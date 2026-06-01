@@ -12,23 +12,23 @@ model User {
   name          String
   email         String         @unique
   password      String?
-  role          String         @default("USER") // USER or ADMIN
+  role          String         @default("USER")
   phone         String?
-  bookings      Booking[]
-  wishlistItems WishlistItem[]
-  notifications Notification[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
+  bookings      Booking[]
+  notifications Notification[]
+  wishlistItems WishlistItem[]
 }
 
 model Notification {
   id        String   @id @default(cuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
   title     String
   message   String
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model City {
@@ -38,10 +38,10 @@ model City {
   banner      String?
   faqQuestion String?
   faqAnswer   String?
+  createdAt   DateTime @default(now())
   cars        Car[]
   tours       Tour[]
   villas      Villa[]
-  createdAt   DateTime @default(now())
 }
 
 model Car {
@@ -55,26 +55,26 @@ model Car {
   image           String
   availability    Boolean        @default(true)
   cityId          String?
-  city            City?          @relation(fields: [cityId], references: [id])
-  packages        CarPackage[]
-  bookings        Booking[]
-  wishlistItems   WishlistItem[]
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
+  bookings        Booking[]
+  city            City?          @relation(fields: [cityId], references: [id])
+  packages        CarPackage[]
+  wishlistItems   WishlistItem[]
 }
 
 model CarPackage {
   id                 String   @id @default(cuid())
   carId              String
-  car                Car      @relation(fields: [carId], references: [id])
-  type               String // "KM", "HOUR", "TRANSFER"
-  name               String // e.g. "120 KM Package", "4 Hours", "Airport Pickup"
+  type               String
+  name               String
   basePrice          Float
   deposit            Float    @default(0)
-  limitValue         Int? // e.g. 120 (for km) or 4 (for hours)
-  extraChargePerUnit Float? // e.g. 10 (for extra km or hour)
+  limitValue         Int?
+  extraChargePerUnit Float?
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
+  car                Car      @relation(fields: [carId], references: [id])
 }
 
 model Tour {
@@ -83,18 +83,18 @@ model Tour {
   description   String
   adultPrice    Float
   childPrice    Float
-  duration      Int // in days
+  duration      Int
   image         String
-  gallery       String // JSON string of image URLs
-  itinerary     String // JSON string of daily itinerary
-  included      String // JSON array of strings
-  excluded      String // JSON array of strings
+  gallery       String
+  itinerary     String
+  included      String
+  excluded      String
   cityId        String?
-  city          City?          @relation(fields: [cityId], references: [id])
-  bookings      Booking[]
-  wishlistItems WishlistItem[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
+  bookings      Booking[]
+  city          City?          @relation(fields: [cityId], references: [id])
+  wishlistItems WishlistItem[]
 }
 
 model Villa {
@@ -104,76 +104,63 @@ model Villa {
   location      String
   startingPrice Float
   image         String
-  gallery       String // JSON array of image URLs
-  amenities     String // JSON array of amenities
-  roomTypes     String // JSON array of room types
+  gallery       String
+  amenities     String
+  roomTypes     String
   occupancy     Int
   cityId        String?
-  city          City?          @relation(fields: [cityId], references: [id])
-  bookings      Booking[]
-  wishlistItems WishlistItem[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
+  bookings      Booking[]
+  city          City?          @relation(fields: [cityId], references: [id])
+  wishlistItems WishlistItem[]
 }
 
 model Booking {
-  id     String @id @default(cuid())
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
-  type   String // "CAR", "TOUR", "VILLA"
-
-  carId String?
-  car   Car?    @relation(fields: [carId], references: [id])
-
-  tourId String?
-  tour   Tour?   @relation(fields: [tourId], references: [id])
-
-  villaId String?
-  villa   Villa?  @relation(fields: [villaId], references: [id])
-
-  startDate DateTime
-  endDate   DateTime
-
-  totalAmount     Float
-  advancePaid     Float
-  remainingAmount Float
-  depositAmount   Float @default(0)
-
-  status        String @default("PENDING") // PENDING, CONFIRMED, CANCELLED
-  depositStatus String @default("PENDING") // PENDING, PAID, REFUNDED, ADJUSTED
-
-  driverName      String?
-  driverEmail     String?
-  driverPhone     String?
-  driverDob       String?
-  aadharFile      String?
-  dlFile          String?
-  specialRequests String?
-
+  id                String   @id @default(cuid())
+  userId            String
+  type              String
+  carId             String?
+  tourId            String?
+  villaId           String?
+  startDate         DateTime
+  endDate           DateTime
+  totalAmount       Float
+  advancePaid       Float
+  remainingAmount   Float
+  depositAmount     Float    @default(0)
+  status            String   @default("PENDING")
+  depositStatus     String   @default("PENDING")
+  driverName        String?
+  driverEmail       String?
+  driverPhone       String?
+  driverDob         String?
+  aadharFile        String?
+  dlFile            String?
+  specialRequests   String?
   rejectionReason   String?
   razorpayPaymentId String?
-  refundStatus      String  @default("NONE") // NONE, PENDING, PROCESSED, FAILED
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  refundStatus      String   @default("NONE")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  car               Car?     @relation(fields: [carId], references: [id])
+  tour              Tour?    @relation(fields: [tourId], references: [id])
+  user              User     @relation(fields: [userId], references: [id])
+  villa             Villa?   @relation(fields: [villaId], references: [id])
 }
 
 model WishlistItem {
-  id     String @id @default(cuid())
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
-  type   String // "CAR", "TOUR", "VILLA"
-
-  carId String?
-  car   Car?    @relation(fields: [carId], references: [id])
-
-  tourId String?
-  tour   Tour?   @relation(fields: [tourId], references: [id])
-
-  villaId String?
-  villa   Villa?  @relation(fields: [villaId], references: [id])
-
+  id        String   @id @default(cuid())
+  userId    String
+  type      String
+  carId     String?
+  tourId    String?
+  villaId   String?
   createdAt DateTime @default(now())
+  car       Car?     @relation(fields: [carId], references: [id])
+  tour      Tour?    @relation(fields: [tourId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+  villa     Villa?   @relation(fields: [villaId], references: [id])
 }
 
 model PricingRule {
@@ -187,7 +174,7 @@ model PricingRule {
 model GlobalPackageTier {
   id              String   @id @default(cuid())
   name            String
-  type            String // "HOURS", "KM", "CUSTOM"
+  type            String
   basePricingInfo String
   limitInfo       String
   isActive        Boolean  @default(true)
@@ -199,7 +186,7 @@ model Coupon {
   id            String   @id @default(cuid())
   code          String   @unique
   discountValue Float
-  discountType  String // "PERCENTAGE" or "FLAT"
+  discountType  String
   isActive      Boolean  @default(true)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -210,7 +197,7 @@ model Blog {
   title     String
   slug      String   @unique
   category  String
-  content   String // Store raw HTML from Rich Text Editor
+  content   String
   isDraft   Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -229,7 +216,7 @@ model AboutPage {
   id        String   @id @default("singleton")
   title     String   @default("About GoRidez")
   subtitle  String   @default("Premium Car Rentals & Excursions in Rajasthan")
-  content   String // Store raw HTML from content editor
-  imageUrl  String? // Optional banner image URL
+  content   String
+  imageUrl  String?
   updatedAt DateTime @updatedAt
 }
