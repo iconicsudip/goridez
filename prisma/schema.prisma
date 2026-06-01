@@ -3,22 +3,22 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgres"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id        String    @id @default(cuid())
-  name      String
-  email     String    @unique
-  password  String?
-  role      String    @default("USER") // USER or ADMIN
-  phone     String?
-  bookings  Booking[]
+  id            String         @id @default(cuid())
+  name          String
+  email         String         @unique
+  password      String?
+  role          String         @default("USER") // USER or ADMIN
+  phone         String?
+  bookings      Booking[]
   wishlistItems WishlistItem[]
   notifications Notification[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 }
 
 model Notification {
@@ -32,115 +32,115 @@ model Notification {
 }
 
 model City {
-  id          String    @id @default(cuid())
-  name        String    @unique
-  slug        String?   @unique
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String?  @unique
   banner      String?
   faqQuestion String?
   faqAnswer   String?
   cars        Car[]
   tours       Tour[]
   villas      Villa[]
-  createdAt   DateTime  @default(now())
+  createdAt   DateTime @default(now())
 }
 
 model Car {
-  id           String       @id @default(cuid())
-  make         String
-  model        String
-  category     String
-  fuelType     String
-  transmission String
+  id              String         @id @default(cuid())
+  make            String
+  model           String
+  category        String
+  fuelType        String
+  transmission    String
   seatingCapacity Int
-  image        String
-  availability Boolean      @default(true)
-  cityId       String?
-  city         City?        @relation(fields: [cityId], references: [id])
-  packages     CarPackage[]
-  bookings     Booking[]
-  wishlistItems WishlistItem[]
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  image           String
+  availability    Boolean        @default(true)
+  cityId          String?
+  city            City?          @relation(fields: [cityId], references: [id])
+  packages        CarPackage[]
+  bookings        Booking[]
+  wishlistItems   WishlistItem[]
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
 }
 
 model CarPackage {
-  id               String   @id @default(cuid())
-  carId            String
-  car              Car      @relation(fields: [carId], references: [id])
-  type             String   // "KM", "HOUR", "TRANSFER"
-  name             String   // e.g. "120 KM Package", "4 Hours", "Airport Pickup"
-  basePrice        Float
-  deposit          Float    @default(0)
-  limitValue       Int?     // e.g. 120 (for km) or 4 (for hours)
+  id                 String   @id @default(cuid())
+  carId              String
+  car                Car      @relation(fields: [carId], references: [id])
+  type               String // "KM", "HOUR", "TRANSFER"
+  name               String // e.g. "120 KM Package", "4 Hours", "Airport Pickup"
+  basePrice          Float
+  deposit            Float    @default(0)
+  limitValue         Int? // e.g. 120 (for km) or 4 (for hours)
   extraChargePerUnit Float? // e.g. 10 (for extra km or hour)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 }
 
 model Tour {
-  id          String    @id @default(cuid())
-  title       String
-  description String
-  adultPrice  Float
-  childPrice  Float
-  duration    Int       // in days
-  image       String
-  gallery     String    // JSON string of image URLs
-  itinerary   String    // JSON string of daily itinerary
-  included    String    // JSON array of strings
-  excluded    String    // JSON array of strings
-  cityId      String?
-  city        City?     @relation(fields: [cityId], references: [id])
-  bookings    Booking[]
+  id            String         @id @default(cuid())
+  title         String
+  description   String
+  adultPrice    Float
+  childPrice    Float
+  duration      Int // in days
+  image         String
+  gallery       String // JSON string of image URLs
+  itinerary     String // JSON string of daily itinerary
+  included      String // JSON array of strings
+  excluded      String // JSON array of strings
+  cityId        String?
+  city          City?          @relation(fields: [cityId], references: [id])
+  bookings      Booking[]
   wishlistItems WishlistItem[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 }
 
 model Villa {
-  id            String    @id @default(cuid())
+  id            String         @id @default(cuid())
   name          String
   description   String
   location      String
   startingPrice Float
   image         String
-  gallery       String    // JSON array of image URLs
-  amenities     String    // JSON array of amenities
-  roomTypes     String    // JSON array of room types
+  gallery       String // JSON array of image URLs
+  amenities     String // JSON array of amenities
+  roomTypes     String // JSON array of room types
   occupancy     Int
   cityId        String?
-  city          City?     @relation(fields: [cityId], references: [id])
+  city          City?          @relation(fields: [cityId], references: [id])
   bookings      Booking[]
   wishlistItems WishlistItem[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 }
 
 model Booking {
-  id             String   @id @default(cuid())
-  userId         String
-  user           User     @relation(fields: [userId], references: [id])
-  type           String   // "CAR", "TOUR", "VILLA"
-  
-  carId          String?
-  car            Car?     @relation(fields: [carId], references: [id])
-  
-  tourId         String?
-  tour           Tour?    @relation(fields: [tourId], references: [id])
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+  type   String // "CAR", "TOUR", "VILLA"
 
-  villaId        String?
-  villa          Villa?   @relation(fields: [villaId], references: [id])
-  
-  startDate      DateTime
-  endDate        DateTime
-  
-  totalAmount    Float
-  advancePaid    Float
+  carId String?
+  car   Car?    @relation(fields: [carId], references: [id])
+
+  tourId String?
+  tour   Tour?   @relation(fields: [tourId], references: [id])
+
+  villaId String?
+  villa   Villa?  @relation(fields: [villaId], references: [id])
+
+  startDate DateTime
+  endDate   DateTime
+
+  totalAmount     Float
+  advancePaid     Float
   remainingAmount Float
-  depositAmount  Float    @default(0)
-  
-  status         String   @default("PENDING") // PENDING, CONFIRMED, CANCELLED
-  depositStatus  String   @default("PENDING") // PENDING, PAID, REFUNDED, ADJUSTED
+  depositAmount   Float @default(0)
+
+  status        String @default("PENDING") // PENDING, CONFIRMED, CANCELLED
+  depositStatus String @default("PENDING") // PENDING, PAID, REFUNDED, ADJUSTED
 
   driverName      String?
   driverEmail     String?
@@ -150,29 +150,29 @@ model Booking {
   dlFile          String?
   specialRequests String?
 
-  rejectionReason String?
+  rejectionReason   String?
   razorpayPaymentId String?
-  refundStatus    String   @default("NONE") // NONE, PENDING, PROCESSED, FAILED
+  refundStatus      String  @default("NONE") // NONE, PENDING, PROCESSED, FAILED
 
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model WishlistItem {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  type      String   // "CAR", "TOUR", "VILLA"
-  
-  carId     String?
-  car       Car?     @relation(fields: [carId], references: [id])
-  
-  tourId    String?
-  tour      Tour?    @relation(fields: [tourId], references: [id])
-  
-  villaId   String?
-  villa     Villa?   @relation(fields: [villaId], references: [id])
-  
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+  type   String // "CAR", "TOUR", "VILLA"
+
+  carId String?
+  car   Car?    @relation(fields: [carId], references: [id])
+
+  tourId String?
+  tour   Tour?   @relation(fields: [tourId], references: [id])
+
+  villaId String?
+  villa   Villa?  @relation(fields: [villaId], references: [id])
+
   createdAt DateTime @default(now())
 }
 
@@ -185,21 +185,21 @@ model PricingRule {
 }
 
 model GlobalPackageTier {
-  id                 String   @id @default(cuid())
-  name               String
-  type               String   // "HOURS", "KM", "CUSTOM"
-  basePricingInfo    String
-  limitInfo          String
-  isActive           Boolean  @default(true)
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  id              String   @id @default(cuid())
+  name            String
+  type            String // "HOURS", "KM", "CUSTOM"
+  basePricingInfo String
+  limitInfo       String
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 model Coupon {
   id            String   @id @default(cuid())
   code          String   @unique
   discountValue Float
-  discountType  String   // "PERCENTAGE" or "FLAT"
+  discountType  String // "PERCENTAGE" or "FLAT"
   isActive      Boolean  @default(true)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -210,7 +210,7 @@ model Blog {
   title     String
   slug      String   @unique
   category  String
-  content   String   // Store raw HTML from Rich Text Editor
+  content   String // Store raw HTML from Rich Text Editor
   isDraft   Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -229,9 +229,7 @@ model AboutPage {
   id        String   @id @default("singleton")
   title     String   @default("About GoRidez")
   subtitle  String   @default("Premium Car Rentals & Excursions in Rajasthan")
-  content   String   // Store raw HTML from content editor
-  imageUrl  String?  // Optional banner image URL
+  content   String // Store raw HTML from content editor
+  imageUrl  String? // Optional banner image URL
   updatedAt DateTime @updatedAt
 }
-
-
