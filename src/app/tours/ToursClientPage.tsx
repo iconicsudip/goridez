@@ -12,13 +12,18 @@ export default function ToursClientPage({ initialTours, cities }: { initialTours
   const router = useRouter();
   const { session, updateSession, addToCart } = useBookingStore();
   const [selectedCityIds, setSelectedCityIds] = useState<string[]>([]);
-  
-  const filteredTours = initialTours.filter(t => 
+
+  const filteredTours = initialTours.filter(t =>
     selectedCityIds.length === 0 || (t.cityId && selectedCityIds.includes(t.cityId))
   );
 
-  const [activeTourId, setActiveTourId] = useState<string | null>(filteredTours[0]?.id || null);
-  const activeTour = filteredTours.find(t => t.id === activeTourId) || filteredTours[0];
+  const [activeTourId, setActiveTourId] = useState<string | null>(
+    filteredTours[0]?.id || null
+  );
+
+  const activeTour =
+    filteredTours.find(t => t.id === activeTourId) ||
+    filteredTours[0];
 
   const [adults, setAdults] = useState(2);
   const [children, setChildren] = useState(0);
@@ -86,7 +91,7 @@ export default function ToursClientPage({ initialTours, cities }: { initialTours
   }
 
   function handleBook(tour: any) {
-    const tourDurationHours = (pickupDate && returnDate) 
+    const tourDurationHours = (pickupDate && returnDate)
       ? Math.max(1, (returnDate.getTime() - pickupDate.getTime()) / (1000 * 60 * 60))
       : tour.duration * 24;
     const tourDurationDays = tourDurationHours / 24;
@@ -113,7 +118,7 @@ export default function ToursClientPage({ initialTours, cities }: { initialTours
   return (
     <div className="min-h-screen bg-[#050505] text-white font-body pt-24 pb-20">
       <div className="container mx-auto px-4">
-        
+
         {/* Header Section */}
         <div className="bg-[#111111] border border-white/5 rounded-3xl p-10 mb-8">
           <div className="text-brand-neon text-[10px] font-black tracking-widest uppercase mb-4">
@@ -129,32 +134,32 @@ export default function ToursClientPage({ initialTours, cities }: { initialTours
           <div className="bg-[#0A0A0A] p-6 rounded-2xl border border-white/5 mt-8">
             <h3 className="text-[10px] text-white/50 font-bold uppercase tracking-widest mb-4">Filters & Dates</h3>
             <div className="flex flex-col md:flex-row gap-6">
-              
+
               {/* Date Selection */}
               <div className="flex flex-col gap-2 min-w-[280px]">
                 <div className="relative">
                   <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-neon pointer-events-none" size={14} />
-                  <DatePicker 
+                  <DatePicker
                     selectsRange={true}
                     startDate={pickupDate}
                     endDate={returnDate}
-                    onChange={handleDateRangeChange} 
-                    dateFormat="dd/MM/yyyy" 
+                    onChange={handleDateRangeChange}
+                    dateFormat="dd/MM/yyyy"
                     placeholderText="Select Tour Dates"
-                    className="w-full bg-[#111111] border border-white/5 rounded-xl pl-9 pr-3 py-3 text-xs outline-none focus:border-brand-neon transition-colors cursor-pointer font-medium" 
+                    className="w-full bg-[#111111] border border-white/5 rounded-xl pl-9 pr-3 py-3 text-xs outline-none focus:border-brand-neon transition-colors cursor-pointer font-medium"
                     wrapperClassName="w-full" portalId="datepicker-root"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-2">
-                  <input 
-                    type="time" 
+                  <input
+                    type="time"
                     value={`${String(pickupDate.getHours()).padStart(2, '0')}:${String(pickupDate.getMinutes()).padStart(2, '0')}`}
                     onChange={(e) => handlePickupTimeChange(e.target.value)}
                     className="w-full bg-[#111111] border border-white/5 rounded-xl px-2 py-1 text-[10px] text-white outline-none focus:border-brand-neon font-mono"
                   />
                   {returnDate && (
-                    <input 
-                      type="time" 
+                    <input
+                      type="time"
                       value={`${String(returnDate.getHours()).padStart(2, '0')}:${String(returnDate.getMinutes()).padStart(2, '0')}`}
                       onChange={(e) => handleReturnTimeChange(e.target.value)}
                       className="w-full bg-[#111111] border border-white/5 rounded-xl px-2 py-1 text-[10px] text-white outline-none focus:border-brand-neon font-mono"
@@ -167,11 +172,10 @@ export default function ToursClientPage({ initialTours, cities }: { initialTours
               <div className="flex-1 flex flex-wrap gap-2 items-center border-t md:border-t-0 md:border-l border-white/5 pt-4 md:pt-0 md:pl-6">
                 <button
                   onClick={() => setSelectedCityIds([])}
-                  className={`px-4 py-2 text-[10px] font-bold tracking-widest uppercase rounded-xl transition-all ${
-                    selectedCityIds.length === 0
-                      ? 'bg-brand-neon text-black shadow-[0_0_15px_rgba(196,240,0,0.2)]'
-                      : 'bg-[#111111] border border-white/10 text-white/50 hover:text-white'
-                  }`}
+                  className={`px-4 py-2 text-[10px] font-bold tracking-widest uppercase rounded-xl transition-all ${selectedCityIds.length === 0
+                    ? 'bg-brand-neon text-black shadow-[0_0_15px_rgba(196,240,0,0.2)]'
+                    : 'bg-[#111111] border border-white/10 text-white/50 hover:text-white'
+                    }`}
                 >
                   All Tours
                 </button>
@@ -181,11 +185,10 @@ export default function ToursClientPage({ initialTours, cities }: { initialTours
                     <button
                       key={c.id}
                       onClick={() => toggleCity(c.id)}
-                      className={`px-4 py-2 text-[10px] font-bold tracking-widest uppercase rounded-xl transition-all ${
-                        selected
-                          ? 'bg-brand-neon/10 border border-brand-neon text-brand-neon shadow-[0_0_10px_rgba(196,240,0,0.08)]'
-                          : 'bg-[#111111] border border-white/10 text-white/50 hover:text-white'
-                      }`}
+                      className={`px-4 py-2 text-[10px] font-bold tracking-widest uppercase rounded-xl transition-all ${selected
+                        ? 'bg-brand-neon/10 border border-brand-neon text-brand-neon shadow-[0_0_10px_rgba(196,240,0,0.08)]'
+                        : 'bg-[#111111] border border-white/10 text-white/50 hover:text-white'
+                        }`}
                     >
                       {c.name}
                     </button>
@@ -199,7 +202,7 @@ export default function ToursClientPage({ initialTours, cities }: { initialTours
 
         {/* Main Split Layout */}
         <div className="flex flex-col lg:flex-row gap-8">
-          
+
           {/* Left Panel: Expeditions */}
           <div className="flex-1 space-y-6">
             <div className="flex items-center gap-2 text-brand-neon font-black text-[10px] uppercase tracking-widest mb-2">
@@ -208,12 +211,12 @@ export default function ToursClientPage({ initialTours, cities }: { initialTours
 
             {filteredTours.map((tour, index) => {
               const isSelected = activeTourId === tour.id;
-              
+
               // Dynamic data parsing
               const itinerary = tour.itinerary ? JSON.parse(tour.itinerary) : [];
               const inclusions = tour.included ? JSON.parse(tour.included) : [];
-              
-              const tourDurationHours = (pickupDate && returnDate) 
+
+              const tourDurationHours = (pickupDate && returnDate)
                 ? Math.max(1, (returnDate.getTime() - pickupDate.getTime()) / (1000 * 60 * 60))
                 : tour.duration * 24;
               const tourDurationDays = tourDurationHours / 24;
@@ -232,10 +235,10 @@ export default function ToursClientPage({ initialTours, cities }: { initialTours
               const stopsText = `${itinerary.length} Stops planned`;
               const category = tour.duration <= 1 ? "Local" : "Extended";
               const stops = itinerary.map((item: any) => item.title);
-              
+
               return (
-                <div 
-                  key={tour.id} 
+                <div
+                  key={tour.id}
                   className={`bg-[#111111] border rounded-3xl p-6 transition-all ${isSelected ? 'border-brand-neon/50 shadow-[0_0_30px_rgba(196,240,0,0.05)]' : 'border-white/5 hover:border-white/20'}`}
                 >
                   <div className="flex flex-col md:flex-row gap-6">
@@ -253,9 +256,9 @@ export default function ToursClientPage({ initialTours, cities }: { initialTours
                         <div className="text-[10px] text-white/50 font-mono tracking-widest uppercase">Category: {category}</div>
                         <div className="text-brand-neon text-[10px] font-mono tracking-widest">{stopsText}</div>
                       </div>
-                      
+
                       <h3 className="text-xl font-black uppercase tracking-tight mb-4">{tour.title}</h3>
-                      
+
                       {/* Stops Pins */}
                       <div className="flex flex-wrap gap-2 mb-6">
                         {stops.map((s: string) => (
@@ -271,7 +274,7 @@ export default function ToursClientPage({ initialTours, cities }: { initialTours
                           <ul className="space-y-2 text-[10px] font-mono text-white/70">
                             {inclusions.slice(0, 3).map((inc: string, i: number) => (
                               <li key={i} className="flex items-center gap-2">
-                                <div className="w-1.5 h-1.5 rounded-full bg-brand-neon shrink-0"></div> 
+                                <div className="w-1.5 h-1.5 rounded-full bg-brand-neon shrink-0"></div>
                                 <span className="truncate">{inc}</span>
                               </li>
                             ))}
@@ -296,20 +299,19 @@ export default function ToursClientPage({ initialTours, cities }: { initialTours
                       <div className="text-brand-neon text-3xl font-black">₹{scaledAdultPrice.toLocaleString()}</div>
                     </div>
                     <div className="flex items-center gap-6">
-                      <button 
+                      <button
                         onClick={() => setActiveTourId(tour.id)}
                         className="text-[10px] text-white/60 font-mono tracking-widest underline underline-offset-4 hover:text-brand-neon transition-colors"
                       >
                         Itinerary Open
                       </button>
-                      <button 
-                        onClick={() => !isAlreadyBooked && handleBook(tour)} 
+                      <button
+                        onClick={() => !isAlreadyBooked && handleBook(tour)}
                         disabled={isAlreadyBooked}
-                        className={`w-full font-black uppercase tracking-widest py-5 px-6 rounded-xl transition-all ${
-                          isAlreadyBooked 
-                            ? 'bg-zinc-800 text-white/30 cursor-not-allowed border border-white/5' 
-                            : 'bg-brand-neon hover:bg-brand-hover text-black shadow-[0_0_20px_rgba(196,240,0,0.2)]'
-                        }`}
+                        className={`w-full font-black uppercase tracking-widest py-5 px-6 rounded-xl transition-all ${isAlreadyBooked
+                          ? 'bg-zinc-800 text-white/30 cursor-not-allowed border border-white/5'
+                          : 'bg-brand-neon hover:bg-brand-hover text-black shadow-[0_0_20px_rgba(196,240,0,0.2)]'
+                          }`}
                       >
                         {isAlreadyBooked ? 'Booked / Unavailable' : 'Book This Experience'}
                       </button>
@@ -323,18 +325,18 @@ export default function ToursClientPage({ initialTours, cities }: { initialTours
           {/* Right Panel: Itinerary Ledger */}
           <div className="w-full lg:w-[380px] shrink-0">
             <div className="bg-[#111111] border border-white/5 rounded-3xl p-8 sticky top-28">
-              
+
               <div className="flex items-center gap-2 text-brand-neon font-black text-[10px] uppercase tracking-widest mb-4">
                 <Compass size={14} /> Active Itinerary Plan
               </div>
 
-              <h2 className="text-xl font-black uppercase tracking-tight mb-2">{activeTour.title}</h2>
+              <h2 className="text-xl font-black uppercase tracking-tight mb-2">{activeTour?.title}</h2>
               <div className="flex items-center gap-2 text-[9px] text-white/50 font-mono mb-8 border-b border-white/5 pb-6">
-                <Calendar size={12} /> Duration: {activeTour.duration} Day{activeTour.duration > 1 ? 's' : ''} • Guided Private Excursion
+                <Calendar size={12} /> Duration: {activeTour?.duration} Day{activeTour?.duration > 1 ? 's' : ''} • Guided Private Excursion
               </div>
 
               <div className="mb-8 max-h-[300px] overflow-y-auto custom-scrollbar pr-2">
-                {(activeTour.itinerary ? JSON.parse(activeTour.itinerary) : []).map((item: any, i: number) => (
+                {(activeTour?.itinerary ? JSON.parse(activeTour.itinerary) : []).map((item: any, i: number) => (
                   <div key={i} className="flex items-start gap-3 mb-6 last:mb-0">
                     <div className="w-4 h-4 rounded-full bg-brand-neon text-black flex items-center justify-center text-[8px] font-black shrink-0 mt-0.5">{item.day}</div>
                     <div>
@@ -349,7 +351,7 @@ export default function ToursClientPage({ initialTours, cities }: { initialTours
               </div>
 
               {activeTour && (() => {
-                const tourDurationHours = (pickupDate && returnDate) 
+                const tourDurationHours = (pickupDate && returnDate)
                   ? Math.max(1, (returnDate.getTime() - pickupDate.getTime()) / (1000 * 60 * 60))
                   : activeTour.duration * 24;
                 const tourDurationDays = tourDurationHours / 24;
@@ -363,26 +365,26 @@ export default function ToursClientPage({ initialTours, cities }: { initialTours
                 return (
                   <div className="bg-[#0A0A0A] border border-white/5 rounded-2xl p-6 font-mono text-[10px] mb-6">
                     <div className="text-[8px] text-white/40 font-bold uppercase tracking-widest mb-4 border-b border-white/10 pb-2">Tour Cost Breakdown ({tourDurationDays.toFixed(1)} Days)</div>
-                    
+
                     <div className="grid grid-cols-2 gap-4 mb-6">
                       <div>
                         <label className="block text-[8px] text-white/50 uppercase tracking-widest mb-1">Adults (₹{scaledAdultPrice.toLocaleString()})</label>
-                        <select 
+                        <select
                           value={adults}
                           onChange={e => setAdults(parseInt(e.target.value))}
                           className="w-full bg-[#111111] border border-white/5 rounded-lg px-3 py-2 text-xs outline-none appearance-none"
                         >
-                          {[1,2,3,4,5,6,7,8,9,10].map(n => <option key={n} value={n}>{n}</option>)}
+                          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => <option key={n} value={n}>{n}</option>)}
                         </select>
                       </div>
                       <div>
                         <label className="block text-[8px] text-white/50 uppercase tracking-widest mb-1">Children (₹{scaledChildPrice.toLocaleString()})</label>
-                        <select 
+                        <select
                           value={children}
                           onChange={e => setChildren(parseInt(e.target.value))}
                           className="w-full bg-[#111111] border border-white/5 rounded-lg px-3 py-2 text-xs outline-none appearance-none"
                         >
-                          {[0,1,2,3,4,5,6,7,8,9,10].map(n => <option key={n} value={n}>{n}</option>)}
+                          {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => <option key={n} value={n}>{n}</option>)}
                         </select>
                       </div>
                     </div>
