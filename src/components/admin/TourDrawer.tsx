@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, ArrowRight } from 'lucide-react';
 import { addTour } from '@/app/admin/actions';
+import ImageUpload from './ImageUpload';
 
 interface TourDrawerProps {
   isOpen: boolean;
@@ -12,6 +13,13 @@ interface TourDrawerProps {
 
 export default function TourDrawer({ isOpen, onClose, cities }: TourDrawerProps) {
   const [loading, setLoading] = useState(false);
+  const [imageUrl, setImageUrl] = useState('');
+
+  useEffect(() => {
+    if (!isOpen) {
+      setImageUrl('');
+    }
+  }, [isOpen]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -56,7 +64,8 @@ export default function TourDrawer({ isOpen, onClose, cities }: TourDrawerProps)
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">IMAGE BANNER URL</label>
-                <input name="image" required type="text" placeholder="https://images.unsplash.com/..." className="w-full bg-[#111111] border border-white/5 rounded-xl px-4 py-3 text-xs text-white outline-none font-mono focus:border-white/20" />
+                <input type="hidden" name="image" value={imageUrl} />
+                <ImageUpload value={imageUrl} onChange={setImageUrl} />
               </div>
               <div className="space-y-2">
                 <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">DURATION (DAYS)</label>

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, X, ShoppingBag } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import { useBookingStore } from '@/store/useBookingStore';
 
 export default function Navbar() {
@@ -59,9 +59,17 @@ export default function Navbar() {
         {/* Right: Actions */}
         <div className="hidden lg:flex items-center gap-6">
           {status === 'authenticated' ? (
-            <Link href="/dashboard" className="text-sm font-medium text-white/80 hover:text-brand-neon transition-colors">
-              My Dashboard
-            </Link>
+            <div className="flex items-center gap-4">
+              <Link href="/dashboard" className="text-sm font-medium text-white/80 hover:text-brand-neon transition-colors">
+                My Dashboard
+              </Link>
+              <button 
+                onClick={() => signOut({ callbackUrl: '/' })} 
+                className="text-sm font-medium text-white/80 hover:text-red-400 transition-colors"
+              >
+                Sign Out
+              </button>
+            </div>
           ) : (
             <div className="flex items-center gap-4">
               <Link href="/login" className="text-sm font-medium text-white/80 hover:text-white transition-colors">
@@ -111,9 +119,23 @@ export default function Navbar() {
             </Link>
           ))}
           <div className="border-t border-white/10 pt-4 flex flex-col gap-4">
-            <Link href="/admin" onClick={() => setIsOpen(false)} className="font-medium text-white/80">
-              Sign In
-            </Link>
+            {status === 'authenticated' ? (
+              <>
+                <Link href="/dashboard" onClick={() => setIsOpen(false)} className="font-medium text-white/80 hover:text-white">
+                  My Dashboard
+                </Link>
+                <button 
+                  onClick={() => { signOut({ callbackUrl: '/' }); setIsOpen(false); }} 
+                  className="font-medium text-left text-white/80 hover:text-red-400"
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <Link href="/login" onClick={() => setIsOpen(false)} className="font-medium text-white/80 hover:text-white">
+                Sign In
+              </Link>
+            )}
             <Link href="/self-drive" onClick={() => setIsOpen(false)} className="bg-brand-neon text-black px-4 py-3 rounded-xl text-center font-bold">
               Book Now
             </Link>

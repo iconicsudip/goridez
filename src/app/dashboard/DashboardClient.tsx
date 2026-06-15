@@ -3,10 +3,11 @@
 import { useState } from 'react';
 import { 
   ShieldCheck, Mail, Phone, ChevronRight, Clock, User, 
-  FileText, CreditCard, Banknote, Bell, Heart, Sparkles, X, Lock
+  FileText, CreditCard, Banknote, Bell, Heart, Sparkles, X, Lock, LogOut
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { signOut } from 'next-auth/react';
 
 // Always pass explicit locale so server & client produce identical output (fixes hydration mismatch)
 const formatDate = (value: string | Date) =>
@@ -263,6 +264,13 @@ export default function DashboardClient({ user, bookings, aggregates, wishlist =
                     <item.icon size={16} /> {item.label}
                   </button>
                 ))}
+                
+                <button 
+                  onClick={() => signOut({ callbackUrl: '/' })}
+                  className="w-full flex items-center gap-4 px-4 py-3 rounded-xl font-bold text-[11px] uppercase tracking-widest transition-colors text-white/60 hover:text-red-400 hover:bg-red-500/10 mt-2 border border-transparent hover:border-red-500/20"
+                >
+                  <LogOut size={16} /> Sign Out
+                </button>
               </nav>
             </div>
 

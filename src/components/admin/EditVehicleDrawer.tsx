@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { X, ArrowRight, Plus, Trash2, Check } from 'lucide-react';
 import { updateVehicle } from '@/app/admin/actions';
+import ImageUpload from './ImageUpload';
+import { useEffect } from 'react';
 
 interface EditVehicleDrawerProps {
   isOpen: boolean;
@@ -26,6 +28,15 @@ export default function EditVehicleDrawer({ isOpen, onClose, car, cities, tiers 
       deposit: String(p.deposit),
     })) ?? []
   );
+  const [imageUrl, setImageUrl] = useState(car?.image || '');
+
+  useEffect(() => {
+    if (isOpen) {
+      setImageUrl(car?.image || '');
+    } else {
+      setImageUrl('');
+    }
+  }, [car, isOpen]);
 
   function toggleCity(id: string) {
     setSelectedCityIds(prev => prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]);
@@ -97,8 +108,8 @@ export default function EditVehicleDrawer({ isOpen, onClose, car, cities, tiers 
                 </div>
                 <div className="space-y-2">
                   <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Image URL</label>
-                  <input name="imageUrl" required defaultValue={car.image}
-                    className="w-full bg-[#111111] border border-white/5 rounded-xl px-4 py-3 text-xs text-white outline-none font-mono focus:border-yellow-400/40 transition-colors" />
+                  <input type="hidden" name="imageUrl" value={imageUrl} />
+                  <ImageUpload value={imageUrl} onChange={setImageUrl} />
                 </div>
                 <div className="grid grid-cols-3 gap-5">
                   <div className="space-y-2">

@@ -7,12 +7,22 @@ import {
   Clock, Users, MapPin, Check
 } from 'lucide-react';
 import { deleteTour, addTour, updateTour } from '@/app/admin/actions';
+import ImageUpload from './ImageUpload';
+import { useEffect } from 'react';
 
 function TourDrawer({ isOpen, onClose, tour, cities, mode }: any) {
   const [loading, setLoading] = useState(false);
   const [selectedCityIds, setSelectedCityIds] = useState<string[]>(
     tour?.cityId ? [tour.cityId] : []
   );
+  const [imageUrl, setImageUrl] = useState(tour?.image || '');
+  useEffect(() => {
+    if (isOpen) {
+      setImageUrl(tour?.image || '');
+    } else {
+      setImageUrl('');
+    }
+  }, [tour, isOpen]);
 
   // Reset city selection when tour prop changes (edit vs add)
   const stableKey = tour?.id ?? 'new';
@@ -76,9 +86,8 @@ function TourDrawer({ isOpen, onClose, tour, cities, mode }: any) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2">
                 <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Cover Image URL</label>
-                <input name="image" required defaultValue={tour?.image}
-                  placeholder="https://images.unsplash.com/..."
-                  className="w-full bg-[#111111] border border-white/5 rounded-xl px-4 py-3 text-xs text-white outline-none font-mono focus:border-white/20" />
+                <input type="hidden" name="image" value={imageUrl} />
+                <ImageUpload value={imageUrl} onChange={setImageUrl} />
               </div>
               <div className="space-y-2">
                 <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Duration (Days)</label>

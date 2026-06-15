@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, ArrowRight, Plus, Trash2, Check, Tag, ChevronDown } from 'lucide-react';
 import { addVehicle } from '@/app/admin/actions';
+import ImageUpload from './ImageUpload';
 
 interface VehicleDrawerProps {
   isOpen: boolean;
@@ -34,6 +35,13 @@ export default function VehicleDrawer({ isOpen, onClose, cities, tiers }: Vehicl
   const [features, setFeatures] = useState<string[]>([]);
   const [featureInput, setFeatureInput] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [imageUrl, setImageUrl] = useState('');
+
+  useEffect(() => {
+    if (!isOpen) {
+      setImageUrl('');
+    }
+  }, [isOpen]);
 
   function toggleCity(id: string) {
     setSelectedCityIds(prev =>
@@ -163,8 +171,8 @@ export default function VehicleDrawer({ isOpen, onClose, cities, tiers }: Vehicl
 
                 <div className="space-y-2">
                   <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Image Photo URL</label>
-                  <input name="imageUrl" required type="text" placeholder="https://images.unsplash.com/..."
-                    className="w-full bg-[#111111] border border-white/5 rounded-xl px-4 py-3 text-xs text-white outline-none font-mono focus:border-brand-neon/40 transition-colors" />
+                  <input type="hidden" name="imageUrl" value={imageUrl} />
+                  <ImageUpload value={imageUrl} onChange={setImageUrl} />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-5">

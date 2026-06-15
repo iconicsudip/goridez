@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { updateAboutPage } from '@/app/admin/actions';
 import { Info, Save, X, Image as ImageIcon } from 'lucide-react';
+import ImageUpload from './ImageUpload';
 
 interface AboutPageData {
   title: string;
@@ -115,16 +116,10 @@ export default function AboutManager({ initialData }: { initialData: AboutPageDa
               <label className="block text-[10px] text-white/40 uppercase tracking-widest mb-2 font-bold font-mono">
                 Banner Image URL
               </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  value={formData.imageUrl}
-                  onChange={e => setFormData({ ...formData, imageUrl: e.target.value })}
-                  placeholder="https://images.unsplash.com/..."
-                  className="w-full bg-[#050505] border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm focus:border-brand-neon outline-none text-white transition-colors"
-                />
-                <ImageIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30" size={16} />
-              </div>
+              <ImageUpload
+                value={formData.imageUrl}
+                onChange={(value) => setFormData({ ...formData, imageUrl: value })}
+              />
             </div>
           </div>
 

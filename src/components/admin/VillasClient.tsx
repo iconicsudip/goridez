@@ -4,6 +4,8 @@ import { useState, useMemo } from 'react';
 import Image from 'next/image';
 import { Trash2, Pencil, Search, Plus, X, ArrowRight, Check, MapPin, Users, Tag } from 'lucide-react';
 import { deleteVilla, addVilla, updateVilla } from '@/app/admin/actions';
+import ImageUpload from './ImageUpload';
+import { useEffect } from 'react';
 
 const AMENITY_SUGGESTIONS = [
   'Private Pool', 'Infinity Pool', 'Lake View', 'Fort View', 'Butler Service',
@@ -21,6 +23,15 @@ function VillaDrawer({ isOpen, onClose, villa, cities, mode }: any) {
   const [selectedCityIds, setSelectedCityIds] = useState<string[]>(
     villa?.cityId ? [villa.cityId] : []
   );
+  const [imageUrl, setImageUrl] = useState(villa?.image || '');
+
+  useEffect(() => {
+    if (isOpen) {
+      setImageUrl(villa?.image || '');
+    } else {
+      setImageUrl('');
+    }
+  }, [villa, isOpen]);
 
   function toggleCity(id: string) {
     setSelectedCityIds(prev =>
@@ -134,8 +145,8 @@ function VillaDrawer({ isOpen, onClose, villa, cities, mode }: any) {
               </div>
               <div className="space-y-2">
                 <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Cover Image URL</label>
-                <input name="image" required defaultValue={villa?.image} placeholder="https://images.unsplash.com/..."
-                  className="w-full bg-[#111111] border border-white/5 rounded-xl px-4 py-3 text-xs text-white outline-none font-mono focus:border-white/20" />
+                <input type="hidden" name="image" value={imageUrl} />
+                <ImageUpload value={imageUrl} onChange={setImageUrl} />
               </div>
             </div>
 
