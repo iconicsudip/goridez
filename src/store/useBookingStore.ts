@@ -13,6 +13,9 @@ export type CartItem = {
   price: number; // Base price for this item based on selected package
   deposit: number; // Refundable deposit
   extraInfo?: string; // e.g. "120 KM Package" or "4 Seats"
+  pickupStation?: string; // 'CITY_CENTER' | 'AIRPORT' | 'RAILWAY'
+  dropStation?: string;   // 'CITY_CENTER' | 'AIRPORT' | 'RAILWAY'
+  deliveryFee?: number;
 };
 
 type BookingStore = {

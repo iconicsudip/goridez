@@ -145,6 +145,9 @@ model Booking {
   driverEmail       String?
   driverPhone       String?
   driverDob         String?
+  pickupStation     String?
+  dropStation       String?
+  deliveryFee       Float?   @default(0)
   aadharFile        String?
   dlFile            String?
   specialRequests   String?

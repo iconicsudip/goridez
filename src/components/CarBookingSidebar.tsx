@@ -91,6 +91,9 @@ export default function CarBookingSidebar({ car, deliveryCharge }: { car: any, d
       price: totalFare,
       deposit: selectedPackage.deposit,
       extraInfo,
+      pickupStation,
+      dropStation,
+      deliveryFee: pickupFee + dropFee + lateNightSurcharge
     });
     router.push('/checkout');
   };

@@ -120,13 +120,21 @@ export default function CheckoutClient() {
     setIsProcessing(true);
 
     try {
+      // Prepare cart items with delivery data to be saved to booking
+      const formattedCartItems = cartItems.map(item => ({
+        ...item,
+        pickupStation: item.pickupStation || null,
+        dropStation: item.dropStation || null,
+        deliveryFee: item.deliveryFee || 0
+      }));
+
       // Create bookings & razorpay order on the backend
       const res = await fetch('/api/razorpay/order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           amount: advanceHold,
-          cartItems,
+          cartItems: formattedCartItems,
           driverDetails: form,
           couponCode: appliedCoupon?.code || null,
           discount,

@@ -98,6 +98,9 @@ export async function POST(req: NextRequest) {
           aadharFile: driverDetails?.aadharFile || null,
           dlFile: driverDetails?.dlFile || null,
           specialRequests: driverDetails?.specialRequests || null,
+          pickupStation: item.pickupStation || null,
+          dropStation: item.dropStation || null,
+          deliveryFee: item.deliveryFee || 0,
         },
       });
 
