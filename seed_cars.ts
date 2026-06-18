@@ -160,6 +160,35 @@ async function main() {
     console.log(`Created Chauffeur ${car.make} ${car.model}`);
   }
 
+  console.log('Inserting Round Trip Routes...');
+  await prisma.roundTripRoute.deleteMany({});
+  
+  const roundTripRoutes = [
+    { route: 'Udaipur-Kumbhalgarh-Ranakpur', dist: 150, s1: 3600, s2: 7200, s3: 10800, v1: 5500, v2: 10900, v3: 16300, c1: 6000, c2: 12000, c3: 18000, l1: 12000, l2: 24000, l3: 36000, na: 500 },
+    { route: 'Udaipur-Chittorgarh', dist: 130, s1: 3600, s2: 7200, s3: 10800, v1: 5500, v2: 10900, v3: 16300, c1: 6000, c2: 12000, c3: 18000, l1: 12000, l2: 24000, l3: 36000, na: 500 },
+    { route: 'Udaipur-Mount Abu', dist: 175, s1: 4800, s2: 8400, s3: 12000, v1: 7200, v2: 12600, v3: 18000, c1: 8000, c2: 14000, c3: 20000, l1: 20000, l2: 32000, l3: 44000, na: 500 },
+    { route: 'Udaipur-Jodhpur', dist: 265, s1: 7200, s2: 10800, s3: 14400, v1: 11500, v2: 16900, v3: 22300, c1: 13500, c2: 19500, c3: 25500, l1: 28000, l2: 40000, l3: 52000, na: 600 },
+    { route: 'Udaipur-Jaipur', dist: 415, s1: 10500, s2: 14100, s3: 17700, v1: 15000, v2: 20400, v3: 25800, c1: 16000, c2: 22000, c3: 28000, l1: 34000, l2: 46000, l3: 58000, na: 700 },
+    { route: 'Udaipur-Ranakpur', dist: 104, s1: 3300, s2: 6900, s3: 10500, v1: 5000, v2: 10400, v3: 15800, c1: 5500, c2: 11500, c3: 17500, l1: 9000, l2: 21000, l3: 33000, na: 500 },
+    { route: 'Udaipur-Nathdwara-Eklingji', dist: 65, s1: 3300, s2: 6900, s3: 10500, v1: 5000, v2: 10400, v3: 15800, c1: 5500, c2: 11500, c3: 17500, l1: 9000, l2: 21000, l3: 33000, na: 400 },
+  ];
+
+  for (const rt of roundTripRoutes) {
+    await prisma.roundTripRoute.create({
+      data: {
+        cityId: city.id,
+        routeTitle: rt.route,
+        distanceKm: rt.dist,
+        sedan1D: rt.s1, sedan2D: rt.s2, sedan3D: rt.s3,
+        suv1D: rt.v1, suv2D: rt.v2, suv3D: rt.v3,
+        crysta1D: rt.c1, crysta2D: rt.c2, crysta3D: rt.c3,
+        luxury1D: rt.l1, luxury2D: rt.l2, luxury3D: rt.l3,
+        nightAllowance: rt.na
+      }
+    });
+    console.log(`Created Route ${rt.route}`);
+  }
+
   console.log('Done!');
 }
 
