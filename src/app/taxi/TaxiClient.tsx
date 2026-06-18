@@ -7,12 +7,16 @@ import { ArrowDownUp, MapPin, Calendar, Users, Send, Route } from 'lucide-react'
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
-export default function TaxiClient({ initialCars, initialCities, initialRoutes = [] }: { initialCars: any[], initialCities: any[], initialRoutes?: any[] }) {
+export default function TaxiClient({ initialCars, initialCities, initialRoutes = [], initialAirportRoutes = [] }: { initialCars: any[], initialCities: any[], initialRoutes?: any[], initialAirportRoutes?: any[] }) {
   const router = useRouter();
   const { session, updateSession, addToCart } = useBookingStore();
   
-  const [bookingMode, setBookingMode] = useState<'ONE_WAY'|'ROUND_TRIP'>('ONE_WAY');
+  const [bookingMode, setBookingMode] = useState<'ONE_WAY'|'ROUND_TRIP'|'AIRPORT_TRANSFER'>('ONE_WAY');
   const [selectedRouteId, setSelectedRouteId] = useState(initialRoutes[0]?.id || '');
+
+  // Airport Transfer State
+  const [selectedAtRouteId, setSelectedAtRouteId] = useState(initialAirportRoutes[0]?.id || '');
+  const [atDirection, setAtDirection] = useState<'PICKUP'|'DROP'>('PICKUP');
 
   const [pickup, setPickup] = useState(initialCities[0]?.name || 'Udaipur');
   const [dropoff, setDropoff] = useState(initialCities.length > 1 ? initialCities[1]?.name : 'Ahmedabad');
@@ -75,13 +79,13 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes =
     let extra = extraText;
     if (pickupDate) {
       extra += ` • Departs: ${pickupDate.toLocaleString('en-GB', { dateStyle: 'short', timeStyle: 'short' })}`;
-      if (returnDate) extra += ` • Returns: ${returnDate.toLocaleString('en-GB', { dateStyle: 'short', timeStyle: 'short' })}`;
+      if (returnDate && bookingMode !== 'AIRPORT_TRANSFER') extra += ` • Returns: ${returnDate.toLocaleString('en-GB', { dateStyle: 'short', timeStyle: 'short' })}`;
     }
 
     addToCart({
-      serviceType: bookingMode === 'ROUND_TRIP' ? 'tours' : 'oneWayTaxi',
+      serviceType: bookingMode === 'ROUND_TRIP' ? 'tours' : bookingMode === 'AIRPORT_TRANSFER' ? 'oneWayTaxi' : 'oneWayTaxi',
       referenceId: car.id,
-      title: `${car.make} ${car.model} (${bookingMode === 'ROUND_TRIP' ? 'Round Trip' : 'One Way'})`,
+      title: `${car.make} ${car.model} (${bookingMode === 'ROUND_TRIP' ? 'Round Trip' : bookingMode === 'AIRPORT_TRANSFER' ? 'Airport Transfer' : 'One Way'})`,
       image: car.image || '',
       price: price,
       deposit: 0,
@@ -126,6 +130,14 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes =
           >
             Round Trip Packages
           </button>
+          <button 
+            onClick={() => setBookingMode('AIRPORT_TRANSFER')}
+            className={`px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
+              bookingMode === 'AIRPORT_TRANSFER' ? 'bg-brand-neon text-black shadow-lg shadow-brand-neon/20' : 'text-white/50 hover:text-white'
+            }`}
+          >
+            Airport Transfers
+          </button>
         </div>
 
         {/* Main Split Layout */}
@@ -164,7 +176,7 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes =
                       </div>
                     </div>
                   </>
-                ) : (
+                ) : bookingMode === 'ROUND_TRIP' ? (
                   <div>
                     <label className="block text-[9px] text-white/50 font-bold uppercase tracking-widest mb-2">Predefined Round Trip Route</label>
                     <div className="relative">
@@ -175,25 +187,70 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes =
                     </div>
                     <p className="text-[10px] text-brand-neon mt-2 font-mono">Distance (OW): {selectedRoute?.distanceKm} KM</p>
                   </div>
+                ) : (
+                  <div>
+                    <label className="block text-[9px] text-white/50 font-bold uppercase tracking-widest mb-2">Airport Direction</label>
+                    <div className="flex gap-2 mb-4">
+                      <button 
+                        onClick={() => setAtDirection('PICKUP')}
+                        className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase transition-all ${atDirection === 'PICKUP' ? 'bg-brand-neon text-black' : 'bg-white/5 text-white/50 hover:bg-white/10'}`}
+                      >
+                        Pickup from Airport
+                      </button>
+                      <button 
+                        onClick={() => setAtDirection('DROP')}
+                        className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase transition-all ${atDirection === 'DROP' ? 'bg-brand-neon text-black' : 'bg-white/5 text-white/50 hover:bg-white/10'}`}
+                      >
+                        Drop to Airport
+                      </button>
+                    </div>
+
+                    <label className="block text-[9px] text-white/50 font-bold uppercase tracking-widest mb-2">City Zone / Locality</label>
+                    <div className="relative">
+                      <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-neon" size={16} />
+                      <select value={selectedAtRouteId} onChange={(e) => setSelectedAtRouteId(e.target.value)} className="w-full bg-[#0A0A0A] border border-white/5 rounded-xl pl-12 pr-4 py-4 text-sm outline-none appearance-none font-medium cursor-pointer">
+                        {initialAirportRoutes.map((r: any) => <option key={r.id} value={r.id}>{r.zone} - {r.areaLocality}</option>)}
+                      </select>
+                    </div>
+                  </div>
                 )}
 
                 <div className="space-y-4 pt-2">
                   <div>
                     <label className="block text-[9px] text-white/50 font-bold uppercase tracking-widest mb-2">
-                      {bookingMode === 'ROUND_TRIP' ? 'Travel Date Range (Required)' : 'Travel Date Range'}
+                      {bookingMode === 'ROUND_TRIP' ? 'Travel Date Range (Required)' : bookingMode === 'AIRPORT_TRANSFER' ? 'Transfer Date' : 'Travel Date Range'}
                     </label>
                     <div className="relative">
                       <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-neon pointer-events-none" size={14} />
-                      <DatePicker 
-                        selectsRange={true}
-                        startDate={pickupDate}
-                        endDate={returnDate}
-                        onChange={handleDateRangeChange} 
-                        dateFormat="dd/MM/yyyy" 
-                        placeholderText={bookingMode === 'ROUND_TRIP' ? 'Select Start & End Date' : 'One Way (or Select Return)'}
-                        className="w-full bg-[#0A0A0A] border border-white/5 rounded-xl pl-10 pr-4 py-4 text-xs outline-none cursor-pointer font-medium" 
-                        wrapperClassName="w-full" portalId="datepicker-root"
-                      />
+                      {bookingMode === 'AIRPORT_TRANSFER' ? (
+                        <DatePicker 
+                          selectsRange={false}
+                          selected={pickupDate}
+                          onChange={(date: Date | null) => {
+                            if (date) {
+                              const nextStart = new Date(date);
+                              nextStart.setHours(pickupDate.getHours(), pickupDate.getMinutes());
+                              setPickupDate(nextStart);
+                              updateSession({ pickupDate: nextStart.toISOString() });
+                            }
+                          }}
+                          dateFormat="dd/MM/yyyy" 
+                          placeholderText="Transfer Date"
+                          className="w-full bg-[#0A0A0A] border border-white/5 rounded-xl pl-10 pr-4 py-4 text-xs outline-none cursor-pointer font-medium" 
+                          wrapperClassName="w-full" portalId="datepicker-root"
+                        />
+                      ) : (
+                        <DatePicker 
+                          selectsRange={true}
+                          startDate={pickupDate}
+                          endDate={returnDate}
+                          onChange={handleDateRangeChange as any} 
+                          dateFormat="dd/MM/yyyy" 
+                          placeholderText={bookingMode === 'ROUND_TRIP' ? 'Select Start & End Date' : 'One Way (or Select Return)'}
+                          className="w-full bg-[#0A0A0A] border border-white/5 rounded-xl pl-10 pr-4 py-4 text-xs outline-none cursor-pointer font-medium" 
+                          wrapperClassName="w-full" portalId="datepicker-root"
+                        />
+                      )}
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
@@ -206,7 +263,7 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes =
                         className="w-full bg-[#0A0A0A] border border-white/5 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-brand-neon font-mono"
                       />
                     </div>
-                    {returnDate && (
+                    {returnDate && bookingMode !== 'AIRPORT_TRANSFER' && (
                       <div>
                         <label className="block text-[8px] text-white/40 font-bold uppercase tracking-widest mb-1 font-bold">Return Time</label>
                         <input 
@@ -259,7 +316,7 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes =
                   const extraDayAllowance = durationDays > 1 ? (durationDays - 1) * 1500 : 0;
                   flatFare = isRoundTrip ? Math.round(baseFlatFare * 1.8) + extraDayAllowance : baseFlatFare;
                   extraText = `${pickup} ➔ ${dropoff} (${distance} KM)`;
-                } else {
+                } else if (bookingMode === 'ROUND_TRIP') {
                   // ROUND TRIP
                   if (!selectedRoute) return null;
                   
@@ -281,12 +338,22 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes =
                     flatFare = price3D + (extraDayPrice * (durationDays - 3));
                   }
 
-                  // Night Allowance overlap logic
-                  // Check if driving involves night (simplifying: add night allowance per day)
-                  // The user requested night allowance. We'll just add the per-day night allowance.
                   flatFare += (selectedRoute.nightAllowance || 0) * durationDays;
 
                   extraText = `Round Trip: ${selectedRoute.routeTitle} (${durationDays} Days)`;
+                } else if (bookingMode === 'AIRPORT_TRANSFER') {
+                  const selectedAt = initialAirportRoutes.find(r => r.id === selectedAtRouteId) || initialAirportRoutes[0];
+                  if (!selectedAt) return null;
+                  
+                  let prefix = 'sedan';
+                  if (car.category.toUpperCase() === 'SUV') prefix = 'suv';
+                  else if (car.model.toLowerCase().includes('crysta')) prefix = 'crysta';
+                  else if (car.category.toUpperCase() === 'LUXURY') prefix = 'luxury';
+
+                  const priceKey = `${prefix}${atDirection === 'PICKUP' ? 'Pickup' : 'Drop'}`;
+                  flatFare = selectedAt[priceKey] || 1000;
+                  
+                  extraText = `Airport Transfer (${atDirection === 'PICKUP' ? 'Pickup from Airport' : 'Drop to Airport'}): ${selectedAt.airport} ↔ ${selectedAt.areaLocality} | Wait Fee: ₹${selectedAt.waitCharge}/30min | Night Fee: ₹${selectedAt.nightFee}`;
                 }
 
                 const isAlreadyBooked = car.bookings && car.bookings.length > 0 && car.bookings.some((booking: any) => {

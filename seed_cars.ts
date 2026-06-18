@@ -189,6 +189,36 @@ async function main() {
     console.log(`Created Route ${rt.route}`);
   }
 
+  console.log('Inserting Airport Transfers...');
+  await prisma.airportTransferRoute.deleteMany({});
+  
+  const airportTransfers = [
+    { zone: 'Zone A', loc: 'City Centre / Fateh Sagar', sp: 1000, sd: 950, vp: 1400, vd: 1350, cp: 1600, cd: 1550, lp: 7000, ld: 6900 },
+    { zone: 'Zone A', loc: 'Lake Pichola / Old City', sp: 1000, sd: 950, vp: 1400, vd: 1350, cp: 1600, cd: 1550, lp: 7000, ld: 6900 },
+    { zone: 'Zone B', loc: 'Hiran Magri / Sector 4-11', sp: 1000, sd: 950, vp: 1400, vd: 1350, cp: 1600, cd: 1550, lp: 7000, ld: 6900 },
+    { zone: 'Zone B', loc: 'Pratap Nagar / Bhuwana', sp: 1000, sd: 950, vp: 1400, vd: 1350, cp: 1600, cd: 1550, lp: 7000, ld: 6900 },
+    { zone: 'Zone C', loc: 'Ambamata / Sukhadia Circle', sp: 1100, sd: 1050, vp: 1600, vd: 1550, cp: 1800, cd: 1750, lp: 8500, ld: 8400 },
+    { zone: 'Zone D', loc: 'Outskirts / Resort Belt', sp: 1300, sd: 1250, vp: 1700, vd: 1650, cp: 2000, cd: 1950, lp: 9500, ld: 9400 }
+  ];
+
+  for (const at of airportTransfers) {
+    await prisma.airportTransferRoute.create({
+      data: {
+        cityId: city.id,
+        airport: 'UDR',
+        zone: at.zone,
+        areaLocality: at.loc,
+        sedanPickup: at.sp, sedanDrop: at.sd,
+        suvPickup: at.vp, suvDrop: at.vd,
+        crystaPickup: at.cp, crystaDrop: at.cd,
+        luxuryPickup: at.lp, luxuryDrop: at.ld,
+        waitCharge: 150,
+        nightFee: 200,
+        meetGreet: true
+      }
+    });
+  }
+
   console.log('Done!');
 }
 

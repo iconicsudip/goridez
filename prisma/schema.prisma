@@ -44,6 +44,7 @@ model City {
   villas          Villa[]
   deliveryCharges DeliveryCharge[]
   roundTripRoutes RoundTripRoute[]
+  airportTransferRoutes AirportTransferRoute[]
 }
 
 model Car {
@@ -270,6 +271,28 @@ model RoundTripRoute {
   luxury2D        Float
   luxury3D        Float
   nightAllowance  Float    @default(500)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  city            City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
+}
+
+model AirportTransferRoute {
+  id              String   @id @default(cuid())
+  cityId          String
+  airport         String   @default("UDR")
+  zone            String
+  areaLocality    String
+  sedanPickup     Float
+  sedanDrop       Float
+  suvPickup       Float
+  suvDrop         Float
+  crystaPickup    Float
+  crystaDrop      Float
+  luxuryPickup    Float
+  luxuryDrop      Float
+  waitCharge      Float    @default(150)
+  nightFee        Float    @default(200)
+  meetGreet       Boolean  @default(true)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   city            City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
