@@ -87,6 +87,31 @@ async function main() {
     console.log(`Created ${car.make} ${car.model}`);
   }
 
+  console.log('Inserting Delivery Charges...');
+  const deliveryData = [
+    { category: 'Hatchback', ap: 599, ad: 599, rp: 399, rd: 399 },
+    { category: 'Sedan', ap: 599, ad: 599, rp: 449, rd: 449 },
+    { category: 'SUV', ap: 699, ad: 699, rp: 499, rd: 499 },
+  ];
+
+  await prisma.deliveryCharge.deleteMany({});
+  for (const d of deliveryData) {
+    await prisma.deliveryCharge.create({
+      data: {
+        cityId: city.id,
+        category: d.category,
+        airportPickup: d.ap,
+        airportDrop: d.ad,
+        railwayPickup: d.rp,
+        railwayDrop: d.rd,
+        lateNightStart: '22:00',
+        lateNightEnd: '06:00',
+        notes: 'Maharana Pratap Airport UDR'
+      }
+    });
+    console.log(`Created Delivery Charge for ${d.category}`);
+  }
+
   console.log('Done!');
 }
 

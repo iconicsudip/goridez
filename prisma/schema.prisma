@@ -38,10 +38,11 @@ model City {
   banner      String?
   faqQuestion String?
   faqAnswer   String?
-  createdAt   DateTime @default(now())
-  cars        Car[]
-  tours       Tour[]
-  villas      Villa[]
+  createdAt       DateTime @default(now())
+  cars            Car[]
+  tours           Tour[]
+  villas          Villa[]
+  deliveryCharges DeliveryCharge[]
 }
 
 model Car {
@@ -221,4 +222,22 @@ model AboutPage {
   content   String
   imageUrl  String?
   updatedAt DateTime @updatedAt
+}
+
+model DeliveryCharge {
+  id              String   @id @default(cuid())
+  cityId          String
+  category        String
+  airportPickup   Float
+  airportDrop     Float
+  railwayPickup   Float
+  railwayDrop     Float
+  lateNightStart  String   @default("22:00")
+  lateNightEnd    String   @default("06:00")
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  city            City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
+
+  @@unique([cityId, category])
 }

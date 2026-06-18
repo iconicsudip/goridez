@@ -499,4 +499,46 @@ export async function updateAboutPage(formData: FormData) {
   }
 }
 
+// --- DELIVERY CHARGES ---
+export async function deleteDeliveryCharge(id: string) {
+  try {
+    await prisma.deliveryCharge.delete({ where: { id } });
+    revalidatePath('/admin/pricing');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
 
+export async function upsertDeliveryCharge(formData: FormData) {
+  try {
+    const id = formData.get('id') as string;
+    const cityId = formData.get('cityId') as string;
+    const category = formData.get('category') as string;
+    const airportPickup = parseFloat(formData.get('airportPickup') as string) || 0;
+    const airportDrop = parseFloat(formData.get('airportDrop') as string) || 0;
+    const railwayPickup = parseFloat(formData.get('railwayPickup') as string) || 0;
+    const railwayDrop = parseFloat(formData.get('railwayDrop') as string) || 0;
+    const lateNightStart = formData.get('lateNightStart') as string || '22:00';
+    const lateNightEnd = formData.get('lateNightEnd') as string || '06:00';
+    const notes = formData.get('notes') as string || '';
+
+    if (!cityId || !category) return { success: false, error: 'City and Category are required' };
+
+    if (id) {
+      await prisma.deliveryCharge.update({
+        where: { id },
+        data: { cityId, category, airportPickup, airportDrop, railwayPickup, railwayDrop, lateNightStart, lateNightEnd, notes }
+      });
+    } else {
+      await prisma.deliveryCharge.create({
+        data: { cityId, category, airportPickup, airportDrop, railwayPickup, railwayDrop, lateNightStart, lateNightEnd, notes }
+      });
+    }
+
+    revalidatePath('/admin/pricing');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}

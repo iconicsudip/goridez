@@ -12,6 +12,7 @@ const ADMIN_LINKS = [
   { href: '/admin', label: 'Consolidated Overview', icon: LayoutDashboard },
   { href: '/admin/vehicles', label: 'Vehicle Management', icon: Car },
   { href: '/admin/pricing', label: 'Pricing & Packages', icon: Layers },
+  { href: '/admin/delivery-charges', label: 'Delivery Charges', icon: Map },
   { href: '/admin/cities', label: 'City Management', icon: Globe },
   { href: '/admin/tours', label: 'Tour Coordinator', icon: Map },
   { href: '/admin/villas', label: 'Villa Stays ERP', icon: Building },

@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, CheckCircle2, ChevronRight, Settings2, Fuel, MapPin, Users, ShieldCheck } from 'lucide-react';
+import CarBookingSidebar from '@/components/CarBookingSidebar';
 
 export default async function CarDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -19,6 +20,15 @@ export default async function CarDetailsPage({ params }: { params: Promise<{ id:
   if (!car) {
     notFound();
   }
+
+  const deliveryCharge = await prisma.deliveryCharge.findUnique({
+    where: {
+      cityId_category: {
+        cityId: car.cityId || '',
+        category: car.category
+      }
+    }
+  });
 
   const cheapestPkg = car.packages[0];
   const startingPrice = cheapestPkg ? cheapestPkg.basePrice : 0;
@@ -106,11 +116,11 @@ export default async function CarDetailsPage({ params }: { params: Promise<{ id:
                 <div className="text-[10px] text-white/40 uppercase tracking-widest font-bold mb-1">Starting Tariff</div>
                 <div className="text-3xl font-black text-white">₹{startingPrice.toLocaleString()}</div>
               </div>
-              <Link href="/self-drive">
+              <a href="#booking-section">
                 <button className="bg-brand-neon hover:bg-brand-hover text-black px-8 py-4 rounded-xl text-xs font-black tracking-widest uppercase shadow-[0_0_20px_rgba(196,240,0,0.2)] transition-all">
                   Configure & Book
                 </button>
-              </Link>
+              </a>
             </div>
           </div>
         </div>
@@ -145,46 +155,8 @@ export default async function CarDetailsPage({ params }: { params: Promise<{ id:
           </div>
 
           {/* Pricing Packages Sidebar */}
-          <div className="lg:col-span-1">
-            <h2 className="text-xl font-black uppercase tracking-tight mb-6 flex items-center gap-3">
-              <span className="text-brand-neon">/</span> Pricing Packages
-            </h2>
-            <div className="space-y-4">
-              {car.packages.length > 0 ? (
-                car.packages.map(pkg => (
-                  <div key={pkg.id} className="bg-[#111111] border border-white/5 rounded-2xl p-6 hover:border-brand-neon/30 transition-colors">
-                    <div className="flex justify-between items-start mb-4">
-                      <div>
-                        <h3 className="font-bold text-sm mb-1">{pkg.name}</h3>
-                        <div className="text-[10px] text-brand-neon font-mono uppercase tracking-widest">
-                          {pkg.limitValue ? `${pkg.limitValue} ${pkg.type === 'KM' ? 'KM' : 'Hours'}` : 'Unlimited'} Included
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-xl font-black">₹{pkg.basePrice.toLocaleString()}</div>
-                      </div>
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-3 pt-4 border-t border-white/5 mt-4">
-                      <div>
-                        <div className="text-[9px] text-white/30 uppercase tracking-widest font-bold mb-0.5">Extra Charge</div>
-                        <div className="text-xs text-white/80">₹{pkg.extraChargePerUnit} / {pkg.type === 'KM' ? 'KM' : 'Hr'}</div>
-                      </div>
-                      <div>
-                        <div className="text-[9px] text-white/30 uppercase tracking-widest font-bold mb-0.5">Refundable Deposit</div>
-                        <div className="text-xs text-white/80 flex items-center gap-1">
-                          <ShieldCheck size={12} className="text-emerald-500" /> ₹{pkg.deposit.toLocaleString()}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="bg-[#111111] border border-white/5 rounded-2xl p-6 text-center text-white/40 text-[10px] uppercase tracking-widest">
-                  Pricing available on request
-                </div>
-              )}
-            </div>
+          <div className="lg:col-span-1" id="booking-section">
+            <CarBookingSidebar car={car} deliveryCharge={deliveryCharge} />
           </div>
 
         </div>
