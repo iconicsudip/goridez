@@ -141,7 +141,7 @@ async function main() {
         image: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&q=80',
         availability: true,
         cityId: city.id,
-        serviceTypes: ['WITH_DRIVER'],
+        serviceTypes: ['WITH_DRIVER', 'TAXI'],
         extraHourCharge: item.exHr,
         nightCharge: item.nc,
         nightChargeStart: item.ns,
