@@ -3,11 +3,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, CheckCircle2, ChevronRight, Settings2, Fuel, MapPin, Users, ShieldCheck } from 'lucide-react';
-import BookingWidget from '@/components/BookingWidget'; // Ensure it can just work or we'll just have a link
 
-export default async function CarDetailsPage({ params }: { params: { id: string } }) {
+export default async function CarDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const car = await prisma.car.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       city: true,
       packages: {
