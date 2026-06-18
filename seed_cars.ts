@@ -112,6 +112,54 @@ async function main() {
     console.log(`Created Delivery Charge for ${d.category}`);
   }
 
+  console.log('Inserting Chauffeur Cars...');
+  const chauffeurData = [
+    { cat: 'Sedan', model: 'Swift Dzire/Aura/Etios', p4: 2000, p8: 2500, p12: 3000, exKm: 12, exHr: 250, nc: 300, ns: '22:00', ne: '06:00', daDay: 250, daOut: 400, seats: 4 },
+    { cat: 'Sedan', model: 'Honda City/Verna', p4: 2500, p8: 3000, p12: 3500, exKm: 14, exHr: 300, nc: 350, ns: '22:00', ne: '06:00', daDay: 250, daOut: 450, seats: 4 },
+    { cat: 'SUV', model: 'Ertiga/Romanio', p4: 3000, p8: 3500, p12: 4000, exKm: 16, exHr: 350, nc: 400, ns: '22:00', ne: '06:00', daDay: 300, daOut: 500, seats: 7 },
+    { cat: 'SUV', model: 'Innova 2.5', p4: 3500, p8: 4000, p12: 4500, exKm: 18, exHr: 400, nc: 450, ns: '22:00', ne: '06:00', daDay: 300, daOut: 500, seats: 7 },
+    { cat: 'Crysta', model: 'Innova Crysta 2.4', p4: 4000, p8: 4500, p12: 5000, exKm: 20, exHr: 450, nc: 550, ns: '22:00', ne: '06:00', daDay: 350, daOut: 600, seats: 7 },
+    { cat: 'Crysta', model: 'Innova Crysta 2.8/Hycross', p4: 4500, p8: 5000, p12: 5500, exKm: 22, exHr: 500, nc: 600, ns: '22:00', ne: '06:00', daDay: 350, daOut: 600, seats: 7 },
+    { cat: 'Traveller', model: 'Traveller', p4: 5000, p8: 6000, p12: 7000, exKm: 28, exHr: 700, nc: 300, ns: '22:00', ne: '06:00', daDay: 250, daOut: 400, seats: 14 },
+    { cat: 'Traveller', model: 'Urbania', p4: 6000, p8: 8000, p12: 10000, exKm: 40, exHr: 1200, nc: 1000, ns: '22:00', ne: '06:00', daDay: 500, daOut: 900, seats: 14 },
+    { cat: 'Luxury', model: 'Mercedes E-Class/BMW', p4: 8500, p8: 13000, p12: 17500, exKm: 70, exHr: 1500, nc: 1500, ns: '22:00', ne: '06:00', daDay: 600, daOut: 1200, seats: 4 },
+  ];
+
+  for (const item of chauffeurData) {
+    const parts = item.model.split(' ');
+    const make = parts[0] || 'Unknown';
+    const model = parts.slice(1).join(' ') || item.model;
+    
+    const car = await prisma.car.create({
+      data: {
+        make,
+        model,
+        category: item.cat,
+        fuelType: 'Diesel',
+        transmission: item.cat === 'Luxury' ? 'Automatic' : 'Manual',
+        seatingCapacity: item.seats,
+        image: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&q=80',
+        availability: true,
+        cityId: city.id,
+        serviceTypes: ['WITH_DRIVER'],
+        extraHourCharge: item.exHr,
+        nightCharge: item.nc,
+        nightChargeStart: item.ns,
+        nightChargeEnd: item.ne,
+        driverAllowanceDay: item.daDay,
+        driverAllowanceOut: item.daOut,
+        packages: {
+          create: [
+            { name: '4 Hours', type: 'KM', basePrice: item.p4, limitValue: 40, extraChargePerUnit: item.exKm, deposit: 0 },
+            { name: '8 Hours', type: 'KM', basePrice: item.p8, limitValue: 80, extraChargePerUnit: item.exKm, deposit: 0 },
+            { name: '12 Hours', type: 'KM', basePrice: item.p12, limitValue: 120, extraChargePerUnit: item.exKm, deposit: 0 },
+          ]
+        }
+      }
+    });
+    console.log(`Created Chauffeur ${car.make} ${car.model}`);
+  }
+
   console.log('Done!');
 }
 

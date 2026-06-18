@@ -57,6 +57,13 @@ export async function updateVehicle(id: string, formData: FormData) {
     const availability = formData.get('availability') === 'true';
     const content = formData.get('content') as string || '';
 
+    const extraHourCharge = formData.get('extraHourCharge') ? parseFloat(formData.get('extraHourCharge') as string) : null;
+    const nightCharge = formData.get('nightCharge') ? parseFloat(formData.get('nightCharge') as string) : null;
+    const nightChargeStart = formData.get('nightChargeStart') as string || null;
+    const nightChargeEnd = formData.get('nightChargeEnd') as string || null;
+    const driverAllowanceDay = formData.get('driverAllowanceDay') ? parseFloat(formData.get('driverAllowanceDay') as string) : null;
+    const driverAllowanceOut = formData.get('driverAllowanceOut') ? parseFloat(formData.get('driverAllowanceOut') as string) : null;
+
     const cityIdsRaw = formData.get('cityIds') as string;
     const cityIds: string[] = cityIdsRaw ? JSON.parse(cityIdsRaw) : [];
     const primaryCityId = cityIds.length > 0 ? cityIds[0] : null;
@@ -83,6 +90,7 @@ export async function updateVehicle(id: string, formData: FormData) {
         make, model, category, image, fuelType, transmission,
         seatingCapacity, cityId: primaryCityId, availability, content,
         serviceTypes,
+        extraHourCharge, nightCharge, nightChargeStart, nightChargeEnd, driverAllowanceDay, driverAllowanceOut,
         packages: {
           create: packagesData.map(p => ({
             name: p.name,
@@ -240,6 +248,13 @@ export async function addVehicle(formData: FormData) {
     const transmission = formData.get('transmission') as string;
     const content = formData.get('content') as string || '';
 
+    const extraHourCharge = formData.get('extraHourCharge') ? parseFloat(formData.get('extraHourCharge') as string) : null;
+    const nightCharge = formData.get('nightCharge') ? parseFloat(formData.get('nightCharge') as string) : null;
+    const nightChargeStart = formData.get('nightChargeStart') as string || null;
+    const nightChargeEnd = formData.get('nightChargeEnd') as string || null;
+    const driverAllowanceDay = formData.get('driverAllowanceDay') ? parseFloat(formData.get('driverAllowanceDay') as string) : null;
+    const driverAllowanceOut = formData.get('driverAllowanceOut') ? parseFloat(formData.get('driverAllowanceOut') as string) : null;
+
     const cityIdsRaw = formData.get('cityIds') as string;
     const cityIds: string[] = cityIdsRaw ? JSON.parse(cityIdsRaw) : [];
     const primaryCityId = cityIds.length > 0 ? cityIds[0] : null;
@@ -270,6 +285,12 @@ export async function addVehicle(formData: FormData) {
         cityId: primaryCityId,
         content,
         serviceTypes,
+        extraHourCharge,
+        nightCharge,
+        nightChargeStart,
+        nightChargeEnd,
+        driverAllowanceDay,
+        driverAllowanceOut,
         packages: {
           create: packagesData.map(p => ({
             name: p.name,

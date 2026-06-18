@@ -246,6 +246,52 @@ export default function VehicleDrawer({ isOpen, onClose, cities, tiers }: Vehicl
               </div>
             </div>
 
+            {/* ── SECTION: CHAUFFEUR SETTINGS ── */}
+            {serviceTypes.includes('WITH_DRIVER') && (
+              <div className="border-t border-white/5 pt-8">
+                <p className="text-[9px] text-brand-neon font-mono uppercase tracking-widest mb-5">— Chauffeur Operations Pricing</p>
+                
+                <div className="grid grid-cols-2 gap-5 mb-5">
+                  <div className="space-y-2">
+                    <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Extra Hour Charge (₹)</label>
+                    <input name="extraHourCharge" type="number" placeholder="e.g. 250"
+                      className="w-full bg-[#111111] border border-white/5 rounded-xl px-4 py-3 text-xs text-white outline-none font-mono focus:border-brand-neon/40 transition-colors" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Night Charge (₹)</label>
+                    <input name="nightCharge" type="number" placeholder="e.g. 300"
+                      className="w-full bg-[#111111] border border-white/5 rounded-xl px-4 py-3 text-xs text-white outline-none font-mono focus:border-brand-neon/40 transition-colors" />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-5 mb-5">
+                  <div className="space-y-2">
+                    <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Night Charge Start Time</label>
+                    <input name="nightChargeStart" type="time" defaultValue="22:00"
+                      className="w-full bg-[#111111] border border-white/5 rounded-xl px-4 py-3 text-xs text-white outline-none font-mono focus:border-brand-neon/40 transition-colors appearance-none" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Night Charge End Time</label>
+                    <input name="nightChargeEnd" type="time" defaultValue="06:00"
+                      className="w-full bg-[#111111] border border-white/5 rounded-xl px-4 py-3 text-xs text-white outline-none font-mono focus:border-brand-neon/40 transition-colors appearance-none" />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-5">
+                  <div className="space-y-2">
+                    <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Driver Allowance / Day (Internal Ops)</label>
+                    <input name="driverAllowanceDay" type="number" placeholder="e.g. 250"
+                      className="w-full bg-[#111111] border border-white/5 rounded-xl px-4 py-3 text-xs text-white outline-none font-mono focus:border-brand-neon/40 transition-colors" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Driver Allowance Outstation (Internal Ops)</label>
+                    <input name="driverAllowanceOut" type="number" placeholder="e.g. 400"
+                      className="w-full bg-[#111111] border border-white/5 rounded-xl px-4 py-3 text-xs text-white outline-none font-mono focus:border-brand-neon/40 transition-colors" />
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* ── SECTION: CITY COVERAGE ── */}
             <div className="border-t border-white/5 pt-8">
               <p className="text-[9px] text-brand-neon font-mono uppercase tracking-widest mb-4">— Active City Coverage (Multi-Select)</p>

@@ -5,37 +5,14 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useBookingStore } from '@/store/useBookingStore';
 import CompareSpecsModal from './CompareSpecsModal';
+import ChauffeurBookingModal from './ChauffeurBookingModal';
 
 export default function ChauffeurList({ initialCars, pickupDate, returnDate }: { initialCars: any[], pickupDate?: Date, returnDate?: Date | null }) {
   const router = useRouter();
   const { addToCart } = useBookingStore();
   const [compareCarId, setCompareCarId] = useState<string | null>(null);
 
-  const handleBook = (carId: string) => {
-    const car = initialCars.find(c => c.id === carId);
-    const currentPackage = car?.packages?.[0];
-    const basePrice = currentPackage?.basePrice || 10000;
-
-    const durationHours = pickupDate && returnDate 
-      ? Math.max(1, (returnDate.getTime() - pickupDate.getTime()) / (1000 * 60 * 60))
-      : 24;
-    const durationDays = durationHours / 24;
-
-    let extra = currentPackage ? `${currentPackage.limitValue ? Math.round(currentPackage.limitValue * durationDays) + ' ' : ''}${currentPackage.type === 'KM' ? 'KM' : 'HOURS'} Package` : undefined;
-    if (pickupDate && returnDate && extra) {
-      extra += ` • ${pickupDate.toLocaleString('en-GB', { dateStyle: 'short', timeStyle: 'short' })} - ${returnDate.toLocaleString('en-GB', { dateStyle: 'short', timeStyle: 'short' })}`;
-    }
-
-    addToCart({
-      serviceType: 'withDriver',
-      referenceId: carId,
-      title: `${car?.make} ${car?.model} (Chauffeur)`,
-      image: car?.image || '',
-      price: Math.round(basePrice * durationDays),
-      deposit: 0,
-      extraInfo: extra
-    });
-  };
+  const [selectedBookingCarId, setSelectedBookingCarId] = useState<string | null>(null);
 
   return (
     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -134,7 +111,7 @@ export default function ChauffeurList({ initialCars, pickupDate, returnDate }: {
                   COMPARE SPECS
                 </button>
                 <button 
-                  onClick={() => !isAlreadyBooked && handleBook(car.id)}
+                  onClick={() => !isAlreadyBooked && setSelectedBookingCarId(car.id)}
                   disabled={isAlreadyBooked}
                   className={`flex-1 py-4 text-[10px] font-black tracking-widest uppercase rounded-xl transition-all ${
                     isAlreadyBooked 
@@ -160,12 +137,22 @@ export default function ChauffeurList({ initialCars, pickupDate, returnDate }: {
             onClose={() => setCompareCarId(null)}
             selectedCar={selectedCompareCar}
             allCars={initialCars}
-            onSelectCar={(carId) => handleBook(carId)}
+            onSelectCar={(carId) => {
+              setCompareCarId(null);
+              setSelectedBookingCarId(carId);
+            }}
             pickupDate={pickupDate}
             returnDate={returnDate}
           />
         );
       })()}
+
+      <ChauffeurBookingModal 
+        isOpen={!!selectedBookingCarId}
+        onClose={() => setSelectedBookingCarId(null)}
+        car={initialCars.find(c => c.id === selectedBookingCarId)}
+        defaultPickupDate={pickupDate}
+      />
     </div>
   );
 }

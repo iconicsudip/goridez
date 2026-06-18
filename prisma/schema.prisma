@@ -58,6 +58,12 @@ model Car {
   cityId          String?
   content         String?        @default("")
   serviceTypes    String[]       @default(["SELF_DRIVE"])
+  extraHourCharge      Float?
+  nightCharge          Float?
+  nightChargeStart     String?  @default("22:00")
+  nightChargeEnd       String?  @default("06:00")
+  driverAllowanceDay   Float?
+  driverAllowanceOut   Float?
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
   bookings        Booking[]
