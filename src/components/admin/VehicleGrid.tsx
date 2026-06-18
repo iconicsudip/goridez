@@ -14,18 +14,23 @@ interface VehicleGridProps {
 
 export default function VehicleGrid({ cars, cities, tiers }: VehicleGridProps) {
   const [search, setSearch] = useState('');
+  const [serviceTypeFilter, setServiceTypeFilter] = useState('ALL');
   const [editingCar, setEditingCar] = useState<any>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
-    if (!q) return cars;
-    return cars.filter(c =>
+    let result = cars;
+    if (serviceTypeFilter !== 'ALL') {
+      result = result.filter(c => c.serviceTypes?.includes(serviceTypeFilter));
+    }
+    if (!q) return result;
+    return result.filter(c =>
       `${c.make} ${c.model}`.toLowerCase().includes(q) ||
       c.category.toLowerCase().includes(q) ||
       c.fuelType.toLowerCase().includes(q)
     );
-  }, [cars, search]);
+  }, [cars, search, serviceTypeFilter]);
 
   async function handleDelete(id: string) {
     if (!confirm('Retire this vehicle from the platform? This cannot be undone.')) return;
@@ -53,6 +58,30 @@ export default function VehicleGrid({ cars, cities, tiers }: VehicleGridProps) {
             {filtered.length} result{filtered.length !== 1 ? 's' : ''}
           </span>
         )}
+      </div>
+
+      {/* Filter Bar */}
+      <div className="flex gap-2 mb-8 overflow-x-auto pb-2 scrollbar-hide">
+        {[
+          { id: 'ALL', label: 'All Vehicles' },
+          { id: 'SELF_DRIVE', label: 'Self Drive' },
+          { id: 'WITH_DRIVER', label: 'With Driver' },
+          { id: 'TAXI', label: 'One Way / Round Trip' },
+          { id: 'VILLA', label: 'Villa + Car' },
+          { id: 'TOUR', label: 'Tour Packages' }
+        ].map(filter => (
+          <button
+            key={filter.id}
+            onClick={() => setServiceTypeFilter(filter.id)}
+            className={`whitespace-nowrap px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${
+              serviceTypeFilter === filter.id 
+                ? 'bg-brand-neon text-black' 
+                : 'bg-[#111111] border border-white/10 text-white/50 hover:border-white/30 hover:text-white'
+            }`}
+          >
+            {filter.label}
+          </button>
+        ))}
       </div>
 
       {/* Grid */}

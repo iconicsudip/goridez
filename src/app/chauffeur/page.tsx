@@ -4,7 +4,10 @@ import { Suspense } from 'react';
 
 export default async function ChauffeurPage() {
   const [cars, cities] = await Promise.all([
-    prisma.car.findMany({ include: { packages: true, city: true, bookings: true } }),
+    prisma.car.findMany({ 
+      where: { serviceTypes: { has: 'WITH_DRIVER' } },
+      include: { packages: true, city: true, bookings: true } 
+    }),
     prisma.city.findMany({ orderBy: { name: 'asc' } })
   ]);
 

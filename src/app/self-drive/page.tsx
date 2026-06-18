@@ -4,7 +4,10 @@ import { Suspense } from 'react';
 
 export default async function SelfDrivePage() {
   const [cars, cities] = await Promise.all([
-    prisma.car.findMany({ include: { packages: true, city: true, bookings: true } }),
+    prisma.car.findMany({ 
+      where: { serviceTypes: { has: 'SELF_DRIVE' } },
+      include: { packages: true, city: true, bookings: true } 
+    }),
     prisma.city.findMany({ orderBy: { name: 'asc' } })
   ]);
 

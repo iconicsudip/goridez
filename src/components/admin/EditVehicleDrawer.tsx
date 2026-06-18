@@ -31,6 +31,7 @@ export default function EditVehicleDrawer({ isOpen, onClose, car, cities, tiers 
   );
   const [imageUrl, setImageUrl] = useState(car?.image || '');
   const [content, setContent] = useState(car?.content || '');
+  const [serviceTypes, setServiceTypes] = useState<string[]>(car?.serviceTypes || ['SELF_DRIVE']);
 
   useEffect(() => {
     if (isOpen && car) {
@@ -48,9 +49,11 @@ export default function EditVehicleDrawer({ isOpen, onClose, car, cities, tiers 
         })) ?? []
       );
       setContent(car.content || '');
+      setServiceTypes(car.serviceTypes || ['SELF_DRIVE']);
     } else {
       setImageUrl('');
       setContent('');
+      setServiceTypes(['SELF_DRIVE']);
     }
   }, [car, isOpen]);
 
@@ -80,9 +83,10 @@ export default function EditVehicleDrawer({ isOpen, onClose, car, cities, tiers 
     e.preventDefault();
     setLoading(true);
     const formData = new FormData(e.currentTarget);
-    formData.set('cityIds', JSON.stringify(selectedCityIds));
     formData.set('packages', JSON.stringify(packages));
+    formData.set('cityIds', JSON.stringify(selectedCityIds));
     formData.set('content', content);
+    formData.set('serviceTypes', JSON.stringify(serviceTypes));
     const res = await updateVehicle(car.id, formData);
     setLoading(false);
     if (res.success) onClose();
@@ -148,6 +152,7 @@ export default function EditVehicleDrawer({ isOpen, onClose, car, cities, tiers 
                     </select>
                   </div>
                 </div>
+                
                 <div className="flex items-center gap-4">
                   <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest">Availability</label>
                   <div className="flex gap-3">
@@ -163,7 +168,38 @@ export default function EditVehicleDrawer({ isOpen, onClose, car, cities, tiers 
             </div>
 
             {/* City Multi-Select */}
+            {/* ── SECTION: SERVICE TYPES ── */}
             <div className="border-t border-white/5 pt-8">
+              <p className="text-[9px] text-brand-neon font-mono uppercase tracking-widest mb-4">— Categorization</p>
+              <div className="flex flex-wrap gap-3">
+                {[
+                  { id: 'SELF_DRIVE', label: 'Self Drive' },
+                  { id: 'WITH_DRIVER', label: 'With Driver' },
+                  { id: 'TAXI', label: 'One Way / Round Trip' },
+                  { id: 'VILLA', label: 'Villa + Car' },
+                  { id: 'TOUR', label: 'Tour Packages' }
+                ].map(type => {
+                  const checked = serviceTypes.includes(type.id);
+                  return (
+                    <label key={type.id} className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-[10px] font-bold uppercase tracking-widest cursor-pointer transition-all ${checked ? 'bg-brand-neon/10 border-brand-neon text-brand-neon' : 'bg-[#111111] border-white/10 text-white/50 hover:border-white/30'}`}>
+                      <input 
+                        type="checkbox" 
+                        className="hidden" 
+                        checked={checked} 
+                        onChange={(e) => {
+                          if (e.target.checked) setServiceTypes([...serviceTypes, type.id]);
+                          else setServiceTypes(serviceTypes.filter(t => t !== type.id));
+                        }} 
+                      />
+                      {checked && <Check size={12} strokeWidth={3} />}
+                      {type.label}
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="border-t border-white/5 pt-8 mt-8">
               <p className="text-[9px] text-yellow-400 font-mono uppercase tracking-widest mb-4">— City Coverage</p>
               <div className="flex flex-wrap gap-2">
                 {cities.map(c => {

@@ -59,7 +59,10 @@ export async function updateVehicle(id: string, formData: FormData) {
 
     const cityIdsRaw = formData.get('cityIds') as string;
     const cityIds: string[] = cityIdsRaw ? JSON.parse(cityIdsRaw) : [];
-    const primaryCityId = cityIds[0] || null;
+    const primaryCityId = cityIds.length > 0 ? cityIds[0] : null;
+
+    const serviceTypesRaw = formData.get('serviceTypes') as string;
+    const serviceTypes: string[] = serviceTypesRaw ? JSON.parse(serviceTypesRaw) : ['SELF_DRIVE'];
 
     const packagesRaw = formData.get('packages') as string;
     const packagesData: Array<{
@@ -79,6 +82,7 @@ export async function updateVehicle(id: string, formData: FormData) {
       data: {
         make, model, category, image, fuelType, transmission,
         seatingCapacity, cityId: primaryCityId, availability, content,
+        serviceTypes,
         packages: {
           create: packagesData.map(p => ({
             name: p.name,
@@ -236,10 +240,12 @@ export async function addVehicle(formData: FormData) {
     const transmission = formData.get('transmission') as string;
     const content = formData.get('content') as string || '';
 
-    // Multi-city: use the first selected city as the primary cityId
     const cityIdsRaw = formData.get('cityIds') as string;
     const cityIds: string[] = cityIdsRaw ? JSON.parse(cityIdsRaw) : [];
-    const primaryCityId = cityIds[0] || null;
+    const primaryCityId = cityIds.length > 0 ? cityIds[0] : null;
+
+    const serviceTypesRaw = formData.get('serviceTypes') as string;
+    const serviceTypes: string[] = serviceTypesRaw ? JSON.parse(serviceTypesRaw) : ['SELF_DRIVE'];
 
     // Dynamic packages: read JSON array from form
     const packagesRaw = formData.get('packages') as string;
@@ -263,6 +269,7 @@ export async function addVehicle(formData: FormData) {
         seatingCapacity: 4,
         cityId: primaryCityId,
         content,
+        serviceTypes,
         packages: {
           create: packagesData.map(p => ({
             name: p.name,

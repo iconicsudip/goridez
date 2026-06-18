@@ -56,6 +56,7 @@ model Car {
   availability    Boolean        @default(true)
   cityId          String?
   content         String?        @default("")
+  serviceTypes    String[]       @default(["SELF_DRIVE"])
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
   bookings        Booking[]
