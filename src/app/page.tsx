@@ -208,9 +208,9 @@ export default async function Home() {
                       </div>
                     </div>
 
-                    <Link href="/self-drive" className="w-full">
+                    <Link href={`/cars/${car.id}`} className="w-full">
                       <button className="w-full bg-[#222222] hover:bg-brand-neon hover:text-black text-white text-xs font-bold py-4 rounded-xl transition-colors uppercase tracking-widest">
-                        CONFIGURE & BOOK NOW
+                        VIEW DETAILS & BOOK
                       </button>
                     </Link>
                   </div>

@@ -55,6 +55,7 @@ model Car {
   image           String
   availability    Boolean        @default(true)
   cityId          String?
+  content         String?        @default("")
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
   bookings        Booking[]

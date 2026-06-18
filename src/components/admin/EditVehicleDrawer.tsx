@@ -5,6 +5,7 @@ import { X, ArrowRight, Plus, Trash2, Check } from 'lucide-react';
 import { updateVehicle } from '@/app/admin/actions';
 import ImageUpload from './ImageUpload';
 import { useEffect } from 'react';
+import RichTextEditor from './RichTextEditor';
 
 interface EditVehicleDrawerProps {
   isOpen: boolean;
@@ -29,6 +30,7 @@ export default function EditVehicleDrawer({ isOpen, onClose, car, cities, tiers 
     })) ?? []
   );
   const [imageUrl, setImageUrl] = useState(car?.image || '');
+  const [content, setContent] = useState(car?.content || '');
 
   useEffect(() => {
     if (isOpen && car) {
@@ -45,8 +47,10 @@ export default function EditVehicleDrawer({ isOpen, onClose, car, cities, tiers 
           deposit: String(p.deposit),
         })) ?? []
       );
+      setContent(car.content || '');
     } else {
       setImageUrl('');
+      setContent('');
     }
   }, [car, isOpen]);
 
@@ -78,6 +82,7 @@ export default function EditVehicleDrawer({ isOpen, onClose, car, cities, tiers 
     const formData = new FormData(e.currentTarget);
     formData.set('cityIds', JSON.stringify(selectedCityIds));
     formData.set('packages', JSON.stringify(packages));
+    formData.set('content', content);
     const res = await updateVehicle(car.id, formData);
     setLoading(false);
     if (res.success) onClose();
@@ -231,6 +236,12 @@ export default function EditVehicleDrawer({ isOpen, onClose, car, cities, tiers 
                   <div className="text-center py-8 border border-dashed border-white/10 rounded-2xl text-white/30 text-[10px] font-mono">No packages. Add from tiers above or click Add.</div>
                 )}
               </div>
+            </div>
+
+            {/* ── SECTION: RICH CONTENT ── */}
+            <div className="border-t border-white/5 pt-8">
+              <p className="text-[9px] text-yellow-400 font-mono uppercase tracking-widest mb-4">— Detailed Vehicle Content</p>
+              <RichTextEditor value={content} onChange={setContent} placeholder="Add detailed descriptions, rules, or special notes..." />
             </div>
 
             <div className="pt-4">

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { X, ArrowRight, Plus, Trash2, Check, Tag, ChevronDown } from 'lucide-react';
 import { addVehicle } from '@/app/admin/actions';
 import ImageUpload from './ImageUpload';
+import RichTextEditor from './RichTextEditor';
 
 interface VehicleDrawerProps {
   isOpen: boolean;
@@ -36,10 +37,12 @@ export default function VehicleDrawer({ isOpen, onClose, cities, tiers }: Vehicl
   const [featureInput, setFeatureInput] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
+  const [content, setContent] = useState('');
 
   useEffect(() => {
     if (!isOpen) {
       setImageUrl('');
+      setContent('');
     }
   }, [isOpen]);
 
@@ -110,12 +113,14 @@ export default function VehicleDrawer({ isOpen, onClose, cities, tiers }: Vehicl
     formData.set('cityIds', JSON.stringify(selectedCityIds));
     formData.set('packages', JSON.stringify(packages));
     formData.set('features', features.join(','));
+    formData.set('content', content);
     const res = await addVehicle(formData);
     setLoading(false);
     if (res.success) {
       setSelectedCityIds([]);
       setPackages([]);
       setFeatures([]);
+      setContent('');
       onClose();
     } else {
       alert('Failed to save: ' + res.error);
@@ -380,6 +385,12 @@ export default function VehicleDrawer({ isOpen, onClose, cities, tiers }: Vehicl
                 )}
               </div>
               <p className="text-[9px] text-white/20 font-mono mt-2">Press Enter or comma to add. Click suggestions or type custom features.</p>
+            </div>
+
+            {/* ── SECTION: RICH CONTENT ── */}
+            <div className="border-t border-white/5 pt-8">
+              <p className="text-[9px] text-brand-neon font-mono uppercase tracking-widest mb-4">— Detailed Vehicle Content</p>
+              <RichTextEditor value={content} onChange={setContent} placeholder="Add detailed descriptions, rules, or special notes..." />
             </div>
 
             <div className="pt-4">

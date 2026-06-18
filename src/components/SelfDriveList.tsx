@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useBookingStore } from '@/store/useBookingStore';
 import { ArrowLeftRight } from 'lucide-react';
 
@@ -95,7 +96,7 @@ export default function SelfDriveList({ initialCars, pickupDate, returnDate }: {
               </div>
 
               {/* Car Image */}
-              <div className="relative w-full h-[80%]">
+              <Link href={`/cars/${car.id}`} className="relative w-full h-[80%] block">
                 <Image 
                   src={car.image} 
                   alt={`${car.make} ${car.model}`}
@@ -103,7 +104,7 @@ export default function SelfDriveList({ initialCars, pickupDate, returnDate }: {
                   className="object-contain group-hover:scale-105 transition-transform duration-500 drop-shadow-2xl"
                   unoptimized
                 />
-              </div>
+              </Link>
             </div>
 
             {/* Middle Specs Row */}
@@ -116,7 +117,9 @@ export default function SelfDriveList({ initialCars, pickupDate, returnDate }: {
             {/* Bottom Content */}
             <div className="p-6 md:p-8 flex-1 flex flex-col">
               
-              <h3 className="text-xl font-black mb-1">{car.make} {car.model}</h3>
+              <Link href={`/cars/${car.id}`}>
+                <h3 className="text-xl font-black mb-1 hover:text-brand-neon transition-colors">{car.make} {car.model}</h3>
+              </Link>
               <div className="flex items-center gap-2 mb-6">
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
                 <p className="text-[10px] text-white/50">Active in: {car.city?.name || 'All Hubs'}</p>

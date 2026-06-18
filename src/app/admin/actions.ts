@@ -55,6 +55,7 @@ export async function updateVehicle(id: string, formData: FormData) {
     const transmission = formData.get('transmission') as string;
     const seatingCapacity = parseInt(formData.get('seatingCapacity') as string) || 4;
     const availability = formData.get('availability') === 'true';
+    const content = formData.get('content') as string || '';
 
     const cityIdsRaw = formData.get('cityIds') as string;
     const cityIds: string[] = cityIdsRaw ? JSON.parse(cityIdsRaw) : [];
@@ -77,7 +78,7 @@ export async function updateVehicle(id: string, formData: FormData) {
       where: { id },
       data: {
         make, model, category, image, fuelType, transmission,
-        seatingCapacity, cityId: primaryCityId, availability,
+        seatingCapacity, cityId: primaryCityId, availability, content,
         packages: {
           create: packagesData.map(p => ({
             name: p.name,
@@ -233,6 +234,7 @@ export async function addVehicle(formData: FormData) {
     const image = formData.get('imageUrl') as string;
     const fuelType = formData.get('fuelType') as string;
     const transmission = formData.get('transmission') as string;
+    const content = formData.get('content') as string || '';
 
     // Multi-city: use the first selected city as the primary cityId
     const cityIdsRaw = formData.get('cityIds') as string;
@@ -260,6 +262,7 @@ export async function addVehicle(formData: FormData) {
         transmission,
         seatingCapacity: 4,
         cityId: primaryCityId,
+        content,
         packages: {
           create: packagesData.map(p => ({
             name: p.name,
