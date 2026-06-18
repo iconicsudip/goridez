@@ -31,8 +31,20 @@ export default function EditVehicleDrawer({ isOpen, onClose, car, cities, tiers 
   const [imageUrl, setImageUrl] = useState(car?.image || '');
 
   useEffect(() => {
-    if (isOpen) {
-      setImageUrl(car?.image || '');
+    if (isOpen && car) {
+      setImageUrl(car.image || '');
+      setSelectedCityIds(car.cityId ? [car.cityId] : []);
+      setPackages(
+        car.packages?.map((p: any) => ({
+          id: p.id,
+          name: p.name,
+          type: p.type,
+          basePrice: String(p.basePrice),
+          limitValue: String(p.limitValue ?? ''),
+          extraChargePerUnit: String(p.extraChargePerUnit ?? ''),
+          deposit: String(p.deposit),
+        })) ?? []
+      );
     } else {
       setImageUrl('');
     }
@@ -88,7 +100,7 @@ export default function EditVehicleDrawer({ isOpen, onClose, car, cities, tiers 
             </button>
           </div>
 
-          <form className="space-y-8" onSubmit={handleSubmit}>
+          <form key={car.id} className="space-y-8" onSubmit={handleSubmit}>
             {/* Identity */}
             <div>
               <p className="text-[9px] text-yellow-400 font-mono uppercase tracking-widest mb-5">— Vehicle Identity</p>

@@ -8,7 +8,7 @@ import { Star, Shield, Clock, Map, ChevronRight, Key, Calendar, BookOpen } from 
 
 export default async function Home() {
   const [cars, villas, tours, cities, blogs, faqs] = await Promise.all([
-    prisma.car.findMany({ include: { packages: true }, take: 8 }),
+    prisma.car.findMany({ include: { packages: true }, take: 8, orderBy: { createdAt: 'desc' } }),
     prisma.villa.findMany({ take: 4 }),
     prisma.tour.findMany({ take: 6 }),
     prisma.city.findMany({ orderBy: { name: 'asc' } }),
