@@ -81,9 +81,6 @@ export async function updateVehicle(id: string, formData: FormData) {
     const make = parts[0] || 'Unknown';
     const model = parts.slice(1).join(' ') || 'Model';
 
-    // Replace all packages (delete old, create new)
-    await prisma.carPackage.deleteMany({ where: { carId: id } });
-
     await prisma.car.update({
       where: { id },
       data: {
@@ -92,6 +89,7 @@ export async function updateVehicle(id: string, formData: FormData) {
         serviceTypes,
         extraHourCharge, nightCharge, nightChargeStart, nightChargeEnd, driverAllowanceDay, driverAllowanceOut,
         packages: {
+          deleteMany: {},
           create: packagesData.map(p => ({
             name: p.name,
             type: p.type,
