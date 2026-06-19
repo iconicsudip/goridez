@@ -56,6 +56,7 @@ model Car {
   transmission    String
   seatingCapacity Int
   image           String
+  gallery         String         @default("[]")
   availability    Boolean        @default(true)
   cityId          String?
   content         String?        @default("")

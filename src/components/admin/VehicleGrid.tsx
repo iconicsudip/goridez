@@ -2,9 +2,10 @@
 
 import { useState, useMemo } from 'react';
 import Image from 'next/image';
-import { Trash2, Pencil, Search, CheckCircle, XCircle, MapPin, Fuel, Settings2 } from 'lucide-react';
-import { deleteCar } from '@/app/admin/actions';
+import { Trash2, Pencil, Search, CheckCircle, XCircle, MapPin, Fuel, Settings2, Copy } from 'lucide-react';
+import { deleteCar, duplicateVehicle } from '@/app/admin/actions';
 import EditVehicleDrawer from './EditVehicleDrawer';
+import VehicleImageCarousel from './VehicleImageCarousel';
 
 interface VehicleGridProps {
   cars: any[];
@@ -17,6 +18,7 @@ export default function VehicleGrid({ cars, cities, tiers }: VehicleGridProps) {
   const [serviceTypeFilter, setServiceTypeFilter] = useState('ALL');
   const [editingCar, setEditingCar] = useState<any>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [isDuplicating, setIsDuplicating] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
@@ -37,6 +39,15 @@ export default function VehicleGrid({ cars, cities, tiers }: VehicleGridProps) {
     setDeletingId(id);
     await deleteCar(id);
     setDeletingId(null);
+  }
+
+  async function handleDuplicate(id: string) {
+    setIsDuplicating(id);
+    const res = await duplicateVehicle(id);
+    if (!res.success) {
+      alert('Failed to duplicate: ' + res.error);
+    }
+    setIsDuplicating(null);
   }
 
   const cityMap = Object.fromEntries(cities.map(c => [c.id, c.name]));
@@ -97,7 +108,12 @@ export default function VehicleGrid({ cars, cities, tiers }: VehicleGridProps) {
 
               {/* Image */}
               <div className="relative w-full h-36 bg-black overflow-hidden">
-                <Image src={car.image} alt={`${car.make} ${car.model}`} fill className="object-cover group-hover:scale-105 transition-transform duration-500" unoptimized />
+                <div className="w-full h-full group-hover:scale-105 transition-transform duration-500">
+                  <VehicleImageCarousel 
+                    images={car.gallery && car.gallery.length > 0 ? car.gallery : [car.image]} 
+                    alt={`${car.make} ${car.model}`} 
+                  />
+                </div>
                 {/* Overlay badges */}
                 <div className="absolute top-3 left-3 flex gap-2">
                   <span className="bg-[#0A0A00] text-brand-neon text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded border border-brand-neon/30">
@@ -144,6 +160,14 @@ export default function VehicleGrid({ cars, cities, tiers }: VehicleGridProps) {
                     </div>
                   </div>
                   <div className="flex gap-2">
+                    <button
+                      onClick={() => handleDuplicate(car.id)}
+                      disabled={isDuplicating === car.id}
+                      className="w-9 h-9 rounded-xl bg-blue-500/5 hover:bg-blue-500/20 text-blue-500/50 hover:text-blue-500 flex items-center justify-center transition-colors border border-blue-500/5 hover:border-blue-500/20 disabled:opacity-50"
+                      title="Duplicate Vehicle"
+                    >
+                      <Copy size={14} className={isDuplicating === car.id ? "animate-pulse" : ""} />
+                    </button>
                     <button
                       onClick={() => setEditingCar(car)}
                       className="w-9 h-9 rounded-xl bg-white/5 hover:bg-brand-neon/10 hover:text-brand-neon text-white/40 flex items-center justify-center transition-colors border border-white/5 hover:border-brand-neon/30"

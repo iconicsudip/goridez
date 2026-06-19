@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { X, ArrowRight, Plus, Trash2, Check, Tag, ChevronDown } from 'lucide-react';
 import { addVehicle } from '@/app/admin/actions';
-import ImageUpload from './ImageUpload';
+import MultiImageUpload from './MultiImageUpload';
 import RichTextEditor from './RichTextEditor';
 
 interface VehicleDrawerProps {
@@ -36,13 +36,13 @@ export default function VehicleDrawer({ isOpen, onClose, cities, tiers }: Vehicl
   const [features, setFeatures] = useState<string[]>([]);
   const [featureInput, setFeatureInput] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [imageUrl, setImageUrl] = useState('');
+  const [gallery, setGallery] = useState<string[]>([]);
   const [content, setContent] = useState('');
   const [serviceTypes, setServiceTypes] = useState<string[]>(['SELF_DRIVE']);
 
   useEffect(() => {
     if (!isOpen) {
-      setImageUrl('');
+      setGallery([]);
       setContent('');
       setServiceTypes(['SELF_DRIVE']);
     }
@@ -76,7 +76,29 @@ export default function VehicleDrawer({ isOpen, onClose, cities, tiers }: Vehicl
   }
 
   function updatePackage(id: string, field: keyof PackageRow, value: string) {
-    setPackages(prev => prev.map(p => p.id === id ? { ...p, [field]: value } : p));
+    setPackages(prev => prev.map(p => {
+      if (p.id !== id) return p;
+      const updated = { ...p, [field]: value };
+      
+      if (field === 'name') {
+        const lower = value.toLowerCase();
+        const match = value.match(/(\d+(\.\d+)?)/);
+        
+        if (lower.includes('km')) {
+          updated.type = 'KM';
+          if (match) updated.limitValue = match[0];
+        } else if (lower.includes('hour') || lower.includes('hr')) {
+          updated.type = 'HOUR';
+          if (match) updated.limitValue = match[0];
+        } else if (lower.includes('day')) {
+          updated.type = 'HOUR';
+          if (match) updated.limitValue = (parseFloat(match[0]) * 24).toString();
+        } else if (match && !updated.limitValue) {
+          updated.limitValue = match[0];
+        }
+      }
+      return updated;
+    }));
   }
 
   function removePackage(id: string) {
@@ -115,6 +137,7 @@ export default function VehicleDrawer({ isOpen, onClose, cities, tiers }: Vehicl
     formData.set('cityIds', JSON.stringify(selectedCityIds));
     formData.set('packages', JSON.stringify(packages));
     formData.set('features', features.join(','));
+    formData.set('gallery', JSON.stringify(gallery));
     formData.set('content', content);
     formData.set('serviceTypes', JSON.stringify(serviceTypes));
     const res = await addVehicle(formData);
@@ -161,12 +184,12 @@ export default function VehicleDrawer({ isOpen, onClose, cities, tiers }: Vehicl
               <div className="space-y-5">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div className="space-y-2">
-                    <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Vehicle Name</label>
+                    <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Vehicle Name <span className="text-red-500">*</span></label>
                     <input name="vehicleName" required type="text" placeholder="E.G. SCORPIO CLASSIC VIP"
                       className="w-full bg-[#111111] border border-white/5 rounded-xl px-4 py-3 text-xs text-white outline-none font-mono focus:border-brand-neon/40 transition-colors" />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Segment Type</label>
+                    <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Segment Type <span className="text-red-500">*</span></label>
                     <select name="segmentType" className="w-full bg-[#111111] border border-white/5 rounded-xl px-4 py-3 text-xs text-white outline-none font-mono focus:border-brand-neon/40 transition-colors appearance-none">
                       <option>Luxury Class</option>
                       <option>SUV</option>
@@ -178,31 +201,37 @@ export default function VehicleDrawer({ isOpen, onClose, cities, tiers }: Vehicl
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Image Photo URL</label>
-                  <input type="hidden" name="imageUrl" value={imageUrl} />
-                  <ImageUpload value={imageUrl} onChange={setImageUrl} />
+                <div className="grid grid-cols-1 gap-5">
+                  <div className="space-y-2">
+                    <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Vehicle Gallery (Multiple) <span className="text-red-500">*</span></label>
+                    <input type="hidden" name="imageUrl" value={gallery.length > 0 ? gallery[0] : ''} />
+                    <input type="hidden" name="gallery" value={JSON.stringify(gallery)} />
+                    <MultiImageUpload value={gallery} onChange={setGallery} />
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                   <div className="space-y-2">
-                    <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Fuel Type</label>
-                    <select name="fuelType" className="w-full bg-[#111111] border border-white/5 rounded-xl px-4 py-3 text-xs text-white outline-none font-mono focus:border-brand-neon/40 transition-colors appearance-none">
-                      <option>Petrol</option>
-                      <option>Diesel</option>
-                      <option>EV</option>
-                      <option>Hybrid</option>
-                    </select>
+                    <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Fuel Type <span className="text-red-500">*</span></label>
+                    <input name="fuelType" list="fuel-options" required placeholder="e.g. Petrol, Diesel, EV..." className="w-full bg-[#111111] border border-white/5 rounded-xl px-4 py-3 text-xs text-white outline-none font-mono focus:border-brand-neon/40 transition-colors" />
+                    <datalist id="fuel-options">
+                      <option value="Diesel" />
+                      <option value="Petrol" />
+                      <option value="Electric" />
+                      <option value="Hybrid" />
+                      <option value="CNG" />
+                      <option value="Petrol/CNG" />
+                    </datalist>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Transmission</label>
+                    <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Transmission <span className="text-red-500">*</span></label>
                     <select name="transmission" className="w-full bg-[#111111] border border-white/5 rounded-xl px-4 py-3 text-xs text-white outline-none font-mono focus:border-brand-neon/40 transition-colors appearance-none">
                       <option>Automatic Gearbox</option>
                       <option>Manual Gearbox</option>
                     </select>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Seating Capacity</label>
+                    <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Seating Capacity <span className="text-red-500">*</span></label>
                     <select name="seatingCapacity" className="w-full bg-[#111111] border border-white/5 rounded-xl px-4 py-3 text-xs text-white outline-none font-mono focus:border-brand-neon/40 transition-colors appearance-none">
                       <option value="4">4 Seater</option>
                       <option value="5">5 Seater</option>
@@ -371,13 +400,13 @@ export default function VehicleDrawer({ isOpen, onClose, cities, tiers }: Vehicl
 
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                       <div className="col-span-2 space-y-1.5">
-                        <label className="text-[9px] text-white/30 font-mono uppercase tracking-widest block">Package Name</label>
+                        <label className="text-[9px] text-white/30 font-mono uppercase tracking-widest block">Package Name <span className="text-red-500">*</span></label>
                         <input value={pkg.name} onChange={e => updatePackage(pkg.id, 'name', e.target.value)} required
                           placeholder="e.g. 120 KM Package"
                           className="w-full bg-[#0A0A0A] border border-white/5 rounded-xl px-4 py-2.5 text-xs text-white outline-none font-mono focus:border-brand-neon/40 transition-colors" />
                       </div>
                       <div className="space-y-1.5">
-                        <label className="text-[9px] text-white/30 font-mono uppercase tracking-widest block">Type</label>
+                        <label className="text-[9px] text-white/30 font-mono uppercase tracking-widest block">Type <span className="text-red-500">*</span></label>
                         <select value={pkg.type} onChange={e => updatePackage(pkg.id, 'type', e.target.value)}
                           className="w-full bg-[#0A0A0A] border border-white/5 rounded-xl px-3 py-2.5 text-xs text-white outline-none font-mono focus:border-brand-neon/40 transition-colors appearance-none">
                           <option value="KM">KM</option>
@@ -389,7 +418,7 @@ export default function VehicleDrawer({ isOpen, onClose, cities, tiers }: Vehicl
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <div className="space-y-1.5">
-                        <label className="text-[9px] text-white/30 font-mono uppercase tracking-widest block">Base Price (₹)</label>
+                        <label className="text-[9px] text-white/30 font-mono uppercase tracking-widest block">Base Price (₹) <span className="text-red-500">*</span></label>
                         <input value={pkg.basePrice} onChange={e => updatePackage(pkg.id, 'basePrice', e.target.value)}
                           required type="number" min="0" placeholder="4500"
                           className="w-full bg-[#0A0A0A] border border-white/5 rounded-xl px-4 py-2.5 text-xs text-white outline-none font-mono focus:border-brand-neon/40 transition-colors" />
@@ -407,9 +436,9 @@ export default function VehicleDrawer({ isOpen, onClose, cities, tiers }: Vehicl
                           className="w-full bg-[#0A0A0A] border border-white/5 rounded-xl px-4 py-2.5 text-xs text-white outline-none font-mono focus:border-brand-neon/40 transition-colors" />
                       </div>
                       <div className="space-y-1.5">
-                        <label className="text-[9px] text-white/30 font-mono uppercase tracking-widest block">Deposit (₹)</label>
+                        <label className="text-[9px] text-white/30 font-mono uppercase tracking-widest block">Deposit (₹) <span className="text-white/20">(Optional)</span></label>
                         <input value={pkg.deposit} onChange={e => updatePackage(pkg.id, 'deposit', e.target.value)}
-                          type="number" min="0" placeholder="5000"
+                          type="number" min="0" placeholder="e.g. 5000"
                           className="w-full bg-[#0A0A0A] border border-white/5 rounded-xl px-4 py-2.5 text-xs text-white outline-none font-mono focus:border-brand-neon/40 transition-colors" />
                       </div>
                     </div>

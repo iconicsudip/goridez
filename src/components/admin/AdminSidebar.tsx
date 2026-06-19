@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 import { 
-  LayoutDashboard, Car, Layers, Globe, Map, Building, FileText, 
+  LayoutDashboard, Car, Layers, Globe, Map, MapPin, Building, FileText, 
   Search, Activity, Users, Percent, LogOut, UserCircle, ListOrdered, HelpCircle, Info
 } from 'lucide-react';
 
@@ -13,6 +13,7 @@ const ADMIN_LINKS = [
   { href: '/admin/vehicles', label: 'Vehicle Management', icon: Car },
   { href: '/admin/pricing', label: 'Pricing & Packages', icon: Layers },
   { href: '/admin/delivery-charges', label: 'Delivery Charges', icon: Map },
+  { href: '/admin/transfers', label: 'Taxi & Transfers', icon: MapPin },
   { href: '/admin/cities', label: 'City Management', icon: Globe },
   { href: '/admin/tours', label: 'Tour Coordinator', icon: Map },
   { href: '/admin/villas', label: 'Villa Stays ERP', icon: Building },

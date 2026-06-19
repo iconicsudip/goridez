@@ -81,10 +81,13 @@ export async function updateVehicle(id: string, formData: FormData) {
     const make = parts[0] || 'Unknown';
     const model = parts.slice(1).join(' ') || 'Model';
 
+    const galleryRaw = formData.get('gallery') as string;
+    const gallery = galleryRaw ? galleryRaw : '[]';
+
     await prisma.car.update({
       where: { id },
       data: {
-        make, model, category, image, fuelType, transmission,
+        make, model, category, image, gallery, fuelType, transmission,
         seatingCapacity, cityId: primaryCityId, availability, content,
         serviceTypes,
         extraHourCharge, nightCharge, nightChargeStart, nightChargeEnd, driverAllowanceDay, driverAllowanceOut,
@@ -110,7 +113,42 @@ export async function updateVehicle(id: string, formData: FormData) {
   }
 }
 
-// --- TOURS ---
+// --- VEHICLES ---
+export async function duplicateVehicle(id: string) {
+  try {
+    const originalCar = await prisma.car.findUnique({
+      where: { id },
+      include: { packages: true }
+    });
+
+    if (!originalCar) {
+      return { success: false, error: 'Original vehicle not found' };
+    }
+
+    const { id: _, createdAt, updatedAt, packages, ...carData } = originalCar;
+
+    await prisma.car.create({
+      data: {
+        ...carData,
+        make: `${carData.make} (Copy)`,
+        availability: false, // Set to false by default for copies so they don't accidentally go live
+        packages: {
+          create: packages.map(p => {
+            const { id: __, carId, createdAt, updatedAt, ...pkgData } = p;
+            return pkgData;
+          })
+        }
+      }
+    });
+
+    revalidatePath('/admin/vehicles');
+    return { success: true };
+  } catch (error: any) {
+    console.error('Failed to duplicate vehicle:', error);
+    return { success: false, error: error.message };
+  }
+}
+
 export async function deleteTour(id: string) {
   await prisma.tour.delete({ where: { id } });
   revalidatePath('/admin/tours');
@@ -271,12 +309,16 @@ export async function addVehicle(formData: FormData) {
     const make = parts[0] || 'Unknown';
     const model = parts.slice(1).join(' ') || 'Model';
 
+    const galleryRaw = formData.get('gallery') as string;
+    const gallery = galleryRaw ? galleryRaw : '[]';
+
     await prisma.car.create({
       data: {
         make,
         model,
         category,
         image,
+        gallery,
         fuelType,
         transmission,
         seatingCapacity: 4,
@@ -556,6 +598,68 @@ export async function upsertDeliveryCharge(formData: FormData) {
     }
 
     revalidatePath('/admin/pricing');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+// --- ROUND TRIP ROUTES ---
+export async function addRoundTripRoute(data: any) {
+  try {
+    await prisma.roundTripRoute.create({ data });
+    revalidatePath('/admin/transfers');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+export async function updateRoundTripRoute(id: string, data: any) {
+  try {
+    await prisma.roundTripRoute.update({ where: { id }, data });
+    revalidatePath('/admin/transfers');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+export async function deleteRoundTripRoute(id: string) {
+  try {
+    await prisma.roundTripRoute.delete({ where: { id } });
+    revalidatePath('/admin/transfers');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+// --- AIRPORT TRANSFERS ---
+export async function addAirportTransfer(data: any) {
+  try {
+    await prisma.airportTransferRoute.create({ data });
+    revalidatePath('/admin/transfers');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+export async function updateAirportTransfer(id: string, data: any) {
+  try {
+    await prisma.airportTransferRoute.update({ where: { id }, data });
+    revalidatePath('/admin/transfers');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+export async function deleteAirportTransfer(id: string) {
+  try {
+    await prisma.airportTransferRoute.delete({ where: { id } });
+    revalidatePath('/admin/transfers');
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };
