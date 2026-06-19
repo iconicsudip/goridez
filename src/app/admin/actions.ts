@@ -71,6 +71,9 @@ export async function updateVehicle(id: string, formData: FormData) {
     const serviceTypesRaw = formData.get('serviceTypes') as string;
     const serviceTypes: string[] = serviceTypesRaw ? JSON.parse(serviceTypesRaw) : ['SELF_DRIVE'];
 
+    const featuresRaw = formData.get('features') as string;
+    const features: string[] = featuresRaw ? JSON.parse(featuresRaw) : [];
+
     const packagesRaw = formData.get('packages') as string;
     const packagesData: Array<{
       name: string; type: string; basePrice: string;
@@ -89,7 +92,7 @@ export async function updateVehicle(id: string, formData: FormData) {
       data: {
         make, model, category, image, gallery, fuelType, transmission,
         seatingCapacity, cityId: primaryCityId, availability, content,
-        serviceTypes,
+        serviceTypes, features,
         extraHourCharge, nightCharge, nightChargeStart, nightChargeEnd, driverAllowanceDay, driverAllowanceOut,
         packages: {
           deleteMany: {},
@@ -298,6 +301,9 @@ export async function addVehicle(formData: FormData) {
     const serviceTypesRaw = formData.get('serviceTypes') as string;
     const serviceTypes: string[] = serviceTypesRaw ? JSON.parse(serviceTypesRaw) : ['SELF_DRIVE'];
 
+    const featuresRaw = formData.get('features') as string;
+    const features: string[] = featuresRaw ? JSON.parse(featuresRaw) : [];
+
     // Dynamic packages: read JSON array from form
     const packagesRaw = formData.get('packages') as string;
     const packagesData: Array<{
@@ -325,6 +331,7 @@ export async function addVehicle(formData: FormData) {
         cityId: primaryCityId,
         content,
         serviceTypes,
+        features,
         extraHourCharge,
         nightCharge,
         nightChargeStart,

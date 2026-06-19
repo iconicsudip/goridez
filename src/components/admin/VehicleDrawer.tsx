@@ -136,7 +136,7 @@ export default function VehicleDrawer({ isOpen, onClose, cities, tiers }: Vehicl
     const formData = new FormData(e.currentTarget);
     formData.set('cityIds', JSON.stringify(selectedCityIds));
     formData.set('packages', JSON.stringify(packages));
-    formData.set('features', features.join(','));
+    formData.set('features', JSON.stringify(features));
     formData.set('gallery', JSON.stringify(gallery));
     formData.set('content', content);
     formData.set('serviceTypes', JSON.stringify(serviceTypes));

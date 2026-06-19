@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import Image from 'next/image';
-import { Trash2, Pencil, Search, CheckCircle, XCircle, MapPin, Fuel, Settings2, Copy } from 'lucide-react';
+import { Trash2, Pencil, Search, CheckCircle, XCircle, MapPin, Fuel, Settings2, Copy, Tag } from 'lucide-react';
 import { deleteCar, duplicateVehicle } from '@/app/admin/actions';
 import EditVehicleDrawer from './EditVehicleDrawer';
 import VehicleImageCarousel from './VehicleImageCarousel';
@@ -156,6 +156,20 @@ export default function VehicleGrid({ cars, cities, tiers }: VehicleGridProps) {
                     <span className="text-[8px] font-mono text-white/30 px-2 py-1">+{car.packages.length - 4} more</span>
                   )}
                 </div>
+
+                {/* Features pills */}
+                {car.features && car.features.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mb-4 mt-2">
+                    {car.features.slice(0, 3).map((feature: string, idx: number) => (
+                      <span key={idx} className="text-[8px] font-bold text-brand-neon bg-brand-neon/5 border border-brand-neon/20 px-1.5 py-0.5 rounded flex items-center gap-1 uppercase tracking-widest">
+                        <Tag size={8} /> {feature}
+                      </span>
+                    ))}
+                    {car.features.length > 3 && (
+                      <span className="text-[8px] font-mono text-white/30 px-1.5 py-0.5 border border-white/5 rounded">+{car.features.length - 3}</span>
+                    )}
+                  </div>
+                )}
 
                 {/* Bottom row */}
                 <div className="flex items-center justify-between pt-3 border-t border-white/5">

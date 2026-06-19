@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { X, ArrowRight, Plus, Trash2, Check } from 'lucide-react';
+import { X, ArrowRight, Plus, Trash2, Check, Tag } from 'lucide-react';
 import { updateVehicle } from '@/app/admin/actions';
 import MultiImageUpload from './MultiImageUpload';
 import { useEffect } from 'react';
@@ -32,6 +32,9 @@ export default function EditVehicleDrawer({ isOpen, onClose, car, cities, tiers 
   const [gallery, setGallery] = useState<string[]>(car?.gallery && typeof car.gallery === 'string' && car.gallery !== '[]' ? JSON.parse(car.gallery) : []);
   const [content, setContent] = useState(car?.content || '');
   const [serviceTypes, setServiceTypes] = useState<string[]>(car?.serviceTypes || ['SELF_DRIVE']);
+  const [features, setFeatures] = useState<string[]>(car?.features || []);
+  const [featureInput, setFeatureInput] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   useEffect(() => {
     if (isOpen && car) {
@@ -50,12 +53,44 @@ export default function EditVehicleDrawer({ isOpen, onClose, car, cities, tiers 
       );
       setContent(car.content || '');
       setServiceTypes(car.serviceTypes || ['SELF_DRIVE']);
+      setFeatures(car.features || []);
     } else {
       setGallery([]);
       setContent('');
       setServiceTypes(['SELF_DRIVE']);
+      setFeatures([]);
     }
   }, [car, isOpen]);
+
+  const FEATURE_SUGGESTIONS = [
+    'GPS Tracker', 'Android Auto', 'Apple CarPlay', 'Sunroof', 'Leather Seats',
+    'AC', 'Rear Camera', 'Bluetooth', '4WD', 'Airbags', 'ABS', 'USB Charging',
+    'Child Seat', 'First Aid Kit', 'Dashcam', 'Parking Sensors'
+  ];
+  const filteredSuggestions = FEATURE_SUGGESTIONS.filter(s => s.toLowerCase().includes(featureInput.toLowerCase()) && !features.includes(s));
+
+  function addFeature(f: string) {
+    const trimmed = f.trim();
+    if (trimmed && !features.includes(trimmed)) {
+      setFeatures(prev => [...prev, trimmed]);
+    }
+    setFeatureInput('');
+    setShowSuggestions(false);
+  }
+
+  function removeFeature(f: string) {
+    setFeatures(prev => prev.filter(x => x !== f));
+  }
+
+  function handleFeatureKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      addFeature(featureInput);
+    }
+    if (e.key === 'Backspace' && featureInput === '' && features.length > 0) {
+      setFeatures(prev => prev.slice(0, -1));
+    }
+  }
 
   function toggleCity(id: string) {
     setSelectedCityIds(prev => prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]);
@@ -107,6 +142,7 @@ export default function EditVehicleDrawer({ isOpen, onClose, car, cities, tiers 
     const formData = new FormData(e.currentTarget);
     formData.set('packages', JSON.stringify(packages));
     formData.set('cityIds', JSON.stringify(selectedCityIds));
+    formData.set('features', JSON.stringify(features));
     formData.set('gallery', JSON.stringify(gallery));
     formData.set('content', content);
     formData.set('serviceTypes', JSON.stringify(serviceTypes));
@@ -308,6 +344,50 @@ export default function EditVehicleDrawer({ isOpen, onClose, car, cities, tiers 
                   <div className="text-center py-8 border border-dashed border-white/10 rounded-2xl text-white/30 text-[10px] font-mono">No packages. Add from tiers above or click Add.</div>
                 )}
               </div>
+            </div>
+
+            {/* ── SECTION: FEATURES ── */}
+            <div className="border-t border-white/5 pt-8">
+              <p className="text-[9px] text-yellow-400 font-mono uppercase tracking-widest mb-4">— Vehicle Features</p>
+
+              {/* Tag Input */}
+              <div className="relative">
+                <div className="min-h-[52px] bg-[#111111] border border-white/5 rounded-xl px-3 py-2 flex flex-wrap gap-2 focus-within:border-yellow-400/40 transition-colors cursor-text"
+                  onClick={() => document.getElementById('edit-feature-input')?.focus()}>
+                  {features.map(f => (
+                    <span key={f} className="flex items-center gap-1.5 bg-yellow-400/10 border border-yellow-400/30 text-yellow-400 text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-lg">
+                      <Tag size={9} />
+                      {f}
+                      <button type="button" onClick={() => removeFeature(f)} className="text-yellow-400/50 hover:text-red-400 transition-colors ml-1">
+                        <X size={9} />
+                      </button>
+                    </span>
+                  ))}
+                  <input
+                    id="edit-feature-input"
+                    value={featureInput}
+                    onChange={e => { setFeatureInput(e.target.value); setShowSuggestions(true); }}
+                    onKeyDown={handleFeatureKeyDown}
+                    onFocus={() => setShowSuggestions(true)}
+                    onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
+                    placeholder={features.length === 0 ? 'Type a feature and press Enter...' : ''}
+                    className="flex-1 min-w-[160px] bg-transparent outline-none text-xs text-white font-mono placeholder:text-white/20 py-1"
+                  />
+                </div>
+
+                {/* Autocomplete Suggestions */}
+                {showSuggestions && filteredSuggestions.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-[#161616] border border-white/10 rounded-xl shadow-2xl z-10 overflow-hidden">
+                    {filteredSuggestions.slice(0, 6).map(s => (
+                      <button key={s} type="button" onMouseDown={() => addFeature(s)}
+                        className="w-full text-left px-4 py-2.5 text-[10px] font-mono text-white/60 hover:text-yellow-400 hover:bg-yellow-400/5 transition-colors flex items-center gap-2">
+                        <Plus size={10} /> {s}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <p className="text-[9px] text-white/20 font-mono mt-2">Press Enter or comma to add. Click suggestions or type custom features.</p>
             </div>
 
             {/* ── SECTION: RICH CONTENT ── */}
