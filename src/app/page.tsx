@@ -34,9 +34,9 @@ export default async function Home() {
           <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black" />
         </div>
         
-        <div className="container mx-auto px-4 relative z-10 flex flex-col lg:flex-row items-center gap-12 mt-12">
-          {/* Left Text */}
-          <div className="w-full lg:w-1/2">
+        <div className="container mx-auto px-4 relative z-10 flex flex-col items-center text-center gap-10 mt-16 pb-16">
+          {/* Center Text */}
+          <div className="w-full max-w-4xl flex flex-col items-center">
             <div className="inline-flex items-center gap-2 border border-brand-neon/30 rounded-full px-4 py-1.5 mb-8 bg-brand-neon/10 backdrop-blur-md">
               <span className="text-brand-neon text-[10px] md:text-xs font-bold tracking-widest uppercase">
                 ✦ PREMIUM TRANSPORTATION
@@ -44,33 +44,31 @@ export default async function Home() {
             </div>
             
             <h1 className="text-5xl md:text-7xl lg:text-[80px] font-black leading-[0.95] tracking-tighter mb-6 uppercase">
-              EXPLORE <br/>
-              RAJASTHAN <br/>
+              EXPLORE RAJASTHAN <br/>
               <span className="text-outline-neon">WITH FREEDOM</span>
             </h1>
             
-            <p className="text-white/60 text-lg md:text-xl max-w-lg mb-10 leading-relaxed">
+            <p className="text-white/60 text-lg md:text-xl max-w-2xl mb-10 leading-relaxed">
               Premium self drive cars, chauffeur services, luxury villas and curated Rajasthan travel experiences. Built specifically for elite global explorers.
             </p>
             
-            <div className="flex flex-wrap items-center gap-4 mb-16">
-              <Link href="#book" className="bg-brand-neon hover:bg-brand-hover text-black font-bold px-8 py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(196,240,0,0.2)] hover:shadow-[0_0_30px_rgba(196,240,0,0.4)] tracking-wide">
-                BOOK NOW
-              </Link>
+            <div className="flex flex-wrap justify-center items-center gap-4 mb-8">
               <Link href="#collection" className="bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold px-8 py-4 rounded-xl transition-all backdrop-blur-sm tracking-wide">
                 EXPLORE COLLECTION
               </Link>
             </div>
             
-            <div className="grid grid-cols-3 gap-6 pt-8 border-t border-white/10">
+            <div className="flex flex-wrap justify-center gap-8 pt-6 border-t border-white/10 w-full max-w-2xl">
               <div>
                 <div className="font-bold text-lg mb-1 uppercase tracking-wide">100% VETTED</div>
                 <div className="text-white/50 text-xs">Verified Private Fleet</div>
               </div>
+              <div className="hidden md:block w-px bg-white/10 h-10"></div>
               <div>
                 <div className="font-bold text-brand-neon text-lg mb-1 uppercase tracking-wide">₹0 DEPOSIT</div>
                 <div className="text-white/50 text-xs">With driver options</div>
               </div>
+              <div className="hidden md:block w-px bg-white/10 h-10"></div>
               <div>
                 <div className="font-bold text-lg mb-1 uppercase tracking-wide">24x7 DESK</div>
                 <div className="text-white/50 text-xs">On-road dispatch</div>
@@ -78,8 +76,8 @@ export default async function Home() {
             </div>
           </div>
           
-          {/* Right Widget */}
-          <div className="w-full lg:w-1/2 flex justify-end">
+          {/* Bottom Widget */}
+          <div className="w-full flex justify-center mt-4">
             <BookingWidget cars={cars} villas={villas} tours={tours} cities={cities} />
           </div>
         </div>

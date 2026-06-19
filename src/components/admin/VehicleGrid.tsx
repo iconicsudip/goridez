@@ -110,7 +110,13 @@ export default function VehicleGrid({ cars, cities, tiers }: VehicleGridProps) {
               <div className="relative w-full h-36 bg-black overflow-hidden">
                 <div className="w-full h-full group-hover:scale-105 transition-transform duration-500">
                   <VehicleImageCarousel 
-                    images={car.gallery && car.gallery.length > 0 ? car.gallery : [car.image]} 
+                    images={(() => {
+                      let parsed = [];
+                      try {
+                        parsed = typeof car.gallery === 'string' ? JSON.parse(car.gallery) : (car.gallery || []);
+                      } catch(e) {}
+                      return parsed.length > 0 ? parsed : [car.image];
+                    })()}
                     alt={`${car.make} ${car.model}`} 
                   />
                 </div>

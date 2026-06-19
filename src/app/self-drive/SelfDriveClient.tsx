@@ -24,13 +24,25 @@ export default function SelfDriveClient({ initialCars, initialCities }: { initia
 
   useEffect(() => {
     setIsMounted(true);
-    if (session?.pickupDate) {
-      setPickupDate(new Date(session.pickupDate));
+    
+    const qPickupDate = searchParams.get('pickupDate');
+    const qReturnDate = searchParams.get('returnDate');
+    const qPickupCity = searchParams.get('pickupCity');
+
+    if (qPickupDate) setPickupDate(new Date(qPickupDate));
+    else if (session?.pickupDate) setPickupDate(new Date(session.pickupDate));
+
+    if (qReturnDate) setReturnDate(new Date(qReturnDate));
+    else if (session?.returnDate) setReturnDate(new Date(session.returnDate));
+
+    const finalCity = qPickupCity || session?.pickupCity;
+    if (finalCity) {
+      const city = initialCities.find(c => c.name === finalCity);
+      if (city && !selectedCityIds.includes(city.id)) {
+        setSelectedCityIds([city.id]);
+      }
     }
-    if (session?.returnDate) {
-      setReturnDate(new Date(session.returnDate));
-    }
-  }, [session?.pickupDate, session?.returnDate]);
+  }, [session?.pickupDate, session?.returnDate, session?.pickupCity, searchParams]);
 
   const handleDateRangeChange = (update: [Date | null, Date | null]) => {
     const [start, end] = update;

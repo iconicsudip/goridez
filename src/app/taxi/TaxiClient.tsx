@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useBookingStore } from '@/store/useBookingStore';
 import { ArrowDownUp, MapPin, Calendar, Users, Send, Route } from 'lucide-react';
 import DatePicker from 'react-datepicker';
@@ -9,6 +9,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 export default function TaxiClient({ initialCars, initialCities, initialRoutes = [], initialAirportRoutes = [] }: { initialCars: any[], initialCities: any[], initialRoutes?: any[], initialAirportRoutes?: any[] }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { session, updateSession, addToCart } = useBookingStore();
   
   const [bookingMode, setBookingMode] = useState<'ONE_WAY'|'ROUND_TRIP'|'AIRPORT_TRANSFER'>('ONE_WAY');
@@ -29,9 +30,28 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes =
 
   useEffect(() => {
     setIsMounted(true);
-    if (session?.pickupDate) setPickupDate(new Date(session.pickupDate));
-    if (session?.returnDate) setReturnDate(new Date(session.returnDate));
-  }, [session?.pickupDate, session?.returnDate]);
+
+    const qPickupDate = searchParams.get('pickupDate');
+    const qReturnDate = searchParams.get('returnDate');
+    const qPickupCity = searchParams.get('pickupCity');
+    const qDropCity = searchParams.get('dropCity');
+    const qMode = searchParams.get('mode') as any;
+
+    if (qPickupDate) setPickupDate(new Date(qPickupDate));
+    else if (session?.pickupDate) setPickupDate(new Date(session.pickupDate));
+
+    if (qReturnDate) setReturnDate(new Date(qReturnDate));
+    else if (session?.returnDate) setReturnDate(new Date(session.returnDate));
+
+    if (qPickupCity) setPickup(qPickupCity);
+    else if (session?.pickupCity) setPickup(session.pickupCity);
+
+    if (qDropCity) setDropoff(qDropCity);
+    else if (session?.dropCity) setDropoff(session.dropCity);
+
+    if (qMode) setBookingMode(qMode);
+    else if (session?.bookingMode) setBookingMode(session.bookingMode);
+  }, [session?.pickupDate, session?.returnDate, session?.pickupCity, session?.dropCity, session?.bookingMode, searchParams]);
 
   const handleDateRangeChange = (update: [Date | null, Date | null]) => {
     const [start, end] = update;
