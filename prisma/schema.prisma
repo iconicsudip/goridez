@@ -299,3 +299,31 @@ model AirportTransferRoute {
   updatedAt       DateTime @updatedAt
   city            City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
 }
+
+model HomePage {
+  id                     String   @id @default("singleton")
+  heroBadge              String   @default("✦ PREMIUM TRANSPORTATION")
+  heroTitleLine1         String   @default("EXPLORE RAJASTHAN")
+  heroTitleLine2         String   @default("WITH FREEDOM")
+  heroDescription        String   @default("Premium self drive cars, chauffeur services, luxury villas and curated Rajasthan travel experiences. Built specifically for elite global explorers.")
+  heroBgImage            String   @default("https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=2500&q=80")
+  seamlessBadge          String   @default("Discover the Mewar Heritage")
+  seamlessTitle          String   @default("SEAMLESS")
+  seamlessTitleHighlight String   @default("EXPERIENCES")
+  seamlessDescription    String   @default("Navigate through our curated premium transportation lists and elite private escapes.")
+  vehiclesBadge          String   @default("Real Automotive Collection")
+  vehiclesTitle          String   @default("VEHICLE")
+  vehiclesTitleHighlight String   @default("COLLECTION")
+  vehiclesDescription    String   @default("Select key luxury automotive segments vetting senior brand names (Maruti Suzuki, Hyundai, Kia, Mahindra, Tata).")
+  villasBadge            String   @default("Royal Residency Alliance")
+  villasTitle            String   @default("VILLAS")
+  villasTitleHighlight   String   @default("& CAR BUNDLES")
+  villasDescription      String   @default("Five-star private villas paired directly with vetted SUVs in a single unified concierge booking.")
+  toursTitle             String   @default("PREMIUM TOUR")
+  toursTitleHighlight    String   @default("EXPERIENCES")
+  toursDescription       String   @default("Skip lines directly. Access private expert guided itineraries covering historical temples and Mewar fortresses.")
+  blogsBadge             String   @default("GoRidez Editorial Journal")
+  blogsTitle             String   @default("FEATURED")
+  blogsTitleHighlight    String   @default("STORIES")
+  updatedAt              DateTime @updatedAt
+}

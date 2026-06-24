@@ -10,7 +10,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 type MainTab = 'CHAUFFEUR' | 'SELF DRIVE' | 'VILLAS' | 'TOURS';
 type SubTab = 'LOCAL' | 'ONE WAY' | 'ROUND TRIP';
 
-export default function BookingWidget({ cities = [] }: { cars?: any[], villas?: any[], tours?: any[], cities?: any[] }) {
+export default function BookingWidget({ cities = [], counts }: { cars?: any[], villas?: any[], tours?: any[], cities?: any[], counts?: { selfDrive: number, chauffeur: number, taxi: number, tours: number, villas: number } }) {
   const [mainTab, setMainTab] = useState<MainTab>('CHAUFFEUR');
   const [subTab, setSubTab] = useState<SubTab>('LOCAL');
 
@@ -31,6 +31,7 @@ export default function BookingWidget({ cities = [] }: { cars?: any[], villas?: 
   const [selectedCity, setSelectedCity] = useState('');
   const [dropCity, setDropCity] = useState('');
   const [isDifferentDropCity, setIsDifferentDropCity] = useState(false);
+  const [destinations, setDestinations] = useState<string[]>(['']);
 
   useMemo(() => {
     if (cities.length > 0) {
@@ -38,6 +39,24 @@ export default function BookingWidget({ cities = [] }: { cars?: any[], villas?: 
       if (!dropCity && cities.length > 1) setDropCity(cities[1].name);
     }
   }, [cities, selectedCity, dropCity]);
+
+  const addDestination = () => {
+    if (destinations.length < 3) {
+      setDestinations([...destinations, '']);
+    }
+  };
+
+  const removeDestination = (idx: number) => {
+    const newDests = [...destinations];
+    newDests.splice(idx, 1);
+    setDestinations(newDests);
+  };
+
+  const updateDestination = (idx: number, value: string) => {
+    const newDests = [...destinations];
+    newDests[idx] = value;
+    setDestinations(newDests);
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,6 +89,12 @@ export default function BookingWidget({ cities = [] }: { cars?: any[], villas?: 
     }
 
     // Save the search preferences
+    const finalDropCity = (mainTab === 'CHAUFFEUR' && subTab === 'ROUND TRIP') 
+      ? destinations.filter(d => d.trim() !== '').join(',')
+      : ((mainTab === 'CHAUFFEUR' && subTab === 'ONE WAY') || (mainTab === 'SELF DRIVE' && isDifferentDropCity)) 
+        ? dropCity 
+        : selectedCity;
+
     if (pickupDate && returnDate) {
       updateSession({
         serviceType: stype,
@@ -77,12 +102,20 @@ export default function BookingWidget({ cities = [] }: { cars?: any[], villas?: 
         returnDate: returnDate.toISOString(),
         driverOption: mainTab === 'CHAUFFEUR',
         pickupCity: selectedCity,
-        dropCity: ((mainTab === 'CHAUFFEUR' && (subTab === 'ONE WAY' || subTab === 'ROUND TRIP')) || (mainTab === 'SELF DRIVE' && isDifferentDropCity)) ? dropCity : selectedCity,
+        dropCity: finalDropCity,
         bookingMode: mode
       });
     }
 
-    router.push(route);
+    const params = new URLSearchParams();
+    if (mode) params.set('mode', mode);
+    if (selectedCity) params.set('pickupCity', selectedCity);
+    if (finalDropCity) params.set('dropCity', finalDropCity);
+    
+    if (pickupDate) params.set('pickupDate', pickupDate.toISOString());
+    if (returnDate) params.set('returnDate', returnDate.toISOString());
+
+    router.push(`${route}?${params.toString()}`);
   };
 
   if (!isMounted) return null;
@@ -94,21 +127,29 @@ export default function BookingWidget({ cities = [] }: { cars?: any[], villas?: 
 
       {/* Floating Main Tabs */}
       <div className="flex justify-center md:justify-start mx-auto w-max bg-white/5 backdrop-blur-md rounded-t-2xl overflow-hidden shadow-lg border border-white/10 border-b-0">
-        {(['CHAUFFEUR', 'SELF DRIVE', 'VILLAS', 'TOURS'] as MainTab[]).map((tab) => (
-          <button
-            key={tab}
-            onClick={() => {
-              setMainTab(tab);
-              setIsDifferentDropCity(false); // Reset when switching tabs
-            }}
-            className={`px-6 md:px-10 py-4 text-xs md:text-sm font-black tracking-widest transition-all ${mainTab === tab
-              ? 'bg-brand-neon text-black shadow-[0_0_20px_rgba(196,240,0,0.2)]'
-              : 'text-white/60 hover:text-white hover:bg-white/10'
-              }`}
-          >
-            {tab}
-          </button>
-        ))}
+        {(['CHAUFFEUR', 'SELF DRIVE', 'VILLAS', 'TOURS'] as MainTab[]).map((tab) => {
+          if (counts) {
+            if (tab === 'SELF DRIVE' && counts.selfDrive === 0) return null;
+            if (tab === 'VILLAS' && counts.villas === 0) return null;
+            if (tab === 'TOURS' && counts.tours === 0) return null;
+            if (tab === 'CHAUFFEUR' && counts.chauffeur === 0 && counts.taxi === 0) return null;
+          }
+          return (
+            <button
+              key={tab}
+              onClick={() => {
+                setMainTab(tab);
+                setIsDifferentDropCity(false); // Reset when switching tabs
+              }}
+              className={`px-6 md:px-10 py-4 text-xs md:text-sm font-black tracking-widest transition-all ${mainTab === tab
+                ? 'bg-brand-neon text-black shadow-[0_0_20px_rgba(196,240,0,0.2)]'
+                : 'text-white/60 hover:text-white hover:bg-white/10'
+                }`}
+            >
+              {tab}
+            </button>
+          );
+        })}
       </div>
 
       {/* Main Card */}
@@ -138,53 +179,78 @@ export default function BookingWidget({ cities = [] }: { cars?: any[], villas?: 
         )}
 
         {/* Horizontal Form Layout */}
-        <form onSubmit={handleSearch} className="flex flex-col lg:flex-row items-center gap-4 bg-[#111111] p-3 md:p-4 rounded-2xl md:rounded-full border border-white/5 w-full relative">
+        <form onSubmit={handleSearch} className="flex flex-col lg:flex-row items-stretch gap-4 bg-[#111111] p-3 md:p-5 rounded-3xl md:rounded-[40px] border border-white/5 w-full relative">
 
           {/* Location Field 1 */}
-          <div className="flex-1 w-full flex flex-col px-4 py-2 lg:border-r border-white/10">
+          <div className="flex-1 w-full flex flex-col px-4 py-3 lg:py-2 lg:border-r border-b lg:border-b-0 border-white/10">
             <label className="text-[10px] font-black text-white/40 uppercase tracking-widest flex items-center gap-2 mb-1">
               <MapPin size={12} className="text-brand-neon" />
-              {showDropCity ? 'Pickup City' : 'Select your city'}
+              {showDropCity ? 'Source City' : 'Select your city'}
             </label>
             <select
               value={selectedCity}
               onChange={(e) => setSelectedCity(e.target.value)}
               className="w-full bg-transparent text-white text-sm font-bold outline-none appearance-none cursor-pointer truncate"
             >
-              {cities && cities.length > 0 ? (
-                cities.map((city: any) => (
-                  <option key={city.id} value={city.name} className="bg-[#111111]">{city.name}</option>
-                ))
-              ) : (
-                <option value="Udaipur" className="bg-[#111111]">Udaipur</option>
-              )}
+              {cities && cities.map((city: any) => (
+                <option key={city.id} value={city.name} className="bg-[#111111]">{city.name}</option>
+              ))}
             </select>
           </div>
 
           {/* Location Field 2 (Drop City) */}
-          {showDropCity && (
-            <div className="flex-1 w-full flex flex-col px-4 py-2 lg:border-r border-white/10">
+          {showDropCity && mainTab === 'CHAUFFEUR' && subTab === 'ROUND TRIP' ? (
+            <div className="flex-[2] w-full flex flex-col px-4 py-3 lg:py-2 lg:border-r border-b lg:border-b-0 border-white/10">
+              <label className="text-[10px] font-black text-white/40 uppercase tracking-widest flex items-center justify-between mb-1">
+                <span className="flex items-center gap-2"><MapPin size={12} className="text-brand-neon" /> Destination city</span>
+                {destinations.length < 3 && (
+                  <button type="button" onClick={addDestination} className="text-brand-neon hover:text-white transition-colors flex items-center gap-1 bg-brand-neon/10 px-2 py-0.5 rounded text-[9px]">
+                    <span className="text-[14px] leading-none">+</span> ADD
+                  </button>
+                )}
+              </label>
+              <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3 md:gap-2 mt-2 w-full">
+                {destinations.map((dest, idx) => (
+                  <div key={idx} className="flex-1 flex items-center gap-2 w-full">
+                    <select
+                      value={dest}
+                      onChange={(e) => updateDestination(idx, e.target.value)}
+                      className="w-full bg-transparent text-white text-sm font-bold outline-none appearance-none cursor-pointer border-b border-white/10 focus:border-brand-neon pb-1"
+                      required
+                    >
+                      <option value="" disabled className="bg-[#111111] text-white/50">Select Destination City {idx + 1}</option>
+                      {cities && cities.map((city: any) => (
+                        <option key={city.id} value={city.name} className="bg-[#111111]">{city.name}</option>
+                      ))}
+                    </select>
+                    {destinations.length > 1 && (
+                      <button type="button" onClick={() => removeDestination(idx)} className="text-red-400 hover:text-red-300 text-xs">
+                        ✕
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : showDropCity ? (
+            <div className="flex-1 w-full flex flex-col px-4 py-3 lg:py-2 lg:border-r border-b lg:border-b-0 border-white/10">
               <label className="text-[10px] font-black text-white/40 uppercase tracking-widest flex items-center gap-2 mb-1">
-                <MapPin size={12} className="text-brand-neon" /> Drop City
+                <MapPin size={12} className="text-brand-neon" /> Destination city
               </label>
               <select
                 value={dropCity}
                 onChange={(e) => setDropCity(e.target.value)}
                 className="w-full bg-transparent text-white text-sm font-bold outline-none appearance-none cursor-pointer truncate"
               >
-                {cities && cities.length > 0 ? (
-                  cities.map((city: any) => (
-                    <option key={city.id} value={city.name} className="bg-[#111111]">{city.name}</option>
-                  ))
-                ) : (
-                  <option value="Jaipur" className="bg-[#111111]">Jaipur</option>
-                )}
+                {cities && cities.map((city: any) => (
+                  <option key={city.id} value={city.name} className="bg-[#111111]">{city.name}</option>
+                ))}
               </select>
             </div>
-          )}
+          ) : null}
 
           {/* Pick Up Date */}
-          <div className="flex-1 w-full flex flex-col px-4 py-2 lg:border-r border-white/10">
+          <div className="flex-1 w-full flex flex-col px-4 py-3 lg:py-2 lg:border-r border-b lg:border-b-0 border-white/10">
             <label className="text-[10px] font-black text-white/40 uppercase tracking-widest flex items-center gap-2 mb-1">
               <Calendar size={12} className="text-brand-neon" /> Pick Up Date
             </label>
@@ -203,7 +269,7 @@ export default function BookingWidget({ cities = [] }: { cars?: any[], villas?: 
 
           {/* Drop-off Date */}
           {!(mainTab === 'CHAUFFEUR' && subTab === 'ONE WAY') && (
-            <div className="flex-1 w-full flex flex-col px-4 py-2">
+            <div className="flex-1 w-full flex flex-col px-4 py-3 lg:py-2 border-b lg:border-b-0 border-white/10">
               <label className="text-[10px] font-black text-white/40 uppercase tracking-widest flex items-center gap-2 mb-1">
                 <Calendar size={12} className="text-brand-neon" /> Drop-off Date
               </label>
@@ -222,7 +288,7 @@ export default function BookingWidget({ cities = [] }: { cars?: any[], villas?: 
           )}
 
           {/* Search Button */}
-          <div className="px-2 w-full lg:w-auto mt-4 lg:mt-0">
+          <div className="px-2 w-full lg:w-auto mt-4 lg:mt-0 flex items-center">
             <button type="submit" className="w-full lg:w-auto bg-brand-neon hover:bg-brand-hover text-black font-black text-xs tracking-widest px-8 py-4 rounded-xl md:rounded-full transition-all shadow-[0_0_20px_rgba(196,240,0,0.2)] flex items-center justify-center gap-2 uppercase">
               <Search size={16} strokeWidth={3} /> Search
             </button>

@@ -7,15 +7,44 @@ import FaqAccordion from "@/components/FaqAccordion";
 import { Star, Shield, Clock, Map, ChevronRight, Key, Calendar, BookOpen } from 'lucide-react';
 
 export default async function Home() {
-  const [cars, villas, tours, cities, blogs, faqs] = await Promise.all([
+  const [cars, villas, tours, cities, blogs, faqs, homePageData, selfDriveCount, chauffeurCount, taxiCount] = await Promise.all([
     prisma.car.findMany({ include: { packages: true }, take: 8, orderBy: { createdAt: 'desc' } }),
     prisma.villa.findMany({ take: 4 }),
     prisma.tour.findMany({ take: 6 }),
     prisma.city.findMany({ orderBy: { name: 'asc' } }),
     prisma.blog.findMany({ where: { isDraft: false }, take: 3, orderBy: { createdAt: 'desc' } }),
-    prisma.fAQ.findMany({ where: { isActive: true }, orderBy: { createdAt: 'asc' } })
+    prisma.fAQ.findMany({ where: { isActive: true }, orderBy: { createdAt: 'asc' } }),
+    prisma.homePage.findUnique({ where: { id: 'singleton' } }),
+    prisma.car.count({ where: { serviceTypes: { has: 'SELF_DRIVE' } } }),
+    prisma.car.count({ where: { serviceTypes: { has: 'WITH_DRIVER' } } }),
+    prisma.car.count({ where: { serviceTypes: { has: 'TAXI' } } })
   ]);
 
+  const hp = homePageData || {
+    heroBadge: '✦ PREMIUM TRANSPORTATION',
+    heroTitleLine1: 'EXPLORE RAJASTHAN',
+    heroTitleLine2: 'WITH FREEDOM',
+    heroDescription: 'Premium self drive cars, chauffeur services, luxury villas and curated Rajasthan travel experiences. Built specifically for elite global explorers.',
+    heroBgImage: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=2500&q=80',
+    seamlessBadge: 'Discover the Mewar Heritage',
+    seamlessTitle: 'SEAMLESS',
+    seamlessTitleHighlight: 'EXPERIENCES',
+    seamlessDescription: 'Navigate through our curated premium transportation lists and elite private escapes.',
+    vehiclesBadge: 'Real Automotive Collection',
+    vehiclesTitle: 'VEHICLE',
+    vehiclesTitleHighlight: 'COLLECTION',
+    vehiclesDescription: 'Select key luxury automotive segments vetting senior brand names (Maruti Suzuki, Hyundai, Kia, Mahindra, Tata).',
+    villasBadge: 'Royal Residency Alliance',
+    villasTitle: 'VILLAS',
+    villasTitleHighlight: '& CAR BUNDLES',
+    villasDescription: 'Five-star private villas paired directly with vetted SUVs in a single unified concierge booking.',
+    toursTitle: 'PREMIUM TOUR',
+    toursTitleHighlight: 'EXPERIENCES',
+    toursDescription: 'Skip lines directly. Access private expert guided itineraries covering historical temples and Mewar fortresses.',
+    blogsBadge: 'GoRidez Editorial Journal',
+    blogsTitle: 'FEATURED',
+    blogsTitleHighlight: 'STORIES',
+  };
 
   return (
     <div className="flex flex-col bg-brand-bg text-white overflow-hidden font-body">
@@ -23,7 +52,7 @@ export default async function Home() {
       <section className="relative min-h-screen flex items-center pt-24 pb-12">
         <div className="absolute inset-0 z-0">
           <Image 
-            src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=2500&q=80" 
+            src={hp.heroBgImage} 
             alt="Hero Background" 
             fill 
             className="object-cover opacity-40 mix-blend-overlay"
@@ -39,17 +68,17 @@ export default async function Home() {
           <div className="w-full max-w-4xl flex flex-col items-center">
             <div className="inline-flex items-center gap-2 border border-brand-neon/30 rounded-full px-4 py-1.5 mb-8 bg-brand-neon/10 backdrop-blur-md">
               <span className="text-brand-neon text-[10px] md:text-xs font-bold tracking-widest uppercase">
-                ✦ PREMIUM TRANSPORTATION
+                {hp.heroBadge}
               </span>
             </div>
             
             <h1 className="text-5xl md:text-7xl lg:text-[80px] font-black leading-[0.95] tracking-tighter mb-6 uppercase">
-              EXPLORE RAJASTHAN <br/>
-              <span className="text-outline-neon">WITH FREEDOM</span>
+              {hp.heroTitleLine1} <br/>
+              <span className="text-outline-neon">{hp.heroTitleLine2}</span>
             </h1>
             
             <p className="text-white/60 text-lg md:text-xl max-w-2xl mb-10 leading-relaxed">
-              Premium self drive cars, chauffeur services, luxury villas and curated Rajasthan travel experiences. Built specifically for elite global explorers.
+              {hp.heroDescription}
             </p>
             
             <div className="flex flex-wrap justify-center items-center gap-4 mb-8">
@@ -78,7 +107,7 @@ export default async function Home() {
           
           {/* Bottom Widget */}
           <div className="w-full flex justify-center mt-4">
-            <BookingWidget cars={cars} villas={villas} tours={tours} cities={cities} />
+            <BookingWidget cars={cars} villas={villas} tours={tours} cities={cities} counts={{ selfDrive: selfDriveCount, chauffeur: chauffeurCount, taxi: taxiCount, tours: tours.length, villas: villas.length }} />
           </div>
         </div>
       </section>
@@ -87,89 +116,100 @@ export default async function Home() {
       <section className="py-24 relative z-10 bg-black">
         <div className="container mx-auto px-4">
           <div className="mb-16">
-            <div className="text-brand-neon text-xs font-bold tracking-[0.2em] uppercase mb-4">Discover the Mewar Heritage</div>
+            <div className="text-brand-neon text-xs font-bold tracking-[0.2em] uppercase mb-4">{hp.seamlessBadge}</div>
             <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter leading-none mb-6">
-              SEAMLESS <span className="text-outline-neon">EXPERIENCES</span>
+              {hp.seamlessTitle} <span className="text-outline-neon">{hp.seamlessTitleHighlight}</span>
             </h2>
             <p className="text-white/60 text-lg max-w-xl">
-              Navigate through our curated premium transportation lists and elite private escapes.
+              {hp.seamlessDescription}
             </p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Card 1 */}
-            <div className="group relative h-[400px] rounded-3xl overflow-hidden cursor-pointer">
-              <Image src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=1000&q=80" alt="Self Drive" fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className="object-cover group-hover:scale-105 transition-transform duration-700" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-              <div className="absolute bottom-0 left-0 p-10 w-full">
-                <div className="text-brand-neon text-xs font-bold tracking-[0.2em] uppercase mb-2">Drive Udaipur Your Way</div>
-                <h3 className="text-4xl font-black uppercase tracking-tight mb-6">SELF DRIVE COLLECTION</h3>
-                <Link href="/self-drive">
-                  <button className="bg-black/50 backdrop-blur-md border border-white/20 hover:border-brand-neon text-white text-xs font-bold px-6 py-3 rounded-lg transition-colors flex items-center gap-2 mt-4">
-                    EXPLORE COLLECTION <ChevronRight size={14} />
-                  </button>
-                </Link>
+            {selfDriveCount > 0 && (
+              <div className="group relative h-[400px] rounded-3xl overflow-hidden cursor-pointer">
+                <Image src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=1000&q=80" alt="Self Drive" fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className="object-cover group-hover:scale-105 transition-transform duration-700" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+                <div className="absolute bottom-0 left-0 p-10 w-full">
+                  <div className="text-brand-neon text-xs font-bold tracking-[0.2em] uppercase mb-2">Drive Udaipur Your Way</div>
+                  <h3 className="text-4xl font-black uppercase tracking-tight mb-6">SELF DRIVE COLLECTION</h3>
+                  <Link href="/self-drive">
+                    <button className="bg-black/50 backdrop-blur-md border border-white/20 hover:border-brand-neon text-white text-xs font-bold px-6 py-3 rounded-lg transition-colors flex items-center gap-2 mt-4">
+                      EXPLORE COLLECTION <ChevronRight size={14} />
+                    </button>
+                  </Link>
+                </div>
               </div>
-            </div>
+            )}
             {/* Card 2 */}
-            <div className="group relative h-[400px] rounded-3xl overflow-hidden cursor-pointer">
-              <Image src="https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=1000&q=80" alt="Chauffeur" fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className="object-cover group-hover:scale-105 transition-transform duration-700" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-              <div className="absolute bottom-0 left-0 p-10 w-full">
-                <div className="text-brand-neon text-xs font-bold tracking-[0.2em] uppercase mb-2">Professional Driver Guided</div>
-                <h3 className="text-4xl font-black uppercase tracking-tight mb-6">CHAUFFEUR COLLECTION</h3>
-                <Link href="/chauffeur">
-                  <button className="bg-black/50 backdrop-blur-md border border-white/20 hover:border-brand-neon text-white text-xs font-bold px-6 py-3 rounded-lg transition-colors flex items-center gap-2">
-                    EXPLORE COLLECTION <ChevronRight size={14} />
-                  </button>
-                </Link>
+            {chauffeurCount > 0 && (
+              <div className="group relative h-[400px] rounded-3xl overflow-hidden cursor-pointer">
+                <Image src="https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=1000&q=80" alt="Chauffeur" fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className="object-cover group-hover:scale-105 transition-transform duration-700" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+                <div className="absolute bottom-0 left-0 p-10 w-full">
+                  <div className="text-brand-neon text-xs font-bold tracking-[0.2em] uppercase mb-2">Professional Driver Guided</div>
+                  <h3 className="text-4xl font-black uppercase tracking-tight mb-6">CHAUFFEUR COLLECTION</h3>
+                  <Link href="/chauffeur">
+                    <button className="bg-black/50 backdrop-blur-md border border-white/20 hover:border-brand-neon text-white text-xs font-bold px-6 py-3 rounded-lg transition-colors flex items-center gap-2">
+                      EXPLORE COLLECTION <ChevronRight size={14} />
+                    </button>
+                  </Link>
+                </div>
               </div>
-            </div>
+            )}
             {/* Card 3 */}
-            <div className="group relative h-[400px] rounded-3xl overflow-hidden cursor-pointer">
-              <Image src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1000&q=80" alt="Villas" fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className="object-cover group-hover:scale-105 transition-transform duration-700" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-              <div className="absolute bottom-0 left-0 p-10 w-full">
-                <div className="text-brand-neon text-xs font-bold tracking-[0.2em] uppercase mb-2">Palace Stay Category</div>
-                <h3 className="text-4xl font-black uppercase tracking-tight mb-6">VILLAS & RESORT ESCAPES</h3>
-                <Link href="/villas">
-                  <button className="bg-black/50 backdrop-blur-md border border-white/20 hover:border-brand-neon text-white text-xs font-bold px-6 py-3 rounded-lg transition-colors flex items-center gap-2">
-                    EXPLORE COLLECTION <ChevronRight size={14} />
-                  </button>
-                </Link>
+            {villas.length > 0 && (
+              <div className="group relative h-[400px] rounded-3xl overflow-hidden cursor-pointer">
+                <Image src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?auto=format&fit=crop&w=1000&q=80" alt="Villas" fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className="object-cover group-hover:scale-105 transition-transform duration-700" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+                <div className="absolute bottom-0 left-0 p-10 w-full">
+                  <div className="text-brand-neon text-xs font-bold tracking-[0.2em] uppercase mb-2">Exclusive Private Stays</div>
+                  <h3 className="text-4xl font-black uppercase tracking-tight mb-6">LUXURY VILLAS</h3>
+                  <Link href="/villas">
+                    <button className="bg-black/50 backdrop-blur-md border border-white/20 hover:border-brand-neon text-white text-xs font-bold px-6 py-3 rounded-lg transition-colors flex items-center gap-2 mt-4">
+                      VIEW ESTATES <ChevronRight size={14} />
+                    </button>
+                  </Link>
+                </div>
               </div>
-            </div>
+            )}
             {/* Card 4 */}
-            <div className="group relative h-[400px] rounded-3xl overflow-hidden cursor-pointer">
-              <Image src="https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=1000&q=80" alt="Monuments" fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className="object-cover group-hover:scale-105 transition-transform duration-700" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-              <div className="absolute bottom-0 left-0 p-10 w-full">
-                <div className="text-brand-neon text-xs font-bold tracking-[0.2em] uppercase mb-2">Heritage Excursions Deck</div>
-                <h3 className="text-4xl font-black uppercase tracking-tight mb-6">PREMIUM TOUR EXPERIENCES</h3>
-                <Link href="/tours">
-                  <button className="bg-black/50 backdrop-blur-md border border-white/20 hover:border-brand-neon text-white text-xs font-bold px-6 py-3 rounded-lg transition-colors flex items-center gap-2">
-                    EXPLORE COLLECTION <ChevronRight size={14} />
-                  </button>
-                </Link>
+            {tours.length > 0 && (
+              <div className="group relative h-[400px] rounded-3xl overflow-hidden cursor-pointer md:col-span-2">
+                <Image src="https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?auto=format&fit=crop&w=1500&q=80" alt="Tours" fill sizes="100vw" className="object-cover group-hover:scale-105 transition-transform duration-700" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+                <div className="absolute bottom-0 left-0 p-10 w-full">
+                  <div className="text-brand-neon text-xs font-bold tracking-[0.2em] uppercase mb-2">Curated Escapes</div>
+                  <h3 className="text-4xl font-black uppercase tracking-tight mb-6">GUIDED RAJASTHAN TOURS</h3>
+                  <Link href="/tours">
+                    <button className="bg-black/50 backdrop-blur-md border border-white/20 hover:border-brand-neon text-white text-xs font-bold px-6 py-3 rounded-lg transition-colors flex items-center gap-2 mt-4">
+                      DISCOVER ITINERARIES <ChevronRight size={14} />
+                    </button>
+                  </Link>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </section>
 
       {/* NEW SECTION: CITY EXPLORER */}
-      <CityExplorer cities={cities} cars={cars} villas={villas} tours={tours} />
+      {cities.length > 0 && (
+        <CityExplorer cities={cities} cars={cars} villas={villas} tours={tours} />
+      )}
 
       {/* SECTION 3: VEHICLE COLLECTION */}
-      <section id="collection" className="py-24 bg-[#0A0A0A]">
-        <div className="container mx-auto px-4">
+      {cars.length > 0 && (
+        <section id="collection" className="py-24 bg-[#0A0A0A]">
+          <div className="container mx-auto px-4">
           <div className="mb-16">
-            <div className="text-brand-neon text-xs font-bold tracking-[0.2em] uppercase mb-4">Real Automotive Collection</div>
+            <div className="text-brand-neon text-xs font-bold tracking-[0.2em] uppercase mb-4">{hp.vehiclesBadge}</div>
             <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter leading-none mb-6">
-              VEHICLE <span className="text-outline-neon">COLLECTION</span>
+              {hp.vehiclesTitle} <span className="text-outline-neon">{hp.vehiclesTitleHighlight}</span>
             </h2>
             <p className="text-white/60 text-sm md:text-base max-w-3xl">
-              Select key luxury automotive segments vetting senior brand names (Maruti Suzuki, Hyundai, Kia, Mahindra, Tata).
+              {hp.vehiclesDescription}
             </p>
           </div>
 
@@ -215,69 +255,24 @@ export default async function Home() {
                 </div>
               );
             })}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      {/* SECTION 4: VILLAS & CAR BUNDLES */}
-      <section className="py-24 bg-black">
-        <div className="container mx-auto px-4">
-          <div className="mb-16">
-            <div className="text-brand-neon text-xs font-bold tracking-[0.2em] uppercase mb-4">Royal Residency Alliance</div>
-            <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter leading-none mb-6">
-              VILLAS <span className="text-outline-neon">& CAR BUNDLES</span>
-            </h2>
-            <p className="text-white/60 text-sm md:text-base max-w-2xl">
-              Five-star private villas paired directly with vetted SUVs in a single unified concierge booking.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {villas.map(villa => (
-              <div key={villa.id} className="bg-[#161616] rounded-3xl overflow-hidden border border-white/5 hover:border-white/10 transition-colors flex flex-col sm:flex-row h-full">
-                <div className="relative w-full sm:w-[40%] h-64 sm:h-auto min-h-[250px]">
-                  <Image src={villa.image} alt={villa.name} fill className="object-cover" unoptimized />
-                </div>
-                <div className="p-8 w-full sm:w-[60%] flex flex-col justify-between">
-                  <div>
-                    <div className="flex justify-between items-start mb-2">
-                      <div className="text-brand-neon text-[10px] font-bold tracking-[0.2em] uppercase">Palace Stay Category</div>
-                      <div className="text-sm font-bold">Starting ₹{villa.startingPrice.toLocaleString()}/N</div>
-                    </div>
-                    <h3 className="text-3xl font-black uppercase tracking-tight mb-3">{villa.name}</h3>
-                    <div className="text-xs text-white/50 uppercase font-bold tracking-wider mb-4">
-                      {villa.occupancy > 4 ? '4+ BHK' : `${villa.occupancy/2} BHK`} • {villa.amenities.includes('Pool') ? 'DEDICATED POOL' : 'PREMIUM EXPERIENCE'}
-                    </div>
-                    <p className="text-sm text-white/70 leading-relaxed line-clamp-3 mb-6">
-                      {villa.description} Includes organic chef dining services, secure walled compound, and personal Chauffeur driver option checks.
-                    </p>
-                  </div>
-                  <div className="flex justify-between items-center mt-auto pt-4 border-t border-white/10">
-                    <span className="text-[10px] text-white/30 uppercase tracking-widest">CHEVRON ALIGN CODES</span>
-                    <Link href="/villas">
-                      <button className="bg-transparent border border-white/20 hover:border-brand-neon hover:text-brand-neon text-white text-xs font-bold px-4 py-2.5 rounded-lg transition-colors uppercase tracking-widest">
-                        SELECT VILLA & WHEELS
-                      </button>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* SECTION 5: PREMIUM TOUR EXPERIENCES */}
-      <section className="py-24 bg-[#0A0A0A] relative border-t border-white/5 overflow-hidden">
-        <div className="container mx-auto px-4">
+      {tours.length > 0 && (
+        <section className="py-24 bg-[#0A0A0A] relative border-t border-white/5 overflow-hidden">
+          <div className="container mx-auto px-4">
           
           <div className="flex flex-col md:flex-row justify-between items-end mb-16">
             <div className="max-w-2xl">
               <h2 className="text-4xl md:text-6xl font-black tracking-tight uppercase mb-4">
-              PREMIUM TOUR <span className="text-outline-neon">EXPERIENCES</span>
+              {hp.toursTitle} <span className="text-outline-neon">{hp.toursTitleHighlight}</span>
             </h2>
             <p className="text-white/60 text-sm md:text-base max-w-3xl">
-              Skip lines directly. Access private expert guided itineraries covering historical temples and Mewar fortresses.
+              {hp.toursDescription}
             </p>
           </div>
         </div>
@@ -323,9 +318,10 @@ export default async function Home() {
               </div>
             );
           })}
-        </div>
-      </div>
-    </section>
+            </div>
+          </div>
+        </section>
+      )}
 
     {/* SECTION 6: FEATURED BLOGS / JOURNAL */}
     {blogs.length > 0 && (
@@ -335,10 +331,10 @@ export default async function Home() {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6">
             <div>
               <div className="text-brand-neon text-xs font-bold tracking-[0.2em] uppercase mb-4">
-                GoRidez Editorial Journal
+                {hp.blogsBadge}
               </div>
               <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tight">
-                FEATURED <span className="text-outline-neon">STORIES</span>
+                {hp.blogsTitle} <span className="text-outline-neon">{hp.blogsTitleHighlight}</span>
               </h2>
             </div>
             <Link href="/blogs" className="text-xs font-bold uppercase tracking-widest text-brand-neon hover:text-white transition-colors flex items-center gap-1.5 border-b border-brand-neon/30 pb-1">

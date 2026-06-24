@@ -79,19 +79,19 @@ export default function SelfDriveList({ initialCars, pickupDate, returnDate }: {
         const unitType = currentPackage?.type === 'KM' ? 'KM' : 'Hour';
 
         return (
-          <div key={car.id} className="bg-[#111111] border border-white/5 rounded-3xl overflow-hidden flex flex-col relative group hover:border-white/10 transition-colors">
+          <div key={car.id} className="bg-gray-100 border border-gray-200 rounded-3xl overflow-hidden flex flex-col relative group hover:border-gray-300 transition-colors">
             
             {/* Top Image Section */}
             <div className="relative h-[240px] w-full bg-gradient-to-b from-[#1A1A1A] to-[#111111] p-4 flex items-center justify-center">
               
               {/* Badges */}
               <div className="absolute top-4 left-4 z-10 flex gap-2">
-                <span className="bg-black text-white px-3 py-1 rounded text-[9px] font-bold uppercase tracking-widest border border-white/10">{car.category || 'Standard'}</span>
-                <span className="bg-brand-neon text-black px-3 py-1 rounded text-[9px] font-bold uppercase tracking-widest shadow-[0_0_15px_rgba(196,240,0,0.3)]">VIP Choice</span>
+                <span className="bg-black text-gray-900 px-3 py-1 rounded text-[9px] font-bold uppercase tracking-widest border border-gray-300">{car.category || 'Standard'}</span>
+                <span className="bg-green-500 text-white px-3 py-1 rounded text-[9px] font-bold uppercase tracking-widest shadow-[0_0_15px_rgba(196,240,0,0.3)]">VIP Choice</span>
               </div>
               
               {/* Top Right Icon */}
-              <div className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-black/50 border border-white/10 flex items-center justify-center text-white/50 cursor-pointer hover:text-white transition-colors">
+              <div className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-black/50 border border-gray-300 flex items-center justify-center text-gray-500 cursor-pointer hover:text-gray-900 transition-colors">
                 <ArrowLeftRight size={14} />
               </div>
 
@@ -108,25 +108,25 @@ export default function SelfDriveList({ initialCars, pickupDate, returnDate }: {
             </div>
 
             {/* Middle Specs Row */}
-            <div className="grid grid-cols-3 border-y border-white/5 bg-[#0A0A0A]">
-              <div className="py-3 text-center text-[10px] text-white/70 uppercase tracking-widest border-r border-white/5">{car.transmission} GEARBOX</div>
-              <div className="py-3 text-center text-[10px] text-white/70 uppercase tracking-widest border-r border-white/5">{car.fuelType}</div>
-              <div className="py-3 text-center text-[10px] text-white/70 uppercase tracking-widest">{car.seatingCapacity} SEATS</div>
+            <div className="grid grid-cols-3 border-y border-gray-200 bg-white">
+              <div className="py-3 text-center text-[10px] text-gray-900/70 uppercase tracking-widest border-r border-gray-200">{car.transmission} GEARBOX</div>
+              <div className="py-3 text-center text-[10px] text-gray-900/70 uppercase tracking-widest border-r border-gray-200">{car.fuelType}</div>
+              <div className="py-3 text-center text-[10px] text-gray-900/70 uppercase tracking-widest">{car.seatingCapacity} SEATS</div>
             </div>
 
             {/* Bottom Content */}
             <div className="p-6 md:p-8 flex-1 flex flex-col">
               
               <Link href={`/cars/${car.id}`}>
-                <h3 className="text-xl font-black mb-1 hover:text-brand-neon transition-colors">{car.make} {car.model}</h3>
+                <h3 className="text-xl font-black mb-1 hover:text-green-700 transition-colors">{car.make} {car.model}</h3>
               </Link>
               <div className="flex items-center gap-2 mb-6">
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
-                <p className="text-[10px] text-white/50">Active in: {car.city?.name || 'All Hubs'}</p>
+                <p className="text-[10px] text-gray-500">Active in: {car.city?.name || 'All Hubs'}</p>
               </div>
 
               {/* Package Selector */}
-              <div className="flex gap-2 mb-8 border-b border-white/5 pb-8 overflow-x-auto custom-scrollbar">
+              <div className="flex gap-2 mb-8 border-b border-gray-200 pb-8 overflow-x-auto custom-scrollbar">
                 {car.packages && car.packages.length > 0 ? (
                   car.packages.map((pkg: any) => (
                     <button 
@@ -134,50 +134,50 @@ export default function SelfDriveList({ initialCars, pickupDate, returnDate }: {
                       onClick={() => handlePackageSelect(car.id, pkg.limitValue)}
                       className={`flex-1 py-2 px-4 text-[10px] font-bold rounded-lg transition-all whitespace-nowrap ${
                         packageLimit === pkg.limitValue 
-                          ? 'bg-brand-neon text-black' 
-                          : 'bg-[#0A0A0A] text-white/60 hover:text-white border border-white/5'
+                          ? 'bg-green-500 text-white' 
+                          : 'bg-white text-gray-600 hover:text-gray-900 border border-gray-200'
                       }`}
                     >
                       {pkg.limitValue ? `${Math.round(pkg.limitValue * durationDays)} ` : ''}{pkg.type === 'KM' ? 'KM' : 'HOURS'}
                     </button>
                   ))
                 ) : (
-                  <div className="text-[10px] text-white/40 italic">No packages configured for this vehicle</div>
+                  <div className="text-[10px] text-gray-400 italic">No packages configured for this vehicle</div>
                 )}
               </div>
 
               {/* Fare Summary */}
               <div className="flex justify-between items-end mb-8">
                 <div>
-                  <div className="text-[10px] text-white/40 uppercase tracking-widest mb-1">
+                  <div className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">
                     {durationDays > 1 ? `Total Fare (${durationDays} Days)` : 'Package Fare'}
                   </div>
                   <div className="flex items-baseline gap-2">
-                    <span className="text-brand-neon text-3xl font-black">₹{finalPrice.toLocaleString()}</span>
-                    {durationDays === 1 && <span className="text-[10px] text-white/40">/ day</span>}
+                    <span className="text-green-700 text-3xl font-black">₹{finalPrice.toLocaleString()}</span>
+                    {durationDays === 1 && <span className="text-[10px] text-gray-400">/ day</span>}
                   </div>
                 </div>
                 <div className="text-right text-[10px] space-y-1">
-                  <div><span className="text-white/40">Extra:</span> <span className="font-bold">₹{extraCharge}/{unitType}</span></div>
-                  <div><span className="text-white/40">Refundable:</span> <span className="font-bold">₹{deposit.toLocaleString()}</span></div>
+                  <div><span className="text-gray-400">Extra:</span> <span className="font-bold">₹{extraCharge}/{unitType}</span></div>
+                  <div><span className="text-gray-400">Refundable:</span> <span className="font-bold">₹{deposit.toLocaleString()}</span></div>
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex gap-4 mt-auto">
+              <div className="flex gap-4 mt-auto items-stretch h-[52px]">
                 <button 
                   onClick={() => setCompareCarId(car.id)}
-                  className="flex-1 py-4 text-[10px] font-bold tracking-widest uppercase rounded-xl border border-white/10 hover:bg-white/5 transition-colors"
+                  className="flex-1 flex items-center justify-center text-center px-2 py-0 text-[10px] font-bold tracking-widest uppercase rounded-xl border border-gray-300 hover:bg-white/5 transition-colors"
                 >
                   COMPARE SPECS
                 </button>
                 <button 
                   onClick={() => !isAlreadyBooked && handleBook(car.id)}
                   disabled={isAlreadyBooked}
-                  className={`flex-1 py-4 text-[10px] font-black tracking-widest uppercase rounded-xl transition-all ${
+                  className={`flex-1 flex items-center justify-center text-center px-2 py-0 text-[10px] font-black tracking-widest uppercase rounded-xl transition-all ${
                     isAlreadyBooked 
-                      ? 'bg-zinc-800 text-white/30 cursor-not-allowed border border-white/5 shadow-none' 
-                      : 'bg-brand-neon text-black shadow-[0_0_20px_rgba(196,240,0,0.15)] hover:shadow-[0_0_30px_rgba(196,240,0,0.3)] transition-all'
+                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-200 shadow-none' 
+                      : 'bg-green-500 text-white shadow-md hover:shadow-lg transition-all'
                   }`}
                 >
                   {isAlreadyBooked ? 'BOOKED / UNAVAILABLE' : 'BOOK NOW'}

@@ -567,6 +567,48 @@ export async function updateAboutPage(formData: FormData) {
   }
 }
 
+// --- HOME PAGE ---
+export async function updateHomePage(formData: FormData) {
+  try {
+    const data = {
+      heroBadge: formData.get('heroBadge') as string,
+      heroTitleLine1: formData.get('heroTitleLine1') as string,
+      heroTitleLine2: formData.get('heroTitleLine2') as string,
+      heroDescription: formData.get('heroDescription') as string,
+      heroBgImage: formData.get('heroBgImage') as string,
+      seamlessBadge: formData.get('seamlessBadge') as string,
+      seamlessTitle: formData.get('seamlessTitle') as string,
+      seamlessTitleHighlight: formData.get('seamlessTitleHighlight') as string,
+      seamlessDescription: formData.get('seamlessDescription') as string,
+      vehiclesBadge: formData.get('vehiclesBadge') as string,
+      vehiclesTitle: formData.get('vehiclesTitle') as string,
+      vehiclesTitleHighlight: formData.get('vehiclesTitleHighlight') as string,
+      vehiclesDescription: formData.get('vehiclesDescription') as string,
+      villasBadge: formData.get('villasBadge') as string,
+      villasTitle: formData.get('villasTitle') as string,
+      villasTitleHighlight: formData.get('villasTitleHighlight') as string,
+      villasDescription: formData.get('villasDescription') as string,
+      toursTitle: formData.get('toursTitle') as string,
+      toursTitleHighlight: formData.get('toursTitleHighlight') as string,
+      toursDescription: formData.get('toursDescription') as string,
+      blogsBadge: formData.get('blogsBadge') as string,
+      blogsTitle: formData.get('blogsTitle') as string,
+      blogsTitleHighlight: formData.get('blogsTitleHighlight') as string,
+    };
+
+    await prisma.homePage.upsert({
+      where: { id: 'singleton' },
+      update: data,
+      create: { id: 'singleton', ...data }
+    });
+    revalidatePath('/');
+    revalidatePath('/admin/home-page');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
 // --- DELIVERY CHARGES ---
 export async function deleteDeliveryCharge(id: string) {
   try {

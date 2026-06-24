@@ -20,6 +20,7 @@ const ADMIN_LINKS = [
   { href: '/admin/blogs', label: 'Blog CMS Controls', icon: FileText },
   { href: '/admin/faqs', label: 'FAQ CMS Controls', icon: HelpCircle },
   { href: '/admin/about', label: 'About Page Editor', icon: Info },
+  { href: '/admin/home-page', label: 'Home Page Editor', icon: Globe },
   { href: '/admin/bookings', label: 'Reservation Ledger', icon: ListOrdered },
   { href: '#', label: 'Search Optimization (SEO)', icon: Search },
   { href: '#', label: 'UTM & Analytics Logs', icon: Activity },
@@ -35,7 +36,7 @@ export default function AdminSidebar({ adminName, adminEmail }: { adminName: str
   };
 
   return (
-    <aside className="w-[300px] shrink-0 bg-[#111111] border-r border-white/5 flex flex-col m-4 rounded-3xl overflow-hidden shadow-2xl relative z-10">
+    <aside className="w-[300px] shrink-0 bg-[#111111] border-r border-white/5 flex flex-col m-4 rounded-3xl overflow-hidden shadow-2xl sticky top-4 h-[calc(100vh-2rem)] z-10">
       <div className="p-8 pb-4 h-full flex flex-col">
         {/* Logo & Brand */}
         <div className="flex items-center gap-3 mb-8 shrink-0">

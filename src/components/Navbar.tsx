@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { useBookingStore } from '@/store/useBookingStore';
 
-export default function Navbar() {
+export default function Navbar({ navVisibility }: { navVisibility?: any }) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const { data: session, status } = useSession();
@@ -18,15 +18,19 @@ export default function Navbar() {
     setMounted(true);
   }, []);
 
-  const links = [
-    { name: 'Cars', href: '/self-drive' },
-    { name: 'Chauffeur', href: '/chauffeur' },
-    { name: 'Taxi', href: '/taxi' },
-    { name: 'Tours', href: '/tours' },
-    { name: 'Villas', href: '/villas' },
+  const baseLinks = [
     { name: 'Cities', href: '/cities' },
     { name: 'Blogs', href: '/blogs' },
     { name: 'About', href: '/about' },
+  ];
+
+  const links = [
+    ...(navVisibility?.showSelfDrive ? [{ name: 'Cars', href: '/self-drive' }] : []),
+    ...(navVisibility?.showChauffeur ? [{ name: 'Chauffeur', href: '/chauffeur' }] : []),
+    ...(navVisibility?.showTaxi ? [{ name: 'Taxi', href: '/taxi' }] : []),
+    ...(navVisibility?.showTours ? [{ name: 'Tours', href: '/tours' }] : []),
+    ...(navVisibility?.showVillas ? [{ name: 'Villas', href: '/villas' }] : []),
+    ...baseLinks
   ];
 
   return (
