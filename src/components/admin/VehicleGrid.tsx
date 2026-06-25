@@ -56,16 +56,16 @@ export default function VehicleGrid({ cars, cities, tiers }: VehicleGridProps) {
     <>
       {/* Search Bar */}
       <div className="relative mb-8">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30" size={16} />
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
         <input
           value={search}
           onChange={e => setSearch(e.target.value)}
           type="text"
           placeholder="Search by name, category, fuel type…"
-          className="w-full bg-[#111111] border border-white/10 rounded-xl py-3 pl-12 pr-6 text-xs text-white focus:outline-none focus:border-brand-neon focus:bg-[#161616] transition-all font-mono"
+          className="w-full bg-gray-100 border border-gray-300 rounded-xl py-3 pl-12 pr-6 text-xs text-gray-900 focus:outline-none focus:border-green-600 focus:bg-white transition-all font-mono"
         />
         {search && (
-          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[9px] text-white/30 font-mono">
+          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[9px] text-gray-400 font-mono">
             {filtered.length} result{filtered.length !== 1 ? 's' : ''}
           </span>
         )}
@@ -86,8 +86,8 @@ export default function VehicleGrid({ cars, cities, tiers }: VehicleGridProps) {
             onClick={() => setServiceTypeFilter(filter.id)}
             className={`whitespace-nowrap px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${
               serviceTypeFilter === filter.id 
-                ? 'bg-brand-neon text-black' 
-                : 'bg-[#111111] border border-white/10 text-white/50 hover:border-white/30 hover:text-white'
+                ? 'bg-green-600 text-white' 
+                : 'bg-gray-100 border border-gray-300 text-gray-500 hover:border-white/30 hover:text-gray-900'
             }`}
           >
             {filter.label}
@@ -104,10 +104,10 @@ export default function VehicleGrid({ cars, cities, tiers }: VehicleGridProps) {
 
           return (
             <div key={car.id}
-              className={`bg-[#111111] border border-white/5 hover:border-white/10 rounded-2xl overflow-hidden group transition-all ${isDeleting ? 'opacity-40 pointer-events-none' : ''}`}>
+              className={`bg-gray-100 border border-gray-200 hover:border-gray-300 rounded-2xl overflow-hidden group transition-all ${isDeleting ? 'opacity-40 pointer-events-none' : ''}`}>
 
               {/* Image */}
-              <div className="relative w-full h-36 bg-black overflow-hidden">
+              <div className="relative w-full h-36 bg-white overflow-hidden">
                 <div className="w-full h-full group-hover:scale-105 transition-transform duration-500">
                   <VehicleImageCarousel 
                     images={(() => {
@@ -122,7 +122,7 @@ export default function VehicleGrid({ cars, cities, tiers }: VehicleGridProps) {
                 </div>
                 {/* Overlay badges */}
                 <div className="absolute top-3 left-3 flex gap-2">
-                  <span className="bg-[#0A0A00] text-brand-neon text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded border border-brand-neon/30">
+                  <span className="bg-[#0A0A00] text-green-700 text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded border border-green-300">
                     {car.category}
                   </span>
                 </div>
@@ -139,7 +139,7 @@ export default function VehicleGrid({ cars, cities, tiers }: VehicleGridProps) {
                 <h3 className="font-black text-sm uppercase tracking-tight mb-1">{car.make} {car.model}</h3>
                 
                 {/* Meta row */}
-                <div className="flex items-center gap-3 mb-4 text-[9px] font-mono text-white/40">
+                <div className="flex items-center gap-3 mb-4 text-[9px] font-mono text-gray-500">
                   <span className="flex items-center gap-1"><Fuel size={10} /> {car.fuelType}</span>
                   <span className="flex items-center gap-1"><Settings2 size={10} /> {car.transmission.replace(' Gearbox', '')}</span>
                   <span className="flex items-center gap-1"><MapPin size={10} /> {cityName}</span>
@@ -148,12 +148,12 @@ export default function VehicleGrid({ cars, cities, tiers }: VehicleGridProps) {
                 {/* Packages pills */}
                 <div className="flex flex-wrap gap-1.5 mb-4">
                   {car.packages.slice(0, 4).map((pkg: any) => (
-                    <span key={pkg.id} className="text-[8px] font-mono text-white/50 bg-white/5 border border-white/5 px-2 py-1 rounded-lg">
+                    <span key={pkg.id} className="text-[8px] font-mono text-gray-500 bg-white/5 border border-gray-200 px-2 py-1 rounded-lg">
                       {pkg.name} — ₹{pkg.basePrice.toLocaleString()}
                     </span>
                   ))}
                   {car.packages.length > 4 && (
-                    <span className="text-[8px] font-mono text-white/30 px-2 py-1">+{car.packages.length - 4} more</span>
+                    <span className="text-[8px] font-mono text-gray-400 px-2 py-1">+{car.packages.length - 4} more</span>
                   )}
                 </div>
 
@@ -161,21 +161,21 @@ export default function VehicleGrid({ cars, cities, tiers }: VehicleGridProps) {
                 {car.features && car.features.length > 0 && (
                   <div className="flex flex-wrap gap-1 mb-4 mt-2">
                     {car.features.slice(0, 3).map((feature: string, idx: number) => (
-                      <span key={idx} className="text-[8px] font-bold text-brand-neon bg-brand-neon/5 border border-brand-neon/20 px-1.5 py-0.5 rounded flex items-center gap-1 uppercase tracking-widest">
+                      <span key={idx} className="text-[8px] font-bold text-green-700 bg-green-600/5 border border-green-600/20 px-1.5 py-0.5 rounded flex items-center gap-1 uppercase tracking-widest">
                         <Tag size={8} /> {feature}
                       </span>
                     ))}
                     {car.features.length > 3 && (
-                      <span className="text-[8px] font-mono text-white/30 px-1.5 py-0.5 border border-white/5 rounded">+{car.features.length - 3}</span>
+                      <span className="text-[8px] font-mono text-gray-400 px-1.5 py-0.5 border border-gray-200 rounded">+{car.features.length - 3}</span>
                     )}
                   </div>
                 )}
 
                 {/* Bottom row */}
-                <div className="flex items-center justify-between pt-3 border-t border-white/5">
+                <div className="flex items-center justify-between pt-3 border-t border-gray-200">
                   <div>
-                    <div className="text-[9px] text-white/30 font-mono mb-0.5">Starting from</div>
-                    <div className="text-brand-neon font-black text-base">
+                    <div className="text-[9px] text-gray-400 font-mono mb-0.5">Starting from</div>
+                    <div className="text-green-700 font-black text-base">
                       ₹{cheapestPkg ? cheapestPkg.basePrice.toLocaleString() : '—'}
                     </div>
                   </div>
@@ -190,7 +190,7 @@ export default function VehicleGrid({ cars, cities, tiers }: VehicleGridProps) {
                     </button>
                     <button
                       onClick={() => setEditingCar(car)}
-                      className="w-9 h-9 rounded-xl bg-white/5 hover:bg-brand-neon/10 hover:text-brand-neon text-white/40 flex items-center justify-center transition-colors border border-white/5 hover:border-brand-neon/30"
+                      className="w-9 h-9 rounded-xl bg-white/5 hover:bg-green-600/10 hover:text-green-700 text-gray-500 flex items-center justify-center transition-colors border border-gray-200 hover:border-green-300"
                     >
                       <Pencil size={14} />
                     </button>
@@ -209,7 +209,7 @@ export default function VehicleGrid({ cars, cities, tiers }: VehicleGridProps) {
       </div>
 
       {filtered.length === 0 && (
-        <div className="text-center py-20 text-white/20 font-mono text-sm border border-dashed border-white/10 rounded-3xl">
+        <div className="text-center py-20 text-gray-400 font-mono text-sm border border-dashed border-gray-300 rounded-3xl">
           {search ? `No vehicles matching "${search}"` : 'No vehicles registered yet. Add one above.'}
         </div>
       )}

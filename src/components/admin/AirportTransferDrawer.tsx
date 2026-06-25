@@ -48,14 +48,14 @@ export default function AirportTransferDrawer({ isOpen, onClose, cities, transfe
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40" onClick={onClose} />
-      <div className="fixed inset-y-0 right-0 w-full md:w-[640px] lg:w-[860px] bg-[#0A0A0A] border-l border-white/10 z-50 shadow-2xl overflow-y-auto animate-in slide-in-from-right duration-300 custom-scrollbar">
+      <div className="fixed inset-0 bg-white/60 backdrop-blur-sm z-40" onClick={onClose} />
+      <div className="fixed inset-y-0 right-0 w-full md:w-[640px] lg:w-[860px] bg-white border-l border-gray-300 z-50 shadow-2xl overflow-y-auto animate-in slide-in-from-right duration-300 custom-scrollbar">
         <div className="p-8 md:p-10">
           <div className="flex justify-between items-center mb-10">
             <h2 className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
-              <span className="text-brand-neon">{transfer ? '✎' : '+'}</span> {transfer ? 'EDIT AIRPORT TRANSFER' : 'ADD AIRPORT TRANSFER'}
+              <span className="text-green-700">{transfer ? '✎' : '+'}</span> {transfer ? 'EDIT AIRPORT TRANSFER' : 'ADD AIRPORT TRANSFER'}
             </h2>
-            <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full text-white/40 hover:text-white transition-colors">
+            <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full text-gray-500 hover:text-gray-900 transition-colors">
               <X size={20} />
             </button>
           </div>
@@ -64,8 +64,8 @@ export default function AirportTransferDrawer({ isOpen, onClose, cities, transfe
             <div className="space-y-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-2">
-                  <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">City Hub *</label>
-                  <select name="cityId" required defaultValue={transfer?.cityId || ''} className="w-full bg-[#111111] border border-white/5 rounded-xl px-4 py-3 text-xs text-white outline-none font-mono focus:border-brand-neon/40 transition-colors appearance-none">
+                  <label className="text-[9px] text-gray-500 font-mono uppercase tracking-widest block">City Hub *</label>
+                  <select name="cityId" required defaultValue={transfer?.cityId || ''} className="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 text-xs text-gray-900 outline-none font-mono focus:border-green-600/40 transition-colors appearance-none">
                     <option value="" disabled>Select City</option>
                     {cities.map((c: any) => (
                       <option key={c.id} value={c.id}>{c.name}</option>
@@ -73,45 +73,45 @@ export default function AirportTransferDrawer({ isOpen, onClose, cities, transfe
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Airport Code *</label>
+                  <label className="text-[9px] text-gray-500 font-mono uppercase tracking-widest block">Airport Code *</label>
                   <input name="airport" type="text" required defaultValue={transfer?.airport || 'UDR'} placeholder="e.g. UDR"
-                    className="w-full bg-[#111111] border border-white/5 rounded-xl px-4 py-3 text-xs text-white outline-none font-mono focus:border-brand-neon/40 transition-colors" />
+                    className="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 text-xs text-gray-900 outline-none font-mono focus:border-green-600/40 transition-colors" />
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-2">
-                  <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Zone *</label>
+                  <label className="text-[9px] text-gray-500 font-mono uppercase tracking-widest block">Zone *</label>
                   <input name="zone" type="text" required defaultValue={transfer?.zone || ''} placeholder="e.g. Zone A"
-                    className="w-full bg-[#111111] border border-white/5 rounded-xl px-4 py-3 text-xs text-white outline-none font-mono focus:border-brand-neon/40 transition-colors" />
+                    className="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 text-xs text-gray-900 outline-none font-mono focus:border-green-600/40 transition-colors" />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Area Locality *</label>
+                  <label className="text-[9px] text-gray-500 font-mono uppercase tracking-widest block">Area Locality *</label>
                   <input name="areaLocality" type="text" required defaultValue={transfer?.areaLocality || ''} placeholder="e.g. City Centre / Fateh Sagar"
-                    className="w-full bg-[#111111] border border-white/5 rounded-xl px-4 py-3 text-xs text-white outline-none font-mono focus:border-brand-neon/40 transition-colors" />
+                    className="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 text-xs text-gray-900 outline-none font-mono focus:border-green-600/40 transition-colors" />
                 </div>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-2">
-                  <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Night Fee (₹) *</label>
+                  <label className="text-[9px] text-gray-500 font-mono uppercase tracking-widest block">Night Fee (₹) *</label>
                   <input name="nightFee" type="number" required defaultValue={transfer?.nightFee ?? 200} placeholder="e.g. 200"
-                    className="w-full bg-[#111111] border border-white/5 rounded-xl px-4 py-3 text-xs text-white outline-none font-mono focus:border-brand-neon/40 transition-colors" />
+                    className="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 text-xs text-gray-900 outline-none font-mono focus:border-green-600/40 transition-colors" />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Wait Charge / Hr (₹) *</label>
+                  <label className="text-[9px] text-gray-500 font-mono uppercase tracking-widest block">Wait Charge / Hr (₹) *</label>
                   <input name="waitCharge" type="number" required defaultValue={transfer?.waitCharge ?? 150} placeholder="e.g. 150"
-                    className="w-full bg-[#111111] border border-white/5 rounded-xl px-4 py-3 text-xs text-white outline-none font-mono focus:border-brand-neon/40 transition-colors" />
+                    className="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 text-xs text-gray-900 outline-none font-mono focus:border-green-600/40 transition-colors" />
                 </div>
               </div>
 
-              <label className="flex items-center gap-3 bg-[#111111] border border-white/5 p-4 rounded-xl cursor-pointer">
+              <label className="flex items-center gap-3 bg-gray-100 border border-gray-200 p-4 rounded-xl cursor-pointer">
                 <input type="checkbox" name="meetGreet" defaultChecked={transfer?.meetGreet ?? true} className="w-4 h-4 accent-brand-neon" />
-                <span className="text-xs text-white font-mono uppercase tracking-widest">Enable Meet & Greet Service</span>
+                <span className="text-xs text-gray-900 font-mono uppercase tracking-widest">Enable Meet & Greet Service</span>
               </label>
 
               {/* Pricing Matrix */}
-              <div className="border-t border-white/5 pt-8">
-                <p className="text-[9px] text-brand-neon font-mono uppercase tracking-widest mb-5">— Pricing Configuration</p>
+              <div className="border-t border-gray-200 pt-8">
+                <p className="text-[9px] text-green-700 font-mono uppercase tracking-widest mb-5">— Pricing Configuration</p>
                 
                 {[
                   { label: 'Sedan', prefix: 'sedan' },
@@ -119,18 +119,18 @@ export default function AirportTransferDrawer({ isOpen, onClose, cities, transfe
                   { label: 'Crysta', prefix: 'crysta' },
                   { label: 'Luxury', prefix: 'luxury' },
                 ].map(cat => (
-                  <div key={cat.prefix} className="mb-4 bg-[#111111] p-5 rounded-2xl border border-white/5">
-                    <h3 className="text-[10px] font-bold text-white mb-4 uppercase tracking-widest">{cat.label}</h3>
+                  <div key={cat.prefix} className="mb-4 bg-gray-100 p-5 rounded-2xl border border-gray-200">
+                    <h3 className="text-[10px] font-bold text-gray-900 mb-4 uppercase tracking-widest">{cat.label}</h3>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Pickup (₹)</label>
+                        <label className="text-[9px] text-gray-500 font-mono uppercase tracking-widest block">Pickup (₹)</label>
                         <input name={`${cat.prefix}Pickup`} type="number" required defaultValue={transfer?.[`${cat.prefix}Pickup`] || ''} placeholder="0"
-                          className="w-full bg-[#050505] border border-white/5 rounded-xl px-3 py-2 text-xs text-white outline-none font-mono focus:border-brand-neon/40 transition-colors" />
+                          className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 outline-none font-mono focus:border-green-600/40 transition-colors" />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Drop (₹)</label>
+                        <label className="text-[9px] text-gray-500 font-mono uppercase tracking-widest block">Drop (₹)</label>
                         <input name={`${cat.prefix}Drop`} type="number" required defaultValue={transfer?.[`${cat.prefix}Drop`] || ''} placeholder="0"
-                          className="w-full bg-[#050505] border border-white/5 rounded-xl px-3 py-2 text-xs text-white outline-none font-mono focus:border-brand-neon/40 transition-colors" />
+                          className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 outline-none font-mono focus:border-green-600/40 transition-colors" />
                       </div>
                     </div>
                   </div>
@@ -140,7 +140,7 @@ export default function AirportTransferDrawer({ isOpen, onClose, cities, transfe
 
             <div className="pt-4">
               <button disabled={loading} type="submit"
-                className="w-full bg-brand-neon hover:bg-brand-hover text-black px-6 py-4 rounded-xl text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-[0_0_15px_rgba(196,240,0,0.15)] disabled:opacity-50">
+                className="w-full bg-green-600 hover:bg-brand-hover text-black px-6 py-4 rounded-xl text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-[0_0_15px_rgba(196,240,0,0.15)] disabled:opacity-50">
                 {loading ? 'SAVING...' : 'SAVE TRANSFER'} <ArrowRight size={14} />
               </button>
             </div>

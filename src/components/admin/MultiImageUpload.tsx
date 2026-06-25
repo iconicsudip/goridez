@@ -66,7 +66,7 @@ export default function MultiImageUpload({ value, onChange }: MultiImageUploadPr
           type="button"
           onClick={() => fileInputRef.current?.click()}
           disabled={isUploading}
-          className="w-full flex items-center justify-center gap-2 bg-[#111111] hover:bg-[#161616] border border-white/5 hover:border-white/20 px-4 py-4 rounded-xl transition-all font-bold text-xs uppercase tracking-widest text-white/80 border-dashed"
+          className="w-full flex items-center justify-center gap-2 bg-gray-100 hover:bg-white border border-gray-200 hover:border-gray-400 px-4 py-4 rounded-xl transition-all font-bold text-xs uppercase tracking-widest text-gray-900/80 border-dashed"
         >
           {isUploading ? (
             <Loader2 size={16} className="animate-spin" />
@@ -80,7 +80,7 @@ export default function MultiImageUpload({ value, onChange }: MultiImageUploadPr
       {value.length > 0 && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {value.map((url, index) => (
-            <div key={index} className="relative w-full aspect-video rounded-xl overflow-hidden bg-[#050505] border border-white/10 group">
+            <div key={index} className="relative w-full aspect-video rounded-xl overflow-hidden bg-gray-50 border border-gray-300 group">
               <img 
                 src={url} 
                 alt={`Upload preview ${index + 1}`} 
@@ -93,7 +93,7 @@ export default function MultiImageUpload({ value, onChange }: MultiImageUploadPr
                 <button
                   type="button"
                   onClick={() => setPreviewImage(url)}
-                  className="bg-black/60 p-2 rounded-full text-white backdrop-blur-sm border border-white/10 hover:bg-black/80 transition-all"
+                  className="bg-white/60 p-2 rounded-full text-gray-900 backdrop-blur-sm border border-gray-300 hover:bg-white/80 transition-all"
                 >
                   <Maximize2 size={16} />
                 </button>
@@ -112,11 +112,11 @@ export default function MultiImageUpload({ value, onChange }: MultiImageUploadPr
 
       {/* Full Size Preview Modal */}
       {previewImage && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-white/90 backdrop-blur-sm p-4 animate-in fade-in duration-200">
           <button 
             type="button"
             onClick={() => setPreviewImage(null)}
-            className="absolute top-6 right-6 p-3 bg-black/50 hover:bg-white/10 rounded-full text-white/50 hover:text-white transition-all backdrop-blur-md"
+            className="absolute top-6 right-6 p-3 bg-white/50 hover:bg-white/10 rounded-full text-gray-500 hover:text-gray-900 transition-all backdrop-blur-md"
           >
             <X size={24} />
           </button>

@@ -80,53 +80,53 @@ export default function FaqManager({ faqs }: { faqs: any[] }) {
 
   return (
     <div className="container mx-auto">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10 border-b border-white/5 pb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10 border-b border-gray-200 pb-6">
         <div>
-          <h1 className="text-4xl font-black uppercase tracking-tight mb-2 text-white flex items-center gap-3">
-            <HelpCircle className="text-brand-neon" size={32} /> FAQ CMS Controls
+          <h1 className="text-4xl font-black uppercase tracking-tight mb-2 text-gray-900 flex items-center gap-3">
+            <HelpCircle className="text-green-700" size={32} /> FAQ CMS Controls
           </h1>
-          <p className="text-white/50 text-[13px]">
+          <p className="text-gray-500 text-[13px]">
             Manage frequently asked questions displayed at the bottom of the home page.
           </p>
         </div>
         <button
           onClick={handleNewFaq}
-          className="bg-brand-neon hover:bg-brand-hover text-black px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(196,240,0,0.15)] flex items-center gap-2 shrink-0"
+          className="bg-green-600 hover:bg-brand-hover text-black px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-md flex items-center gap-2 shrink-0"
         >
           <Plus size={14} strokeWidth={3} /> Create FAQ Entry
         </button>
       </div>
 
-      <div className="bg-[#111111] border border-white/5 rounded-3xl p-8 mb-8">
-        <div className="flex justify-between items-end border-b border-white/10 pb-4 mb-4 font-mono">
-          <div className="text-[10px] text-white/50 font-bold uppercase tracking-widest">Question & Answer Summary</div>
-          <div className="text-[10px] text-white/50 font-bold uppercase tracking-widest">Status & Controls</div>
+      <div className="bg-gray-100 border border-gray-200 rounded-3xl p-8 mb-8">
+        <div className="flex justify-between items-end border-b border-gray-300 pb-4 mb-4 font-mono">
+          <div className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Question & Answer Summary</div>
+          <div className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Status & Controls</div>
         </div>
 
         <div className="space-y-4">
           {faqs.length === 0 ? (
-            <div className="text-[11px] text-white/30 italic text-center py-10 font-mono border border-dashed border-white/10 rounded-2xl">
+            <div className="text-[11px] text-gray-400 italic text-center py-10 font-mono border border-dashed border-gray-300 rounded-2xl">
               No FAQs created yet. Click "Create FAQ Entry" to add one.
             </div>
           ) : (
             faqs.map((faq) => (
-              <div key={faq.id} className="flex flex-col md:flex-row md:items-center justify-between py-5 border-b border-white/5 last:border-0 group gap-4">
+              <div key={faq.id} className="flex flex-col md:flex-row md:items-center justify-between py-5 border-b border-gray-200 last:border-0 group gap-4">
                 <div className="max-w-3xl">
-                  <h3 className="font-bold text-sm text-white mb-2 flex items-start gap-2">
-                    <span className="text-brand-neon font-black">Q:</span> {faq.question}
+                  <h3 className="font-bold text-sm text-gray-900 mb-2 flex items-start gap-2">
+                    <span className="text-green-700 font-black">Q:</span> {faq.question}
                   </h3>
-                  <p className="text-xs text-white/50 leading-relaxed font-mono pl-5">
-                    <span className="text-white/30 font-black mr-1">A:</span> {faq.answer}
+                  <p className="text-xs text-gray-500 leading-relaxed font-mono pl-5">
+                    <span className="text-gray-400 font-black mr-1">A:</span> {faq.answer}
                   </p>
                 </div>
 
-                <div className="flex items-center justify-between md:justify-end gap-6 shrink-0 border-t border-white/5 pt-3 md:border-t-0 md:pt-0">
+                <div className="flex items-center justify-between md:justify-end gap-6 shrink-0 border-t border-gray-200 pt-3 md:border-t-0 md:pt-0">
                   <div className="flex items-center gap-3">
                     <button
                       onClick={() => toggleActive(faq.id, faq.isActive)}
                       className={`text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-lg border transition-all flex items-center gap-1.5 ${faq.isActive
                           ? 'border-[#00FF66]/30 text-[#00FF66] bg-[#00FF66]/5 hover:bg-[#00FF66]/10'
-                          : 'border-white/10 text-white/40 bg-white/[0.02] hover:bg-white/[0.05]'
+                          : 'border-gray-300 text-gray-500 bg-white/[0.02] hover:bg-white/[0.05]'
                         }`}
                     >
                       <Power size={10} />
@@ -138,7 +138,7 @@ export default function FaqManager({ faqs }: { faqs: any[] }) {
                     <button
                       onClick={() => handleEdit(faq)}
                       title="Edit"
-                      className="p-2 bg-white/5 hover:bg-brand-neon/10 hover:text-brand-neon text-white/40 rounded-xl transition-all border border-white/5"
+                      className="p-2 bg-white/5 hover:bg-green-600/10 hover:text-green-700 text-gray-500 rounded-xl transition-all border border-gray-200"
                     >
                       <Edit2 size={14} />
                     </button>
@@ -162,24 +162,24 @@ export default function FaqManager({ faqs }: { faqs: any[] }) {
         <div className="fixed inset-0 z-50 flex justify-end">
           {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity"
+            className="fixed inset-0 bg-white/70 backdrop-blur-sm transition-opacity"
             onClick={() => setIsDrawerOpen(false)}
           />
 
           {/* Drawer Container */}
-          <div className="relative w-full max-w-xl bg-[#111111] border-l border-white/10 h-full p-8 overflow-y-auto shadow-2xl flex flex-col justify-between z-10 animate-slide-in">
+          <div className="relative w-full max-w-xl bg-gray-100 border-l border-gray-300 h-full p-8 overflow-y-auto shadow-2xl flex flex-col justify-between z-10 animate-slide-in">
             <div className="flex flex-col h-full justify-between">
               <div>
-                <div className="flex justify-between items-center mb-8 border-b border-white/5 pb-4">
+                <div className="flex justify-between items-center mb-8 border-b border-gray-200 pb-4">
                   <div>
-                    <span className="text-[9px] text-brand-neon font-black tracking-widest uppercase mb-1 block">FAQ CMS Controls</span>
-                    <h2 className="text-xl font-black uppercase tracking-tight text-white">
+                    <span className="text-[9px] text-green-700 font-black tracking-widest uppercase mb-1 block">FAQ CMS Controls</span>
+                    <h2 className="text-xl font-black uppercase tracking-tight text-gray-900">
                       {isEditing ? 'Edit FAQ Entry' : 'Create FAQ Entry'}
                     </h2>
                   </div>
                   <button
                     onClick={() => setIsDrawerOpen(false)}
-                    className="w-8 h-8 rounded-full border border-white/10 bg-white/5 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-colors"
+                    className="w-8 h-8 rounded-full border border-gray-300 bg-white/5 flex items-center justify-center text-gray-500 hover:text-gray-900 hover:bg-white/10 transition-colors"
                   >
                     <X size={16} />
                   </button>
@@ -187,7 +187,7 @@ export default function FaqManager({ faqs }: { faqs: any[] }) {
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div>
-                    <label className="block text-[10px] text-white/40 uppercase tracking-widest mb-2 font-bold font-mono">
+                    <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">
                       Question Text
                     </label>
                     <input
@@ -196,12 +196,12 @@ export default function FaqManager({ faqs }: { faqs: any[] }) {
                       value={formData.question}
                       onChange={e => setFormData({ ...formData, question: e.target.value })}
                       placeholder="e.g. Do I need a security deposit for self-drive bookings?"
-                      className="w-full bg-[#050505] border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand-neon outline-none text-white transition-colors placeholder:text-white/20"
+                      className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors placeholder:text-gray-400"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[10px] text-white/40 uppercase tracking-widest mb-2 font-bold font-mono">
+                    <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">
                       Answer Text
                     </label>
                     <textarea
@@ -210,36 +210,36 @@ export default function FaqManager({ faqs }: { faqs: any[] }) {
                       value={formData.answer}
                       onChange={e => setFormData({ ...formData, answer: e.target.value })}
                       placeholder="Provide a clear, detailed answer..."
-                      className="w-full bg-[#050505] border border-white/10 rounded-xl p-4 text-sm focus:border-brand-neon outline-none text-white transition-colors placeholder:text-white/20 resize-none font-mono"
+                      className="w-full bg-gray-50 border border-gray-300 rounded-xl p-4 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors placeholder:text-gray-400 resize-none font-mono"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[10px] text-white/40 uppercase tracking-widest mb-2 font-bold font-mono">
+                    <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">
                       Status
                     </label>
                     <select
                       value={formData.isActive ? 'active' : 'inactive'}
                       onChange={e => setFormData({ ...formData, isActive: e.target.value === 'active' })}
-                      className="w-full bg-[#050505] border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand-neon outline-none text-white transition-colors cursor-pointer"
+                      className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors cursor-pointer"
                     >
                       <option value="active">Active (Show on Home Page)</option>
                       <option value="inactive">Inactive (Hide)</option>
                     </select>
                   </div>
 
-                  <div className="flex gap-4 pt-4 border-t border-white/5 mt-8">
+                  <div className="flex gap-4 pt-4 border-t border-gray-200 mt-8">
                     <button
                       type="submit"
                       disabled={loading}
-                      className="flex-1 bg-brand-neon hover:bg-brand-hover text-black py-4 rounded-xl text-[11px] font-black tracking-widest uppercase transition-all shadow-[0_0_20px_rgba(196,240,0,0.15)] disabled:opacity-50"
+                      className="flex-1 bg-green-600 hover:bg-brand-hover text-black py-4 rounded-xl text-[11px] font-black tracking-widest uppercase transition-all shadow-md disabled:opacity-50"
                     >
                       {loading ? 'Saving...' : isEditing ? 'Update FAQ Entry →' : 'Publish FAQ Entry →'}
                     </button>
                     <button
                       type="button"
                       onClick={() => setIsDrawerOpen(false)}
-                      className="px-6 py-4 rounded-xl text-[11px] font-black tracking-widest uppercase border border-white/10 text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+                      className="px-6 py-4 rounded-xl text-[11px] font-black tracking-widest uppercase border border-gray-300 text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
                     >
                       Cancel
                     </button>

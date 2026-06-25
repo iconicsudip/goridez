@@ -3,47 +3,125 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useBookingStore } from '@/store/useBookingStore';
-import { ArrowDownUp, MapPin, Calendar, Users, Send, Route } from 'lucide-react';
+import { ArrowDownUp, MapPin, Calendar, Briefcase, Loader2 } from 'lucide-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { Info, Briefcase, Settings2, Fuel } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import LocationAutocomplete from '@/components/LocationAutocomplete';
+import { calculateRoute, OSMLocation } from '@/lib/osm';
 
-export default function TaxiClient({ initialCars, initialCities, initialRoutes = [], initialAirportRoutes = [] }: { initialCars: any[], initialCities: any[], initialRoutes?: any[], initialAirportRoutes?: any[] }) {
-  const [activeTab, setActiveTab] = useState<string | null>(null); // State for round trip breakdown tabs
+const UDAIPUR_AIRPORT: OSMLocation = {
+  place_id: -1,
+  display_name: 'Maharana Pratap Airport, Udaipur, Rajasthan, India',
+  lat: '24.6178',
+  lon: '73.8961',
+  type: 'airport'
+};
+
+const UDAIPUR_CITY: OSMLocation = {
+  place_id: -2,
+  display_name: 'Udaipur, Rajasthan, India',
+  lat: '24.5854',
+  lon: '73.7125',
+  type: 'city'
+};
+
+export default function TaxiClient({ initialCars, initialCities }: { initialCars: any[], initialCities: any[] }) {
+  const [activeTab, setActiveTab] = useState<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const { session, updateSession, addToCart } = useBookingStore();
   
   const [bookingMode, setBookingMode] = useState<'ONE_WAY'|'ROUND_TRIP'|'AIRPORT_TRANSFER'>('ONE_WAY');
-  const [selectedRouteId, setSelectedRouteId] = useState(initialRoutes[0]?.id || '');
 
-  // Airport Transfer State
-  const [selectedAtRouteId, setSelectedAtRouteId] = useState(initialAirportRoutes[0]?.id || '');
-  const [atDirection, setAtDirection] = useState<'PICKUP'|'DROP'>('PICKUP');
-
-  const [pickup, setPickup] = useState<string>(initialCities[0]?.name || 'Udaipur');
-  const [dropoff, setDropoff] = useState<string>(initialCities.length > 1 ? initialCities[1]?.name : 'Ahmedabad');
-  const calculatedOneWayDistance = useMemo(() => {
-    if (!pickup || !dropoff) return 260;
-    const route = initialRoutes.find((r: any) => 
-      r.routeTitle.toLowerCase().includes(pickup.toLowerCase()) && 
-      r.routeTitle.toLowerCase().includes(dropoff.toLowerCase())
-    );
-    return route ? route.distanceKm : 260;
-  }, [pickup, dropoff, initialRoutes]);
-
-  const distance = calculatedOneWayDistance;
-  const duration = `${(distance / 55).toFixed(1)} Hrs`;
+  // Locations
+  const [pickupLocation, setPickupLocation] = useState<{name: string, data?: OSMLocation}>({ name: 'Udaipur, Rajasthan', data: UDAIPUR_CITY });
+  const [dropoffLocation, setDropoffLocation] = useState<{name: string, data?: OSMLocation}>({ name: '' });
+  const [destLocations, setDestLocations] = useState<{name: string, data?: OSMLocation}[]>([{ name: '' }]);
   
+  const [atDirection, setAtDirection] = useState<'PICKUP'|'DROP'>('PICKUP');
+  const [atLocation, setAtLocation] = useState<{name: string, data?: OSMLocation}>({ name: '' });
+
+  // Distance calculations
+  const [calculatedDistance, setCalculatedDistance] = useState<number>(0);
+  const [calculatedDuration, setCalculatedDuration] = useState<number>(0); // in seconds
+  const [isCalculating, setIsCalculating] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    const fetchRoute = async () => {
+      if (bookingMode === 'ONE_WAY') {
+        if (pickupLocation.data && dropoffLocation.data) {
+          setIsCalculating(true);
+          const route = await calculateRoute(pickupLocation.data.lon, pickupLocation.data.lat, dropoffLocation.data.lon, dropoffLocation.data.lat);
+          if (active && route) {
+            setCalculatedDistance(Math.ceil(route.distance / 1000));
+            setCalculatedDuration(route.duration);
+          }
+          if (active) setIsCalculating(false);
+        } else {
+          setCalculatedDistance(0);
+        }
+      } else if (bookingMode === 'ROUND_TRIP') {
+        // Source is always Udaipur
+        setIsCalculating(true);
+        let totalKm = 0;
+        let totalDur = 0;
+        let currentLoc = UDAIPUR_CITY;
+        let validDests = destLocations.filter(d => d.data);
+        
+        for (const dest of validDests) {
+          const route = await calculateRoute(currentLoc.lon, currentLoc.lat, dest.data!.lon, dest.data!.lat);
+          if (route) {
+            totalKm += Math.ceil(route.distance / 1000);
+            totalDur += route.duration;
+          }
+          currentLoc = dest.data!;
+        }
+        
+        // Return trip to Udaipur
+        if (validDests.length > 0) {
+          const returnRoute = await calculateRoute(currentLoc.lon, currentLoc.lat, UDAIPUR_CITY.lon, UDAIPUR_CITY.lat);
+          if (returnRoute) {
+            totalKm += Math.ceil(returnRoute.distance / 1000);
+            totalDur += returnRoute.duration;
+          }
+        }
+        
+        if (active) {
+          setCalculatedDistance(Math.ceil(totalKm / 2)); // Return OW distance for base calculations if needed
+          setCalculatedDuration(totalDur);
+          setIsCalculating(false);
+        }
+      } else if (bookingMode === 'AIRPORT_TRANSFER') {
+        if (atLocation.data) {
+          setIsCalculating(true);
+          const source = atDirection === 'PICKUP' ? UDAIPUR_AIRPORT : atLocation.data;
+          const dest = atDirection === 'PICKUP' ? atLocation.data : UDAIPUR_AIRPORT;
+          const route = await calculateRoute(source.lon, source.lat, dest.lon, dest.lat);
+          if (active && route) {
+            setCalculatedDistance(Math.ceil(route.distance / 1000));
+            setCalculatedDuration(route.duration);
+          }
+          if (active) setIsCalculating(false);
+        } else {
+          setCalculatedDistance(0);
+        }
+      }
+    };
+    
+    fetchRoute();
+    return () => { active = false; };
+  }, [pickupLocation.data, dropoffLocation.data, destLocations, bookingMode, atLocation.data, atDirection]);
+
+  // Dates
   const [pickupDate, setPickupDate] = useState<Date>(new Date(Date.now() + 86400000));
   const [returnDate, setReturnDate] = useState<Date | null>(null);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
-
     const qPickupDate = searchParams.get('pickupDate');
     const qReturnDate = searchParams.get('returnDate');
     const qPickupCity = searchParams.get('pickupCity');
@@ -56,15 +134,12 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes =
     if (qReturnDate) setReturnDate(new Date(qReturnDate));
     else if (session?.returnDate) setReturnDate(new Date(session.returnDate));
 
-    if (qPickupCity) setPickup(qPickupCity);
-    else if (session?.pickupCity) setPickup(session.pickupCity);
-
-    if (qDropCity) setDropoff(qDropCity);
-    else if (session?.dropCity) setDropoff(session.dropCity);
-
+    if (qPickupCity && pickupLocation.name !== qPickupCity) setPickupLocation({ name: qPickupCity });
+    if (qDropCity && dropoffLocation.name !== qDropCity) setDropoffLocation({ name: qDropCity });
     if (qMode) setBookingMode(qMode);
     else if (session?.bookingMode) setBookingMode(session.bookingMode);
-  }, [session?.pickupDate, session?.returnDate, session?.pickupCity, session?.dropCity, session?.bookingMode]); // Remove searchParams to avoid infinite loop on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Sync state changes to URL
   useEffect(() => {
@@ -74,14 +149,6 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes =
 
     if (bookingMode && params.get('mode') !== bookingMode) {
       params.set('mode', bookingMode);
-      changed = true;
-    }
-    if (pickup && params.get('pickupCity') !== pickup) {
-      params.set('pickupCity', pickup);
-      changed = true;
-    }
-    if (dropoff && params.get('dropCity') !== dropoff) {
-      params.set('dropCity', dropoff);
       changed = true;
     }
     if (pickupDate) {
@@ -102,7 +169,7 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes =
     if (changed) {
       router.replace(`?${params.toString()}`, { scroll: false });
     }
-  }, [bookingMode, pickup, dropoff, pickupDate, returnDate, isMounted, router, searchParams]);
+  }, [bookingMode, pickupDate, returnDate, isMounted, router, searchParams]);
 
   const handleDateRangeChange = (update: [Date | null, Date | null]) => {
     const [start, end] = update;
@@ -154,7 +221,7 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes =
     }
 
     addToCart({
-      serviceType: bookingMode === 'ROUND_TRIP' ? 'tours' : bookingMode === 'AIRPORT_TRANSFER' ? 'oneWayTaxi' : 'oneWayTaxi',
+      serviceType: bookingMode === 'ROUND_TRIP' ? 'tours' : 'oneWayTaxi',
       referenceId: car.id,
       title: `${car.make} ${car.model} (${bookingMode === 'ROUND_TRIP' ? 'Round Trip' : bookingMode === 'AIRPORT_TRANSFER' ? 'Airport Transfer' : 'One Way'})`,
       image: car.image || '',
@@ -164,49 +231,27 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes =
     });
   };
 
-  const selectedRoute = initialRoutes.find(r => r.id === selectedRouteId) || initialRoutes[0];
-
-  const destArray = dropoff ? dropoff.split(',') : [''];
-  const updateDestination = (index: number, val: string) => {
-    const newDests = [...destArray];
-    newDests[index] = val;
-    setDropoff(newDests.join(','));
+  const updateDestination = (index: number, val: string, data?: OSMLocation) => {
+    const newDests = [...destLocations];
+    newDests[index] = { name: val, data };
+    setDestLocations(newDests);
   };
   const addDestination = () => {
-    if (destArray.length < 3) {
-      setDropoff([...destArray, ''].join(','));
+    if (destLocations.length < 3) {
+      setDestLocations([...destLocations, { name: '' }]);
     }
   };
   const removeDestination = (index: number) => {
-    const newDests = [...destArray];
+    const newDests = [...destLocations];
     newDests.splice(index, 1);
-    setDropoff(newDests.join(','));
+    setDestLocations(newDests);
   };
 
-  const calculatedOwDistance = useMemo(() => {
-    if (bookingMode !== 'ROUND_TRIP') return 0;
-    let totalKm = 0;
-    let currentCity = pickup;
-    
-    for (const dest of destArray) {
-      if (!dest) continue;
-      // Find a matching route where the title contains both the start and end city of this segment
-      const route = initialRoutes.find((r: any) => 
-        r.routeTitle.toLowerCase().includes(currentCity.toLowerCase()) && 
-        r.routeTitle.toLowerCase().includes(dest.toLowerCase())
-      );
-      
-      if (route) {
-        totalKm += route.distanceKm;
-      }
-      currentCity = dest;
-    }
-    return totalKm;
-  }, [pickup, destArray, initialRoutes, bookingMode]);
+  const displayDuration = `${Math.floor(calculatedDuration / 3600)}h ${Math.floor((calculatedDuration % 3600) / 60)}m`;
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 font-body pt-24 pb-20">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 mt-8">
         
         {/* Header Section */}
         <div className="bg-white border border-gray-200 rounded-3xl p-10 mb-10 bg-gradient-to-br from-white to-green-50">
@@ -217,12 +262,12 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes =
             INTERCITY <span className="text-outline-neon">TAXI & ROUTES</span>
           </h1>
           <p className="text-gray-600 max-w-2xl text-sm leading-relaxed">
-            Premium door-to-door direct pick-ups. Choose One Way express transfers or full Round Trip scenic routes around Rajasthan.
+            Premium door-to-door direct pick-ups. Powered by OpenStreetMap for accurate routing.
           </p>
         </div>
 
         {/* Booking Mode Tabs */}
-        <div className="flex gap-4 mb-8 bg-gray-100 p-2 rounded-2xl w-fit">
+        <div className="flex overflow-x-auto lg:flex-wrap gap-4 mb-8 bg-gray-100 p-2 rounded-2xl w-full lg:w-fit">
           <button 
             onClick={() => setBookingMode('ONE_WAY')}
             className={`px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
@@ -253,7 +298,7 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes =
         <div className="flex flex-col lg:flex-row items-start gap-8">
           
           {/* Sidebar */}
-          <aside className="w-full lg:w-[380px] shrink-0 space-y-6 lg:sticky lg:top-24 h-fit z-10">
+          <aside className="w-full lg:w-[380px] shrink-0 space-y-6 lg:sticky lg:top-32 h-fit z-10">
             
             {/* Route Configurator */}
             <div className="bg-gray-100 border border-gray-200 rounded-3xl p-8">
@@ -265,24 +310,22 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes =
                   <>
                     <div>
                       <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest mb-2">Pick-Up Location</label>
-                      <div className="relative">
-                        <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-green-700" size={16} />
-                        <select value={pickup} onChange={(e) => setPickup(e.target.value)} className="w-full bg-white border border-gray-200 rounded-xl pl-12 pr-4 py-4 text-sm outline-none appearance-none font-medium cursor-pointer">
-                          {initialCities.map((c: any) => <option key={c.id} value={c.name}>{c.name}</option>)}
-                        </select>
-                      </div>
+                      <LocationAutocomplete
+                        value={pickupLocation.name}
+                        onChange={(val, loc) => setPickupLocation({ name: val, data: loc })}
+                        placeholder="Search starting city/area..."
+                      />
                     </div>
                     <div className="absolute top-[28%] left-12 w-8 h-8 bg-gray-50 border border-green-300 text-green-700 rounded-full flex items-center justify-center z-10 cursor-pointer">
                       <ArrowDownUp size={14} />
                     </div>
                     <div>
                       <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest mb-2">Drop-Off Destination</label>
-                      <div className="relative">
-                        <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-green-700" size={16} />
-                        <select value={dropoff} onChange={(e) => setDropoff(e.target.value)} className="w-full bg-white border border-gray-200 rounded-xl pl-12 pr-4 py-4 text-sm outline-none appearance-none font-medium cursor-pointer">
-                          {initialCities.map((c: any) => <option key={c.id} value={c.name}>{c.name}</option>)}
-                        </select>
-                      </div>
+                      <LocationAutocomplete
+                        value={dropoffLocation.name}
+                        onChange={(val, loc) => setDropoffLocation({ name: val, data: loc })}
+                        placeholder="Search destination city/area..."
+                      />
                     </div>
                   </>
                 ) : bookingMode === 'ROUND_TRIP' ? (
@@ -291,16 +334,19 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes =
                       <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest mb-2">Pick-Up Location</label>
                       <div className="relative">
                         <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-green-700" size={16} />
-                        <select value={pickup} onChange={(e) => setPickup(e.target.value)} className="w-full bg-white border border-gray-200 rounded-xl pl-12 pr-4 py-4 text-sm outline-none appearance-none font-medium cursor-pointer">
-                          {initialCities.map((c: any) => <option key={c.id} value={c.name}>{c.name}</option>)}
-                        </select>
+                        <input 
+                          type="text" 
+                          readOnly 
+                          value="Udaipur, Rajasthan" 
+                          className="w-full bg-gray-200 border border-gray-200 rounded-xl pl-12 pr-4 py-4 text-sm outline-none font-medium text-gray-600 cursor-not-allowed" 
+                        />
                       </div>
                     </div>
                     
                     <div className="mt-4">
                       <div className="flex items-center justify-between mb-2">
                         <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest">Destinations</label>
-                        {destArray.length < 3 && (
+                        {destLocations.length < 3 && (
                           <button type="button" onClick={addDestination} className="text-green-700 hover:text-gray-900 transition-colors flex items-center gap-1 bg-green-500/10 px-2 py-0.5 rounded text-[9px]">
                             <span className="text-[14px] leading-none">+</span> ADD
                           </button>
@@ -308,20 +354,16 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes =
                       </div>
                       
                       <div className="space-y-3">
-                        {destArray.map((dest: string, idx: number) => (
+                        {destLocations.map((dest, idx) => (
                           <div key={idx} className="relative flex items-center gap-2">
                             <div className="relative flex-1">
-                              <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-green-700" size={16} />
-                              <select 
-                                value={dest} 
-                                onChange={(e) => updateDestination(idx, e.target.value)} 
-                                className="w-full bg-white border border-gray-200 rounded-xl pl-12 pr-4 py-4 text-sm outline-none appearance-none font-medium cursor-pointer"
-                              >
-                                <option value="" disabled className="text-gray-400">Select Destination</option>
-                                {initialCities.map((c: any) => <option key={c.id} value={c.name}>{c.name}</option>)}
-                              </select>
+                              <LocationAutocomplete
+                                value={dest.name}
+                                onChange={(val, loc) => updateDestination(idx, val, loc)}
+                                placeholder={`Destination ${idx + 1}...`}
+                              />
                             </div>
-                            {destArray.length > 1 && (
+                            {destLocations.length > 1 && (
                               <button type="button" onClick={() => removeDestination(idx)} className="text-red-400 hover:text-red-300 w-8 flex justify-center">
                                 ✕
                               </button>
@@ -329,14 +371,6 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes =
                           </div>
                         ))}
                       </div>
-                      
-                      {calculatedOwDistance > 0 ? (
-                        <p className="text-[10px] text-green-700 mt-4 font-mono font-bold tracking-widest uppercase">
-                          Est. Distance (OW): {calculatedOwDistance} KM
-                        </p>
-                      ) : (
-                        <p className="text-[10px] text-gray-400 mt-4 font-mono">Distance calculated based on minimum package.</p>
-                      )}
                     </div>
                   </>
                 ) : (
@@ -345,25 +379,24 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes =
                     <div className="flex gap-2 mb-4">
                       <button 
                         onClick={() => setAtDirection('PICKUP')}
-                        className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase transition-all ${atDirection === 'PICKUP' ? 'bg-green-500 text-white' : 'bg-white/5 text-gray-500 hover:bg-white/10'}`}
+                        className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase transition-all ${atDirection === 'PICKUP' ? 'bg-green-500 text-white' : 'bg-white border border-gray-200 text-gray-500 hover:bg-gray-50'}`}
                       >
                         Pickup from Airport
                       </button>
                       <button 
                         onClick={() => setAtDirection('DROP')}
-                        className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase transition-all ${atDirection === 'DROP' ? 'bg-green-500 text-white' : 'bg-white/5 text-gray-500 hover:bg-white/10'}`}
+                        className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase transition-all ${atDirection === 'DROP' ? 'bg-green-500 text-white' : 'bg-white border border-gray-200 text-gray-500 hover:bg-gray-50'}`}
                       >
                         Drop to Airport
                       </button>
                     </div>
 
-                    <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest mb-2">City Zone / Locality</label>
-                    <div className="relative">
-                      <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-green-700" size={16} />
-                      <select value={selectedAtRouteId} onChange={(e) => setSelectedAtRouteId(e.target.value)} className="w-full bg-white border border-gray-200 rounded-xl pl-12 pr-4 py-4 text-sm outline-none appearance-none font-medium cursor-pointer">
-                        {initialAirportRoutes.map((r: any) => <option key={r.id} value={r.id}>{r.zone} - {r.areaLocality}</option>)}
-                      </select>
-                    </div>
+                    <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest mb-2">Search Locality/Hotel</label>
+                    <LocationAutocomplete
+                      value={atLocation.name}
+                      onChange={(val, loc) => setAtLocation({ name: val, data: loc })}
+                      placeholder="Search destination in Udaipur..."
+                    />
                   </div>
                 )}
 
@@ -412,7 +445,7 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes =
                         type="time" 
                         value={`${String(pickupDate.getHours()).padStart(2, '0')}:${String(pickupDate.getMinutes()).padStart(2, '0')}`}
                         onChange={(e) => handlePickupTimeChange(e.target.value)}
-                        className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 outline-none focus:border-brand-neon font-mono"
+                        className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 outline-none focus:border-green-600 font-mono"
                       />
                     </div>
                     {returnDate && bookingMode !== 'AIRPORT_TRANSFER' && (
@@ -422,7 +455,7 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes =
                           type="time" 
                           value={`${String(returnDate.getHours()).padStart(2, '0')}:${String(returnDate.getMinutes()).padStart(2, '0')}`}
                           onChange={(e) => handleReturnTimeChange(e.target.value)}
-                          className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 outline-none focus:border-brand-neon font-mono"
+                          className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 outline-none focus:border-green-600 font-mono"
                         />
                       </div>
                     )}
@@ -430,15 +463,15 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes =
                 </div>
               </div>
 
-              {bookingMode === 'ONE_WAY' && (
+              {calculatedDistance > 0 && (
                 <div className="bg-gray-50 border border-[#2A2A0A] rounded-xl p-5 mt-6 space-y-3 font-mono text-[10px]">
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-center">
                     <span className="text-gray-500 font-bold tracking-widest">EST. ROUTE DISTANCE</span>
-                    <span className="text-green-700 font-bold">{distance} KM</span>
+                    <span className="text-green-700 font-bold text-sm">{isCalculating ? <Loader2 size={12} className="animate-spin" /> : `${bookingMode === 'ROUND_TRIP' ? calculatedDistance * 2 : calculatedDistance} KM`}</span>
                   </div>
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-center">
                     <span className="text-gray-500 font-bold tracking-widest">EST. TRAVEL DURATION</span>
-                    <span className="text-gray-900 font-bold">{duration}</span>
+                    <span className="text-gray-900 font-bold text-sm">{isCalculating ? <Loader2 size={12} className="animate-spin" /> : displayDuration}</span>
                   </div>
                 </div>
               )}
@@ -463,15 +496,14 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes =
 
                 if (bookingMode === 'ONE_WAY') {
                   const ratePerKm = car.packages?.[0]?.extraChargePerUnit || 15;
-                  const baseFlatFare = Math.round(2000 + (distance * ratePerKm * 1.2));
+                  const baseFlatFare = Math.round(2000 + (calculatedDistance * ratePerKm * 1.2));
                   const isRoundTrip = returnDate !== null;
                   const extraDayAllowance = durationDays > 1 ? (durationDays - 1) * 1500 : 0;
                   flatFare = isRoundTrip ? Math.round(baseFlatFare * 1.8) + extraDayAllowance : baseFlatFare;
-                  extraText = `${pickup} ➔ ${dropoff} (${distance} KM)`;
+                  extraText = `${pickupLocation.name} ➔ ${dropoffLocation.name} (${calculatedDistance} KM)`;
                 } else if (bookingMode === 'ROUND_TRIP') {
-                  // ROUND TRIP
-                  const runningDistance = calculatedOwDistance > 0 ? calculatedOwDistance * 2 : 0; // Dynamic custom route, fallback to package minimums if no match
                   const minKmPerDay = 250;
+                  const runningDistance = calculatedDistance * 2;
                   const billableKm = Math.max(runningDistance, minKmPerDay * durationDays);
                   const ratePerKm = car.packages?.[0]?.extraChargePerUnit || 13;
                   const driverAllowancePerDay = car.driverAllowanceOut || 350;
@@ -493,21 +525,18 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes =
                     days: durationDays
                   };
                   
-                  const destStr = dropoff ? dropoff.split(',').join(' -> ') : '';
-                  extraText = `Round Trip: ${pickup} -> ${destStr} (${durationDays} Days)`;
+                  const destStr = destLocations.map(d => d.name).filter(Boolean).join(' -> ');
+                  extraText = `Round Trip: Udaipur -> ${destStr} (${durationDays} Days)`;
                 } else if (bookingMode === 'AIRPORT_TRANSFER') {
-                  const selectedAt = initialAirportRoutes.find(r => r.id === selectedAtRouteId) || initialAirportRoutes[0];
-                  if (!selectedAt) return null;
+                  // AIRPORT TRANSFER logic: 
+                  // Formula: Distance (km) * Per KM Charge
+                  // Minimum Fare: Base rate (20 km minimum)
+                  const ratePerKm = car.packages?.[0]?.extraChargePerUnit || 15;
+                  const baseFare = 20 * ratePerKm; // Minimum 20 KM
+                  const billableKm = Math.max(20, calculatedDistance);
+                  flatFare = Math.round(billableKm * ratePerKm);
                   
-                  let prefix = 'sedan';
-                  if (car.category.toUpperCase() === 'SUV') prefix = 'suv';
-                  else if (car.model.toLowerCase().includes('crysta')) prefix = 'crysta';
-                  else if (car.category.toUpperCase() === 'LUXURY') prefix = 'luxury';
-
-                  const priceKey = `${prefix}${atDirection === 'PICKUP' ? 'Pickup' : 'Drop'}`;
-                  flatFare = selectedAt[priceKey] || 1000;
-                  
-                  extraText = `Airport Transfer (${atDirection === 'PICKUP' ? 'Pickup from Airport' : 'Drop to Airport'}): ${selectedAt.airport} ↔ ${selectedAt.areaLocality} | Wait Fee: ₹${selectedAt.waitCharge}/30min | Night Fee: ₹${selectedAt.nightFee}`;
+                  extraText = `Airport Transfer (${atDirection === 'PICKUP' ? 'Pickup from Airport' : 'Drop to Airport'}): ${atLocation.name}`;
                 }
 
                 const isAlreadyBooked = car.bookings && car.bookings.length > 0 && car.bookings.some((booking: any) => {
@@ -529,7 +558,7 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes =
                       <div className="flex flex-col md:flex-row items-center gap-8">
                         <div className="shrink-0 w-full md:w-48 relative h-40 flex items-center justify-center">
                           <Link href={`/cars/${car.id}`} className="block w-full h-full relative">
-                            <Image src={car.image || '/placeholder-car.png'} alt={`${car.make} ${car.model}`} fill className="object-contain hover:scale-105 transition-transform" unoptimized />
+                            <Image src={car.image || '/placeholder-car.png'} alt={`${car.make} ${car.model}`} fill className="object-cover hover:scale-105 transition-transform" unoptimized />
                           </Link>
                         </div>
                         
@@ -537,7 +566,7 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes =
                           <div>
                             <div className="flex items-center justify-between mb-2">
                               <div className="flex items-center gap-3">
-                                <span className="text-green-700 text-[10px] font-black tracking-[0.2em] uppercase">{car.category} AC</span>
+                                <span className="text-green-700 text-xs font-black tracking-widest uppercase">{car.category} AC</span>
                               </div>
                             </div>
                             
@@ -547,7 +576,7 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes =
                               </Link>
                             </h3>
                             
-                            <div className="flex flex-wrap items-center gap-3 text-[10px] text-gray-600 font-bold uppercase tracking-widest mb-6">
+                            <div className="flex flex-wrap items-center gap-3 text-xs font-semibold text-gray-700 mb-6">
                               <span className="bg-gray-100 px-3 py-1 rounded border border-gray-200">{car.transmission}</span>
                               <span className="bg-gray-100 px-3 py-1 rounded border border-gray-200">{car.fuelType}</span>
                               {car.features && car.features.length > 0 ? car.features.slice(0, 2).map((feat: string, idx: number) => (
@@ -587,19 +616,19 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes =
                         </div>
                         
                         <div className="shrink-0 w-full md:w-56 flex flex-col justify-center items-end text-right md:border-l border-gray-200 md:pl-8 mt-6 md:mt-0 pt-6 md:pt-0 border-t md:border-t-0">
-                          <div className="text-[9px] text-gray-400 uppercase tracking-widest font-bold mb-1">
+                          <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
                             Package Fare ({bd.days}D)
                           </div>
                           <p className="text-4xl font-black text-green-700 mb-2">₹{flatFare.toLocaleString()}</p>
-                          <p className="text-[10px] text-gray-400 font-mono mb-1">Inc. GST & Driver Allowance</p>
-                          <p className="text-[10px] text-gray-400 font-mono mb-6">Exc. Toll Tax & Parking</p>
+                          <p className="text-xs text-gray-500 mb-1">Inc. GST & Driver Allowance</p>
+                          <p className="text-xs text-gray-500 mb-6">Exc. Toll Tax & Parking</p>
                           
-                          <button onClick={() => !isAlreadyBooked && handleBook(car, flatFare, extraText)} disabled={isAlreadyBooked || !returnDate} className={`w-full font-black text-[10px] tracking-widest uppercase py-4 px-6 rounded-xl transition-all ${
-                            isAlreadyBooked || !returnDate
+                          <button onClick={() => !isAlreadyBooked && handleBook(car, flatFare, extraText)} disabled={isAlreadyBooked || !returnDate || calculatedDistance === 0} className={`w-full font-medium text-base py-4 px-6 rounded-2xl transition-all ${
+                            isAlreadyBooked || !returnDate || calculatedDistance === 0
                               ? 'bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-200 shadow-none' 
-                              : 'bg-green-500 text-white hover:bg-brand-hover shadow-[0_0_15px_rgba(196,240,0,0.15)]'
+                              : 'bg-green-500 text-white hover:bg-green-600 shadow-lg'
                           }`}>
-                            {isAlreadyBooked ? 'Booked' : !returnDate ? 'Select Dates First' : 'Book Now'}
+                            {isAlreadyBooked ? 'Booked' : !returnDate ? 'Select Dates First' : calculatedDistance === 0 ? 'Select Valid Route' : 'Book Now'}
                           </button>
                         </div>
                       </div>
@@ -607,9 +636,9 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes =
                       {activeTab?.startsWith(`${car.id}-`) && (
                         <div className="mt-8 border-t border-gray-200 pt-8">
                           <div className="flex flex-wrap gap-3 mb-6">
-                            <button onClick={() => toggleTab("fare")} className={`px-5 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-colors ${isTabActive("fare") ? "bg-green-500 text-white" : "bg-white/5 text-gray-600 hover:bg-white/10 border border-gray-200"}`}>Fare Details</button>
-                            <button onClick={() => toggleTab("exclusion")} className={`px-5 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-colors ${isTabActive("exclusion") ? "bg-green-500 text-white" : "bg-white/5 text-gray-600 hover:bg-white/10 border border-gray-200"}`}>Exclusions</button>
-                            <button onClick={() => toggleTab("terms")} className={`px-5 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-colors ${isTabActive("terms") ? "bg-green-500 text-white" : "bg-white/5 text-gray-600 hover:bg-white/10 border border-gray-200"}`}>Terms & Conditions</button>
+                            <button onClick={() => toggleTab("fare")} className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-colors ${isTabActive("fare") ? "bg-green-500 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-200"}`}>Fare Details</button>
+                            <button onClick={() => toggleTab("exclusion")} className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-colors ${isTabActive("exclusion") ? "bg-green-500 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-200"}`}>Exclusions</button>
+                            <button onClick={() => toggleTab("terms")} className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-colors ${isTabActive("terms") ? "bg-green-500 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-200"}`}>Terms & Conditions</button>
                           </div>
                           
                           {isTabActive("fare") && (
@@ -659,7 +688,7 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes =
                   <div key={car.id} className="bg-gray-100 border border-gray-200 rounded-3xl p-6 md:p-8 flex flex-col md:flex-row justify-between items-center gap-6 hover:border-gray-300 transition-colors mb-6">
                     <div className="shrink-0 w-full md:w-48 relative h-40 flex items-center justify-center">
                       <Link href={`/cars/${car.id}`} className="block w-full h-full relative">
-                        <Image src={car.image || '/placeholder-car.png'} alt={`${car.make} ${car.model}`} fill className="object-contain hover:scale-105 transition-transform" unoptimized />
+                        <Image src={car.image || '/placeholder-car.png'} alt={`${car.make} ${car.model}`} fill className="object-cover hover:scale-105 transition-transform" unoptimized />
                       </Link>
                     </div>
                     <div className="flex-1">
@@ -678,7 +707,7 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes =
                       </div>
                     </div>
                     <div className="text-right shrink-0 bg-transparent flex flex-col items-end">
-                      <div className="text-[9px] text-gray-400 uppercase tracking-widest font-bold mb-1">
+                      <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
                         {bookingMode === 'ROUND_TRIP' ? `Package Fare (${durationDays}D)` : 'Flat Invoice Fare'}
                       </div>
                       <div className="text-3xl font-black text-green-700 mb-4">
@@ -689,14 +718,14 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes =
                       </div>
                       <button 
                         onClick={() => !isAlreadyBooked && handleBook(car, flatFare, extraText)} 
-                        disabled={isAlreadyBooked || (bookingMode === 'ROUND_TRIP' && !returnDate)}
+                        disabled={isAlreadyBooked || (bookingMode === 'ROUND_TRIP' && !returnDate) || calculatedDistance === 0}
                         className={`font-black text-[10px] tracking-widest uppercase py-4 px-8 rounded-xl transition-all ${
-                          isAlreadyBooked || (bookingMode === 'ROUND_TRIP' && !returnDate)
+                          isAlreadyBooked || (bookingMode === 'ROUND_TRIP' && !returnDate) || calculatedDistance === 0
                             ? 'bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-200 shadow-none' 
-                            : 'bg-green-500 text-white hover:bg-brand-hover shadow-[0_0_20px_rgba(196,240,0,0.2)]'
+                            : 'bg-green-500 text-white hover:bg-green-600 shadow-lg shadow-green-500/20'
                         }`}
                       >
-                        {isAlreadyBooked ? 'Booked / Unavailable' : (bookingMode === 'ROUND_TRIP' && !returnDate ? 'Select Dates First' : 'Book Cab Now')}
+                        {isAlreadyBooked ? 'Booked / Unavailable' : (bookingMode === 'ROUND_TRIP' && !returnDate ? 'Select Dates First' : calculatedDistance === 0 ? 'Select Valid Route' : 'Book Cab Now')}
                       </button>
                     </div>
                   </div>

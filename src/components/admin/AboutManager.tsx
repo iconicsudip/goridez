@@ -64,12 +64,12 @@ export default function AboutManager({ initialData }: { initialData: AboutPageDa
   return (
     <div className="max-w-4xl mx-auto">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10 border-b border-white/5 pb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10 border-b border-gray-200 pb-6">
         <div>
-          <h1 className="text-4xl font-black uppercase tracking-tight mb-2 text-white flex items-center gap-3">
-            <Info className="text-brand-neon" size={32} /> About Page Editor
+          <h1 className="text-4xl font-black uppercase tracking-tight mb-2 text-gray-900 flex items-center gap-3">
+            <Info className="text-green-700" size={32} /> About Page Editor
           </h1>
-          <p className="text-white/50 text-[13px]">
+          <p className="text-gray-500 text-[13px]">
             Manage the content, banner images, brand vision, and storytelling blocks of the customer-facing About Page.
           </p>
         </div>
@@ -92,14 +92,14 @@ export default function AboutManager({ initialData }: { initialData: AboutPageDa
 
       {/* Editor Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="bg-[#111111] border border-white/5 rounded-3xl p-8 space-y-6">
-          <h2 className="text-sm font-black uppercase tracking-widest text-white/50 border-b border-white/5 pb-4 mb-4">
+        <div className="bg-gray-100 border border-gray-200 rounded-3xl p-8 space-y-6">
+          <h2 className="text-sm font-black uppercase tracking-widest text-gray-500 border-b border-gray-200 pb-4 mb-4">
             Header Configuration
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-[10px] text-white/40 uppercase tracking-widest mb-2 font-bold font-mono">
+              <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">
                 Page Header Title
               </label>
               <input
@@ -108,12 +108,12 @@ export default function AboutManager({ initialData }: { initialData: AboutPageDa
                 value={formData.title}
                 onChange={e => setFormData({ ...formData, title: e.target.value })}
                 placeholder="e.g. About GoRidez"
-                className="w-full bg-[#050505] border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand-neon outline-none text-white transition-colors"
+                className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors"
               />
             </div>
 
             <div>
-              <label className="block text-[10px] text-white/40 uppercase tracking-widest mb-2 font-bold font-mono">
+              <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">
                 Banner Image URL
               </label>
               <ImageUpload
@@ -124,7 +124,7 @@ export default function AboutManager({ initialData }: { initialData: AboutPageDa
           </div>
 
           <div>
-            <label className="block text-[10px] text-white/40 uppercase tracking-widest mb-2 font-bold font-mono">
+            <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">
               Subtitle / Vision Catchphrase
             </label>
             <input
@@ -133,38 +133,38 @@ export default function AboutManager({ initialData }: { initialData: AboutPageDa
               value={formData.subtitle}
               onChange={e => setFormData({ ...formData, subtitle: e.target.value })}
               placeholder="e.g. Redefining premium transport across the heart of Rajasthan."
-              className="w-full bg-[#050505] border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand-neon outline-none text-white transition-colors"
+              className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors"
             />
           </div>
         </div>
 
         {/* Content Editor */}
-        <div className="bg-[#111111] border border-white/5 rounded-3xl p-8 space-y-6">
-          <h2 className="text-sm font-black uppercase tracking-widest text-white/50 border-b border-white/5 pb-4 mb-4">
+        <div className="bg-gray-100 border border-gray-200 rounded-3xl p-8 space-y-6">
+          <h2 className="text-sm font-black uppercase tracking-widest text-gray-500 border-b border-gray-200 pb-4 mb-4">
             Storytelling & Page Body Content
           </h2>
 
           <div>
-            <label className="block text-[10px] text-white/40 uppercase tracking-widest mb-2 font-bold font-mono">
+            <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">
               Body Content (HTML Supported)
             </label>
-            <div className="bg-[#050505] rounded-xl border border-white/10 overflow-hidden focus-within:border-brand-neon transition-colors">
+            <div className="bg-gray-50 rounded-xl border border-gray-300 overflow-hidden focus-within:border-green-600 transition-colors">
               {/* Toolbar */}
-              <div className="bg-[#111111] border-b border-white/10 p-2 flex flex-wrap gap-1">
+              <div className="bg-gray-100 border-b border-gray-300 p-2 flex flex-wrap gap-1">
                 {[
-                  { label: 'Paragraph', open: '<p class="text-white/60 mb-6 leading-relaxed">', close: '</p>' },
-                  { label: 'Heading 2', open: '<h2 class="text-2xl font-black uppercase tracking-tight text-white mt-8 mb-4">', close: '</h2>' },
-                  { label: 'Heading 3', open: '<h3 class="text-lg font-bold uppercase text-brand-neon mt-6 mb-3">', close: '</h3>' },
+                  { label: 'Paragraph', open: '<p class="text-gray-600 mb-6 leading-relaxed">', close: '</p>' },
+                  { label: 'Heading 2', open: '<h2 class="text-2xl font-black uppercase tracking-tight text-gray-900 mt-8 mb-4">', close: '</h2>' },
+                  { label: 'Heading 3', open: '<h3 class="text-lg font-bold uppercase text-green-700 mt-6 mb-3">', close: '</h3>' },
                   { label: 'Bold', open: '<strong>', close: '</strong>' },
                   { label: 'Italic', open: '<em>', close: '</em>' },
-                  { label: 'Bullet list', open: '<ul class="list-disc pl-5 mb-6 text-white/60 space-y-2">', close: '</ul>' },
+                  { label: 'Bullet list', open: '<ul class="list-disc pl-5 mb-6 text-gray-600 space-y-2">', close: '</ul>' },
                   { label: 'List Item', open: '<li>', close: '</li>' },
                 ].map((btn) => (
                   <button
                     key={btn.label}
                     type="button"
                     onClick={() => insertTag(btn.open, btn.close)}
-                    className="px-3 py-1.5 bg-[#1A1A1A] hover:bg-[#222] border border-white/5 text-[9px] font-bold uppercase tracking-widest text-white/70 hover:text-white rounded-lg transition-colors"
+                    className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 border border-gray-200 text-[9px] font-bold uppercase tracking-widest text-gray-600 hover:text-gray-900 rounded-lg transition-colors"
                   >
                     {btn.label}
                   </button>
@@ -176,7 +176,7 @@ export default function AboutManager({ initialData }: { initialData: AboutPageDa
                 value={formData.content}
                 onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                 placeholder="Write your brand story here (HTML tags are supported)..."
-                className="w-full bg-transparent p-4 min-h-[400px] font-mono text-xs text-white outline-none border-0 resize-y"
+                className="w-full bg-transparent p-4 min-h-[400px] font-mono text-xs text-gray-900 outline-none border-0 resize-y"
               />
             </div>
           </div>
@@ -187,7 +187,7 @@ export default function AboutManager({ initialData }: { initialData: AboutPageDa
           <button
             type="submit"
             disabled={loading}
-            className="bg-brand-neon hover:bg-brand-hover text-black px-8 py-4 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(196,240,0,0.15)] flex items-center gap-2 disabled:opacity-50"
+            className="bg-green-600 hover:bg-brand-hover text-black px-8 py-4 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all shadow-md flex items-center gap-2 disabled:opacity-50"
           >
             <Save size={14} />
             {loading ? 'Saving Changes...' : 'Save Settings'}

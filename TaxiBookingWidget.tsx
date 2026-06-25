@@ -116,9 +116,9 @@ export default function TaxiBookingWidget({
   }
 
   return (
-    <div className="w-full max-w-3xl rounded-2xl border border-white/10 bg-[#13161A]/90 backdrop-blur-md shadow-2xl shadow-black/40">
+    <div className="w-full max-w-3xl rounded-2xl border border-gray-300 bg-[#13161A]/90 backdrop-blur-md shadow-2xl shadow-black/40">
       {/* Tabs */}
-      <div className="flex overflow-x-auto border-b border-white/10 px-2 pt-2 gap-1">
+      <div className="flex overflow-x-auto border-b border-gray-300 px-2 pt-2 gap-1">
         {TABS.map((t) => (
           <button
             key={t.id}
@@ -215,7 +215,7 @@ export default function TaxiBookingWidget({
                       onClick={() => setExtraStop(" ")}
                       aria-label="Add another destination"
                       title="Add another destination (max 1)"
-                      className="shrink-0 h-11 w-11 grid place-items-center rounded-lg border border-dashed border-white/20 text-zinc-400 hover:text-[#C9A463] hover:border-[#C9A463]/50 transition-colors"
+                      className="shrink-0 h-11 w-11 grid place-items-center rounded-lg border border-dashed border-gray-400 text-zinc-400 hover:text-[#C9A463] hover:border-[#C9A463]/50 transition-colors"
                     >
                       <Plus size={16} />
                     </button>
@@ -273,7 +273,7 @@ export default function TaxiBookingWidget({
         </div>
 
         {/* Inclusions / Exclusions */}
-        <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-4 rounded-lg border border-white/10 bg-white/[0.03] p-4">
+        <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-4 rounded-lg border border-gray-300 bg-white/[0.03] p-4">
           <div>
             <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-400">
               Included

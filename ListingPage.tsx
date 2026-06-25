@@ -154,7 +154,7 @@ function CardShell({
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="rounded-xl border border-white/10 bg-[#13161A] p-4 sm:p-5">
+    <div className="rounded-xl border border-gray-300 bg-[#13161A] p-4 sm:p-5">
       <div className="flex flex-col sm:flex-row sm:items-center gap-4">
         <img src={image} alt={title} className="h-24 w-full sm:w-36 rounded-lg object-cover shrink-0" />
 
@@ -190,7 +190,7 @@ function CardShell({
       </button>
 
       {open && (
-        <div className="mt-2 space-y-3 border-t border-white/10 pt-3">
+        <div className="mt-2 space-y-3 border-t border-gray-300 pt-3">
           <div className="space-y-1">
             {fare.lines.map((line) => (
               <div key={line.label} className="flex justify-between text-xs text-zinc-400">

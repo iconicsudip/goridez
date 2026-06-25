@@ -24,7 +24,7 @@ export default function VehicleImageCarousel({ images, alt }: Props) {
   if (!images || images.length === 0) {
     return (
       <div className="w-full h-full bg-neutral-900 flex items-center justify-center">
-        <span className="text-[10px] font-mono text-white/30 uppercase">No Images</span>
+        <span className="text-[10px] font-mono text-gray-400 uppercase">No Images</span>
       </div>
     );
   }
@@ -49,7 +49,7 @@ export default function VehicleImageCarousel({ images, alt }: Props) {
             <div
               key={i}
               className={`h-1 rounded-full transition-all duration-300 ${
-                i === currentIndex ? 'w-3 bg-brand-neon' : 'w-1.5 bg-white/30'
+                i === currentIndex ? 'w-3 bg-green-600' : 'w-1.5 bg-white/30'
               }`}
             />
           ))}

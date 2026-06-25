@@ -46,34 +46,34 @@ function LoginForm() {
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label className="text-[10px] font-bold text-white/50 tracking-widest uppercase mb-2 block">Registered Email</label>
+          <label className="text-[10px] font-bold text-gray-500 tracking-widest uppercase mb-2 block">Registered Email</label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <Mail size={16} className="text-white/30" />
+              <Mail size={16} className="text-gray-400" />
             </div>
             <input 
               type="email" 
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-[#0A0A0A] border border-white/5 rounded-xl py-3 pl-11 pr-4 text-sm text-white outline-none focus:border-brand-neon/50 transition-colors"
+              className="w-full bg-white border border-gray-200 rounded-xl py-3 pl-11 pr-4 text-sm text-gray-900 outline-none focus:border-green-600/50 transition-colors"
               placeholder="name@domain.com"
             />
           </div>
         </div>
 
         <div>
-          <label className="text-[10px] font-bold text-white/50 tracking-widest uppercase mb-2 block">Security Passkey</label>
+          <label className="text-[10px] font-bold text-gray-500 tracking-widest uppercase mb-2 block">Security Passkey</label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <Lock size={16} className="text-white/30" />
+              <Lock size={16} className="text-gray-400" />
             </div>
             <input 
               type="password" 
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-[#0A0A0A] border border-white/5 rounded-xl py-3 pl-11 pr-4 text-sm text-white outline-none focus:border-brand-neon/50 transition-colors"
+              className="w-full bg-white border border-gray-200 rounded-xl py-3 pl-11 pr-4 text-sm text-gray-900 outline-none focus:border-green-600/50 transition-colors"
               placeholder="••••••••"
             />
           </div>
@@ -82,7 +82,7 @@ function LoginForm() {
         <button 
           type="submit" 
           disabled={loading}
-          className="w-full bg-brand-neon hover:bg-brand-hover text-black font-black uppercase tracking-widest py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_0_15px_rgba(196,240,0,0.15)] disabled:opacity-50 mt-4"
+          className="w-full bg-green-600 hover:bg-brand-hover text-black font-black uppercase tracking-widest py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_0_15px_rgba(196,240,0,0.15)] disabled:opacity-50 mt-4"
         >
           {loading ? 'Authenticating...' : 'Access Terminal'} <ChevronRight size={16} strokeWidth={3} />
         </button>
@@ -93,28 +93,28 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen bg-[#050505] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         
         {/* Header */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-3 mb-6">
-            <div className="bg-brand-neon text-black font-black text-xs w-8 h-8 rounded-lg flex items-center justify-center tracking-tighter">
+            <div className="bg-green-600 text-white font-black text-xs w-8 h-8 rounded-lg flex items-center justify-center tracking-tighter">
               GR
             </div>
             <div className="text-xl font-black tracking-tight">
-              <span className="text-white">Go</span><span className="text-brand-neon">Ridez</span>
+              <span className="text-gray-900">Go</span><span className="text-green-700">Ridez</span>
             </div>
           </Link>
           <h1 className="text-2xl font-black uppercase tracking-tight mb-2">Secure Gateway Login</h1>
-          <p className="text-[10px] text-white/50 font-mono tracking-widest uppercase">PCI DSS Compliant • 256-Bit Encrypted</p>
+          <p className="text-[10px] text-gray-500 font-mono tracking-widest uppercase">PCI DSS Compliant • 256-Bit Encrypted</p>
         </div>
 
         {/* Form Card */}
-        <div className="bg-[#111111] border border-white/5 rounded-3xl p-8 relative overflow-hidden">
+        <div className="bg-gray-100 border border-gray-200 rounded-3xl p-8 relative overflow-hidden">
           <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-brand-neon to-transparent opacity-50"></div>
           
-          <Suspense fallback={<div className="text-center text-white/50 py-10 font-mono text-[10px]">Loading secure gateway...</div>}>
+          <Suspense fallback={<div className="text-center text-gray-500 py-10 font-mono text-[10px]">Loading secure gateway...</div>}>
             <LoginForm />
           </Suspense>
 
@@ -122,8 +122,8 @@ export default function LoginPage() {
 
         {/* Footer Links */}
         <div className="text-center mt-8 space-y-4">
-          <Link href="/register" className="text-[11px] text-white/60 hover:text-white transition-colors font-medium">
-            Don't have an account? <span className="text-brand-neon font-bold">Register Identity</span>
+          <Link href="/register" className="text-[11px] text-gray-600 hover:text-gray-900 transition-colors font-medium">
+            Don't have an account? <span className="text-green-700 font-bold">Register Identity</span>
           </Link>
         </div>
 

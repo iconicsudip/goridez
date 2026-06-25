@@ -126,7 +126,7 @@ export default function BookingWidget({ cities = [], counts }: { cars?: any[], v
     <div className="w-full max-w-5xl mx-auto font-body mt-8 z-10 relative">
 
       {/* Floating Main Tabs */}
-      <div className="flex justify-center md:justify-start mx-auto w-max bg-white/5 backdrop-blur-md rounded-t-2xl overflow-hidden shadow-lg border border-white/10 border-b-0">
+      <div className="flex justify-center md:justify-start mx-auto w-max bg-white/95 backdrop-blur-xl rounded-t-3xl overflow-hidden shadow-lg border border-gray-300 border-b-0">
         {(['CHAUFFEUR', 'SELF DRIVE', 'VILLAS', 'TOURS'] as MainTab[]).map((tab) => {
           if (counts) {
             if (tab === 'SELF DRIVE' && counts.selfDrive === 0) return null;
@@ -142,8 +142,8 @@ export default function BookingWidget({ cities = [], counts }: { cars?: any[], v
                 setIsDifferentDropCity(false); // Reset when switching tabs
               }}
               className={`px-6 md:px-10 py-4 text-xs md:text-sm font-black tracking-widest transition-all ${mainTab === tab
-                ? 'bg-brand-neon text-black shadow-[0_0_20px_rgba(196,240,0,0.2)]'
-                : 'text-white/60 hover:text-white hover:bg-white/10'
+                ? 'bg-green-600 text-white shadow-[0_0_20px_rgba(22,163,74,0.3)]'
+                : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
                 }`}
             >
               {tab}
@@ -153,144 +153,151 @@ export default function BookingWidget({ cities = [], counts }: { cars?: any[], v
       </div>
 
       {/* Main Card */}
-      <div className="bg-[#0A0A0A]/95 backdrop-blur-xl border border-white/10 rounded-3xl md:rounded-tl-none p-6 md:p-10 shadow-2xl relative">
+      <div className="bg-white/95 backdrop-blur-xl border border-gray-300 rounded-3xl md:rounded-tl-none p-6 md:p-10 shadow-2xl relative">
 
-        {/* Sub Tabs Pill (Only for CHAUFFEUR) */}
+        {/* Sub Tabs Pill */}
         {mainTab === 'CHAUFFEUR' && (
-          <div className="flex justify-center mb-10">
-            <div className="bg-[#161616] rounded-full p-1.5 flex gap-1 border border-white/5">
-              {(['ONE WAY', 'ROUND TRIP', 'LOCAL'] as SubTab[]).map(sub => (
-                <button
-                  key={sub}
-                  onClick={() => setSubTab(sub)}
-                  className={`px-6 py-2.5 rounded-full text-[10px] md:text-xs font-black tracking-widest transition-all flex items-center gap-2 ${subTab === sub
-                    ? 'bg-white text-black shadow-md'
-                    : 'text-white/50 hover:text-white'
-                    }`}
-                >
-                  {sub === 'ONE WAY' && <ArrowRightLeft size={14} className={subTab === sub ? 'text-brand-neon' : ''} />}
-                  {sub === 'ROUND TRIP' && <ArrowRightLeft size={14} className={subTab === sub ? 'text-brand-neon' : ''} />}
-                  {sub === 'LOCAL' && <MapPin size={14} className={subTab === sub ? 'text-brand-neon' : ''} />}
-                  {sub}
-                </button>
-              ))}
-            </div>
+          <div className="flex flex-wrap items-center gap-3 mb-8">
+            {(['LOCAL', 'ONE WAY', 'ROUND TRIP'] as SubTab[]).map(sub => (
+              <button
+                key={sub}
+                onClick={() => setSubTab(sub)}
+                className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all flex items-center gap-2 border ${subTab === sub
+                  ? 'bg-green-600 text-white border-green-600 shadow-sm'
+                  : 'bg-[#f0f4f8] text-green-700 border-transparent hover:bg-[#e2e8f0]'
+                  }`}
+              >
+                <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${subTab === sub ? 'border-white' : 'border-green-600 bg-white'}`}>
+                  {subTab === sub && <div className="w-2 h-2 rounded-full bg-white"></div>}
+                </div>
+                {sub === 'LOCAL' && 'Local Rental'}
+                {sub === 'ONE WAY' && 'One Way'}
+                {sub === 'ROUND TRIP' && 'Round Trip'}
+              </button>
+            ))}
           </div>
         )}
 
-        {/* Horizontal Form Layout */}
-        <form onSubmit={handleSearch} className="flex flex-col lg:flex-row items-stretch gap-4 bg-[#111111] p-3 md:p-5 rounded-3xl md:rounded-[40px] border border-white/5 w-full relative">
-
-          {/* Location Field 1 */}
-          <div className="flex-1 w-full flex flex-col px-4 py-3 lg:py-2 lg:border-r border-b lg:border-b-0 border-white/10">
-            <label className="text-[10px] font-black text-white/40 uppercase tracking-widest flex items-center gap-2 mb-1">
-              <MapPin size={12} className="text-brand-neon" />
-              {showDropCity ? 'Source City' : 'Select your city'}
-            </label>
-            <select
-              value={selectedCity}
-              onChange={(e) => setSelectedCity(e.target.value)}
-              className="w-full bg-transparent text-white text-sm font-bold outline-none appearance-none cursor-pointer truncate"
-            >
-              {cities && cities.map((city: any) => (
-                <option key={city.id} value={city.name} className="bg-[#111111]">{city.name}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Location Field 2 (Drop City) */}
-          {showDropCity && mainTab === 'CHAUFFEUR' && subTab === 'ROUND TRIP' ? (
-            <div className="flex-[2] w-full flex flex-col px-4 py-3 lg:py-2 lg:border-r border-b lg:border-b-0 border-white/10">
-              <label className="text-[10px] font-black text-white/40 uppercase tracking-widest flex items-center justify-between mb-1">
-                <span className="flex items-center gap-2"><MapPin size={12} className="text-brand-neon" /> Destination city</span>
-                {destinations.length < 3 && (
-                  <button type="button" onClick={addDestination} className="text-brand-neon hover:text-white transition-colors flex items-center gap-1 bg-brand-neon/10 px-2 py-0.5 rounded text-[9px]">
-                    <span className="text-[14px] leading-none">+</span> ADD
-                  </button>
-                )}
-              </label>
-              <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3 md:gap-2 mt-2 w-full">
-                {destinations.map((dest, idx) => (
-                  <div key={idx} className="flex-1 flex items-center gap-2 w-full">
-                    <select
-                      value={dest}
-                      onChange={(e) => updateDestination(idx, e.target.value)}
-                      className="w-full bg-transparent text-white text-sm font-bold outline-none appearance-none cursor-pointer border-b border-white/10 focus:border-brand-neon pb-1"
-                      required
-                    >
-                      <option value="" disabled className="bg-[#111111] text-white/50">Select Destination City {idx + 1}</option>
-                      {cities && cities.map((city: any) => (
-                        <option key={city.id} value={city.name} className="bg-[#111111]">{city.name}</option>
-                      ))}
-                    </select>
-                    {destinations.length > 1 && (
-                      <button type="button" onClick={() => removeDestination(idx)} className="text-red-400 hover:text-red-300 text-xs">
-                        ✕
-                      </button>
-                    )}
-                  </div>
-                ))}
+        {/* Grid Form Layout */}
+        <form onSubmit={handleSearch} className="w-full relative">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            
+            {/* Location Field 1 */}
+            <div className="bg-white border border-gray-200 hover:border-green-400 transition-colors rounded-xl p-4 flex flex-col shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+              <label className="text-xs text-gray-500 mb-2">{showDropCity ? 'Source City' : 'Select your city'}</label>
+              <div className="flex items-center gap-2 text-gray-700">
+                <MapPin size={16} className="text-gray-400" />
+                <select
+                  value={selectedCity}
+                  onChange={(e) => setSelectedCity(e.target.value)}
+                  className="w-full bg-transparent text-sm font-semibold outline-none appearance-none cursor-pointer truncate"
+                >
+                  {cities && cities.map((city: any) => (
+                    <option key={city.id} value={city.name}>{city.name}</option>
+                  ))}
+                </select>
               </div>
             </div>
-          ) : showDropCity ? (
-            <div className="flex-1 w-full flex flex-col px-4 py-3 lg:py-2 lg:border-r border-b lg:border-b-0 border-white/10">
-              <label className="text-[10px] font-black text-white/40 uppercase tracking-widest flex items-center gap-2 mb-1">
-                <MapPin size={12} className="text-brand-neon" /> Destination city
-              </label>
-              <select
-                value={dropCity}
-                onChange={(e) => setDropCity(e.target.value)}
-                className="w-full bg-transparent text-white text-sm font-bold outline-none appearance-none cursor-pointer truncate"
-              >
-                {cities && cities.map((city: any) => (
-                  <option key={city.id} value={city.name} className="bg-[#111111]">{city.name}</option>
+
+            {/* Location Field 2 (Drop City / Destinations) */}
+            {showDropCity && mainTab === 'CHAUFFEUR' && subTab === 'ROUND TRIP' ? (
+              <>
+                {destinations.map((dest, idx) => (
+                  <div key={idx} className="bg-white border border-gray-200 hover:border-green-400 transition-colors rounded-xl p-4 flex flex-col shadow-[0_2px_10px_rgba(0,0,0,0.02)] relative pr-12">
+                    <label className="text-xs text-gray-500 mb-2">Destination city</label>
+                    <div className="flex items-center gap-2 text-gray-700">
+                      <MapPin size={16} className="text-gray-400" />
+                      <select
+                        value={dest}
+                        onChange={(e) => updateDestination(idx, e.target.value)}
+                        className="w-full bg-transparent text-sm font-semibold outline-none appearance-none cursor-pointer truncate"
+                        required
+                      >
+                        <option value="" disabled className="text-gray-400">Destination City Name</option>
+                        {cities && cities.map((city: any) => (
+                          <option key={city.id} value={city.name}>{city.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    {/* Add / Remove buttons */}
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                      {idx === destinations.length - 1 && destinations.length < 3 ? (
+                        <button type="button" onClick={addDestination} className="text-green-600 hover:text-green-700 p-1 flex items-center justify-center">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
+                        </button>
+                      ) : idx > 0 || destinations.length > 1 ? (
+                        <button type="button" onClick={() => removeDestination(idx)} className="text-red-500 hover:text-red-600 p-1 flex items-center justify-center">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></svg>
+                        </button>
+                      ) : null}
+                    </div>
+                  </div>
                 ))}
-              </select>
-            </div>
-          ) : null}
+              </>
+            ) : showDropCity ? (
+              <div className="bg-white border border-gray-200 hover:border-green-400 transition-colors rounded-xl p-4 flex flex-col shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+                <label className="text-xs text-gray-500 mb-2">Destination city</label>
+                <div className="flex items-center gap-2 text-gray-700">
+                  <MapPin size={16} className="text-gray-400" />
+                  <select
+                    value={dropCity}
+                    onChange={(e) => setDropCity(e.target.value)}
+                    className="w-full bg-transparent text-sm font-semibold outline-none appearance-none cursor-pointer truncate"
+                  >
+                    {cities && cities.map((city: any) => (
+                      <option key={city.id} value={city.name}>{city.name}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            ) : null}
 
-          {/* Pick Up Date */}
-          <div className="flex-1 w-full flex flex-col px-4 py-3 lg:py-2 lg:border-r border-b lg:border-b-0 border-white/10">
-            <label className="text-[10px] font-black text-white/40 uppercase tracking-widest flex items-center gap-2 mb-1">
-              <Calendar size={12} className="text-brand-neon" /> Pick Up Date
-            </label>
-            <DatePicker
-              selected={pickupDate}
-              onChange={(date: Date | null) => setPickupDate(date)}
-              showTimeSelect
-              timeFormat="HH:mm"
-              timeIntervals={30}
-              dateFormat="MMM d, yyyy h:mm aa"
-              placeholderText="Enter Date & Time"
-              className="w-full bg-transparent text-white text-sm font-bold outline-none cursor-pointer placeholder-white/30 truncate"
-              wrapperClassName="w-full"
-            />
-          </div>
-
-          {/* Drop-off Date */}
-          {!(mainTab === 'CHAUFFEUR' && subTab === 'ONE WAY') && (
-            <div className="flex-1 w-full flex flex-col px-4 py-3 lg:py-2 border-b lg:border-b-0 border-white/10">
-              <label className="text-[10px] font-black text-white/40 uppercase tracking-widest flex items-center gap-2 mb-1">
-                <Calendar size={12} className="text-brand-neon" /> Drop-off Date
-              </label>
-              <DatePicker
-                selected={returnDate}
-                onChange={(date: Date | null) => setReturnDate(date)}
-                showTimeSelect
-                timeFormat="HH:mm"
-                timeIntervals={30}
-                dateFormat="MMM d, yyyy h:mm aa"
-                placeholderText="Enter Date & Time"
-                className="w-full bg-transparent text-white text-sm font-bold outline-none cursor-pointer placeholder-white/30 truncate"
-                wrapperClassName="w-full"
-              />
+            {/* Pick Up Date */}
+            <div className="bg-white border border-gray-200 hover:border-green-400 transition-colors rounded-xl p-4 flex flex-col shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+              <label className="text-xs text-gray-500 mb-2">Pickup Date - Time</label>
+              <div className="flex items-center gap-2 text-gray-700">
+                <Calendar size={16} className="text-gray-400" />
+                <DatePicker
+                  selected={pickupDate}
+                  onChange={(date: Date | null) => setPickupDate(date)}
+                  showTimeSelect
+                  timeFormat="h:mm aa"
+                  timeIntervals={30}
+                  dateFormat="dd MMM yyyy - h:mm aa"
+                  placeholderText="Enter Date & Time"
+                  className="w-full bg-transparent text-sm font-semibold outline-none cursor-pointer placeholder-gray-400 truncate"
+                  wrapperClassName="w-full"
+                />
+              </div>
             </div>
-          )}
+
+            {/* Drop-off Date */}
+            {!(mainTab === 'CHAUFFEUR' && subTab === 'ONE WAY') && (
+              <div className="bg-white border border-gray-200 hover:border-green-400 transition-colors rounded-xl p-4 flex flex-col shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+                <label className="text-xs text-gray-500 mb-2">Drop Date</label>
+                <div className="flex items-center gap-2 text-gray-700">
+                  <Calendar size={16} className="text-gray-400" />
+                  <DatePicker
+                    selected={returnDate}
+                    onChange={(date: Date | null) => setReturnDate(date)}
+                    showTimeSelect
+                    timeFormat="h:mm aa"
+                    timeIntervals={30}
+                    dateFormat="dd MMM yyyy"
+                    placeholderText="Enter Date"
+                    className="w-full bg-transparent text-sm font-semibold outline-none cursor-pointer placeholder-gray-400 truncate"
+                    wrapperClassName="w-full"
+                  />
+                </div>
+              </div>
+            )}
+
+          </div> {/* End Grid */}
 
           {/* Search Button */}
-          <div className="px-2 w-full lg:w-auto mt-4 lg:mt-0 flex items-center">
-            <button type="submit" className="w-full lg:w-auto bg-brand-neon hover:bg-brand-hover text-black font-black text-xs tracking-widest px-8 py-4 rounded-xl md:rounded-full transition-all shadow-[0_0_20px_rgba(196,240,0,0.2)] flex items-center justify-center gap-2 uppercase">
-              <Search size={16} strokeWidth={3} /> Search
+          <div className="w-full flex justify-center mt-8">
+            <button type="submit" className="w-full md:w-[320px] bg-green-600 hover:bg-green-700 text-white font-bold tracking-widest uppercase text-[16px] px-8 py-3.5 rounded-xl transition-all shadow-md">
+              Search
             </button>
           </div>
 
@@ -302,7 +309,7 @@ export default function BookingWidget({ cities = [], counts }: { cars?: any[], v
             <button
               type="button"
               onClick={() => setIsDifferentDropCity(!isDifferentDropCity)}
-              className="text-sm font-black text-brand-neon hover:text-white transition-colors"
+              className="text-sm font-semibold text-green-600 hover:text-green-700 transition-colors"
             >
               {isDifferentDropCity ? "Same drop off city?" : "Drop in different city?"}
             </button>

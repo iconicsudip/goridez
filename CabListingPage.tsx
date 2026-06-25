@@ -64,7 +64,7 @@ export default function CabListingPage({ searchParams }: CabListingPageProps) {
   return (
     <div className="w-full max-w-4xl mx-auto">
       {/* Trip summary banner */}
-      <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/10 bg-[#13161A] px-5 py-4">
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-gray-300 bg-[#13161A] px-5 py-4">
         <div className="flex items-center gap-2 text-sm text-zinc-200">
           <MapPin size={16} className="text-[#C9A463]" />
           <span className="font-medium">{routeLabel}</span>
@@ -95,7 +95,7 @@ function CarFareCard({ car, fare }: { car: FleetCar; fare: FareResult }) {
   const [showBreakdown, setShowBreakdown] = useState(false);
 
   return (
-    <div className="rounded-xl border border-white/10 bg-[#13161A] p-4 sm:p-5">
+    <div className="rounded-xl border border-gray-300 bg-[#13161A] p-4 sm:p-5">
       <div className="flex flex-col sm:flex-row sm:items-center gap-4">
         <img
           src={car.image}
@@ -147,7 +147,7 @@ function CarFareCard({ car, fare }: { car: FleetCar; fare: FareResult }) {
         <ChevronDown size={13} className={`transition-transform ${showBreakdown ? "rotate-180" : ""}`} />
       </button>
       {showBreakdown && (
-        <div className="mt-2 space-y-1 border-t border-white/10 pt-2">
+        <div className="mt-2 space-y-1 border-t border-gray-300 pt-2">
           {fare.lines.map((line) => (
             <div key={line.label} className="flex justify-between text-xs text-zinc-400">
               <span>{line.label}</span>

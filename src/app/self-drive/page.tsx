@@ -12,7 +12,7 @@ export default async function SelfDrivePage() {
   ]);
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white font-body pt-24 pb-20">
+    <div className="min-h-screen bg-gray-50 text-gray-900 font-body pt-24 pb-20">
       <Suspense fallback={<div className="text-center py-20">Loading vehicles...</div>}>
         <SelfDriveClient initialCars={cars} initialCities={cities} />
       </Suspense>

@@ -93,15 +93,15 @@ export default function ChauffeurBookingModal({ isOpen, onClose, car, defaultPic
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100]" onClick={onClose} />
-      <div className="fixed inset-x-4 md:inset-x-auto md:left-1/2 md:-translate-x-1/2 top-[5%] md:top-[10%] bottom-[5%] md:bottom-auto md:h-[80vh] w-auto md:w-[800px] bg-[#0A0A0A] border border-white/10 rounded-3xl z-[101] shadow-2xl overflow-hidden flex flex-col custom-scrollbar">
+      <div className="fixed inset-0 bg-white/60 backdrop-blur-sm z-[100]" onClick={onClose} />
+      <div className="fixed inset-x-4 md:inset-x-auto md:left-1/2 md:-translate-x-1/2 top-[5%] md:top-[10%] bottom-[5%] md:bottom-auto md:h-[80vh] w-auto md:w-[800px] bg-white border border-gray-300 rounded-3xl z-[101] shadow-2xl overflow-hidden flex flex-col custom-scrollbar">
         
         {/* Header */}
-        <div className="flex justify-between items-center p-6 border-b border-white/5 bg-[#111111] shrink-0">
+        <div className="flex justify-between items-center p-6 border-b border-gray-200 bg-gray-100 shrink-0">
           <h2 className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
             Configure Chauffeur Booking
           </h2>
-          <button onClick={onClose} className="text-white/40 hover:text-white transition-colors">
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-900 transition-colors">
             <X size={20} />
           </button>
         </div>
@@ -117,16 +117,16 @@ export default function ChauffeurBookingModal({ isOpen, onClose, car, defaultPic
               </div>
               <div>
                 <h3 className="font-black text-xl">{car.make} {car.model}</h3>
-                <p className="text-[10px] text-white/50 tracking-widest uppercase">{car.category}</p>
+                <p className="text-[10px] text-gray-500 tracking-widest uppercase">{car.category}</p>
               </div>
             </div>
 
             {/* DateTime Selection */}
             <div>
-              <p className="text-[10px] text-brand-neon font-bold uppercase tracking-widest mb-3">1. Select Pickup Time</p>
+              <p className="text-[10px] text-green-700 font-bold uppercase tracking-widest mb-3">1. Select Pickup Time</p>
               <div className="grid grid-cols-2 gap-3">
                 <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" size={14} />
+                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={14} />
                   <DatePicker 
                     selected={pickupDate}
                     onChange={(date: Date | null) => {
@@ -138,27 +138,27 @@ export default function ChauffeurBookingModal({ isOpen, onClose, car, defaultPic
                     }}
                     dateFormat="dd/MM/yyyy" 
                     minDate={new Date()}
-                    className="w-full bg-[#111] border border-white/5 rounded-xl pl-9 pr-3 py-3 text-xs outline-none focus:border-brand-neon cursor-pointer" 
+                    className="w-full bg-gray-100 border border-gray-200 rounded-xl pl-9 pr-3 py-3 text-xs outline-none focus:border-green-600 cursor-pointer" 
                   />
                 </div>
                 <div className="relative">
-                  <Clock className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" size={14} />
+                  <Clock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={14} />
                   <input 
                     type="time" 
                     value={`${String(pickupDate.getHours()).padStart(2, '0')}:${String(pickupDate.getMinutes()).padStart(2, '0')}`}
                     onChange={handleTimeChange}
-                    className="w-full bg-[#111] border border-white/5 rounded-xl pl-9 pr-3 py-3 text-xs outline-none focus:border-brand-neon appearance-none"
+                    className="w-full bg-gray-100 border border-gray-200 rounded-xl pl-9 pr-3 py-3 text-xs outline-none focus:border-green-600 appearance-none"
                   />
                 </div>
               </div>
-              <p className="text-[10px] text-white/40 mt-2">
+              <p className="text-[10px] text-gray-500 mt-2">
                 Return calculated based on package duration.
               </p>
             </div>
 
             {/* Package Selection */}
             <div>
-              <p className="text-[10px] text-brand-neon font-bold uppercase tracking-widest mb-3">2. Select Rental Package</p>
+              <p className="text-[10px] text-green-700 font-bold uppercase tracking-widest mb-3">2. Select Rental Package</p>
               <div className="space-y-3">
                 {car.packages?.map((pkg: any) => {
                   const isSelected = selectedPackageId === pkg.id;
@@ -167,8 +167,8 @@ export default function ChauffeurBookingModal({ isOpen, onClose, car, defaultPic
                       key={pkg.id} 
                       className={`block p-4 rounded-xl border cursor-pointer transition-all ${
                         isSelected 
-                          ? 'bg-brand-neon/5 border-brand-neon' 
-                          : 'bg-[#111] border-white/5 hover:border-white/20'
+                          ? 'bg-green-600/5 border-green-600' 
+                          : 'bg-gray-100 border-gray-200 hover:border-gray-400'
                       }`}
                     >
                       <div className="flex justify-between items-center">
@@ -182,13 +182,13 @@ export default function ChauffeurBookingModal({ isOpen, onClose, car, defaultPic
                           />
                           <div>
                             <div className="font-bold text-sm">{pkg.name}</div>
-                            <div className="text-[10px] text-white/50">{pkg.limitValue} {pkg.type === 'KM' ? 'KM Included' : ''}</div>
+                            <div className="text-[10px] text-gray-500">{pkg.limitValue} {pkg.type === 'KM' ? 'KM Included' : ''}</div>
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="font-black text-brand-neon">₹{pkg.basePrice.toLocaleString()}</div>
+                          <div className="font-black text-green-700">₹{pkg.basePrice.toLocaleString()}</div>
                           {pkg.extraChargePerUnit && (
-                            <div className="text-[9px] text-white/40">Extra KM: ₹{pkg.extraChargePerUnit}/km</div>
+                            <div className="text-[9px] text-gray-500">Extra KM: ₹{pkg.extraChargePerUnit}/km</div>
                           )}
                         </div>
                       </div>
@@ -197,7 +197,7 @@ export default function ChauffeurBookingModal({ isOpen, onClose, car, defaultPic
                 })}
               </div>
               {car.extraHourCharge && (
-                <p className="text-[10px] text-white/40 mt-3 flex items-center gap-1.5">
+                <p className="text-[10px] text-gray-500 mt-3 flex items-center gap-1.5">
                   <AlertCircle size={12} className="text-yellow-500" />
                   Additional hours will be billed at ₹{car.extraHourCharge}/hr
                 </p>
@@ -207,11 +207,11 @@ export default function ChauffeurBookingModal({ isOpen, onClose, car, defaultPic
           </div>
 
           {/* Right Column - Summary */}
-          <div className="w-full md:w-[300px] shrink-0 bg-[#111] border border-white/5 rounded-2xl p-6 h-fit">
+          <div className="w-full md:w-[300px] shrink-0 bg-gray-100 border border-gray-200 rounded-2xl p-6 h-fit">
             <h3 className="font-black mb-6">Fare Breakdown</h3>
 
             <div className="space-y-4 mb-6 text-sm">
-              <div className="flex justify-between text-white/70">
+              <div className="flex justify-between text-gray-600">
                 <span>{selectedPackage.name} Package</span>
                 <span className="font-mono">₹{basePrice.toLocaleString()}</span>
               </div>
@@ -229,20 +229,20 @@ export default function ChauffeurBookingModal({ isOpen, onClose, car, defaultPic
               )}
             </div>
 
-            <div className="pt-4 border-t border-white/10 mb-8 flex justify-between items-end">
-              <span className="text-[10px] text-white/50 font-bold uppercase tracking-widest">Total Estimate</span>
-              <span className="text-3xl font-black text-brand-neon">₹{totalFare.toLocaleString()}</span>
+            <div className="pt-4 border-t border-gray-300 mb-8 flex justify-between items-end">
+              <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Total Estimate</span>
+              <span className="text-3xl font-black text-green-700">₹{totalFare.toLocaleString()}</span>
             </div>
 
-            <div className="space-y-3 mb-8 text-[10px] text-white/60">
-              <div className="flex gap-2"><Check size={14} className="text-brand-neon shrink-0" /> Professional Chauffeur Included</div>
-              <div className="flex gap-2"><Check size={14} className="text-brand-neon shrink-0" /> Tolls & State Taxes Pre-paid</div>
-              <div className="flex gap-2"><ShieldCheck size={14} className="text-brand-neon shrink-0" /> 100% Insured Journey</div>
+            <div className="space-y-3 mb-8 text-[10px] text-gray-600">
+              <div className="flex gap-2"><Check size={14} className="text-green-700 shrink-0" /> Professional Chauffeur Included</div>
+              <div className="flex gap-2"><Check size={14} className="text-green-700 shrink-0" /> Tolls & State Taxes Pre-paid</div>
+              <div className="flex gap-2"><ShieldCheck size={14} className="text-green-700 shrink-0" /> 100% Insured Journey</div>
             </div>
 
             <button 
               onClick={handleBook}
-              className="w-full py-4 bg-brand-neon text-black font-black uppercase tracking-widest text-xs rounded-xl shadow-[0_0_20px_rgba(196,240,0,0.2)] hover:shadow-[0_0_30px_rgba(196,240,0,0.4)] transition-all"
+              className="w-full py-4 bg-green-600 text-white font-black uppercase tracking-widest text-xs rounded-xl shadow-[0_0_20px_rgba(196,240,0,0.2)] hover:shadow-[0_0_30px_rgba(196,240,0,0.4)] transition-all"
             >
               Add to Booking
             </button>

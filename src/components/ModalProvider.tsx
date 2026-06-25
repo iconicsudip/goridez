@@ -75,40 +75,40 @@ export function ModalProvider({ children }: { children: ReactNode }) {
   const isSuccess = opts.type === 'success';
   const isError = opts.type === 'error';
 
-  const iconColor = isSuccess ? 'text-[#00ffaa]' : isError ? 'text-red-500' : 'text-brand-neon';
+  const iconColor = isSuccess ? 'text-[#00ffaa]' : isError ? 'text-red-500' : 'text-green-700';
   const confirmBtnClass = isError
-    ? 'bg-red-500 hover:bg-red-600 text-white'
+    ? 'bg-red-500 hover:bg-red-600 text-gray-900'
     : isSuccess
     ? 'bg-[#00ffaa] hover:bg-[#00e699] text-black'
     : isConfirm
-    ? 'bg-brand-neon hover:bg-brand-hover text-black'
-    : 'bg-brand-neon hover:bg-brand-hover text-black';
+    ? 'bg-green-600 hover:bg-brand-hover text-black'
+    : 'bg-green-600 hover:bg-brand-hover text-black';
 
   return (
     <ModalContext.Provider value={{ confirm, alert, showSuccess, showError }}>
       {children}
       {open && (
         <div
-          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm"
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-white/75 backdrop-blur-sm"
           onClick={(e) => { if (e.target === e.currentTarget) close(false); }}
         >
-          <div className="bg-[#111111] border border-white/10 rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-gray-100 border border-gray-300 rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             {/* Header */}
-            <div className="flex items-center gap-3 p-6 border-b border-white/5">
+            <div className="flex items-center gap-3 p-6 border-b border-gray-200">
               {isSuccess && <CheckCircle size={20} className="text-[#00ffaa] flex-shrink-0" />}
               {isError && <AlertTriangle size={20} className="text-red-500 flex-shrink-0" />}
               {!isSuccess && !isError && <Info size={20} className={`${iconColor} flex-shrink-0`} />}
-              <h3 className="font-black uppercase tracking-tight text-white text-sm flex-1">
+              <h3 className="font-black uppercase tracking-tight text-gray-900 text-sm flex-1">
                 {opts.title || (isSuccess ? 'Success' : isError ? 'Error' : isConfirm ? 'Confirm Action' : 'Notice')}
               </h3>
-              <button onClick={() => close(false)} className="text-white/30 hover:text-white transition-colors">
+              <button onClick={() => close(false)} className="text-gray-400 hover:text-gray-900 transition-colors">
                 <X size={16} />
               </button>
             </div>
 
             {/* Body */}
             <div className="p-6">
-              <p className="text-sm text-white/70 font-mono leading-relaxed">{opts.message}</p>
+              <p className="text-sm text-gray-600 font-mono leading-relaxed">{opts.message}</p>
             </div>
 
             {/* Footer */}
@@ -116,7 +116,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
               {isConfirm && (
                 <button
                   onClick={() => close(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest text-white/50 hover:text-white border border-white/10 hover:border-white/20 transition-all"
+                  className="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-gray-900 border border-gray-300 hover:border-gray-400 transition-all"
                 >
                   {opts.cancelLabel || 'Cancel'}
                 </button>

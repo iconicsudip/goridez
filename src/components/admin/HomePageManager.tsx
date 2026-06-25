@@ -65,7 +65,7 @@ export default function HomePageManager({ initialData }: { initialData: any }) {
   };
 
   const renderSectionHeader = (title: string) => (
-    <h2 className="text-sm font-black uppercase tracking-widest text-white/50 border-b border-white/5 pb-4 mb-4 mt-8">
+    <h2 className="text-sm font-black uppercase tracking-widest text-gray-500 border-b border-gray-200 pb-4 mb-4 mt-8">
       {title}
     </h2>
   );
@@ -73,12 +73,12 @@ export default function HomePageManager({ initialData }: { initialData: any }) {
   return (
     <div className="max-w-4xl mx-auto pb-24">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10 border-b border-white/5 pb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10 border-b border-gray-200 pb-6">
         <div>
-          <h1 className="text-4xl font-black uppercase tracking-tight mb-2 text-white flex items-center gap-3">
-            <Globe className="text-brand-neon" size={32} /> Home Page Editor
+          <h1 className="text-4xl font-black uppercase tracking-tight mb-2 text-gray-900 flex items-center gap-3">
+            <Globe className="text-green-700" size={32} /> Home Page Editor
           </h1>
-          <p className="text-white/50 text-[13px]">
+          <p className="text-gray-500 text-[13px]">
             Manage the content blocks, catchy titles, and hero banner for the landing page.
           </p>
         </div>
@@ -101,22 +101,22 @@ export default function HomePageManager({ initialData }: { initialData: any }) {
 
       {/* Editor Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="bg-[#111111] border border-white/5 rounded-3xl p-8">
+        <div className="bg-gray-100 border border-gray-200 rounded-3xl p-8">
           
           {/* HERO SECTION */}
           {renderSectionHeader('Hero Section')}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
-              <label className="block text-[10px] text-white/40 uppercase tracking-widest mb-2 font-bold font-mono">
+              <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">
                 Hero Badge
               </label>
               <input
                 type="text" name="heroBadge" value={formData.heroBadge} onChange={handleChange}
-                className="w-full bg-[#050505] border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand-neon outline-none text-white transition-colors"
+                className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors"
               />
             </div>
             <div>
-              <label className="block text-[10px] text-white/40 uppercase tracking-widest mb-2 font-bold font-mono">
+              <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">
                 Hero Banner Image URL
               </label>
               <ImageUpload
@@ -127,31 +127,31 @@ export default function HomePageManager({ initialData }: { initialData: any }) {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
-              <label className="block text-[10px] text-white/40 uppercase tracking-widest mb-2 font-bold font-mono">
+              <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">
                 Title Line 1
               </label>
               <input
                 type="text" name="heroTitleLine1" value={formData.heroTitleLine1} onChange={handleChange}
-                className="w-full bg-[#050505] border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand-neon outline-none text-white transition-colors"
+                className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors"
               />
             </div>
             <div>
-              <label className="block text-[10px] text-white/40 uppercase tracking-widest mb-2 font-bold font-mono">
+              <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">
                 Title Line 2 (Highlighted)
               </label>
               <input
                 type="text" name="heroTitleLine2" value={formData.heroTitleLine2} onChange={handleChange}
-                className="w-full bg-[#050505] border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand-neon outline-none text-white transition-colors"
+                className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors"
               />
             </div>
           </div>
           <div className="mb-6">
-            <label className="block text-[10px] text-white/40 uppercase tracking-widest mb-2 font-bold font-mono">
+            <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">
               Hero Description
             </label>
             <textarea
               name="heroDescription" value={formData.heroDescription} onChange={handleChange}
-              className="w-full bg-[#050505] border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand-neon outline-none text-white transition-colors h-24"
+              className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors h-24"
             />
           </div>
 
@@ -159,104 +159,104 @@ export default function HomePageManager({ initialData }: { initialData: any }) {
           {renderSectionHeader('Seamless Experiences Section')}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
-              <label className="block text-[10px] text-white/40 uppercase tracking-widest mb-2 font-bold font-mono">Section Badge</label>
-              <input type="text" name="seamlessBadge" value={formData.seamlessBadge} onChange={handleChange} className="w-full bg-[#050505] border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand-neon outline-none text-white transition-colors" />
+              <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">Section Badge</label>
+              <input type="text" name="seamlessBadge" value={formData.seamlessBadge} onChange={handleChange} className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors" />
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
-              <label className="block text-[10px] text-white/40 uppercase tracking-widest mb-2 font-bold font-mono">Title</label>
-              <input type="text" name="seamlessTitle" value={formData.seamlessTitle} onChange={handleChange} className="w-full bg-[#050505] border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand-neon outline-none text-white transition-colors" />
+              <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">Title</label>
+              <input type="text" name="seamlessTitle" value={formData.seamlessTitle} onChange={handleChange} className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors" />
             </div>
             <div>
-              <label className="block text-[10px] text-white/40 uppercase tracking-widest mb-2 font-bold font-mono">Title Highlight</label>
-              <input type="text" name="seamlessTitleHighlight" value={formData.seamlessTitleHighlight} onChange={handleChange} className="w-full bg-[#050505] border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand-neon outline-none text-white transition-colors" />
+              <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">Title Highlight</label>
+              <input type="text" name="seamlessTitleHighlight" value={formData.seamlessTitleHighlight} onChange={handleChange} className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors" />
             </div>
           </div>
           <div className="mb-6">
-            <label className="block text-[10px] text-white/40 uppercase tracking-widest mb-2 font-bold font-mono">Description</label>
-            <textarea name="seamlessDescription" value={formData.seamlessDescription} onChange={handleChange} className="w-full bg-[#050505] border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand-neon outline-none text-white transition-colors h-20" />
+            <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">Description</label>
+            <textarea name="seamlessDescription" value={formData.seamlessDescription} onChange={handleChange} className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors h-20" />
           </div>
 
           {/* VEHICLES SECTION */}
           {renderSectionHeader('Vehicles Section')}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
-              <label className="block text-[10px] text-white/40 uppercase tracking-widest mb-2 font-bold font-mono">Section Badge</label>
-              <input type="text" name="vehiclesBadge" value={formData.vehiclesBadge} onChange={handleChange} className="w-full bg-[#050505] border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand-neon outline-none text-white transition-colors" />
+              <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">Section Badge</label>
+              <input type="text" name="vehiclesBadge" value={formData.vehiclesBadge} onChange={handleChange} className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors" />
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
-              <label className="block text-[10px] text-white/40 uppercase tracking-widest mb-2 font-bold font-mono">Title</label>
-              <input type="text" name="vehiclesTitle" value={formData.vehiclesTitle} onChange={handleChange} className="w-full bg-[#050505] border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand-neon outline-none text-white transition-colors" />
+              <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">Title</label>
+              <input type="text" name="vehiclesTitle" value={formData.vehiclesTitle} onChange={handleChange} className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors" />
             </div>
             <div>
-              <label className="block text-[10px] text-white/40 uppercase tracking-widest mb-2 font-bold font-mono">Title Highlight</label>
-              <input type="text" name="vehiclesTitleHighlight" value={formData.vehiclesTitleHighlight} onChange={handleChange} className="w-full bg-[#050505] border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand-neon outline-none text-white transition-colors" />
+              <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">Title Highlight</label>
+              <input type="text" name="vehiclesTitleHighlight" value={formData.vehiclesTitleHighlight} onChange={handleChange} className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors" />
             </div>
           </div>
           <div className="mb-6">
-            <label className="block text-[10px] text-white/40 uppercase tracking-widest mb-2 font-bold font-mono">Description</label>
-            <textarea name="vehiclesDescription" value={formData.vehiclesDescription} onChange={handleChange} className="w-full bg-[#050505] border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand-neon outline-none text-white transition-colors h-20" />
+            <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">Description</label>
+            <textarea name="vehiclesDescription" value={formData.vehiclesDescription} onChange={handleChange} className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors h-20" />
           </div>
 
           {/* VILLAS SECTION */}
           {renderSectionHeader('Villas Section')}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
-              <label className="block text-[10px] text-white/40 uppercase tracking-widest mb-2 font-bold font-mono">Section Badge</label>
-              <input type="text" name="villasBadge" value={formData.villasBadge} onChange={handleChange} className="w-full bg-[#050505] border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand-neon outline-none text-white transition-colors" />
+              <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">Section Badge</label>
+              <input type="text" name="villasBadge" value={formData.villasBadge} onChange={handleChange} className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors" />
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
-              <label className="block text-[10px] text-white/40 uppercase tracking-widest mb-2 font-bold font-mono">Title</label>
-              <input type="text" name="villasTitle" value={formData.villasTitle} onChange={handleChange} className="w-full bg-[#050505] border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand-neon outline-none text-white transition-colors" />
+              <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">Title</label>
+              <input type="text" name="villasTitle" value={formData.villasTitle} onChange={handleChange} className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors" />
             </div>
             <div>
-              <label className="block text-[10px] text-white/40 uppercase tracking-widest mb-2 font-bold font-mono">Title Highlight</label>
-              <input type="text" name="villasTitleHighlight" value={formData.villasTitleHighlight} onChange={handleChange} className="w-full bg-[#050505] border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand-neon outline-none text-white transition-colors" />
+              <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">Title Highlight</label>
+              <input type="text" name="villasTitleHighlight" value={formData.villasTitleHighlight} onChange={handleChange} className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors" />
             </div>
           </div>
           <div className="mb-6">
-            <label className="block text-[10px] text-white/40 uppercase tracking-widest mb-2 font-bold font-mono">Description</label>
-            <textarea name="villasDescription" value={formData.villasDescription} onChange={handleChange} className="w-full bg-[#050505] border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand-neon outline-none text-white transition-colors h-20" />
+            <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">Description</label>
+            <textarea name="villasDescription" value={formData.villasDescription} onChange={handleChange} className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors h-20" />
           </div>
 
           {/* TOURS SECTION */}
           {renderSectionHeader('Tours Section')}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
-              <label className="block text-[10px] text-white/40 uppercase tracking-widest mb-2 font-bold font-mono">Title</label>
-              <input type="text" name="toursTitle" value={formData.toursTitle} onChange={handleChange} className="w-full bg-[#050505] border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand-neon outline-none text-white transition-colors" />
+              <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">Title</label>
+              <input type="text" name="toursTitle" value={formData.toursTitle} onChange={handleChange} className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors" />
             </div>
             <div>
-              <label className="block text-[10px] text-white/40 uppercase tracking-widest mb-2 font-bold font-mono">Title Highlight</label>
-              <input type="text" name="toursTitleHighlight" value={formData.toursTitleHighlight} onChange={handleChange} className="w-full bg-[#050505] border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand-neon outline-none text-white transition-colors" />
+              <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">Title Highlight</label>
+              <input type="text" name="toursTitleHighlight" value={formData.toursTitleHighlight} onChange={handleChange} className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors" />
             </div>
           </div>
           <div className="mb-6">
-            <label className="block text-[10px] text-white/40 uppercase tracking-widest mb-2 font-bold font-mono">Description</label>
-            <textarea name="toursDescription" value={formData.toursDescription} onChange={handleChange} className="w-full bg-[#050505] border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand-neon outline-none text-white transition-colors h-20" />
+            <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">Description</label>
+            <textarea name="toursDescription" value={formData.toursDescription} onChange={handleChange} className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors h-20" />
           </div>
 
           {/* BLOGS SECTION */}
           {renderSectionHeader('Blogs / Journal Section')}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
-              <label className="block text-[10px] text-white/40 uppercase tracking-widest mb-2 font-bold font-mono">Section Badge</label>
-              <input type="text" name="blogsBadge" value={formData.blogsBadge} onChange={handleChange} className="w-full bg-[#050505] border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand-neon outline-none text-white transition-colors" />
+              <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">Section Badge</label>
+              <input type="text" name="blogsBadge" value={formData.blogsBadge} onChange={handleChange} className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors" />
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
-              <label className="block text-[10px] text-white/40 uppercase tracking-widest mb-2 font-bold font-mono">Title</label>
-              <input type="text" name="blogsTitle" value={formData.blogsTitle} onChange={handleChange} className="w-full bg-[#050505] border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand-neon outline-none text-white transition-colors" />
+              <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">Title</label>
+              <input type="text" name="blogsTitle" value={formData.blogsTitle} onChange={handleChange} className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors" />
             </div>
             <div>
-              <label className="block text-[10px] text-white/40 uppercase tracking-widest mb-2 font-bold font-mono">Title Highlight</label>
-              <input type="text" name="blogsTitleHighlight" value={formData.blogsTitleHighlight} onChange={handleChange} className="w-full bg-[#050505] border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-brand-neon outline-none text-white transition-colors" />
+              <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">Title Highlight</label>
+              <input type="text" name="blogsTitleHighlight" value={formData.blogsTitleHighlight} onChange={handleChange} className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors" />
             </div>
           </div>
 
@@ -267,7 +267,7 @@ export default function HomePageManager({ initialData }: { initialData: any }) {
           <button
             type="submit"
             disabled={loading}
-            className="bg-brand-neon hover:bg-brand-hover text-black px-8 py-4 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(196,240,0,0.4)] flex items-center gap-2 disabled:opacity-50"
+            className="bg-green-600 hover:bg-brand-hover text-black px-8 py-4 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(196,240,0,0.4)] flex items-center gap-2 disabled:opacity-50"
           >
             <Save size={14} />
             {loading ? 'Saving Changes...' : 'Save Settings'}

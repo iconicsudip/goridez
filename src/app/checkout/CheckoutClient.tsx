@@ -223,7 +223,7 @@ export default function CheckoutClient() {
         <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tight mb-2">
           SECURE <span className="text-outline-neon">CHECKOUT</span>
         </h1>
-        <p className="text-white/50 text-sm">Finalize your Sovereign Travel-Tech Reservation</p>
+        <p className="text-gray-500 text-sm">Finalize your Sovereign Travel-Tech Reservation</p>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-12">
@@ -234,7 +234,7 @@ export default function CheckoutClient() {
             <h2 className="text-xl font-black uppercase tracking-widest mb-6">1. Primary Driver Details</h2>
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label className="text-[10px] font-bold text-white/50 tracking-widest uppercase mb-2 block">Full Legal Name <span className="text-red-500 font-bold">*</span></label>
+                <label className="text-[10px] font-bold text-gray-500 tracking-widest uppercase mb-2 block">Full Legal Name <span className="text-red-500 font-bold">*</span></label>
                 <input 
                   type="text" 
                   placeholder="e.g. John Doe" 
@@ -243,13 +243,13 @@ export default function CheckoutClient() {
                     setForm(prev => ({ ...prev, name: e.target.value }));
                     if (errors.name) setErrors(prev => ({ ...prev, name: '' }));
                   }}
-                  className={`w-full bg-[#111111] border rounded-xl px-4 py-4 outline-none focus:border-brand-neon text-sm ${errors.name ? 'border-red-500' : 'border-white/10'}`} 
+                  className={`w-full bg-gray-100 border rounded-xl px-4 py-4 outline-none focus:border-green-600 text-sm ${errors.name ? 'border-red-500' : 'border-gray-300'}`} 
                 />
                 {errors.name && <p className="text-[10px] text-red-500 mt-1 pl-1 font-mono">{errors.name}</p>}
               </div>
 
               <div>
-                <label className="text-[10px] font-bold text-white/50 tracking-widest uppercase mb-2 block">Email Address <span className="text-red-500 font-bold">*</span></label>
+                <label className="text-[10px] font-bold text-gray-500 tracking-widest uppercase mb-2 block">Email Address <span className="text-red-500 font-bold">*</span></label>
                 <input 
                   type="email" 
                   placeholder="e.g. john@example.com" 
@@ -258,13 +258,13 @@ export default function CheckoutClient() {
                     setForm(prev => ({ ...prev, email: e.target.value }));
                     if (errors.email) setErrors(prev => ({ ...prev, email: '' }));
                   }}
-                  className={`w-full bg-[#111111] border rounded-xl px-4 py-4 outline-none focus:border-brand-neon text-sm ${errors.email ? 'border-red-500' : 'border-white/10'}`} 
+                  className={`w-full bg-gray-100 border rounded-xl px-4 py-4 outline-none focus:border-green-600 text-sm ${errors.email ? 'border-red-500' : 'border-gray-300'}`} 
                 />
                 {errors.email && <p className="text-[10px] text-red-500 mt-1 pl-1 font-mono">{errors.email}</p>}
               </div>
 
               <div>
-                <label className="text-[10px] font-bold text-white/50 tracking-widest uppercase mb-2 block">Phone Number <span className="text-red-500 font-bold">*</span></label>
+                <label className="text-[10px] font-bold text-gray-500 tracking-widest uppercase mb-2 block">Phone Number <span className="text-red-500 font-bold">*</span></label>
                 <input 
                   type="tel" 
                   placeholder="e.g. +91 9876543210" 
@@ -273,13 +273,13 @@ export default function CheckoutClient() {
                     setForm(prev => ({ ...prev, phone: e.target.value }));
                     if (errors.phone) setErrors(prev => ({ ...prev, phone: '' }));
                   }}
-                  className={`w-full bg-[#111111] border rounded-xl px-4 py-4 outline-none focus:border-brand-neon text-sm ${errors.phone ? 'border-red-500' : 'border-white/10'}`} 
+                  className={`w-full bg-gray-100 border rounded-xl px-4 py-4 outline-none focus:border-green-600 text-sm ${errors.phone ? 'border-red-500' : 'border-gray-300'}`} 
                 />
                 {errors.phone && <p className="text-[10px] text-red-500 mt-1 pl-1 font-mono">{errors.phone}</p>}
               </div>
 
               <div>
-                <label className="text-[10px] font-bold text-white/50 tracking-widest uppercase mb-2 block">Date of Birth <span className="text-red-500 font-bold">*</span></label>
+                <label className="text-[10px] font-bold text-gray-500 tracking-widest uppercase mb-2 block">Date of Birth <span className="text-red-500 font-bold">*</span></label>
                 <input 
                   type="date" 
                   placeholder="Date of Birth" 
@@ -288,7 +288,7 @@ export default function CheckoutClient() {
                     setForm(prev => ({ ...prev, dob: e.target.value }));
                     if (errors.dob) setErrors(prev => ({ ...prev, dob: '' }));
                   }}
-                  className={`w-full bg-[#111111] border rounded-xl px-4 py-4 outline-none focus:border-brand-neon text-sm text-white/50 ${errors.dob ? 'border-red-500' : 'border-white/10'}`} 
+                  className={`w-full bg-gray-100 border rounded-xl px-4 py-4 outline-none focus:border-green-600 text-sm text-gray-500 ${errors.dob ? 'border-red-500' : 'border-gray-300'}`} 
                 />
                 {errors.dob && <p className="text-[10px] text-red-500 mt-1 pl-1 font-mono">{errors.dob}</p>}
               </div>
@@ -298,15 +298,15 @@ export default function CheckoutClient() {
           <section>
             <h2 className="text-xl font-black uppercase tracking-widest mb-6 flex items-center gap-2">
               2. Identity Verification
-              <ShieldCheck className="text-brand-neon" size={20} />
+              <ShieldCheck className="text-green-700" size={20} />
             </h2>
-            <div className="bg-[#111111] border border-white/10 rounded-2xl p-6">
-              <p className="text-xs text-white/50 mb-6 font-mono">
+            <div className="bg-gray-100 border border-gray-300 rounded-2xl p-6">
+              <p className="text-xs text-gray-500 mb-6 font-mono">
                 Mandatory government ID required for Self-Drive & Luxury rentals. Data is encrypted and automatically wiped post-trip under GDPR guidelines.
               </p>
               
               <div className="grid md:grid-cols-2 gap-4">
-                <label className={`border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center text-center cursor-pointer hover:border-brand-neon/50 transition-colors bg-[#0A0A0A] ${errors.aadharFile ? 'border-red-500/50' : 'border-white/10'}`}>
+                <label className={`border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center text-center cursor-pointer hover:border-green-600/50 transition-colors bg-white ${errors.aadharFile ? 'border-red-500/50' : 'border-gray-300'}`}>
                   <input
                     type="file"
                     accept="image/*,application/pdf"
@@ -321,20 +321,20 @@ export default function CheckoutClient() {
                   />
                   {form.aadharFile ? (
                     <>
-                      <CheckCircle2 className="text-brand-neon mb-3" size={28} />
-                      <div className="text-[10px] font-bold uppercase tracking-widest mb-1 text-brand-neon">Aadhar / Passport Selected</div>
-                      <div className="text-[9px] text-white/60 truncate max-w-[200px]">{form.aadharFile}</div>
+                      <CheckCircle2 className="text-green-700 mb-3" size={28} />
+                      <div className="text-[10px] font-bold uppercase tracking-widest mb-1 text-green-700">Aadhar / Passport Selected</div>
+                      <div className="text-[9px] text-gray-600 truncate max-w-[200px]">{form.aadharFile}</div>
                     </>
                   ) : (
                     <>
-                      <UploadCloud className="text-white/30 mb-3" size={28} />
+                      <UploadCloud className="text-gray-400 mb-3" size={28} />
                       <div className="text-[10px] font-bold uppercase tracking-widest mb-1">Aadhar / Passport <span className="text-red-500 font-bold">*</span></div>
-                      <div className="text-[9px] text-white/40">Upload Front & Back (PDF, JPG)</div>
+                      <div className="text-[9px] text-gray-500">Upload Front & Back (PDF, JPG)</div>
                     </>
                   )}
                 </label>
 
-                <label className={`border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center text-center cursor-pointer hover:border-brand-neon/50 transition-colors bg-[#0A0A0A] ${errors.dlFile ? 'border-red-500/50' : 'border-white/10'}`}>
+                <label className={`border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center text-center cursor-pointer hover:border-green-600/50 transition-colors bg-white ${errors.dlFile ? 'border-red-500/50' : 'border-gray-300'}`}>
                   <input
                     type="file"
                     accept="image/*,application/pdf"
@@ -349,15 +349,15 @@ export default function CheckoutClient() {
                   />
                   {form.dlFile ? (
                     <>
-                      <CheckCircle2 className="text-brand-neon mb-3" size={28} />
-                      <div className="text-[10px] font-bold uppercase tracking-widest mb-1 text-brand-neon">Driving License Selected</div>
-                      <div className="text-[9px] text-white/60 truncate max-w-[200px]">{form.dlFile}</div>
+                      <CheckCircle2 className="text-green-700 mb-3" size={28} />
+                      <div className="text-[10px] font-bold uppercase tracking-widest mb-1 text-green-700">Driving License Selected</div>
+                      <div className="text-[9px] text-gray-600 truncate max-w-[200px]">{form.dlFile}</div>
                     </>
                   ) : (
                     <>
-                      <UploadCloud className="text-white/30 mb-3" size={28} />
+                      <UploadCloud className="text-gray-400 mb-3" size={28} />
                       <div className="text-[10px] font-bold uppercase tracking-widest mb-1">Driving License <span className="text-red-500 font-bold">*</span></div>
-                      <div className="text-[9px] text-white/40">Valid Indian or Int. License</div>
+                      <div className="text-[9px] text-gray-500">Valid Indian or Int. License</div>
                     </>
                   )}
                 </label>
@@ -379,7 +379,7 @@ export default function CheckoutClient() {
               value={form.specialRequests}
               onChange={(e) => setForm(prev => ({ ...prev, specialRequests: e.target.value }))}
               placeholder="Any specific delivery instructions, child seats, or preferences?"
-              className="w-full bg-[#111111] border border-white/10 rounded-xl p-4 outline-none focus:border-brand-neon text-sm resize-none"
+              className="w-full bg-gray-100 border border-gray-300 rounded-xl p-4 outline-none focus:border-green-600 text-sm resize-none"
             ></textarea>
           </section>
 
@@ -387,21 +387,21 @@ export default function CheckoutClient() {
 
         {/* Right Column: Voucher Live Receipt */}
         <aside className="w-full lg:w-[400px] shrink-0">
-          <div className="sticky top-28 bg-[#0A0A0A] border-t-2 border-t-brand-neon border-x border-b border-white/10 rounded-b-3xl p-8 shadow-2xl">
+          <div className="sticky top-28 bg-white border-t-2 border-t-brand-neon border-x border-b border-gray-300 rounded-b-3xl p-8 shadow-2xl">
             
-            <div className="text-[10px] font-black text-brand-neon uppercase tracking-widest mb-2">Voucher Live Receipt</div>
+            <div className="text-[10px] font-black text-green-700 uppercase tracking-widest mb-2">Voucher Live Receipt</div>
             <h2 className="text-xl font-black uppercase tracking-widest mb-8">Regal Mobility Invoice</h2>
 
             {/* Items List */}
             <div className="space-y-4 mb-8">
               {cartItems.map((item) => (
-                <div key={item.id} className="flex justify-between items-start border-b border-white/5 pb-4">
+                <div key={item.id} className="flex justify-between items-start border-b border-gray-200 pb-4">
                   <div className="flex-1 pr-4">
-                    <div className="text-[9px] text-white/50 uppercase tracking-widest font-mono mb-1">
+                    <div className="text-[9px] text-gray-500 uppercase tracking-widest font-mono mb-1">
                       {item.serviceType === 'selfDrive' ? 'Self Drive' : item.serviceType === 'withDriver' ? 'Chauffeur' : item.serviceType === 'villaCar' ? 'Villa Combo' : item.serviceType}
                     </div>
                     <div className="font-bold text-sm uppercase">{item.title}</div>
-                    {item.extraInfo && <div className="text-[10px] text-brand-neon mt-1">{item.extraInfo}</div>}
+                    {item.extraInfo && <div className="text-[10px] text-green-700 mt-1">{item.extraInfo}</div>}
                   </div>
                   <div className="text-sm font-bold text-right shrink-0">
                     ₹{item.price.toLocaleString()}
@@ -411,10 +411,10 @@ export default function CheckoutClient() {
             </div>
 
             {/* Coupon Code Selection */}
-            <div className="bg-[#111111] border border-white/5 rounded-xl p-4 mb-6">
+            <div className="bg-gray-100 border border-gray-200 rounded-xl p-4 mb-6">
               <div className="flex items-center gap-2 mb-3">
-                <Percent size={14} className="text-brand-neon" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-white/60">Apply Coupon Code</span>
+                <Percent size={14} className="text-green-700" />
+                <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">Apply Coupon Code</span>
               </div>
               <div className="flex gap-2">
                 <input 
@@ -423,7 +423,7 @@ export default function CheckoutClient() {
                   value={couponCode}
                   onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                   disabled={!!appliedCoupon}
-                  className="flex-1 bg-black border border-white/10 rounded-lg px-3 py-2 text-xs uppercase tracking-wider outline-none focus:border-brand-neon text-white disabled:opacity-50 font-mono"
+                  className="flex-1 bg-white border border-gray-300 rounded-lg px-3 py-2 text-xs uppercase tracking-wider outline-none focus:border-green-600 text-gray-900 disabled:opacity-50 font-mono"
                 />
                 {appliedCoupon ? (
                   <button 
@@ -435,7 +435,7 @@ export default function CheckoutClient() {
                 ) : (
                   <button 
                     onClick={handleApplyCoupon}
-                    className="bg-brand-neon text-black px-4 py-2 rounded-lg text-[10px] font-black uppercase hover:bg-brand-hover transition-all"
+                    className="bg-green-600 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase hover:bg-brand-hover transition-all"
                   >
                     Apply
                   </button>
@@ -443,7 +443,7 @@ export default function CheckoutClient() {
               </div>
               {couponError && <p className="text-[9px] text-red-500 mt-2 font-mono">{couponError}</p>}
               {appliedCoupon && (
-                <div className="flex items-center gap-1.5 mt-3 text-brand-neon text-[10px] font-mono uppercase bg-brand-neon/10 border border-brand-neon/20 px-3 py-1.5 rounded-lg">
+                <div className="flex items-center gap-1.5 mt-3 text-green-700 text-[10px] font-mono uppercase bg-green-600/10 border border-green-600/20 px-3 py-1.5 rounded-lg">
                   <Gift size={12} />
                   <span>Success: <b>{appliedCoupon.code}</b> applied! (
                     {appliedCoupon.discountType === 'PERCENTAGE' 
@@ -455,44 +455,44 @@ export default function CheckoutClient() {
             </div>
 
             {/* Calculations */}
-            <div className="bg-[#111111] rounded-xl p-5 mb-6 space-y-3 font-mono text-[11px] uppercase tracking-widest">
-              <div className="flex justify-between text-white/60">
+            <div className="bg-gray-100 rounded-xl p-5 mb-6 space-y-3 font-mono text-[11px] uppercase tracking-widest">
+              <div className="flex justify-between text-gray-600">
                 <span>Subtotal</span>
                 <span>₹{subtotal.toLocaleString()}</span>
               </div>
               {appliedCoupon && (
-                <div className="flex justify-between text-brand-neon">
+                <div className="flex justify-between text-green-700">
                   <span>Coupon Discount</span>
                   <span>-₹{discount.toLocaleString()}</span>
                 </div>
               )}
-              <div className="flex justify-between text-white/60">
+              <div className="flex justify-between text-gray-600">
                 <span>Total Tax Invoice (12% GST)</span>
                 <span>₹{gst.toLocaleString()}</span>
               </div>
-              <div className="flex justify-between border-t border-white/10 pt-3 text-white font-bold">
+              <div className="flex justify-between border-t border-gray-300 pt-3 text-gray-900 font-bold">
                 <span>Total Package Fare</span>
                 <span>₹{totalAmount.toLocaleString()}</span>
               </div>
             </div>
 
-            <div className="bg-[#C4F000]/10 border border-[#C4F000]/30 rounded-xl p-5 mb-8">
+            <div className="bg-green-600/10 border border-[#C4F000]/30 rounded-xl p-5 mb-8">
               <div className="flex justify-between items-center mb-2">
-                <span className="text-[10px] font-bold text-brand-neon uppercase tracking-widest">Advance Hold Deposit:</span>
-                <span className="text-xl font-black text-brand-neon">₹{advanceHold.toLocaleString()}</span>
+                <span className="text-[10px] font-bold text-green-700 uppercase tracking-widest">Advance Hold Deposit:</span>
+                <span className="text-xl font-black text-green-700">₹{advanceHold.toLocaleString()}</span>
               </div>
-              <div className="text-[9px] text-brand-neon/60">Remaining balance of ₹{(totalAmount - advanceHold).toLocaleString()} + Security Deposit of ₹{totalDeposit.toLocaleString()} payable at delivery.</div>
+              <div className="text-[9px] text-green-700/60">Remaining balance of ₹{(totalAmount - advanceHold).toLocaleString()} + Security Deposit of ₹{totalDeposit.toLocaleString()} payable at delivery.</div>
             </div>
 
-            <div className="flex items-center gap-2 text-[9px] text-white/40 mb-6 font-mono">
-              <ShieldCheck size={14} className="shrink-0 text-brand-neon" />
+            <div className="flex items-center gap-2 text-[9px] text-gray-500 mb-6 font-mono">
+              <ShieldCheck size={14} className="shrink-0 text-green-700" />
               <p>Identity records are heavily cryptographed under GDPR security guidelines.</p>
             </div>
 
             <button 
               onClick={handlePayment}
               disabled={isProcessing}
-              className="w-full bg-brand-neon text-black font-black uppercase tracking-widest py-5 rounded-xl shadow-[0_0_20px_rgba(196,240,0,0.2)] hover:shadow-[0_0_30px_rgba(196,240,0,0.4)] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full bg-green-600 text-white font-black uppercase tracking-widest py-5 rounded-xl shadow-[0_0_20px_rgba(196,240,0,0.2)] hover:shadow-[0_0_30px_rgba(196,240,0,0.4)] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {isProcessing ? (
                 <span className="animate-pulse">Processing...</span>

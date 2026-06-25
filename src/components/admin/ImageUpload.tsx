@@ -52,13 +52,13 @@ export default function ImageUpload({ value, onChange, placeholder = 'https://im
     <div className="space-y-2">
       <div className="flex gap-2">
         <div className="relative flex-1">
-          <ImageIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30" size={16} />
+          <ImageIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
           <input
             type="text"
             value={value}
             onChange={(e) => onChange(e.target.value)}
             placeholder={placeholder}
-            className="w-full bg-[#111111] border border-white/5 rounded-xl pl-10 pr-4 py-3 text-sm text-white outline-none focus:border-white/20 transition-colors"
+            className="w-full bg-gray-100 border border-gray-200 rounded-xl pl-10 pr-4 py-3 text-sm text-gray-900 outline-none focus:border-gray-400 transition-colors"
           />
         </div>
         <input
@@ -72,7 +72,7 @@ export default function ImageUpload({ value, onChange, placeholder = 'https://im
           type="button"
           onClick={() => fileInputRef.current?.click()}
           disabled={isUploading}
-          className="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 px-4 py-3 rounded-xl transition-colors font-bold text-xs uppercase tracking-widest text-white/80 shrink-0"
+          className="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-gray-300 px-4 py-3 rounded-xl transition-colors font-bold text-xs uppercase tracking-widest text-gray-900/80 shrink-0"
         >
           {isUploading ? (
             <Loader2 size={16} className="animate-spin" />
@@ -83,7 +83,7 @@ export default function ImageUpload({ value, onChange, placeholder = 'https://im
         </button>
       </div>
       {value && (
-        <div className="mt-3 relative w-full h-32 rounded-xl overflow-hidden bg-[#050505] border border-white/10 group">
+        <div className="mt-3 relative w-full h-32 rounded-xl overflow-hidden bg-gray-50 border border-gray-300 group">
           <img 
             src={value} 
             alt="Upload preview" 
@@ -97,11 +97,11 @@ export default function ImageUpload({ value, onChange, placeholder = 'https://im
             onClick={() => setIsPreviewOpen(true)}
             className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
           >
-            <div className="bg-black/60 p-3 rounded-full text-white backdrop-blur-sm border border-white/10 hover:bg-black/80 hover:scale-110 transition-all">
+            <div className="bg-white/60 p-3 rounded-full text-gray-900 backdrop-blur-sm border border-gray-300 hover:bg-white/80 hover:scale-110 transition-all">
               <Maximize2 size={20} />
             </div>
           </button>
-          <div className="absolute bottom-2 left-2 right-2 px-2 py-1 bg-black/80 backdrop-blur-md rounded text-[9px] text-brand-neon font-mono truncate border border-white/10 pointer-events-none">
+          <div className="absolute bottom-2 left-2 right-2 px-2 py-1 bg-white/80 backdrop-blur-md rounded text-[9px] text-green-700 font-mono truncate border border-gray-300 pointer-events-none">
             {value}
           </div>
         </div>
@@ -109,11 +109,11 @@ export default function ImageUpload({ value, onChange, placeholder = 'https://im
 
       {/* Full Size Preview Modal */}
       {isPreviewOpen && value && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-white/90 backdrop-blur-sm p-4 animate-in fade-in duration-200">
           <button 
             type="button"
             onClick={() => setIsPreviewOpen(false)}
-            className="absolute top-6 right-6 p-3 bg-black/50 hover:bg-white/10 rounded-full text-white/50 hover:text-white transition-all backdrop-blur-md"
+            className="absolute top-6 right-6 p-3 bg-white/50 hover:bg-white/10 rounded-full text-gray-500 hover:text-gray-900 transition-all backdrop-blur-md"
           >
             <X size={24} />
           </button>

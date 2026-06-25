@@ -14,7 +14,7 @@ export default async function TaxiPage() {
   ]);
 
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#050505]"><div className="text-brand-neon animate-pulse font-black tracking-widest uppercase">Loading Routes...</div></div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-gray-50"><div className="text-green-700 animate-pulse font-black tracking-widest uppercase">Loading Routes...</div></div>}>
       <TaxiClient initialCars={cars} initialCities={cities} initialRoutes={routes} initialAirportRoutes={airportRoutes} />
     </Suspense>
   );

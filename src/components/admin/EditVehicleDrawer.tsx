@@ -156,14 +156,14 @@ export default function EditVehicleDrawer({ isOpen, onClose, car, cities, tiers 
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40" onClick={onClose} />
-      <div className="fixed inset-y-0 right-0 w-full md:w-[640px] lg:w-[860px] bg-[#0A0A0A] border-l border-white/10 z-50 shadow-2xl overflow-y-auto custom-scrollbar">
+      <div className="fixed inset-0 bg-white/70 backdrop-blur-sm z-40" onClick={onClose} />
+      <div className="fixed inset-y-0 right-0 w-full md:w-[640px] lg:w-[860px] bg-white border-l border-gray-300 z-50 shadow-2xl overflow-y-auto custom-scrollbar">
         <div className="p-8 md:p-10">
           <div className="flex justify-between items-center mb-10">
             <h2 className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
               <span className="text-yellow-400">✎</span> EDIT — {car.make} {car.model}
             </h2>
-            <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full text-white/40 hover:text-white transition-colors">
+            <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full text-gray-500 hover:text-gray-900 transition-colors">
               <X size={20} />
             </button>
           </div>
@@ -175,20 +175,20 @@ export default function EditVehicleDrawer({ isOpen, onClose, car, cities, tiers 
               <div className="space-y-5">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div className="space-y-2">
-                    <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Vehicle Name <span className="text-yellow-400">*</span></label>
+                    <label className="text-[9px] text-gray-500 font-mono uppercase tracking-widest block">Vehicle Name <span className="text-yellow-400">*</span></label>
                     <input name="vehicleName" required defaultValue={`${car.make} ${car.model}`}
-                      className="w-full bg-[#111111] border border-white/5 rounded-xl px-4 py-3 text-xs text-white outline-none font-mono focus:border-yellow-400/40 transition-colors" />
+                      className="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 text-xs text-gray-900 outline-none font-mono focus:border-yellow-400/40 transition-colors" />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Segment Type <span className="text-yellow-400">*</span></label>
-                    <select name="segmentType" defaultValue={car.category} className="w-full bg-[#111111] border border-white/5 rounded-xl px-4 py-3 text-xs text-white outline-none font-mono focus:border-yellow-400/40 transition-colors appearance-none">
+                    <label className="text-[9px] text-gray-500 font-mono uppercase tracking-widest block">Segment Type <span className="text-yellow-400">*</span></label>
+                    <select name="segmentType" defaultValue={car.category} className="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 text-xs text-gray-900 outline-none font-mono focus:border-yellow-400/40 transition-colors appearance-none">
                       <option>Luxury Class</option><option>SUV</option><option>Sedan</option><option>Tempo</option><option>Innova</option><option>Hatchback</option>
                     </select>
                   </div>
                 </div>
                 <div className="grid grid-cols-1 gap-5">
                   <div className="space-y-2">
-                    <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Vehicle Gallery (Multiple) <span className="text-yellow-400">*</span></label>
+                    <label className="text-[9px] text-gray-500 font-mono uppercase tracking-widest block">Vehicle Gallery (Multiple) <span className="text-yellow-400">*</span></label>
                     <input type="hidden" name="imageUrl" value={gallery.length > 0 ? gallery[0] : ''} />
                     <input type="hidden" name="gallery" value={JSON.stringify(gallery)} />
                     <MultiImageUpload value={gallery} onChange={setGallery} />
@@ -196,8 +196,8 @@ export default function EditVehicleDrawer({ isOpen, onClose, car, cities, tiers 
                 </div>
                 <div className="grid grid-cols-3 gap-5">
                   <div className="space-y-2">
-                    <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Fuel Type <span className="text-yellow-400">*</span></label>
-                    <input name="fuelType" list="fuel-options" required defaultValue={car.fuelType} placeholder="e.g. Petrol, Diesel, EV..." className="w-full bg-[#111111] border border-white/5 rounded-xl px-4 py-3 text-xs text-white outline-none font-mono focus:border-yellow-400/40 transition-colors" />
+                    <label className="text-[9px] text-gray-500 font-mono uppercase tracking-widest block">Fuel Type <span className="text-yellow-400">*</span></label>
+                    <input name="fuelType" list="fuel-options" required defaultValue={car.fuelType} placeholder="e.g. Petrol, Diesel, EV..." className="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 text-xs text-gray-900 outline-none font-mono focus:border-yellow-400/40 transition-colors" />
                     <datalist id="fuel-options">
                       <option value="Diesel" />
                       <option value="Petrol" />
@@ -208,26 +208,26 @@ export default function EditVehicleDrawer({ isOpen, onClose, car, cities, tiers 
                     </datalist>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Transmission <span className="text-yellow-400">*</span></label>
-                    <select name="transmission" defaultValue={car.transmission} className="w-full bg-[#111111] border border-white/5 rounded-xl px-4 py-3 text-xs text-white outline-none font-mono appearance-none">
+                    <label className="text-[9px] text-gray-500 font-mono uppercase tracking-widest block">Transmission <span className="text-yellow-400">*</span></label>
+                    <select name="transmission" defaultValue={car.transmission} className="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 text-xs text-gray-900 outline-none font-mono appearance-none">
                       <option>Automatic Gearbox</option><option>Manual Gearbox</option>
                     </select>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Seating Capacity <span className="text-yellow-400">*</span></label>
-                    <select name="seatingCapacity" defaultValue={String(car.seatingCapacity)} className="w-full bg-[#111111] border border-white/5 rounded-xl px-4 py-3 text-xs text-white outline-none font-mono appearance-none">
+                    <label className="text-[9px] text-gray-500 font-mono uppercase tracking-widest block">Seating Capacity <span className="text-yellow-400">*</span></label>
+                    <select name="seatingCapacity" defaultValue={String(car.seatingCapacity)} className="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 text-xs text-gray-900 outline-none font-mono appearance-none">
                       <option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
                     </select>
                   </div>
                 </div>
                 
                 <div className="flex items-center gap-4">
-                  <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest">Availability</label>
+                  <label className="text-[9px] text-gray-500 font-mono uppercase tracking-widest">Availability</label>
                   <div className="flex gap-3">
                     {['true', 'false'].map(v => (
                       <label key={v} className="flex items-center gap-2 cursor-pointer">
                         <input type="radio" name="availability" value={v} defaultChecked={String(car.availability) === v} className="accent-brand-neon" />
-                        <span className="text-[10px] font-mono text-white/60">{v === 'true' ? 'Available' : 'Unavailable'}</span>
+                        <span className="text-[10px] font-mono text-gray-600">{v === 'true' ? 'Available' : 'Unavailable'}</span>
                       </label>
                     ))}
                   </div>
@@ -237,8 +237,8 @@ export default function EditVehicleDrawer({ isOpen, onClose, car, cities, tiers 
 
             {/* City Multi-Select */}
             {/* ── SECTION: SERVICE TYPES ── */}
-            <div className="border-t border-white/5 pt-8">
-              <p className="text-[9px] text-brand-neon font-mono uppercase tracking-widest mb-4">— Categorization</p>
+            <div className="border-t border-gray-200 pt-8">
+              <p className="text-[9px] text-green-700 font-mono uppercase tracking-widest mb-4">— Categorization</p>
               <div className="flex flex-wrap gap-3">
                 {[
                   { id: 'SELF_DRIVE', label: 'Self Drive' },
@@ -249,7 +249,7 @@ export default function EditVehicleDrawer({ isOpen, onClose, car, cities, tiers 
                 ].map(type => {
                   const checked = serviceTypes.includes(type.id);
                   return (
-                    <label key={type.id} className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-[10px] font-bold uppercase tracking-widest cursor-pointer transition-all ${checked ? 'bg-brand-neon/10 border-brand-neon text-brand-neon' : 'bg-[#111111] border-white/10 text-white/50 hover:border-white/30'}`}>
+                    <label key={type.id} className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-[10px] font-bold uppercase tracking-widest cursor-pointer transition-all ${checked ? 'bg-green-600/10 border-green-600 text-green-700' : 'bg-gray-100 border-gray-300 text-gray-500 hover:border-white/30'}`}>
                       <input 
                         type="checkbox" 
                         className="hidden" 
@@ -267,14 +267,14 @@ export default function EditVehicleDrawer({ isOpen, onClose, car, cities, tiers 
               </div>
             </div>
 
-            <div className="border-t border-white/5 pt-8 mt-8">
+            <div className="border-t border-gray-200 pt-8 mt-8">
               <p className="text-[9px] text-yellow-400 font-mono uppercase tracking-widest mb-4">— City Coverage</p>
               <div className="flex flex-wrap gap-2">
                 {cities.map(c => {
                   const selected = selectedCityIds.includes(c.id);
                   return (
                     <button key={c.id} type="button" onClick={() => toggleCity(c.id)}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-[10px] font-bold uppercase tracking-widest transition-all ${selected ? 'bg-yellow-400/10 border-yellow-400 text-yellow-400' : 'bg-[#111111] border-white/10 text-white/50 hover:border-white/30'}`}>
+                      className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-[10px] font-bold uppercase tracking-widest transition-all ${selected ? 'bg-yellow-400/10 border-yellow-400 text-yellow-400' : 'bg-gray-100 border-gray-300 text-gray-500 hover:border-white/30'}`}>
                       {selected && <Check size={11} strokeWidth={3} />}{c.name}
                     </button>
                   );
@@ -283,10 +283,10 @@ export default function EditVehicleDrawer({ isOpen, onClose, car, cities, tiers 
             </div>
 
             {/* Packages */}
-            <div className="border-t border-white/5 pt-8">
+            <div className="border-t border-gray-200 pt-8">
               <div className="flex justify-between items-center mb-4">
                 <p className="text-[9px] text-yellow-400 font-mono uppercase tracking-widest">— Pricing Packages</p>
-                <button type="button" onClick={addBlankPackage} className="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest text-white/40 hover:text-yellow-400 border border-white/10 hover:border-yellow-400/40 px-3 py-1.5 rounded-lg transition-all">
+                <button type="button" onClick={addBlankPackage} className="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest text-gray-500 hover:text-yellow-400 border border-gray-300 hover:border-yellow-400/40 px-3 py-1.5 rounded-lg transition-all">
                   <Plus size={11} /> Add
                 </button>
               </div>
@@ -294,7 +294,7 @@ export default function EditVehicleDrawer({ isOpen, onClose, car, cities, tiers 
                 <div className="flex flex-wrap gap-2 mb-4">
                   {tiers.map(tier => (
                     <button key={tier.id} type="button" onClick={() => addFromTier(tier)}
-                      className="text-[9px] font-mono px-3 py-1.5 rounded-xl border border-white/10 text-white/40 hover:text-yellow-400 hover:border-yellow-400/40 transition-all">
+                      className="text-[9px] font-mono px-3 py-1.5 rounded-xl border border-gray-300 text-gray-500 hover:text-yellow-400 hover:border-yellow-400/40 transition-all">
                       + {tier.name}
                     </button>
                   ))}
@@ -302,20 +302,20 @@ export default function EditVehicleDrawer({ isOpen, onClose, car, cities, tiers 
               )}
               <div className="space-y-4">
                 {packages.map((pkg, idx) => (
-                  <div key={pkg.id} className="bg-[#111111] border border-white/5 rounded-2xl p-5 space-y-4 relative group hover:border-white/10 transition-colors">
+                  <div key={pkg.id} className="bg-gray-100 border border-gray-200 rounded-2xl p-5 space-y-4 relative group hover:border-gray-300 transition-colors">
                     <div className="flex justify-between items-center">
-                      <span className="text-[9px] text-white/30 font-mono uppercase">Package #{idx + 1}</span>
+                      <span className="text-[9px] text-gray-400 font-mono uppercase">Package #{idx + 1}</span>
                       <button type="button" onClick={() => removePackage(pkg.id)} className="opacity-0 group-hover:opacity-100 text-red-500 p-1.5 rounded-lg hover:bg-red-500/10 transition-all"><Trash2 size={13} /></button>
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                       <div className="col-span-2 space-y-1.5">
-                        <label className="text-[9px] text-white/30 font-mono uppercase tracking-widest block">Package Name <span className="text-yellow-400">*</span></label>
+                        <label className="text-[9px] text-gray-400 font-mono uppercase tracking-widest block">Package Name <span className="text-yellow-400">*</span></label>
                         <input value={pkg.name} onChange={e => updatePackage(pkg.id, 'name', e.target.value)} required placeholder="e.g. 120 KM Package"
-                          className="w-full bg-[#0A0A0A] border border-white/5 rounded-xl px-4 py-2.5 text-xs text-white outline-none font-mono focus:border-yellow-400/40 transition-colors" />
+                          className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs text-gray-900 outline-none font-mono focus:border-yellow-400/40 transition-colors" />
                       </div>
                       <div className="space-y-1.5">
-                        <label className="text-[9px] text-white/30 font-mono uppercase tracking-widest block">Type <span className="text-yellow-400">*</span></label>
-                        <select value={pkg.type} onChange={e => updatePackage(pkg.id, 'type', e.target.value)} className="w-full bg-[#0A0A0A] border border-white/5 rounded-xl px-3 py-2.5 text-xs text-white outline-none font-mono appearance-none">
+                        <label className="text-[9px] text-gray-400 font-mono uppercase tracking-widest block">Type <span className="text-yellow-400">*</span></label>
+                        <select value={pkg.type} onChange={e => updatePackage(pkg.id, 'type', e.target.value)} className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-xs text-gray-900 outline-none font-mono appearance-none">
                           <option value="KM">KM</option><option value="HOUR">HOUR</option><option value="TRANSFER">TRANSFER</option>
                         </select>
                       </div>
@@ -328,31 +328,31 @@ export default function EditVehicleDrawer({ isOpen, onClose, car, cities, tiers 
                         { label: 'Deposit (₹) (Optional)', field: 'deposit', ph: '5000' },
                       ].map(({ label, field, ph }) => (
                         <div key={field} className="space-y-1.5">
-                          <label className="text-[9px] text-white/30 font-mono uppercase tracking-widest block">
+                          <label className="text-[9px] text-gray-400 font-mono uppercase tracking-widest block">
                             {label.replace(' *', '').replace(' (Optional)', '')}
                             {label.includes(' *') && <span className="text-yellow-400 ml-1">*</span>}
-                            {label.includes(' (Optional)') && <span className="text-white/20 ml-1">(Optional)</span>}
+                            {label.includes(' (Optional)') && <span className="text-gray-400 ml-1">(Optional)</span>}
                           </label>
                           <input value={(pkg as any)[field]} onChange={e => updatePackage(pkg.id, field, e.target.value)} type="number" min="0" placeholder={ph}
-                            className="w-full bg-[#0A0A0A] border border-white/5 rounded-xl px-4 py-2.5 text-xs text-white outline-none font-mono focus:border-yellow-400/40 transition-colors" />
+                            className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs text-gray-900 outline-none font-mono focus:border-yellow-400/40 transition-colors" />
                         </div>
                       ))}
                     </div>
                   </div>
                 ))}
                 {packages.length === 0 && (
-                  <div className="text-center py-8 border border-dashed border-white/10 rounded-2xl text-white/30 text-[10px] font-mono">No packages. Add from tiers above or click Add.</div>
+                  <div className="text-center py-8 border border-dashed border-gray-300 rounded-2xl text-gray-400 text-[10px] font-mono">No packages. Add from tiers above or click Add.</div>
                 )}
               </div>
             </div>
 
             {/* ── SECTION: FEATURES ── */}
-            <div className="border-t border-white/5 pt-8">
+            <div className="border-t border-gray-200 pt-8">
               <p className="text-[9px] text-yellow-400 font-mono uppercase tracking-widest mb-4">— Vehicle Features</p>
 
               {/* Tag Input */}
               <div className="relative">
-                <div className="min-h-[52px] bg-[#111111] border border-white/5 rounded-xl px-3 py-2 flex flex-wrap gap-2 focus-within:border-yellow-400/40 transition-colors cursor-text"
+                <div className="min-h-[52px] bg-gray-100 border border-gray-200 rounded-xl px-3 py-2 flex flex-wrap gap-2 focus-within:border-yellow-400/40 transition-colors cursor-text"
                   onClick={() => document.getElementById('edit-feature-input')?.focus()}>
                   {features.map(f => (
                     <span key={f} className="flex items-center gap-1.5 bg-yellow-400/10 border border-yellow-400/30 text-yellow-400 text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-lg">
@@ -371,27 +371,27 @@ export default function EditVehicleDrawer({ isOpen, onClose, car, cities, tiers 
                     onFocus={() => setShowSuggestions(true)}
                     onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
                     placeholder={features.length === 0 ? 'Type a feature and press Enter...' : ''}
-                    className="flex-1 min-w-[160px] bg-transparent outline-none text-xs text-white font-mono placeholder:text-white/20 py-1"
+                    className="flex-1 min-w-[160px] bg-transparent outline-none text-xs text-gray-900 font-mono placeholder:text-gray-400 py-1"
                   />
                 </div>
 
                 {/* Autocomplete Suggestions */}
                 {showSuggestions && filteredSuggestions.length > 0 && (
-                  <div className="absolute top-full left-0 right-0 mt-1 bg-[#161616] border border-white/10 rounded-xl shadow-2xl z-10 overflow-hidden">
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-xl shadow-2xl z-10 overflow-hidden">
                     {filteredSuggestions.slice(0, 6).map(s => (
                       <button key={s} type="button" onMouseDown={() => addFeature(s)}
-                        className="w-full text-left px-4 py-2.5 text-[10px] font-mono text-white/60 hover:text-yellow-400 hover:bg-yellow-400/5 transition-colors flex items-center gap-2">
+                        className="w-full text-left px-4 py-2.5 text-[10px] font-mono text-gray-600 hover:text-yellow-400 hover:bg-yellow-400/5 transition-colors flex items-center gap-2">
                         <Plus size={10} /> {s}
                       </button>
                     ))}
                   </div>
                 )}
               </div>
-              <p className="text-[9px] text-white/20 font-mono mt-2">Press Enter or comma to add. Click suggestions or type custom features.</p>
+              <p className="text-[9px] text-gray-400 font-mono mt-2">Press Enter or comma to add. Click suggestions or type custom features.</p>
             </div>
 
             {/* ── SECTION: RICH CONTENT ── */}
-            <div className="border-t border-white/5 pt-8">
+            <div className="border-t border-gray-200 pt-8">
               <p className="text-[9px] text-yellow-400 font-mono uppercase tracking-widest mb-4">— Detailed Vehicle Content</p>
               <RichTextEditor value={content} onChange={setContent} placeholder="Add detailed descriptions, rules, or special notes..." />
             </div>

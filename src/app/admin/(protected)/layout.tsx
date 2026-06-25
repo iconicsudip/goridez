@@ -12,7 +12,7 @@ export default async function ProtectedAdminLayout({ children }: { children: Rea
   }
 
   return (
-    <div className="flex min-h-screen bg-[#050505] text-white font-body selection:bg-brand-neon selection:text-black">
+    <div className="flex min-h-screen bg-gray-50 text-gray-900 font-body selection:bg-green-600 selection:text-black">
       <AdminSidebar adminName={session.user?.name || 'Admin'} adminEmail={session.user?.email || ''} />
       <main className="flex-1 p-8 h-screen overflow-y-auto custom-scrollbar">
         {children}

@@ -164,18 +164,18 @@ export default function CompareSpecsModal({
   const carBPackage = activeCompareCar?.packages?.[0];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
-      <div className="bg-[#111111] border border-white/10 rounded-3xl w-full max-w-4xl overflow-hidden shadow-2xl relative flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white/80 backdrop-blur-md animate-fade-in">
+      <div className="bg-gray-100 border border-gray-300 rounded-3xl w-full max-w-4xl overflow-hidden shadow-2xl relative flex flex-col max-h-[90vh]">
         
         {/* Header */}
-        <div className="p-6 md:p-8 border-b border-white/5 flex justify-between items-center bg-[#0C0C0C]">
+        <div className="p-6 md:p-8 border-b border-gray-200 flex justify-between items-center bg-[#0C0C0C]">
           <div>
-            <span className="text-[10px] text-brand-neon font-black tracking-widest uppercase mb-1 block">Fidelity Fleet Intelligence</span>
-            <h2 className="text-xl md:text-2xl font-black uppercase tracking-tight text-white">Compare Vehicle Specifications</h2>
+            <span className="text-[10px] text-green-700 font-black tracking-widest uppercase mb-1 block">Fidelity Fleet Intelligence</span>
+            <h2 className="text-xl md:text-2xl font-black uppercase tracking-tight text-gray-900">Compare Vehicle Specifications</h2>
           </div>
           <button 
             onClick={onClose}
-            className="w-10 h-10 rounded-full border border-white/10 bg-white/5 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-colors"
+            className="w-10 h-10 rounded-full border border-gray-300 bg-white/5 flex items-center justify-center text-gray-500 hover:text-gray-900 hover:bg-white/10 transition-colors"
           >
             <X size={18} />
           </button>
@@ -186,33 +186,33 @@ export default function CompareSpecsModal({
           <div className="grid grid-cols-3 gap-4 items-stretch">
             
             {/* Column 1: Labels placeholder */}
-            <div className="flex flex-col justify-end pb-4 font-mono text-[9px] text-white/40 uppercase tracking-wider font-bold">
+            <div className="flex flex-col justify-end pb-4 font-mono text-[9px] text-gray-500 uppercase tracking-wider font-bold">
               SPECIFICATION METRIC
             </div>
 
             {/* Column 2: Selected Car Card */}
-            <div className="bg-[#161616] border border-white/5 rounded-2xl p-4 flex flex-col items-center text-center relative">
-              <div className="absolute top-3 left-3 bg-brand-neon text-black text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded">
+            <div className="bg-white border border-gray-200 rounded-2xl p-4 flex flex-col items-center text-center relative">
+              <div className="absolute top-3 left-3 bg-green-600 text-white text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded">
                 SELECTED
               </div>
               <div className="relative w-full h-[90px] mb-3">
                 <Image src={selectedCar.image} alt={selectedCar.model} fill className="object-contain" unoptimized />
               </div>
-              <h3 className="font-black text-sm uppercase text-white truncate max-w-full">
+              <h3 className="font-black text-sm uppercase text-gray-900 truncate max-w-full">
                 {selectedCar.make} {selectedCar.model}
               </h3>
-              <span className="text-[9px] font-mono text-white/50 uppercase tracking-widest mt-1">
+              <span className="text-[9px] font-mono text-gray-500 uppercase tracking-widest mt-1">
                 {selectedCar.category} Class
               </span>
             </div>
 
             {/* Column 3: Comparison Selector / Car Card */}
-            <div className="bg-[#161616] border border-white/5 rounded-2xl p-4 flex flex-col items-center text-center relative">
+            <div className="bg-white border border-gray-200 rounded-2xl p-4 flex flex-col items-center text-center relative">
               <div className="absolute top-3 left-3 w-40 text-left">
                 <select
                   value={compareCarId}
                   onChange={(e) => setCompareCarId(e.target.value)}
-                  className="bg-black/90 border border-white/10 rounded-lg px-2 py-1 text-[10px] text-white outline-none w-full cursor-pointer font-bold uppercase tracking-wider focus:border-brand-neon"
+                  className="bg-white/90 border border-gray-300 rounded-lg px-2 py-1 text-[10px] text-gray-900 outline-none w-full cursor-pointer font-bold uppercase tracking-wider focus:border-green-600"
                 >
                   <option value="" disabled>Select comparison</option>
                   {comparisonOptions.map(c => (
@@ -226,17 +226,17 @@ export default function CompareSpecsModal({
                 {activeCompareCar ? (
                   <Image src={activeCompareCar.image} alt={activeCompareCar.model} fill className="object-contain" unoptimized />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-white/20 text-xs font-mono">
+                  <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs font-mono">
                     No image available
                   </div>
                 )}
               </div>
               {activeCompareCar && (
                 <>
-                  <h3 className="font-black text-sm uppercase text-white truncate max-w-full">
+                  <h3 className="font-black text-sm uppercase text-gray-900 truncate max-w-full">
                     {activeCompareCar.make} {activeCompareCar.model}
                   </h3>
-                  <span className="text-[9px] font-mono text-white/50 uppercase tracking-widest mt-1">
+                  <span className="text-[9px] font-mono text-gray-500 uppercase tracking-widest mt-1">
                     {activeCompareCar.category} Class
                   </span>
                 </>
@@ -246,7 +246,7 @@ export default function CompareSpecsModal({
           </div>
 
           {/* Specs Rows Grid */}
-          <div className="border border-white/5 rounded-2xl overflow-hidden font-mono text-[11px]">
+          <div className="border border-gray-200 rounded-2xl overflow-hidden font-mono text-[11px]">
             {[
               { label: 'Transmission System', valA: selectedCar.transmission, valB: activeCompareCar?.transmission },
               { label: 'Propulsion Fuel', valA: selectedCar.fuelType, valB: activeCompareCar?.fuelType },
@@ -262,23 +262,23 @@ export default function CompareSpecsModal({
             ].map((row, i) => (
               <div 
                 key={i} 
-                className={`grid grid-cols-3 gap-4 p-4 border-b border-white/5 last:border-0 ${i % 2 === 0 ? 'bg-[#151515]' : 'bg-[#0E0E0E]'}`}
+                className={`grid grid-cols-3 gap-4 p-4 border-b border-gray-200 last:border-0 ${i % 2 === 0 ? 'bg-[#151515]' : 'bg-[#0E0E0E]'}`}
               >
-                <div className="text-white/50 font-bold uppercase tracking-wider text-[10px]">{row.label}</div>
-                <div className="text-white font-medium">{row.valA}</div>
-                <div className="text-white font-medium">{row.valB || '-'}</div>
+                <div className="text-gray-500 font-bold uppercase tracking-wider text-[10px]">{row.label}</div>
+                <div className="text-gray-900 font-medium">{row.valA}</div>
+                <div className="text-gray-900 font-medium">{row.valB || '-'}</div>
               </div>
             ))}
 
             {/* Special Features Row */}
-            <div className="grid grid-cols-3 gap-4 p-5 bg-[#1C1C12] border-t border-white/10">
-              <div className="text-brand-neon font-black uppercase tracking-wider text-[10px]">
+            <div className="grid grid-cols-3 gap-4 p-5 bg-[#1C1C12] border-t border-gray-300">
+              <div className="text-green-700 font-black uppercase tracking-wider text-[10px]">
                 Premium Package Features
               </div>
-              <div className="text-white/80 leading-relaxed text-[10px]">
+              <div className="text-gray-900/80 leading-relaxed text-[10px]">
                 {carASpecs.features}
               </div>
-              <div className="text-white/80 leading-relaxed text-[10px]">
+              <div className="text-gray-900/80 leading-relaxed text-[10px]">
                 {carBSpecs?.features || '-'}
               </div>
             </div>
@@ -286,10 +286,10 @@ export default function CompareSpecsModal({
         </div>
 
         {/* Footer Actions */}
-        <div className="p-6 border-t border-white/5 flex justify-end gap-4 bg-[#0C0C0C]">
+        <div className="p-6 border-t border-gray-200 flex justify-end gap-4 bg-[#0C0C0C]">
           <button 
             onClick={onClose}
-            className="px-6 py-3 border border-white/10 rounded-xl text-[10px] font-bold uppercase tracking-widest text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+            className="px-6 py-3 border border-gray-300 rounded-xl text-[10px] font-bold uppercase tracking-widest text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
           >
             Close Comparison
           </button>
@@ -305,8 +305,8 @@ export default function CompareSpecsModal({
               disabled={isCarABooked}
               className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
                 isCarABooked 
-                  ? 'bg-zinc-800 text-white/30 cursor-not-allowed border border-white/5' 
-                  : 'bg-brand-neon text-black hover:bg-brand-hover shadow-[0_0_15px_rgba(196,240,0,0.2)]'
+                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-200' 
+                  : 'bg-green-600 text-white hover:bg-brand-hover shadow-[0_0_15px_rgba(196,240,0,0.2)]'
               }`}
             >
               {isCarABooked ? 'Selected Booked' : `Choose ${selectedCar.model}`}
@@ -323,7 +323,7 @@ export default function CompareSpecsModal({
                 disabled={isCarBBooked}
                 className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
                   isCarBBooked 
-                    ? 'bg-zinc-800 text-white/30 cursor-not-allowed border border-white/5' 
+                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-200' 
                     : 'bg-white text-black hover:bg-zinc-200 shadow-[0_0_15px_rgba(255,255,255,0.1)]'
                 }`}
               >

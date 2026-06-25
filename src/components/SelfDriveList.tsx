@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useBookingStore } from '@/store/useBookingStore';
-import { ArrowLeftRight } from 'lucide-react';
+import { ArrowLeftRight, ShieldCheck, CheckCircle } from 'lucide-react';
 
 import CompareSpecsModal from './CompareSpecsModal';
 
@@ -79,19 +79,21 @@ export default function SelfDriveList({ initialCars, pickupDate, returnDate }: {
         const unitType = currentPackage?.type === 'KM' ? 'KM' : 'Hour';
 
         return (
-          <div key={car.id} className="bg-gray-100 border border-gray-200 rounded-3xl overflow-hidden flex flex-col relative group hover:border-gray-300 transition-colors">
+          <div key={car.id} className="bg-white border border-gray-200 rounded-3xl overflow-hidden flex flex-col group hover:border-green-300 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
             
             {/* Top Image Section */}
-            <div className="relative h-[240px] w-full bg-gradient-to-b from-[#1A1A1A] to-[#111111] p-4 flex items-center justify-center">
+            <div className="relative h-[220px] w-full bg-gray-50 flex items-center justify-center pt-8">
               
               {/* Badges */}
               <div className="absolute top-4 left-4 z-10 flex gap-2">
-                <span className="bg-black text-gray-900 px-3 py-1 rounded text-[9px] font-bold uppercase tracking-widest border border-gray-300">{car.category || 'Standard'}</span>
+                <span className="bg-white/90 backdrop-blur-md text-green-700 px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider shadow-sm flex items-center gap-1">
+                  <ShieldCheck size={14} /> Self-Drive
+                </span>
                 <span className="bg-green-500 text-white px-3 py-1 rounded text-[9px] font-bold uppercase tracking-widest shadow-[0_0_15px_rgba(196,240,0,0.3)]">VIP Choice</span>
               </div>
               
               {/* Top Right Icon */}
-              <div className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-black/50 border border-gray-300 flex items-center justify-center text-gray-500 cursor-pointer hover:text-gray-900 transition-colors">
+              <div className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-white/50 border border-gray-300 flex items-center justify-center text-gray-500 cursor-pointer hover:text-gray-900 transition-colors">
                 <ArrowLeftRight size={14} />
               </div>
 
@@ -101,7 +103,7 @@ export default function SelfDriveList({ initialCars, pickupDate, returnDate }: {
                   src={car.image} 
                   alt={`${car.make} ${car.model}`}
                   fill
-                  className="object-contain group-hover:scale-105 transition-transform duration-500 drop-shadow-2xl"
+                  className="object-cover group-hover:scale-105 transition-transform duration-500 drop-shadow-2xl"
                   unoptimized
                 />
               </Link>
@@ -109,20 +111,24 @@ export default function SelfDriveList({ initialCars, pickupDate, returnDate }: {
 
             {/* Middle Specs Row */}
             <div className="grid grid-cols-3 border-y border-gray-200 bg-white">
-              <div className="py-3 text-center text-[10px] text-gray-900/70 uppercase tracking-widest border-r border-gray-200">{car.transmission} GEARBOX</div>
-              <div className="py-3 text-center text-[10px] text-gray-900/70 uppercase tracking-widest border-r border-gray-200">{car.fuelType}</div>
-              <div className="py-3 text-center text-[10px] text-gray-900/70 uppercase tracking-widest">{car.seatingCapacity} SEATS</div>
+              <div className="py-3 text-center text-xs text-gray-600 font-medium capitalize border-r border-gray-200">{car.transmission} Gearbox</div>
+              <div className="py-3 text-center text-xs text-gray-600 font-medium capitalize border-r border-gray-200">{car.fuelType}</div>
+              <div className="py-3 text-center text-xs text-gray-600 font-medium capitalize">{car.seatingCapacity} Seats</div>
             </div>
 
             {/* Bottom Content */}
             <div className="p-6 md:p-8 flex-1 flex flex-col">
               
               <Link href={`/cars/${car.id}`}>
-                <h3 className="text-xl font-black mb-1 hover:text-green-700 transition-colors">{car.make} {car.model}</h3>
+                <h3 className="text-xl font-black mb-2 hover:text-green-700 transition-colors">{car.make} {car.model}</h3>
               </Link>
-              <div className="flex items-center gap-2 mb-6">
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
-                <p className="text-[10px] text-gray-500">Active in: {car.city?.name || 'All Hubs'}</p>
+              <div className="flex flex-wrap gap-2 mb-6">
+                <span className="flex items-center gap-1 bg-green-50 text-green-700 px-2 py-1 rounded border border-green-100 text-[10px] font-semibold">
+                  <ShieldCheck size={12}/> Insured
+                </span>
+                <span className="flex items-center gap-1 bg-blue-50 text-blue-700 px-2 py-1 rounded border border-blue-100 text-[10px] font-semibold">
+                  <CheckCircle size={12}/> GPS Tracked
+                </span>
               </div>
 
               {/* Package Selector */}
@@ -132,55 +138,56 @@ export default function SelfDriveList({ initialCars, pickupDate, returnDate }: {
                     <button 
                       key={pkg.id}
                       onClick={() => handlePackageSelect(car.id, pkg.limitValue)}
-                      className={`flex-1 py-2 px-4 text-[10px] font-bold rounded-lg transition-all whitespace-nowrap ${
+                      className={`flex-1 py-2 px-4 text-xs font-semibold rounded-lg transition-all whitespace-nowrap ${
                         packageLimit === pkg.limitValue 
                           ? 'bg-green-500 text-white' 
                           : 'bg-white text-gray-600 hover:text-gray-900 border border-gray-200'
                       }`}
                     >
-                      {pkg.limitValue ? `${Math.round(pkg.limitValue * durationDays)} ` : ''}{pkg.type === 'KM' ? 'KM' : 'HOURS'}
+                      {pkg.limitValue ? `${Math.round(pkg.limitValue * durationDays)} ` : ''}{pkg.type === 'KM' ? 'KM' : 'Hours'}
                     </button>
                   ))
                 ) : (
-                  <div className="text-[10px] text-gray-400 italic">No packages configured for this vehicle</div>
+                  <div className="text-xs text-gray-400 italic">No packages configured for this vehicle</div>
                 )}
               </div>
 
               {/* Fare Summary */}
               <div className="flex justify-between items-end mb-8">
                 <div>
-                  <div className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">
-                    {durationDays > 1 ? `Total Fare (${durationDays} Days)` : 'Package Fare'}
+                  <div className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">
+                    {durationDays > 1 ? `Total Fare (${Math.round(durationDays * 10) / 10} Days)` : 'Package Fare'}
                   </div>
                   <div className="flex items-baseline gap-2">
                     <span className="text-green-700 text-3xl font-black">₹{finalPrice.toLocaleString()}</span>
-                    {durationDays === 1 && <span className="text-[10px] text-gray-400">/ day</span>}
+                    {durationDays === 1 && <span className="text-xs text-gray-500">/ day</span>}
                   </div>
                 </div>
-                <div className="text-right text-[10px] space-y-1">
-                  <div><span className="text-gray-400">Extra:</span> <span className="font-bold">₹{extraCharge}/{unitType}</span></div>
-                  <div><span className="text-gray-400">Refundable:</span> <span className="font-bold">₹{deposit.toLocaleString()}</span></div>
+                <div className="text-right text-xs space-y-1">
+                  <div><span className="text-gray-500">Extra:</span> <span className="font-bold text-gray-900">₹{extraCharge}/{unitType}</span></div>
+                  <div><span className="text-gray-500">Refundable:</span> <span className="font-bold text-gray-900">₹{deposit.toLocaleString()}</span></div>
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex gap-4 mt-auto items-stretch h-[52px]">
+              <div className="flex gap-4 mt-auto items-stretch h-12">
                 <button 
                   onClick={() => setCompareCarId(car.id)}
-                  className="flex-1 flex items-center justify-center text-center px-2 py-0 text-[10px] font-bold tracking-widest uppercase rounded-xl border border-gray-300 hover:bg-white/5 transition-colors"
+                  className="flex-1 flex items-center justify-center text-center px-4 py-0 text-sm font-semibold rounded-xl border border-gray-300 hover:bg-gray-100 transition-colors"
                 >
-                  COMPARE SPECS
+                  Compare
                 </button>
                 <button 
                   onClick={() => !isAlreadyBooked && handleBook(car.id)}
                   disabled={isAlreadyBooked}
-                  className={`flex-1 flex items-center justify-center text-center px-2 py-0 text-[10px] font-black tracking-widest uppercase rounded-xl transition-all ${
+                  className={`flex-1 flex items-center justify-center text-center px-4 py-0 text-sm font-semibold rounded-xl transition-all ${
                     isAlreadyBooked 
                       ? 'bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-200 shadow-none' 
-                      : 'bg-green-500 text-white shadow-md hover:shadow-lg transition-all'
+                      : 'bg-green-600 text-white shadow-lg shadow-green-600/20 hover:shadow-xl hover:shadow-green-600/30 hover:-translate-y-0.5 relative overflow-hidden group/btn'
                   }`}
                 >
-                  {isAlreadyBooked ? 'BOOKED / UNAVAILABLE' : 'BOOK NOW'}
+                  <span className="absolute inset-0 w-full h-full -ml-[100%] bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover/btn:animate-shimmer"></span>
+                  <span className="relative z-10">{isAlreadyBooked ? 'Booked' : 'Book Now'}</span>
                 </button>
               </div>
               

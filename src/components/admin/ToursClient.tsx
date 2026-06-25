@@ -53,67 +53,67 @@ function TourDrawer({ isOpen, onClose, tour, cities, mode }: any) {
 
   if (!isOpen) return null;
   const isEdit = mode === 'edit';
-  const accent = isEdit ? 'text-yellow-400' : 'text-brand-neon';
-  const btnClass = isEdit ? 'bg-yellow-400 hover:bg-yellow-300 text-black' : 'bg-brand-neon hover:bg-brand-hover text-black';
+  const accent = isEdit ? 'text-yellow-400' : 'text-green-700';
+  const btnClass = isEdit ? 'bg-yellow-400 hover:bg-yellow-300 text-black' : 'bg-green-600 hover:bg-brand-hover text-black';
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40" onClick={onClose} />
-      <div className="fixed inset-y-0 right-0 w-full md:w-[640px] lg:w-[800px] bg-[#0A0A0A] border-l border-white/10 z-50 shadow-2xl overflow-y-auto custom-scrollbar">
+      <div className="fixed inset-0 bg-white/70 backdrop-blur-sm z-40" onClick={onClose} />
+      <div className="fixed inset-y-0 right-0 w-full md:w-[640px] lg:w-[800px] bg-white border-l border-gray-300 z-50 shadow-2xl overflow-y-auto custom-scrollbar">
         <div className="p-8 md:p-10">
           <div className="flex justify-between items-center mb-10">
             <h2 className={`text-sm font-black uppercase tracking-widest flex items-center gap-2 ${accent}`}>
               {isEdit ? '✎ EDIT TOUR' : '+ CURATE NEW TOUR'}
             </h2>
-            <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full text-white/40 hover:text-white transition-colors"><X size={20} /></button>
+            <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full text-gray-500 hover:text-gray-900 transition-colors"><X size={20} /></button>
           </div>
 
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div className="space-y-2">
-              <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Tour Title</label>
+              <label className="text-[9px] text-gray-500 font-mono uppercase tracking-widest block">Tour Title</label>
               <input name="title" required defaultValue={tour?.title}
                 placeholder="e.g. Royal Rajasthan Heritage Circuit"
-                className="w-full bg-[#111111] border border-white/5 rounded-xl px-4 py-3 text-xs text-white outline-none font-mono focus:border-white/20" />
+                className="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 text-xs text-gray-900 outline-none font-mono focus:border-gray-400" />
             </div>
 
             <div className="space-y-2">
-              <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Description</label>
+              <label className="text-[9px] text-gray-500 font-mono uppercase tracking-widest block">Description</label>
               <textarea name="description" required defaultValue={tour?.description} rows={3}
                 placeholder="Embark on a majestic odyssey through..."
-                className="w-full bg-[#111111] border border-white/5 rounded-xl px-4 py-3 text-xs text-white outline-none font-mono focus:border-white/20 resize-none" />
+                className="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 text-xs text-gray-900 outline-none font-mono focus:border-gray-400 resize-none" />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2">
-                <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Cover Image URL</label>
+                <label className="text-[9px] text-gray-500 font-mono uppercase tracking-widest block">Cover Image URL</label>
                 <input type="hidden" name="image" value={imageUrl} />
                 <ImageUpload value={imageUrl} onChange={setImageUrl} />
               </div>
               <div className="space-y-2">
-                <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Duration (Days)</label>
+                <label className="text-[9px] text-gray-500 font-mono uppercase tracking-widest block">Duration (Days)</label>
                 <input name="duration" required type="number" min="1" defaultValue={tour?.duration ?? 1}
-                  className="w-full bg-[#111111] border border-white/5 rounded-xl px-4 py-3 text-xs text-white outline-none font-mono focus:border-white/20" />
+                  className="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 text-xs text-gray-900 outline-none font-mono focus:border-gray-400" />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2">
-                <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Adult Price (₹)</label>
+                <label className="text-[9px] text-gray-500 font-mono uppercase tracking-widest block">Adult Price (₹)</label>
                 <input name="adultPrice" required type="number" defaultValue={tour?.adultPrice}
                   placeholder="45000"
-                  className="w-full bg-[#111111] border border-white/5 rounded-xl px-4 py-3 text-xs text-white outline-none font-mono focus:border-white/20" />
+                  className="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 text-xs text-gray-900 outline-none font-mono focus:border-gray-400" />
               </div>
               <div className="space-y-2">
-                <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">Child Price (₹)</label>
+                <label className="text-[9px] text-gray-500 font-mono uppercase tracking-widest block">Child Price (₹)</label>
                 <input name="childPrice" required type="number" defaultValue={tour?.childPrice}
                   placeholder="20000"
-                  className="w-full bg-[#111111] border border-white/5 rounded-xl px-4 py-3 text-xs text-white outline-none font-mono focus:border-white/20" />
+                  className="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 text-xs text-gray-900 outline-none font-mono focus:border-gray-400" />
               </div>
             </div>
 
             {/* ── MULTI-SELECT CITIES ── */}
-            <div className="border-t border-white/5 pt-6">
-              <label className="text-[9px] text-brand-neon font-mono uppercase tracking-widest block mb-3">
+            <div className="border-t border-gray-200 pt-6">
+              <label className="text-[9px] text-green-700 font-mono uppercase tracking-widest block mb-3">
                 — City Coverage (Multi-Select)
               </label>
               <div className="flex flex-wrap gap-2">
@@ -126,8 +126,8 @@ function TourDrawer({ isOpen, onClose, tour, cities, mode }: any) {
                       onClick={() => toggleCity(c.id)}
                       className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-[10px] font-bold uppercase tracking-widest transition-all ${
                         selected
-                          ? 'bg-brand-neon/10 border-brand-neon text-brand-neon shadow-[0_0_10px_rgba(196,240,0,0.08)]'
-                          : 'bg-[#111111] border-white/10 text-white/50 hover:border-white/30 hover:text-white/80'
+                          ? 'bg-green-600/10 border-green-600 text-green-700 shadow-sm'
+                          : 'bg-gray-100 border-gray-300 text-gray-500 hover:border-white/30 hover:text-gray-900/80'
                       }`}
                     >
                       {selected && <Check size={11} strokeWidth={3} />}
@@ -136,13 +136,13 @@ function TourDrawer({ isOpen, onClose, tour, cities, mode }: any) {
                   );
                 })}
                 {cities.length === 0 && (
-                  <p className="text-[10px] text-white/30 font-mono">No cities configured.</p>
+                  <p className="text-[10px] text-gray-400 font-mono">No cities configured.</p>
                 )}
               </div>
               {selectedCityIds.length > 0 && (
-                <p className="text-[9px] text-white/30 font-mono mt-2">
+                <p className="text-[9px] text-gray-400 font-mono mt-2">
                   {selectedCityIds.length} city hub{selectedCityIds.length > 1 ? 's' : ''} selected
-                  {selectedCityIds.length > 1 && <span className="text-white/20"> (primary: {cities.find((c: any) => c.id === selectedCityIds[0])?.name})</span>}
+                  {selectedCityIds.length > 1 && <span className="text-gray-400"> (primary: {cities.find((c: any) => c.id === selectedCityIds[0])?.name})</span>}
                 </p>
               )}
             </div>
@@ -189,16 +189,16 @@ export default function ToursClient({ tours, cities }: { tours: any[], cities: a
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
         <div>
           <h1 className="text-[28px] font-black uppercase tracking-tight mb-1">EXPERIENCE COORDINATOR</h1>
-          <p className="text-[10px] text-white/40 font-mono tracking-widest uppercase">Curate multi-day excursions, track guest manifests, and deploy localized itineraries.</p>
+          <p className="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Curate multi-day excursions, track guest manifests, and deploy localized itineraries.</p>
         </div>
         <div className="flex gap-3 w-full md:w-auto">
           <div className="relative flex-1 md:w-72">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30" size={15} />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={15} />
             <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Filter tours..."
-              className="w-full bg-[#111111] border border-white/10 rounded-xl py-3 pl-11 pr-4 text-xs text-white focus:outline-none focus:border-brand-neon transition-all font-mono" />
+              className="w-full bg-gray-100 border border-gray-300 rounded-xl py-3 pl-11 pr-4 text-xs text-gray-900 focus:outline-none focus:border-green-600 transition-all font-mono" />
           </div>
           <button onClick={() => setShowAdd(true)}
-            className="bg-brand-neon hover:bg-brand-hover text-black px-5 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest flex items-center gap-2 transition-all whitespace-nowrap shadow-[0_0_15px_rgba(196,240,0,0.15)]">
+            className="bg-green-600 hover:bg-brand-hover text-black px-5 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest flex items-center gap-2 transition-all whitespace-nowrap shadow-[0_0_15px_rgba(196,240,0,0.15)]">
             <Plus size={15} /> Curate New Tour
           </button>
         </div>
@@ -210,18 +210,18 @@ export default function ToursClient({ tours, cities }: { tours: any[], cities: a
           const cityName = tour.cityId ? cityMap[tour.cityId] : null;
           const isDeleting = deletingId === tour.id;
           return (
-            <div key={tour.id} className={`bg-[#111111] border border-white/5 hover:border-white/10 rounded-2xl overflow-hidden group transition-all ${isDeleting ? 'opacity-40 pointer-events-none' : ''}`}>
+            <div key={tour.id} className={`bg-gray-100 border border-gray-200 hover:border-gray-300 rounded-2xl overflow-hidden group transition-all ${isDeleting ? 'opacity-40 pointer-events-none' : ''}`}>
               {/* Image */}
-              <div className="relative w-full h-36 bg-black overflow-hidden">
+              <div className="relative w-full h-36 bg-white overflow-hidden">
                 {tour.image ? (
                   <Image src={tour.image} alt={tour.title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" unoptimized />
                 ) : (
-                  <div className="w-full h-full bg-brand-neon/5 flex items-center justify-center text-brand-neon/30 font-mono text-xs">NO IMAGE</div>
+                  <div className="w-full h-full bg-green-600/5 flex items-center justify-center text-green-700/30 font-mono text-xs">NO IMAGE</div>
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
                 <div className="absolute bottom-3 left-3 flex items-center gap-2">
                   {cityName && (
-                    <span className="text-[8px] font-bold uppercase tracking-widest bg-black/60 text-brand-neon border border-brand-neon/30 px-2 py-1 rounded flex items-center gap-1">
+                    <span className="text-[8px] font-bold uppercase tracking-widest bg-white/60 text-green-700 border border-green-300 px-2 py-1 rounded flex items-center gap-1">
                       <MapPin size={8} /> {cityName}
                     </span>
                   )}
@@ -230,20 +230,20 @@ export default function ToursClient({ tours, cities }: { tours: any[], cities: a
 
               <div className="p-5">
                 <h3 className="font-black text-sm uppercase tracking-tight mb-2 line-clamp-2">{tour.title}</h3>
-                <div className="flex items-center gap-4 text-[9px] font-mono text-white/40 mb-3">
+                <div className="flex items-center gap-4 text-[9px] font-mono text-gray-500 mb-3">
                   <span className="flex items-center gap-1"><Clock size={10} /> {tour.duration} Days</span>
                   <span className="flex items-center gap-1"><Users size={10} /> Adult: ₹{tour.adultPrice.toLocaleString()}</span>
                 </div>
-                <p className="text-[9px] text-white/30 font-mono line-clamp-2 mb-4">{tour.description}</p>
+                <p className="text-[9px] text-gray-400 font-mono line-clamp-2 mb-4">{tour.description}</p>
 
-                <div className="flex items-center justify-between pt-3 border-t border-white/5">
+                <div className="flex items-center justify-between pt-3 border-t border-gray-200">
                   <div>
-                    <div className="text-[9px] text-white/30 font-mono mb-0.5">Child Price</div>
-                    <div className="text-brand-neon font-black">₹{tour.childPrice.toLocaleString()}</div>
+                    <div className="text-[9px] text-gray-400 font-mono mb-0.5">Child Price</div>
+                    <div className="text-green-700 font-black">₹{tour.childPrice.toLocaleString()}</div>
                   </div>
                   <div className="flex gap-2">
                     <button onClick={() => setEditingTour(tour)}
-                      className="w-9 h-9 rounded-xl bg-white/5 hover:bg-brand-neon/10 hover:text-brand-neon text-white/40 flex items-center justify-center transition-colors border border-white/5">
+                      className="w-9 h-9 rounded-xl bg-white/5 hover:bg-green-600/10 hover:text-green-700 text-gray-500 flex items-center justify-center transition-colors border border-gray-200">
                       <Pencil size={14} />
                     </button>
                     <button onClick={() => handleDelete(tour.id)}
@@ -259,7 +259,7 @@ export default function ToursClient({ tours, cities }: { tours: any[], cities: a
       </div>
 
       {filtered.length === 0 && (
-        <div className="text-center py-20 text-white/20 font-mono text-sm border border-dashed border-white/10 rounded-3xl mt-4">
+        <div className="text-center py-20 text-gray-400 font-mono text-sm border border-dashed border-gray-300 rounded-3xl mt-4">
           {search ? `No tours matching "${search}"` : 'No tours curated yet.'}
         </div>
       )}

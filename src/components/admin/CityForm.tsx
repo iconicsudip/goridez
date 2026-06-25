@@ -22,33 +22,33 @@ export default function CityForm() {
   }
 
   return (
-    <div className="bg-[#161616] border border-white/5 rounded-[24px] p-8 md:p-10">
+    <div className="bg-white border border-gray-200 rounded-[24px] p-8 md:p-10">
       <h2 className="text-sm font-black uppercase tracking-widest mb-8">PROVISION NEW CITY HUB</h2>
       
       <form className="space-y-6" onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">CITY NAME</label>
-            <input name="name" required type="text" placeholder="e.g. Jodhpur" className="w-full bg-[#050505] border border-white/5 rounded-xl px-4 py-4 text-xs text-white outline-none font-mono focus:border-brand-neon focus:bg-[#0A0A0A] transition-all" />
+            <label className="text-[9px] text-gray-500 font-mono uppercase tracking-widest block">CITY NAME</label>
+            <input name="name" required type="text" placeholder="e.g. Jodhpur" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-xs text-gray-900 outline-none font-mono focus:border-green-600 focus:bg-white transition-all" />
           </div>
           <div className="space-y-2">
-            <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">TARGET URL SLUG (FOR LANDING PAGES)</label>
-            <input name="slug" required type="text" placeholder="/self-drive-cars-in-jodhpur" className="w-full bg-[#050505] border border-white/5 rounded-xl px-4 py-4 text-xs text-white outline-none font-mono focus:border-brand-neon focus:bg-[#0A0A0A] transition-all" />
+            <label className="text-[9px] text-gray-500 font-mono uppercase tracking-widest block">TARGET URL SLUG (FOR LANDING PAGES)</label>
+            <input name="slug" required type="text" placeholder="/self-drive-cars-in-jodhpur" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-xs text-gray-900 outline-none font-mono focus:border-green-600 focus:bg-white transition-all" />
           </div>
         </div>
 
         <div className="space-y-2">
-          <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">CITY FAQ SCHEMA QUESTION</label>
-          <input name="faqQuestion" required type="text" placeholder="e.g. What is the standard security deposit in Jodhpur?" className="w-full bg-[#050505] border border-white/5 rounded-xl px-4 py-4 text-xs text-white outline-none font-mono focus:border-brand-neon focus:bg-[#0A0A0A] transition-all" />
+          <label className="text-[9px] text-gray-500 font-mono uppercase tracking-widest block">CITY FAQ SCHEMA QUESTION</label>
+          <input name="faqQuestion" required type="text" placeholder="e.g. What is the standard security deposit in Jodhpur?" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-xs text-gray-900 outline-none font-mono focus:border-green-600 focus:bg-white transition-all" />
         </div>
 
         <div className="space-y-2">
-          <label className="text-[9px] text-white/40 font-mono uppercase tracking-widest block">CITY FAQ SCHEMA ANSWER</label>
-          <textarea name="faqAnswer" required placeholder="e.g. We only reserve ₹4,000 for standard offroaders, released fully upon clean return." rows={3} className="w-full bg-[#050505] border border-white/5 rounded-xl px-4 py-4 text-xs text-white outline-none font-mono focus:border-brand-neon focus:bg-[#0A0A0A] transition-all resize-none"></textarea>
+          <label className="text-[9px] text-gray-500 font-mono uppercase tracking-widest block">CITY FAQ SCHEMA ANSWER</label>
+          <textarea name="faqAnswer" required placeholder="e.g. We only reserve ₹4,000 for standard offroaders, released fully upon clean return." rows={3} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-xs text-gray-900 outline-none font-mono focus:border-green-600 focus:bg-white transition-all resize-none"></textarea>
         </div>
 
         <div className="pt-4">
-          <button disabled={loading} type="submit" className="bg-brand-neon hover:bg-brand-hover text-black px-6 py-4 rounded-xl text-[11px] font-black uppercase tracking-widest flex items-center gap-2 transition-all shadow-[0_0_20px_rgba(196,240,0,0.15)] disabled:opacity-50">
+          <button disabled={loading} type="submit" className="bg-green-600 hover:bg-brand-hover text-black px-6 py-4 rounded-xl text-[11px] font-black uppercase tracking-widest flex items-center gap-2 transition-all shadow-md disabled:opacity-50">
             {loading ? 'PROVISIONING...' : 'PUBLISH LOCATION LANDING MODULE'} <ArrowRight size={16} strokeWidth={2.5} />
           </button>
         </div>

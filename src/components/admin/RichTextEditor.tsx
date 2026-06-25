@@ -6,7 +6,7 @@ import { useMemo } from 'react';
 
 const ReactQuill = dynamic(() => import('react-quill-new'), { 
   ssr: false,
-  loading: () => <div className="h-64 flex items-center justify-center bg-[#111111] text-white/40 font-mono text-xs border border-white/5 rounded-xl">Loading Editor...</div>
+  loading: () => <div className="h-64 flex items-center justify-center bg-gray-100 text-gray-500 font-mono text-xs border border-gray-200 rounded-xl">Loading Editor...</div>
 });
 
 interface RichTextEditorProps {
@@ -26,14 +26,14 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
   }), []);
 
   return (
-    <div className="rich-text-editor-wrapper text-white">
+    <div className="rich-text-editor-wrapper text-gray-900">
       <ReactQuill 
         theme="snow" 
         value={value} 
         onChange={onChange} 
         modules={modules}
         placeholder={placeholder || 'Write detailed content here...'}
-        className="bg-[#050505] border border-white/10 rounded-xl overflow-hidden [&_.ql-toolbar]:border-0 [&_.ql-toolbar]:border-b [&_.ql-toolbar]:border-white/10 [&_.ql-toolbar]:bg-[#111111] [&_.ql-container]:border-0 [&_.ql-editor]:min-h-[250px] [&_.ql-editor]:text-sm [&_.ql-editor]:font-mono [&_.ql-stroke]:stroke-white/70 [&_.ql-fill]:fill-white/70 [&_.ql-picker]:text-white/70"
+        className="bg-gray-50 border border-gray-300 rounded-xl overflow-hidden [&_.ql-toolbar]:border-0 [&_.ql-toolbar]:border-b [&_.ql-toolbar]:border-gray-300 [&_.ql-toolbar]:bg-gray-100 [&_.ql-container]:border-0 [&_.ql-editor]:min-h-[250px] [&_.ql-editor]:text-sm [&_.ql-editor]:font-mono [&_.ql-stroke]:stroke-white/70 [&_.ql-fill]:fill-white/70 [&_.ql-picker]:text-gray-600"
       />
     </div>
   );
