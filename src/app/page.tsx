@@ -153,9 +153,9 @@ export default async function Home() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10" />
                 <div className="absolute bottom-0 left-0 p-8 w-full">
                   <div className="text-green-600 text-[10px] font-bold tracking-widest uppercase mb-1">Drive Udaipur Your Way</div>
-                  <h3 className="text-3xl font-black uppercase tracking-tight mb-6 text-[#1a202c]">SELF DRIVE COLLECTION</h3>
+                  <h3 className="text-3xl font-black uppercase tracking-tight mb-6 text-white">SELF DRIVE COLLECTION</h3>
                   <Link href="/self-drive">
-                    <button className="bg-[#a0aec0] hover:bg-[#cbd5e1] text-[#1a202c] text-[10px] font-bold px-4 py-2.5 rounded transition-colors flex items-center gap-2">
+                    <button className="bg-white hover:bg-gray-100 text-black text-[10px] font-bold px-4 py-2.5 rounded transition-colors flex items-center gap-2">
                       EXPLORE COLLECTION <ChevronRight size={14} />
                     </button>
                   </Link>
@@ -169,9 +169,9 @@ export default async function Home() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10" />
                 <div className="absolute bottom-0 left-0 p-8 w-full">
                   <div className="text-green-600 text-[10px] font-bold tracking-widest uppercase mb-1">Professional Driver Guided</div>
-                  <h3 className="text-3xl font-black uppercase tracking-tight mb-6 text-[#1a202c]">CHAUFFEUR COLLECTION</h3>
+                  <h3 className="text-3xl font-black uppercase tracking-tight mb-6 text-white">CHAUFFEUR COLLECTION</h3>
                   <Link href="/chauffeur">
-                    <button className="bg-[#a0aec0] hover:bg-[#cbd5e1] text-[#1a202c] text-[10px] font-bold px-4 py-2.5 rounded transition-colors flex items-center gap-2">
+                    <button className="bg-white hover:bg-gray-100 text-black text-[10px] font-bold px-4 py-2.5 rounded transition-colors flex items-center gap-2">
                       EXPLORE COLLECTION <ChevronRight size={14} />
                     </button>
                   </Link>
@@ -185,9 +185,9 @@ export default async function Home() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10" />
                 <div className="absolute bottom-0 left-0 p-8 w-full">
                   <div className="text-green-600 text-[10px] font-bold tracking-widest uppercase mb-1">Exclusive Private Stays</div>
-                  <h3 className="text-3xl font-black uppercase tracking-tight mb-6 text-[#1a202c]">LUXURY VILLAS</h3>
+                  <h3 className="text-3xl font-black uppercase tracking-tight mb-6 text-white">LUXURY VILLAS</h3>
                   <Link href="/villas">
-                    <button className="bg-[#a0aec0] hover:bg-[#cbd5e1] text-[#1a202c] text-[10px] font-bold px-4 py-2.5 rounded transition-colors flex items-center gap-2">
+                    <button className="bg-white hover:bg-gray-100 text-black text-[10px] font-bold px-4 py-2.5 rounded transition-colors flex items-center gap-2">
                       VIEW ESTATES <ChevronRight size={14} />
                     </button>
                   </Link>
@@ -203,7 +203,7 @@ export default async function Home() {
                   <div className="text-green-600 text-[10px] font-bold tracking-widest uppercase mb-1">Curated Heritage Trails</div>
                   <h3 className="text-3xl font-black uppercase tracking-tight mb-6 text-white">SIGNATURE TOURS</h3>
                   <Link href="/tours">
-                    <button className="bg-white/10 hover:bg-white text-white hover:text-black text-[10px] font-bold px-4 py-2.5 rounded transition-colors flex items-center gap-2 backdrop-blur-sm">
+                    <button className="bg-white hover:bg-gray-100 text-black text-[10px] font-bold px-4 py-2.5 rounded transition-colors flex items-center gap-2">
                       BROWSE ITINERARIES <ChevronRight size={14} />
                     </button>
                   </Link>
