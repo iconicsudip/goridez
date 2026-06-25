@@ -27,7 +27,7 @@ const UDAIPUR_CITY: OSMLocation = {
   type: 'city'
 };
 
-export default function TaxiClient({ initialCars, initialCities }: { initialCars: any[], initialCities: any[] }) {
+export default function TaxiClient({ initialCars, initialCities, initialRoutes, initialAirportRoutes }: { initialCars: any[], initialCities: any[], initialRoutes: any[], initialAirportRoutes: any[] }) {
   const [activeTab, setActiveTab] = useState<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
