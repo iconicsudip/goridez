@@ -9,6 +9,7 @@ export interface OSMLocation {
 export interface OSRMRoute {
   distance: number; // Distance in meters
   duration: number; // Duration in seconds
+  geometry?: any;   // GeoJSON LineString coordinates
 }
 
 /**
@@ -52,7 +53,7 @@ export async function calculateRoute(
   lon2: string, lat2: string
 ): Promise<OSRMRoute | null> {
   try {
-    const url = `https://router.project-osrm.org/route/v1/driving/${lon1},${lat1};${lon2},${lat2}?overview=false`;
+    const url = `https://router.project-osrm.org/route/v1/driving/${lon1},${lat1};${lon2},${lat2}?overview=full&geometries=geojson`;
     
     const response = await fetch(url);
     if (!response.ok) {
@@ -66,7 +67,8 @@ export async function calculateRoute(
     
     return {
       distance: data.routes[0].distance,
-      duration: data.routes[0].duration
+      duration: data.routes[0].duration,
+      geometry: data.routes[0].geometry
     };
   } catch (error) {
     console.error('Error calculating route with OSRM:', error);

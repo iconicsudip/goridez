@@ -43,12 +43,15 @@ export default function LocationAutocomplete({
     return () => clearTimeout(timer);
   }, [query, value]);
 
+  const prevValueRef = useRef(value);
+
   // Sync external value changes
   useEffect(() => {
-    if (value !== query && !isOpen) {
+    if (value !== prevValueRef.current) {
       setQuery(value);
+      prevValueRef.current = value;
     }
-  }, [value, isOpen, query]);
+  }, [value]);
 
   // Handle outside click
   useEffect(() => {

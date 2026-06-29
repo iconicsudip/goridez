@@ -43,8 +43,6 @@ model City {
   tours           Tour[]
   villas          Villa[]
   deliveryCharges DeliveryCharge[]
-  roundTripRoutes RoundTripRoute[]
-  airportTransferRoutes AirportTransferRoute[]
 }
 
 model Car {
@@ -255,49 +253,22 @@ model DeliveryCharge {
   @@unique([cityId, category])
 }
 
-model RoundTripRoute {
-  id              String   @id @default(cuid())
-  cityId          String
-  routeTitle      String
-  distanceKm      Int
-  sedan1D         Float
-  sedan2D         Float
-  sedan3D         Float
-  suv1D           Float
-  suv2D           Float
-  suv3D           Float
-  crysta1D        Float
-  crysta2D        Float
-  crysta3D        Float
-  luxury1D        Float
-  luxury2D        Float
-  luxury3D        Float
-  nightAllowance  Float    @default(500)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  city            City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
-}
-
-model AirportTransferRoute {
-  id              String   @id @default(cuid())
-  cityId          String
-  airport         String   @default("UDR")
-  zone            String
-  areaLocality    String
-  sedanPickup     Float
-  sedanDrop       Float
-  suvPickup       Float
-  suvDrop         Float
-  crystaPickup    Float
-  crystaDrop      Float
-  luxuryPickup    Float
-  luxuryDrop      Float
-  waitCharge      Float    @default(150)
-  nightFee        Float    @default(200)
-  meetGreet       Boolean  @default(true)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  city            City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
+model TaxiFareSetting {
+  id               String   @id @default(cuid())
+  vehicleCategory  String   @unique // e.g., "Sedan", "SUV", "Luxury"
+  
+  // Airport Transfer Settings
+  airportBaseFare  Float    @default(0)
+  airportRatePerKm Float    @default(15)
+  airportMinFare   Float    @default(300)
+  
+  // Round Trip Settings
+  roundTripRatePerKm Float  @default(13)
+  roundTripMinKmPerDay Int  @default(250)
+  driverAllowancePerDay Float @default(350)
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }
 
 model HomePage {

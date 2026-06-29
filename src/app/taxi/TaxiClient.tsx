@@ -3,7 +3,10 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useBookingStore } from '@/store/useBookingStore';
-import { ArrowDownUp, MapPin, Calendar, Briefcase, Loader2 } from 'lucide-react';
+import { ArrowDownUp, MapPin, Calendar, Briefcase, Loader2, Map as MapIcon } from 'lucide-react';
+import dynamic from 'next/dynamic';
+
+const RouteMap = dynamic(() => import('@/components/RouteMap'), { ssr: false, loading: () => <div className="w-full h-64 bg-gray-100 rounded-2xl animate-pulse flex items-center justify-center text-gray-400 font-mono text-[10px] uppercase tracking-widest">Loading Map...</div> });
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Image from 'next/image';
@@ -27,7 +30,13 @@ const UDAIPUR_CITY: OSMLocation = {
   type: 'city'
 };
 
-export default function TaxiClient({ initialCars, initialCities, initialRoutes, initialAirportRoutes }: { initialCars: any[], initialCities: any[], initialRoutes: any[], initialAirportRoutes: any[] }) {
+const mapToRouteLocation = (loc: OSMLocation) => ({
+  lat: parseFloat(loc.lat) || 0,
+  lon: parseFloat(loc.lon) || 0,
+  name: loc.display_name
+});
+
+export default function TaxiClient({ initialCars, initialCities, taxiSettings }: { initialCars: any[], initialCities: any[], taxiSettings: any[] }) {
   const [activeTab, setActiveTab] = useState<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -46,6 +55,7 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes, 
   // Distance calculations
   const [calculatedDistance, setCalculatedDistance] = useState<number>(0);
   const [calculatedDuration, setCalculatedDuration] = useState<number>(0); // in seconds
+  const [routeGeometry, setRouteGeometry] = useState<any>(null);
   const [isCalculating, setIsCalculating] = useState(false);
 
   useEffect(() => {
@@ -58,6 +68,7 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes, 
           if (active && route) {
             setCalculatedDistance(Math.ceil(route.distance / 1000));
             setCalculatedDuration(route.duration);
+            setRouteGeometry(route.geometry);
           }
           if (active) setIsCalculating(false);
         } else {
@@ -86,6 +97,13 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes, 
           if (returnRoute) {
             totalKm += Math.ceil(returnRoute.distance / 1000);
             totalDur += returnRoute.duration;
+            // Optionally, we just keep the geometry of the first leg or null for round trips
+            if (validDests.length === 1 && returnRoute.geometry) {
+               // Only 1 destination round trip
+               setRouteGeometry(returnRoute.geometry);
+            } else {
+               setRouteGeometry(null);
+            }
           }
         }
         
@@ -103,6 +121,7 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes, 
           if (active && route) {
             setCalculatedDistance(Math.ceil(route.distance / 1000));
             setCalculatedDuration(route.duration);
+            setRouteGeometry(route.geometry);
           }
           if (active) setIsCalculating(false);
         } else {
@@ -464,6 +483,7 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes, 
               </div>
 
               {calculatedDistance > 0 && (
+                <>
                 <div className="bg-gray-50 border border-[#2A2A0A] rounded-xl p-5 mt-6 space-y-3 font-mono text-[10px]">
                   <div className="flex justify-between items-center">
                     <span className="text-gray-500 font-bold tracking-widest">EST. ROUTE DISTANCE</span>
@@ -474,6 +494,25 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes, 
                     <span className="text-gray-900 font-bold text-sm">{isCalculating ? <Loader2 size={12} className="animate-spin" /> : displayDuration}</span>
                   </div>
                 </div>
+                
+                {!isCalculating && (
+                  <div className="mt-6 h-[300px] rounded-2xl overflow-hidden shadow-lg border border-gray-200">
+                    <RouteMap 
+                      sourceLocation={mapToRouteLocation(
+                        bookingMode === 'AIRPORT_TRANSFER' ? (atDirection === 'PICKUP' ? UDAIPUR_AIRPORT : atLocation.data || UDAIPUR_CITY) :
+                        bookingMode === 'ROUND_TRIP' ? UDAIPUR_CITY :
+                        pickupLocation.data || UDAIPUR_CITY
+                      )}
+                      destLocation={mapToRouteLocation(
+                        bookingMode === 'AIRPORT_TRANSFER' ? (atDirection === 'PICKUP' ? atLocation.data || UDAIPUR_CITY : UDAIPUR_AIRPORT) :
+                        bookingMode === 'ROUND_TRIP' ? (destLocations[0]?.data || UDAIPUR_CITY) :
+                        dropoffLocation.data || UDAIPUR_CITY
+                      )}
+                      routeGeometry={routeGeometry}
+                    />
+                  </div>
+                )}
+                </>
               )}
 
             </div>
@@ -502,11 +541,18 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes, 
                   flatFare = isRoundTrip ? Math.round(baseFlatFare * 1.8) + extraDayAllowance : baseFlatFare;
                   extraText = `${pickupLocation.name} ➔ ${dropoffLocation.name} (${calculatedDistance} KM)`;
                 } else if (bookingMode === 'ROUND_TRIP') {
-                  const minKmPerDay = 250;
+                  // Use TaxiFareSetting based on car category (fallback to defaults)
+                  const setting = taxiSettings.find(s => s.vehicleCategory.toLowerCase() === car.category.toLowerCase()) || {
+                    roundTripRatePerKm: car.packages?.[0]?.extraChargePerUnit || 13,
+                    roundTripMinKmPerDay: 250,
+                    driverAllowancePerDay: car.driverAllowanceOut || 350
+                  };
+
+                  const minKmPerDay = setting.roundTripMinKmPerDay;
                   const runningDistance = calculatedDistance * 2;
                   const billableKm = Math.max(runningDistance, minKmPerDay * durationDays);
-                  const ratePerKm = car.packages?.[0]?.extraChargePerUnit || 13;
-                  const driverAllowancePerDay = car.driverAllowanceOut || 350;
+                  const ratePerKm = setting.roundTripRatePerKm;
+                  const driverAllowancePerDay = setting.driverAllowancePerDay;
                   
                   const basicFare = Math.round(billableKm * ratePerKm);
                   const driverAllowance = driverAllowancePerDay * durationDays;
@@ -529,12 +575,20 @@ export default function TaxiClient({ initialCars, initialCities, initialRoutes, 
                   extraText = `Round Trip: Udaipur -> ${destStr} (${durationDays} Days)`;
                 } else if (bookingMode === 'AIRPORT_TRANSFER') {
                   // AIRPORT TRANSFER logic: 
-                  // Formula: Distance (km) * Per KM Charge
-                  // Minimum Fare: Base rate (20 km minimum)
-                  const ratePerKm = car.packages?.[0]?.extraChargePerUnit || 15;
-                  const baseFare = 20 * ratePerKm; // Minimum 20 KM
-                  const billableKm = Math.max(20, calculatedDistance);
-                  flatFare = Math.round(billableKm * ratePerKm);
+                  // Use TaxiFareSetting based on car category
+                  const setting = taxiSettings.find(s => s.vehicleCategory.toLowerCase() === car.category.toLowerCase()) || {
+                    airportBaseFare: 0,
+                    airportRatePerKm: car.packages?.[0]?.extraChargePerUnit || 15,
+                    airportMinFare: 300
+                  };
+
+                  const ratePerKm = setting.airportRatePerKm;
+                  const baseFare = setting.airportBaseFare;
+                  const minFare = setting.airportMinFare;
+                  
+                  const distanceFare = Math.round(calculatedDistance * ratePerKm);
+                  flatFare = baseFare + distanceFare;
+                  if (flatFare < minFare) flatFare = minFare;
                   
                   extraText = `Airport Transfer (${atDirection === 'PICKUP' ? 'Pickup from Airport' : 'Drop to Airport'}): ${atLocation.name}`;
                 }

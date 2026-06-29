@@ -653,62 +653,43 @@ export async function upsertDeliveryCharge(formData: FormData) {
   }
 }
 
-// --- ROUND TRIP ROUTES ---
-export async function addRoundTripRoute(data: any) {
+// --- TAXI FARE SETTINGS ---
+export async function saveTaxiFareSetting(data: any) {
   try {
-    await prisma.roundTripRoute.create({ data });
+    const { vehicleCategory, ...rest } = data;
+    await prisma.taxiFareSetting.upsert({
+      where: { vehicleCategory },
+      update: {
+        airportBaseFare: parseFloat(rest.airportBaseFare) || 0,
+        airportRatePerKm: parseFloat(rest.airportRatePerKm) || 0,
+        airportMinFare: parseFloat(rest.airportMinFare) || 0,
+        roundTripRatePerKm: parseFloat(rest.roundTripRatePerKm) || 0,
+        roundTripMinKmPerDay: parseInt(rest.roundTripMinKmPerDay) || 0,
+        driverAllowancePerDay: parseFloat(rest.driverAllowancePerDay) || 0,
+      },
+      create: {
+        vehicleCategory,
+        airportBaseFare: parseFloat(rest.airportBaseFare) || 0,
+        airportRatePerKm: parseFloat(rest.airportRatePerKm) || 0,
+        airportMinFare: parseFloat(rest.airportMinFare) || 0,
+        roundTripRatePerKm: parseFloat(rest.roundTripRatePerKm) || 0,
+        roundTripMinKmPerDay: parseInt(rest.roundTripMinKmPerDay) || 0,
+        driverAllowancePerDay: parseFloat(rest.driverAllowancePerDay) || 0,
+      }
+    });
     revalidatePath('/admin/transfers');
+    revalidatePath('/taxi');
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };
   }
 }
 
-export async function updateRoundTripRoute(id: string, data: any) {
+export async function deleteTaxiFareSetting(id: string) {
   try {
-    await prisma.roundTripRoute.update({ where: { id }, data });
+    await prisma.taxiFareSetting.delete({ where: { id } });
     revalidatePath('/admin/transfers');
-    return { success: true };
-  } catch (error: any) {
-    return { success: false, error: error.message };
-  }
-}
-
-export async function deleteRoundTripRoute(id: string) {
-  try {
-    await prisma.roundTripRoute.delete({ where: { id } });
-    revalidatePath('/admin/transfers');
-    return { success: true };
-  } catch (error: any) {
-    return { success: false, error: error.message };
-  }
-}
-
-// --- AIRPORT TRANSFERS ---
-export async function addAirportTransfer(data: any) {
-  try {
-    await prisma.airportTransferRoute.create({ data });
-    revalidatePath('/admin/transfers');
-    return { success: true };
-  } catch (error: any) {
-    return { success: false, error: error.message };
-  }
-}
-
-export async function updateAirportTransfer(id: string, data: any) {
-  try {
-    await prisma.airportTransferRoute.update({ where: { id }, data });
-    revalidatePath('/admin/transfers');
-    return { success: true };
-  } catch (error: any) {
-    return { success: false, error: error.message };
-  }
-}
-
-export async function deleteAirportTransfer(id: string) {
-  try {
-    await prisma.airportTransferRoute.delete({ where: { id } });
-    revalidatePath('/admin/transfers');
+    revalidatePath('/taxi');
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };

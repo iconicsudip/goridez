@@ -101,7 +101,7 @@ export default function BookingWidget({ cities = [], counts }: { cars?: any[], v
         pickupDate: pickupDate.toISOString(),
         returnDate: returnDate.toISOString(),
         driverOption: mainTab === 'CHAUFFEUR',
-        pickupCity: selectedCity,
+        pickupCity: (mainTab === 'CHAUFFEUR' && subTab === 'ROUND TRIP') ? 'Udaipur, Rajasthan' : selectedCity,
         dropCity: finalDropCity,
         bookingMode: mode
       });
@@ -109,7 +109,11 @@ export default function BookingWidget({ cities = [], counts }: { cars?: any[], v
 
     const params = new URLSearchParams();
     if (mode) params.set('mode', mode);
-    if (selectedCity) params.set('pickupCity', selectedCity);
+    if (mainTab === 'CHAUFFEUR' && subTab === 'ROUND TRIP') {
+      params.set('pickupCity', 'Udaipur, Rajasthan');
+    } else if (selectedCity) {
+      params.set('pickupCity', selectedCity);
+    }
     if (finalDropCity) params.set('dropCity', finalDropCity);
     
     if (pickupDate) params.set('pickupDate', pickupDate.toISOString());
@@ -123,10 +127,10 @@ export default function BookingWidget({ cities = [], counts }: { cars?: any[], v
   const showDropCity = (mainTab === 'CHAUFFEUR' && (subTab === 'ONE WAY' || subTab === 'ROUND TRIP')) || (mainTab === 'SELF DRIVE' && isDifferentDropCity);
 
   return (
-    <div className="w-full max-w-5xl mx-auto font-body mt-8 z-10 relative">
+    <div className="w-full max-w-5xl mx-auto font-body mt-8 z-10 relative text-left">
 
       {/* Floating Main Tabs */}
-      <div className="flex justify-center md:justify-start mx-auto w-max bg-white/95 backdrop-blur-xl rounded-t-3xl overflow-hidden shadow-lg border border-gray-300 border-b-0">
+      <div className="flex w-full sm:w-max max-w-full overflow-x-auto hide-scrollbar bg-white/95 backdrop-blur-xl rounded-t-3xl shadow-lg border border-gray-300 border-b-0">
         {(['CHAUFFEUR', 'SELF DRIVE', 'VILLAS', 'TOURS'] as MainTab[]).map((tab) => {
           if (counts) {
             if (tab === 'SELF DRIVE' && counts.selfDrive === 0) return null;
@@ -141,7 +145,7 @@ export default function BookingWidget({ cities = [], counts }: { cars?: any[], v
                 setMainTab(tab);
                 setIsDifferentDropCity(false); // Reset when switching tabs
               }}
-              className={`px-6 md:px-10 py-4 text-xs md:text-sm font-black tracking-widest transition-all ${mainTab === tab
+              className={`px-6 md:px-10 py-4 text-xs md:text-sm font-black tracking-widest transition-all whitespace-nowrap flex-shrink-0 ${mainTab === tab
                 ? 'bg-green-600 text-white shadow-[0_0_20px_rgba(22,163,74,0.3)]'
                 : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
                 }`}
@@ -187,15 +191,24 @@ export default function BookingWidget({ cities = [], counts }: { cars?: any[], v
               <label className="text-xs text-gray-500 mb-2">{showDropCity ? 'Source City' : 'Select your city'}</label>
               <div className="flex items-center gap-2 text-gray-700">
                 <MapPin size={16} className="text-gray-400" />
-                <select
-                  value={selectedCity}
-                  onChange={(e) => setSelectedCity(e.target.value)}
-                  className="w-full bg-transparent text-sm font-semibold outline-none appearance-none cursor-pointer truncate"
-                >
-                  {cities && cities.map((city: any) => (
-                    <option key={city.id} value={city.name}>{city.name}</option>
-                  ))}
-                </select>
+                {mainTab === 'CHAUFFEUR' && subTab === 'ROUND TRIP' ? (
+                  <input
+                    type="text"
+                    readOnly
+                    value="Udaipur, Rajasthan"
+                    className="w-full bg-transparent text-sm font-semibold outline-none cursor-not-allowed truncate text-gray-500"
+                  />
+                ) : (
+                  <select
+                    value={selectedCity}
+                    onChange={(e) => setSelectedCity(e.target.value)}
+                    className="w-full bg-transparent text-sm font-semibold outline-none appearance-none cursor-pointer truncate"
+                  >
+                    {cities && cities.map((city: any) => (
+                      <option key={city.id} value={city.name}>{city.name}</option>
+                    ))}
+                  </select>
+                )}
               </div>
             </div>
 
@@ -207,17 +220,14 @@ export default function BookingWidget({ cities = [], counts }: { cars?: any[], v
                     <label className="text-xs text-gray-500 mb-2">Destination city</label>
                     <div className="flex items-center gap-2 text-gray-700">
                       <MapPin size={16} className="text-gray-400" />
-                      <select
+                      <input
+                        type="text"
                         value={dest}
                         onChange={(e) => updateDestination(idx, e.target.value)}
-                        className="w-full bg-transparent text-sm font-semibold outline-none appearance-none cursor-pointer truncate"
+                        placeholder="E.g., Jaipur, Mumbai, Delhi..."
+                        className="w-full bg-transparent text-sm font-semibold outline-none truncate placeholder-gray-400"
                         required
-                      >
-                        <option value="" disabled className="text-gray-400">Destination City Name</option>
-                        {cities && cities.map((city: any) => (
-                          <option key={city.id} value={city.name}>{city.name}</option>
-                        ))}
-                      </select>
+                      />
                     </div>
                     {/* Add / Remove buttons */}
                     <div className="absolute right-4 top-1/2 -translate-y-1/2">

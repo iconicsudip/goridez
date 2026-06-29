@@ -63,7 +63,7 @@ export default function ImageUpload({ value, onChange, placeholder = 'https://im
         </div>
         <input
           type="file"
-          accept="image/*"
+          accept="image/*,video/*"
           className="hidden"
           ref={fileInputRef}
           onChange={handleFileChange}
@@ -84,14 +84,22 @@ export default function ImageUpload({ value, onChange, placeholder = 'https://im
       </div>
       {value && (
         <div className="mt-3 relative w-full h-32 rounded-xl overflow-hidden bg-gray-50 border border-gray-300 group">
-          <img 
-            src={value} 
-            alt="Upload preview" 
-            className="w-full h-full object-cover opacity-80 group-hover:opacity-60 transition-opacity"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="%23333" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>';
-            }}
-          />
+          {value.match(/\.(mp4|webm)$/i) ? (
+            <video 
+              src={value}
+              className="w-full h-full object-cover opacity-80 group-hover:opacity-60 transition-opacity"
+              autoPlay muted loop playsInline
+            />
+          ) : (
+            <img 
+              src={value} 
+              alt="Upload preview" 
+              className="w-full h-full object-cover opacity-80 group-hover:opacity-60 transition-opacity"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="%23333" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>';
+              }}
+            />
+          )}
           <button
             type="button"
             onClick={() => setIsPreviewOpen(true)}
@@ -117,11 +125,19 @@ export default function ImageUpload({ value, onChange, placeholder = 'https://im
           >
             <X size={24} />
           </button>
-          <img 
-            src={value} 
-            alt="Full size preview" 
-            className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
-          />
+          {value.match(/\.(mp4|webm)$/i) ? (
+            <video 
+              src={value} 
+              className="max-w-full max-h-full rounded-lg shadow-2xl"
+              controls autoPlay
+            />
+          ) : (
+            <img 
+              src={value} 
+              alt="Full size preview" 
+              className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+            />
+          )}
         </div>
       )}
     </div>

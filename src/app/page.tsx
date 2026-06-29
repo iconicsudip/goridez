@@ -49,86 +49,86 @@ export default async function Home() {
   return (
     <div className="flex flex-col bg-brand-bg text-gray-900 overflow-hidden font-body">
       {/* SECTION 1: HERO (Modern Light Layout) */}
-      <section className="relative min-h-screen pt-32 pb-16 lg:pb-32 bg-gray-50 flex items-center overflow-hidden">
-        {/* Subtle Background Elements */}
-        <div className="absolute top-0 right-0 w-1/2 h-full bg-green-50/50 rounded-bl-[100px] -z-10" />
-        <div className="absolute -top-40 -right-40 w-[600px] h-[600px] bg-green-400/10 blur-[100px] rounded-full -z-10" />
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Background Video/Image */}
+        <div className="absolute inset-0 z-0">
+          {hp.heroBgImage?.match(/\.(mp4|webm)$/i) ? (
+            <video 
+              src={hp.heroBgImage}
+              autoPlay muted loop playsInline
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <Image 
+              src={hp.heroBgImage}
+              alt="Luxury Transportation"
+              fill
+              className="object-cover"
+              priority
+              unoptimized
+            />
+          )}
+          {/* Overlay to ensure text readability */}
+          <div className="absolute inset-0 bg-black/60" />
+        </div>
         
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-8">
-            
-            {/* Left Content */}
-            <div className="w-full lg:w-1/2 flex flex-col items-start text-left pt-10 lg:pt-0">
-              <div className="inline-flex items-center gap-2 border border-green-200 rounded-full px-4 py-1.5 mb-8 bg-green-50">
-                <span className="text-green-700 text-xs font-bold tracking-widest uppercase">
-                  {hp.heroBadge}
-                </span>
-              </div>
-              
-              <h1 className="text-5xl md:text-6xl lg:text-[72px] font-black leading-[1.05] tracking-tight mb-6 uppercase text-gray-900">
-                {hp.heroTitleLine1} <br/>
-                <span className="text-green-600">{hp.heroTitleLine2}</span>
-              </h1>
-              
-              <p className="text-gray-500 text-lg md:text-xl max-w-xl mb-12 leading-relaxed font-medium">
-                {hp.heroDescription}
-              </p>
-              
-              <div className="flex flex-wrap items-center gap-6 mb-12">
-                <Link href="#collection" className="bg-green-600 hover:bg-green-700 text-white shadow-lg shadow-green-600/30 font-bold px-8 py-4 rounded-xl transition-all tracking-wide flex items-center gap-2">
-                  EXPLORE FLEET <ChevronRight size={18} />
-                </Link>
-                <div className="flex items-center gap-4">
-                  <div className="flex -space-x-3">
-                    <div className="w-10 h-10 rounded-full border-2 border-white bg-gray-200" />
-                    <div className="w-10 h-10 rounded-full border-2 border-white bg-gray-300" />
-                    <div className="w-10 h-10 rounded-full border-2 border-white bg-gray-400" />
-                  </div>
-                  <div className="text-xs font-semibold text-gray-600">
-                    Trusted by <br/><span className="text-gray-900 font-bold">10k+ Travelers</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Value Props */}
-              <div className="flex gap-8 pt-8 border-t border-gray-200 w-full">
-                <div>
-                  <div className="font-bold text-gray-900 text-lg mb-1">100% VETTED</div>
-                  <div className="text-gray-500 text-xs font-medium">Verified Fleet</div>
-                </div>
-                <div className="w-px bg-gray-200 h-10"></div>
-                <div>
-                  <div className="font-bold text-green-700 text-lg mb-1">₹0 DEPOSIT</div>
-                  <div className="text-gray-500 text-xs font-medium">Driver Options</div>
-                </div>
-                <div className="w-px bg-gray-200 h-10"></div>
-                <div>
-                  <div className="font-bold text-gray-900 text-lg mb-1">24x7 DESK</div>
-                  <div className="text-gray-500 text-xs font-medium">On-road Dispatch</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Content - Hero Image & Floating Widget */}
-            <div className="w-full lg:w-1/2 relative h-[500px] lg:h-[700px] flex items-center justify-center">
-              <div className="absolute inset-0 w-full h-full rounded-[40px] overflow-hidden shadow-2xl">
-                <Image 
-                  src={hp.heroBgImage} 
-                  alt="Luxury Transportation" 
-                  fill 
-                  className="object-cover hover:scale-105 transition-transform duration-1000"
-                  priority
-                  unoptimized
-                />
-              </div>
-              
-              {/* Floating Booking Widget */}
-              <div className="absolute -bottom-10 lg:-bottom-20 -left-4 lg:-left-20 w-[calc(100%+2rem)] lg:w-[120%] z-20">
-                <BookingWidget cars={cars} villas={villas} tours={tours} cities={cities} counts={{ selfDrive: selfDriveCount, chauffeur: chauffeurCount, taxi: taxiCount, tours: tours.length, villas: villas.length }} />
-              </div>
-            </div>
-
+        {/* Content */}
+        <div className="container mx-auto px-4 relative z-10 flex flex-col items-center text-center pt-32 pb-16 lg:pb-32">
+          
+          <div className="inline-flex items-center gap-2 border border-white/30 rounded-full px-4 py-1.5 mb-8 bg-white/10 backdrop-blur-md">
+            <span className="text-white text-xs font-bold tracking-widest uppercase shadow-sm">
+              {hp.heroBadge}
+            </span>
           </div>
+          
+          <h1 className="text-4xl md:text-6xl lg:text-[72px] font-black leading-[1.05] tracking-tight mb-4 md:mb-6 uppercase text-white drop-shadow-xl">
+            {hp.heroTitleLine1} <br/>
+            <span className="text-green-400">{hp.heroTitleLine2}</span>
+          </h1>
+          
+          <p className="text-gray-200 text-base md:text-xl max-w-2xl mx-auto mb-8 md:mb-12 leading-relaxed font-medium drop-shadow-md">
+            {hp.heroDescription}
+          </p>
+          
+          <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6 mb-12 md:mb-16">
+            <Link href="#collection" className="w-full md:w-auto justify-center bg-green-600 hover:bg-green-700 text-white shadow-lg shadow-green-600/30 font-bold px-8 py-4 rounded-xl transition-all tracking-wide flex items-center gap-2">
+              EXPLORE FLEET <ChevronRight size={18} />
+            </Link>
+            <div className="flex items-center gap-4 bg-white/10 backdrop-blur-md px-6 py-3 rounded-xl border border-white/20">
+              <div className="flex -space-x-3">
+                <div className="w-10 h-10 rounded-full border-2 border-white bg-gray-200" />
+                <div className="w-10 h-10 rounded-full border-2 border-white bg-gray-300" />
+                <div className="w-10 h-10 rounded-full border-2 border-white bg-gray-400" />
+              </div>
+              <div className="text-xs font-semibold text-gray-200 text-left">
+                Trusted by <br/><span className="text-white font-bold">10k+ Travelers</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Value Props */}
+          <div className="flex flex-wrap justify-center gap-4 md:gap-8 pt-8 border-t border-white/20 w-full max-w-3xl mb-12 md:mb-16">
+            <div className="text-center px-2">
+              <div className="font-bold text-white text-base md:text-lg mb-1 drop-shadow">100% VETTED</div>
+              <div className="text-gray-300 text-[10px] md:text-xs font-medium">Verified Fleet</div>
+            </div>
+            <div className="hidden md:block w-px bg-white/20 h-10"></div>
+            <div className="text-center px-2">
+              <div className="font-bold text-green-400 text-base md:text-lg mb-1 drop-shadow">₹0 DEPOSIT</div>
+              <div className="text-gray-300 text-[10px] md:text-xs font-medium">Driver Options</div>
+            </div>
+            <div className="hidden md:block w-px bg-white/20 h-10"></div>
+            <div className="text-center px-2">
+              <div className="font-bold text-white text-base md:text-lg mb-1 drop-shadow">24x7 DESK</div>
+              <div className="text-gray-300 text-[10px] md:text-xs font-medium">On-road Dispatch</div>
+            </div>
+          </div>
+
+          {/* Floating Booking Widget */}
+          <div className="w-full max-w-5xl relative z-20">
+            <BookingWidget cars={cars} villas={villas} tours={tours} cities={cities} counts={{ selfDrive: selfDriveCount, chauffeur: chauffeurCount, taxi: taxiCount, tours: tours.length, villas: villas.length }} />
+          </div>
+
         </div>
       </section>
 
@@ -137,7 +137,7 @@ export default async function Home() {
         <div className="container mx-auto px-4">
           <div className="mb-16">
             <div className="text-green-700 text-xs font-bold tracking-[0.2em] uppercase mb-4">{hp.seamlessBadge}</div>
-            <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter leading-none mb-6">
+            <h2 className="text-4xl md:text-5xl lg:text-7xl font-black uppercase tracking-tighter leading-none mb-6">
               {hp.seamlessTitle} <span className="text-outline-neon">{hp.seamlessTitleHighlight}</span>
             </h2>
             <p className="text-gray-600 text-lg max-w-xl">
@@ -225,7 +225,7 @@ export default async function Home() {
           <div className="container mx-auto px-4">
           <div className="mb-16">
             <div className="text-green-700 text-xs font-bold tracking-[0.2em] uppercase mb-4">{hp.vehiclesBadge}</div>
-            <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter leading-none mb-6">
+            <h2 className="text-4xl md:text-5xl lg:text-7xl font-black uppercase tracking-tighter leading-none mb-6">
               {hp.vehiclesTitle} <span className="text-outline-neon">{hp.vehiclesTitleHighlight}</span>
             </h2>
             <p className="text-gray-600 text-sm md:text-base max-w-3xl">
@@ -289,7 +289,7 @@ export default async function Home() {
           
           <div className="flex flex-col md:flex-row justify-between items-end mb-16">
             <div className="max-w-2xl">
-              <h2 className="text-4xl md:text-6xl font-black tracking-tight uppercase mb-4">
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight uppercase mb-4">
               {hp.toursTitle} <span className="text-outline-neon">{hp.toursTitleHighlight}</span>
             </h2>
             <p className="text-gray-600 text-sm md:text-base max-w-3xl">
@@ -354,7 +354,7 @@ export default async function Home() {
               <div className="text-green-700 text-xs font-bold tracking-[0.2em] uppercase mb-4">
                 {hp.blogsBadge}
               </div>
-              <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tight">
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight">
                 {hp.blogsTitle} <span className="text-outline-neon">{hp.blogsTitleHighlight}</span>
               </h2>
             </div>
