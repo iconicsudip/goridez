@@ -25,6 +25,17 @@ export default function Navbar({ navVisibility }: { navVisibility?: any }) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
   const isHome = pathname === '/';
   const isTransparent = isHome && !scrolled && !isOpen; // Don't be transparent if mobile menu is open
 
@@ -44,7 +55,8 @@ export default function Navbar({ navVisibility }: { navVisibility?: any }) {
   ];
 
   return (
-    <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+    <>
+      <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
       isTransparent 
         ? 'bg-transparent border-transparent' 
         : 'bg-white/90 backdrop-blur-xl border-b border-gray-200 shadow-sm'
@@ -122,48 +134,73 @@ export default function Navbar({ navVisibility }: { navVisibility?: any }) {
         </div>
 
         {/* Mobile Toggle */}
-        <button className={`lg:hidden ${isTransparent ? 'text-white' : 'text-gray-900'}`} onClick={() => setIsOpen(!isOpen)}>
-          {isOpen ? <X size={24} /> : <Menu size={24} />}
+        <button className={`lg:hidden ${isTransparent ? 'text-white' : 'text-gray-900'}`} onClick={() => setIsOpen(true)}>
+          <Menu size={24} />
         </button>
       </div>
+      </nav>
 
-      {/* Mobile Menu */}
-      {isOpen && (
-        <div className="lg:hidden p-4 border-t border-gray-300 flex flex-col gap-4 bg-white/95 backdrop-blur-xl">
+      {/* Mobile Sidebar Overlay */}
+      <div 
+        className={`fixed inset-0 bg-black/60 z-[60] lg:hidden transition-opacity duration-300 ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`} 
+        onClick={() => setIsOpen(false)}
+      />
+
+      {/* Mobile Sidebar */}
+      <div 
+        className={`fixed top-0 left-0 h-[100dvh] w-[280px] bg-white z-[70] lg:hidden transform transition-transform duration-300 ease-in-out flex flex-col ${
+          isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
+        } overflow-y-auto`}
+      >
+        <div className="p-4 flex items-center justify-between border-b border-gray-100">
+          <Link href="/" className="flex items-center gap-3" onClick={() => setIsOpen(false)}>
+            <div className="bg-green-600 text-white font-black text-xs w-8 h-8 rounded-lg flex items-center justify-center tracking-tighter">
+              GR
+            </div>
+            <div className="text-xl font-black tracking-tight text-gray-900">
+              Go<span className="text-green-600">Ridez</span>
+            </div>
+          </Link>
+          <button className="text-gray-500 hover:text-gray-900" onClick={() => setIsOpen(false)}>
+            <X size={24} />
+          </button>
+        </div>
+
+        <div className="p-4 flex flex-col gap-4">
           {links.map(link => (
             <Link 
               key={link.name} 
               href={link.href}
               onClick={() => setIsOpen(false)}
-              className={`font-medium ${pathname === link.href ? 'text-gray-900' : 'text-gray-600'}`}
+              className={`font-medium py-2 ${pathname === link.href ? 'text-gray-900' : 'text-gray-600'}`}
             >
               {link.name}
             </Link>
           ))}
-          <div className="border-t border-gray-300 pt-4 flex flex-col gap-4">
+          <div className="border-t border-gray-100 pt-6 mt-2 flex flex-col gap-4">
             {status === 'authenticated' ? (
               <>
-                <Link href="/dashboard" onClick={() => setIsOpen(false)} className="font-medium text-gray-900/80 hover:text-gray-900">
+                <Link href="/dashboard" onClick={() => setIsOpen(false)} className="font-medium py-2 text-gray-900/80 hover:text-gray-900">
                   My Dashboard
                 </Link>
                 <button 
                   onClick={() => { signOut({ callbackUrl: '/' }); setIsOpen(false); }} 
-                  className="font-medium text-left text-gray-900/80 hover:text-red-400"
+                  className="font-medium py-2 text-left text-gray-900/80 hover:text-red-500"
                 >
                   Sign Out
                 </button>
               </>
             ) : (
-              <Link href="/login" onClick={() => setIsOpen(false)} className="font-medium text-gray-900/80 hover:text-gray-900">
+              <Link href="/login" onClick={() => setIsOpen(false)} className="font-medium py-2 text-gray-900/80 hover:text-gray-900">
                 Sign In
               </Link>
             )}
-            <Link href="/self-drive" onClick={() => setIsOpen(false)} className="bg-green-600 text-white px-4 py-3 rounded-xl text-center font-bold">
+            <Link href="/self-drive" onClick={() => setIsOpen(false)} className="bg-green-600 text-white px-4 py-3 rounded-xl text-center font-bold mt-4 shadow-lg shadow-green-600/30">
               Book Now
             </Link>
           </div>
         </div>
-      )}
-    </nav>
+      </div>
+    </>
   );
 }

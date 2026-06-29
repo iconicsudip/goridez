@@ -387,7 +387,7 @@ export default function CheckoutClient() {
 
         {/* Right Column: Voucher Live Receipt */}
         <aside className="w-full lg:w-[400px] shrink-0">
-          <div className="sticky top-28 bg-white border-t-2 border-t-brand-neon border-x border-b border-gray-300 rounded-b-3xl p-8 shadow-2xl">
+          <div className="lg:sticky lg:top-28 bg-white border-t-2 border-t-brand-neon border-x border-b border-gray-300 rounded-b-3xl p-8 shadow-2xl">
             
             <div className="text-[10px] font-black text-green-700 uppercase tracking-widest mb-2">Voucher Live Receipt</div>
             <h2 className="text-xl font-black uppercase tracking-widest mb-8">Regal Mobility Invoice</h2>

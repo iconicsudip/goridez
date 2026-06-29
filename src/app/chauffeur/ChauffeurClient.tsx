@@ -198,7 +198,7 @@ export default function ChauffeurClient({ initialCars, initialCities }: { initia
       <div className="flex flex-col lg:flex-row gap-8">
         
         {/* Sidebar */}
-        <aside className="w-full lg:w-[320px] shrink-0 bg-gray-100 border border-gray-200 rounded-3xl p-8 h-fit lg:sticky top-28">
+        <aside className="w-full lg:w-[320px] shrink-0 bg-gray-100 border border-gray-200 rounded-3xl p-8 h-fit lg:sticky lg:top-28">
           <div className="flex justify-between items-center mb-8">
             <h2 className="font-black text-lg">Filters & Options</h2>
             <button 

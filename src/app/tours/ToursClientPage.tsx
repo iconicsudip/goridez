@@ -324,7 +324,7 @@ export default function ToursClientPage({ initialTours, cities }: { initialTours
 
           {/* Right Panel: Itinerary Ledger */}
           <div className="w-full lg:w-[380px] shrink-0">
-            <div className="bg-gray-100 border border-gray-200 rounded-3xl p-8 sticky top-28">
+            <div className="bg-gray-100 border border-gray-200 rounded-3xl p-8 lg:sticky lg:top-28">
 
               <div className="flex items-center gap-2 text-green-700 font-black text-[10px] uppercase tracking-widest mb-4">
                 <Compass size={14} /> Active Itinerary Plan
