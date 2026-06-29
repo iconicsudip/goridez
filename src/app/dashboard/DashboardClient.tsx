@@ -88,7 +88,7 @@ export default function DashboardClient({ user, bookings, aggregates, wishlist =
           key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_mockkey123',
           amount: order.amount,
           currency: order.currency,
-          name: 'Go Ridezz United',
+          name: 'GoRidez',
           description: description,
           order_id: order.id,
           handler: async function (response: any) {
@@ -629,7 +629,7 @@ export default function DashboardClient({ user, bookings, aggregates, wishlist =
               </button>
               
               <div className="bg-[#1a1a0a] border border-green-600/20 text-green-700 text-[9px] font-black uppercase tracking-widest inline-block px-3 py-1.5 rounded mb-4">PREMIUM TRIP RECEIPT</div>
-              <h2 className="text-3xl font-black uppercase tracking-tighter mb-1">GO RIDEZZ UNITED</h2>
+              <h2 className="text-3xl font-black uppercase tracking-tighter mb-1">GORIDEZ</h2>
               <p className="text-[10px] text-gray-500 font-mono tracking-widest uppercase">UDAIPUR STATION FLEET HQ</p>
             </div>
             

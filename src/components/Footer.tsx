@@ -6,7 +6,7 @@ export default function Footer() {
       <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
         <div className="col-span-1 md:col-span-2">
           <Link href="/" className="text-2xl font-bold font-heading mb-4 inline-block">
-            GoRidez <span className="gradient-text">United</span>
+            GoRidez
           </Link>
           <p className="text-gray-600 leading-relaxed max-w-sm">
             Experience the ultimate luxury travel across Rajasthan with our premium fleet of self-drive cars, chauffeur services, and palace villa stays.
@@ -35,7 +35,7 @@ export default function Footer() {
       </div>
       
       <div className="container mx-auto px-4 mt-12 pt-8 border-t border-gray-300 text-center text-gray-500 text-sm">
-        &copy; {new Date().getFullYear()} GoRidez United. All rights reserved.
+        &copy; {new Date().getFullYear()} GoRidez. All rights reserved.
       </div>
     </footer>
   );
