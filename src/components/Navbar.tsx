@@ -79,10 +79,10 @@ export default function Navbar({ navVisibility }: { navVisibility?: any }) {
             <Link 
               key={link.name} 
               href={link.href}
-              className={`text-sm font-medium transition-colors ${
-                pathname === link.href 
-                  ? (isTransparent ? 'text-white font-bold' : 'text-gray-900 font-bold') 
-                  : (isTransparent ? 'text-gray-200 hover:text-white' : 'text-gray-600 hover:text-gray-900')
+              className={`text-sm transition-colors ${
+                pathname?.startsWith(link.href)
+                  ? (isTransparent ? 'text-white font-black' : 'text-green-600 font-black') 
+                  : (isTransparent ? 'text-gray-200 hover:text-white font-medium' : 'text-gray-600 hover:text-gray-900 font-medium')
               }`}
             >
               {link.name}
@@ -172,7 +172,11 @@ export default function Navbar({ navVisibility }: { navVisibility?: any }) {
               key={link.name} 
               href={link.href}
               onClick={() => setIsOpen(false)}
-              className={`font-medium py-2 ${pathname === link.href ? 'text-gray-900' : 'text-gray-600'}`}
+              className={`py-2 transition-colors ${
+                pathname?.startsWith(link.href) 
+                  ? 'text-green-600 font-black' 
+                  : 'text-gray-600 font-medium hover:text-gray-900'
+              }`}
             >
               {link.name}
             </Link>
