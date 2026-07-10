@@ -9,7 +9,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
 type MainTab = 'CHAUFFEUR' | 'SELF DRIVE' | 'VILLAS' | 'TOURS';
-type SubTab = 'LOCAL' | 'ONE WAY' | 'ROUND TRIP';
+type SubTab = 'LOCAL' | 'ROUND TRIP';
 
 // ── Inline OSM Location Search Field ─────────────────────────────────────────
 // Matches the same style as the booking widget card cells
@@ -172,7 +172,7 @@ export default function BookingWidget({
   counts?: { selfDrive: number; chauffeur: number; taxi: number; tours: number; villas: number };
 }) {
   const [mainTab, setMainTab] = useState<MainTab>('CHAUFFEUR');
-  const [subTab, setSubTab] = useState<SubTab>('ONE WAY');
+  const [subTab, setSubTab] = useState<SubTab>('LOCAL');
 
   const router = useRouter();
   const { session, updateSession } = useBookingStore();
@@ -215,22 +215,21 @@ export default function BookingWidget({
 
     let stype: any = 'withDriver';
     let route = '/chauffeur';
-    let mode: any = 'ONE_WAY';
+    let mode: any = 'LOCAL';
 
     if (mainTab === 'SELF DRIVE') { stype = 'selfDrive'; route = '/self-drive'; }
     else if (mainTab === 'VILLAS') { stype = 'villaCar'; route = '/villas'; }
     else if (mainTab === 'TOURS') { stype = 'tours'; route = '/tours'; }
     else {
-      if (subTab === 'LOCAL') { stype = 'withDriver'; route = '/chauffeur'; mode = 'LOCAL'; }
-      else if (subTab === 'ROUND TRIP') { stype = 'roundTripTaxi'; route = '/taxi'; mode = 'ROUND_TRIP'; }
-      else { stype = 'oneWayTaxi'; route = '/taxi'; mode = 'ONE_WAY'; }
+      if (subTab === 'ROUND TRIP') { stype = 'roundTripTaxi'; route = '/taxi'; mode = 'ROUND_TRIP'; }
+      else { stype = 'withDriver'; route = '/chauffeur'; mode = 'LOCAL'; }
     }
 
     const isRoundTrip = mainTab === 'CHAUFFEUR' && subTab === 'ROUND TRIP';
     const pickupCityVal = isRoundTrip ? 'Udaipur' : sourceCity;
     const finalDropCity = isRoundTrip
       ? destinations.filter(d => d.trim()).join(',')
-      : ((mainTab === 'CHAUFFEUR' && subTab === 'ONE WAY') || (mainTab === 'SELF DRIVE' && isDifferentDropCity))
+      : (mainTab === 'SELF DRIVE' && isDifferentDropCity)
         ? destCity
         : sourceCity;
 
@@ -257,7 +256,7 @@ export default function BookingWidget({
   if (!isMounted) return null;
 
   const showDropCity =
-    (mainTab === 'CHAUFFEUR' && (subTab === 'ONE WAY' || subTab === 'ROUND TRIP')) ||
+    (mainTab === 'CHAUFFEUR' && subTab === 'ROUND TRIP') ||
     (mainTab === 'SELF DRIVE' && isDifferentDropCity);
 
   return (
@@ -294,7 +293,7 @@ export default function BookingWidget({
         {/* Sub Tabs */}
         {mainTab === 'CHAUFFEUR' && (
           <div className="flex flex-wrap items-center gap-3 mb-8">
-            {(['LOCAL', 'ONE WAY', 'ROUND TRIP'] as SubTab[]).map((sub) => (
+            {(['LOCAL', 'ROUND TRIP'] as SubTab[]).map((sub) => (
               <button
                 key={sub}
                 type="button"
@@ -311,7 +310,6 @@ export default function BookingWidget({
                   {subTab === sub && <div className="w-2 h-2 rounded-full bg-brand-gold" />}
                 </div>
                 {sub === 'LOCAL' && 'Local Rental'}
-                {sub === 'ONE WAY' && 'One Way'}
                 {sub === 'ROUND TRIP' && 'Round Trip'}
               </button>
             ))}
@@ -409,7 +407,7 @@ export default function BookingWidget({
             </div>
 
             {/* ── Return Date ───────────────────────────────────────── */}
-            {!(mainTab === 'CHAUFFEUR' && subTab === 'ONE WAY') && (
+            {true && (
               <div className="bg-white border border-brand-border hover:border-brand-gold/50 transition-colors rounded-xl p-4 flex flex-col shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
                 <label className="text-xs text-gray-500 mb-2 font-mono uppercase tracking-wider">
                   Drop Date

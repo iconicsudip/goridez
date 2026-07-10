@@ -42,7 +42,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings }:
   const searchParams = useSearchParams();
   const { session, updateSession, addToCart } = useBookingStore();
   
-  const [bookingMode, setBookingMode] = useState<'ONE_WAY'|'ROUND_TRIP'|'AIRPORT_TRANSFER'>('ONE_WAY');
+  const [bookingMode, setBookingMode] = useState<'ROUND_TRIP'|'AIRPORT_TRANSFER'>('ROUND_TRIP');
 
   // Locations
   const [pickupLocation, setPickupLocation] = useState<{name: string, data?: OSMLocation}>({ name: 'Udaipur, Rajasthan', data: UDAIPUR_CITY });
@@ -61,20 +61,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings }:
   useEffect(() => {
     let active = true;
     const fetchRoute = async () => {
-      if (bookingMode === 'ONE_WAY') {
-        if (pickupLocation.data && dropoffLocation.data) {
-          setIsCalculating(true);
-          const route = await calculateRoute(pickupLocation.data.lon, pickupLocation.data.lat, dropoffLocation.data.lon, dropoffLocation.data.lat);
-          if (active && route) {
-            setCalculatedDistance(Math.ceil(route.distance / 1000));
-            setCalculatedDuration(route.duration);
-            setRouteGeometry(route.geometry);
-          }
-          if (active) setIsCalculating(false);
-        } else {
-          setCalculatedDistance(0);
-        }
-      } else if (bookingMode === 'ROUND_TRIP') {
+      if (bookingMode === 'ROUND_TRIP') {
         // Source is always Udaipur
         setIsCalculating(true);
         let totalKm = 0;
@@ -132,7 +119,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings }:
     
     fetchRoute();
     return () => { active = false; };
-  }, [pickupLocation.data, dropoffLocation.data, destLocations, bookingMode, atLocation.data, atDirection]);
+  }, [pickupLocation.data, destLocations, bookingMode, atLocation.data, atDirection]);
 
   // Dates
   const [pickupDate, setPickupDate] = useState<Date>(new Date(Date.now() + 86400000));
@@ -155,8 +142,9 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings }:
 
     if (qPickupCity && pickupLocation.name !== qPickupCity) setPickupLocation({ name: qPickupCity });
     if (qDropCity && dropoffLocation.name !== qDropCity) setDropoffLocation({ name: qDropCity });
-    if (qMode) setBookingMode(qMode);
-    else if (session?.bookingMode) setBookingMode(session.bookingMode);
+    if (qMode && qMode !== 'ONE_WAY' && qMode !== 'LOCAL') setBookingMode(qMode);
+    else if (session?.bookingMode && session.bookingMode !== 'ONE_WAY' && session.bookingMode !== 'LOCAL') setBookingMode(session.bookingMode as any);
+    else setBookingMode('ROUND_TRIP');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -292,14 +280,6 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings }:
         {/* Booking Mode Tabs */}
         <div className="flex overflow-x-auto lg:flex-wrap gap-4 mb-8 bg-gray-100 p-2 rounded-2xl w-full lg:w-fit">
           <button 
-            onClick={() => setBookingMode('ONE_WAY')}
-            className={`px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
-              bookingMode === 'ONE_WAY' ? 'bg-green-500 text-white shadow-lg shadow-green-500/20' : 'text-gray-500 hover:text-gray-900'
-            }`}
-          >
-            One Way Express
-          </button>
-          <button 
             onClick={() => setBookingMode('ROUND_TRIP')}
             className={`px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
               bookingMode === 'ROUND_TRIP' ? 'bg-green-500 text-white shadow-lg shadow-green-500/20' : 'text-gray-500 hover:text-gray-900'
@@ -329,29 +309,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings }:
               
               <div className="space-y-4 relative">
                 
-                {bookingMode === 'ONE_WAY' ? (
-                  <>
-                    <div>
-                      <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest mb-2">Pick-Up Location</label>
-                      <LocationAutocomplete
-                        value={pickupLocation.name}
-                        onChange={(val, loc) => setPickupLocation({ name: val, data: loc })}
-                        placeholder="Search starting city/area..."
-                      />
-                    </div>
-                    <div className="absolute top-[28%] left-12 w-8 h-8 bg-gray-50 border border-green-300 text-green-700 rounded-full flex items-center justify-center z-10 cursor-pointer">
-                      <ArrowDownUp size={14} />
-                    </div>
-                    <div>
-                      <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest mb-2">Drop-Off Destination</label>
-                      <LocationAutocomplete
-                        value={dropoffLocation.name}
-                        onChange={(val, loc) => setDropoffLocation({ name: val, data: loc })}
-                        placeholder="Search destination city/area..."
-                      />
-                    </div>
-                  </>
-                ) : bookingMode === 'ROUND_TRIP' ? (
+                {bookingMode === 'ROUND_TRIP' ? (
                   <>
                     <div>
                       <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest mb-2">Pick-Up Location</label>
@@ -537,14 +495,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings }:
                 let flatFare = 0;
                 let extraText = '';
 
-                if (bookingMode === 'ONE_WAY') {
-                  const ratePerKm = car.packages?.[0]?.extraChargePerUnit || 15;
-                  const baseFlatFare = Math.round(2000 + (calculatedDistance * ratePerKm * 1.2));
-                  const isRoundTrip = returnDate !== null;
-                  const extraDayAllowance = durationDays > 1 ? (durationDays - 1) * 1500 : 0;
-                  flatFare = isRoundTrip ? Math.round(baseFlatFare * 1.8) + extraDayAllowance : baseFlatFare;
-                  extraText = `${pickupLocation.name} ➔ ${dropoffLocation.name} (${calculatedDistance} KM)`;
-                } else if (bookingMode === 'ROUND_TRIP') {
+                if (bookingMode === 'ROUND_TRIP') {
                   // Use TaxiFareSetting based on car category (fallback to defaults)
                   const setting = taxiSettings.find(s => s.vehicleCategory.toLowerCase() === car.category.toLowerCase()) || {
                     roundTripRatePerKm: car.packages?.[0]?.extraChargePerUnit || 13,
