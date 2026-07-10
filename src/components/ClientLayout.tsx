@@ -6,17 +6,17 @@ import Footer from './Footer';
 import FloatingCart from './FloatingCart';
 import CartDrawer from './cart/CartDrawer';
 
-export default function ClientLayout({ children, navVisibility }: { children: React.ReactNode, navVisibility?: any }) {
+export default function ClientLayout({ children, navVisibility, siteSettings }: { children: React.ReactNode, navVisibility?: any, siteSettings?: any }) {
   const pathname = usePathname();
   const isAdmin = pathname?.startsWith('/admin');
 
   return (
     <>
-      {!isAdmin && <Navbar navVisibility={navVisibility} />}
+      {!isAdmin && <Navbar navVisibility={navVisibility} siteSettings={siteSettings} />}
       {children}
       {!isAdmin && <FloatingCart />}
       {!isAdmin && <CartDrawer />}
-      {!isAdmin && <Footer />}
+      {!isAdmin && <Footer siteSettings={siteSettings} />}
     </>
   );
 }

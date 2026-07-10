@@ -31,9 +31,10 @@ interface DashboardClientProps {
   };
   wishlist?: any[];
   notifications?: any[];
+  razorpayKeyId?: string;
 }
 
-export default function DashboardClient({ user, bookings, aggregates, wishlist = [], notifications = [] }: DashboardClientProps) {
+export default function DashboardClient({ user, bookings, aggregates, wishlist = [], notifications = [], razorpayKeyId }: DashboardClientProps) {
   const [activeTab, setActiveTab] = useState<Tab>('bookings');
   const [showReceiptModal, setShowReceiptModal] = useState<string | null>(null);
   const [localWishlist, setLocalWishlist] = useState(wishlist);
@@ -85,7 +86,7 @@ export default function DashboardClient({ user, bookings, aggregates, wishlist =
       script.src = 'https://checkout.razorpay.com/v1/checkout.js';
       script.onload = () => {
         const options = {
-          key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_mockkey123',
+          key: razorpayKeyId || 'rzp_test_mockkey123',
           amount: order.amount,
           currency: order.currency,
           name: 'GoRidez',

@@ -6,7 +6,10 @@ export async function POST(req: NextRequest) {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, bookingIds, settleBookingId } = await req.json();
 
-    const secret = process.env.RAZORPAY_KEY_SECRET || 'mocksecret123';
+    const settings = await prisma.siteSettings.findUnique({
+      where: { id: 'singleton' },
+    });
+    const secret = settings?.razorpayKeySecret || process.env.RAZORPAY_KEY_SECRET || 'mocksecret123';
 
     // Verify the payment signature using HMAC SHA256
     const generated_signature = crypto

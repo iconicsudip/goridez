@@ -24,12 +24,12 @@ export default function FloatingCart() {
   return (
     <button
       onClick={openCart}
-      className="fixed bottom-8 right-8 z-50 bg-green-600 hover:bg-[#aacc00] text-black p-4 rounded-3xl shadow-[0_10px_40px_rgba(196,240,0,0.3)] transition-all hover:scale-105"
+      className="fixed bottom-8 right-8 z-50 bg-brand-gold hover:bg-[#8dbb00] text-white p-4 rounded-3xl shadow-lg shadow-brand-gold/30 transition-all hover:scale-105"
       aria-label="View Cart"
     >
       <div className="relative">
         <Car size={28} strokeWidth={2.5} />
-        <span className="absolute -top-4 -right-4 bg-white text-green-700 border-2 border-[#C4F000] w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-black">
+        <span className="absolute -top-4 -right-4 bg-white text-black border-2 border-brand-gold w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-black">
           {itemCount}
         </span>
       </div>

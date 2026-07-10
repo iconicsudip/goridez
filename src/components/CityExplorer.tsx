@@ -82,15 +82,23 @@ export default function CityExplorer({
   };
 
   return (
-    <section className="py-24 bg-white border-t border-gray-200 relative">
-      <div className="container mx-auto px-4">
+    <section className="py-24 bg-[#0A0A0A] border-t border-zinc-900 relative overflow-hidden">
+      {/* Decorative Luxury Background Glows */}
+      <div className="absolute top-1/4 left-1/12 w-[450px] h-[450px] bg-brand-gold/[0.035] blur-[130px] rounded-full pointer-events-none -z-10" />
+      <div className="absolute bottom-1/4 right-1/12 w-[450px] h-[450px] bg-brand-gold/[0.035] blur-[130px] rounded-full pointer-events-none -z-10" />
+
+      <div className="container mx-auto px-4 relative z-10">
         
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 text-green-700 text-[10px] font-black uppercase tracking-widest mb-4">
-            <MapPin size={14} /> Destinations
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <span className="h-[2px] w-8 bg-brand-gold rounded-full"></span>
+            <div className="text-brand-gold text-[10px] font-black uppercase tracking-widest">
+              Destinations
+            </div>
+            <span className="h-[2px] w-8 bg-brand-gold rounded-full"></span>
           </div>
-          <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter leading-none mb-10">
+          <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter leading-none mb-10 text-white">
             EXPLORE BY <span className="text-outline-neon">CITY</span>
           </h2>
           
@@ -100,28 +108,29 @@ export default function CityExplorer({
               <button
                 key={city.id}
                 onClick={() => setActiveCityId(city.id)}
-                className={`px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-colors ${
+                className={`px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-colors cursor-pointer ${
                   activeCityId === city.id 
-                    ? 'bg-green-600 text-white' 
-                    : 'bg-white border border-gray-200 text-gray-500 hover:bg-gray-100 hover:text-gray-900'
+                    ? 'bg-brand-gold text-white shadow-md shadow-brand-gold/30 font-bold' 
+                    : 'bg-[#1F1F1F] border border-zinc-800 text-gray-400 hover:bg-zinc-800 hover:text-white'
                 }`}
               >
                 {city.name}
               </button>
             ))}
           </div>
+          <div className="w-20 h-1 bg-brand-gold mx-auto mt-8 rounded-full"></div>
         </div>
 
         {/* Tabs */}
-        <div className="flex flex-wrap items-center gap-6 border-b border-gray-300 pb-4 mb-10">
+        <div className="flex flex-wrap items-center gap-6 border-b border-zinc-800 pb-4 mb-10">
           {availableTabs.map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`text-[11px] font-black tracking-widest uppercase flex items-center gap-2 transition-colors ${
+              className={`text-[11px] font-black tracking-widest uppercase flex items-center gap-2 transition-colors cursor-pointer ${
                 activeTab === tab
-                  ? 'text-green-700'
-                  : 'text-gray-500 hover:text-gray-900'
+                  ? 'text-brand-gold'
+                  : 'text-gray-400 hover:text-white'
               }`}
             >
               {tab === 'SELF DRIVE' && <Car size={16} />}
@@ -136,13 +145,13 @@ export default function CityExplorer({
 
         {/* Grid */}
         {displayItems.length === 0 ? (
-          <div className="text-center py-20 text-gray-400 text-sm font-mono italic bg-gray-100 rounded-2xl border border-gray-200">
+          <div className="text-center py-20 text-gray-405 text-sm font-mono italic bg-[#1F1F1F] rounded-2xl border border-zinc-800">
             No items found for {cities.find(c => c.id === activeCityId)?.name} in {activeTab}.
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {displayItems.map((item, idx) => (
-              <div key={item.id || idx} className="bg-gray-100 border border-gray-200 rounded-2xl p-4 flex flex-col group">
+              <div key={item.id || idx} className="bg-[#1F1F1F] border border-zinc-800 rounded-2xl p-4 flex flex-col group hover:border-brand-gold hover:shadow-lg transition-all">
                 <div className="relative h-48 w-full rounded-xl overflow-hidden mb-4">
                   <Image 
                     src={item.image} 
@@ -155,16 +164,16 @@ export default function CityExplorer({
                 </div>
                 
                 <div className="flex flex-col flex-grow">
-                  <div className="text-[10px] text-green-700 font-bold tracking-[0.2em] uppercase mb-1">
+                  <div className="text-[10px] text-brand-gold font-bold tracking-[0.2em] uppercase mb-1">
                     {item.category || (activeTab === 'VILLAS' ? 'Palace Stay' : 'Experience')}
                   </div>
-                  <h3 className="text-2xl font-black uppercase tracking-tight mb-4">
+                  <h3 className="text-2xl font-black uppercase tracking-tight mb-4 text-white">
                     {item.name || `${item.make || ''} ${item.model || ''}`.trim() || item.title}
                   </h3>
                   
                   <Link href={getLinkForTab()} className="mt-auto">
-                    <button className="w-full bg-gray-100 hover:bg-white/10 text-gray-900 border border-gray-300 text-[10px] font-black py-4 rounded-xl transition-colors uppercase tracking-widest flex items-center justify-center gap-2 group-hover:border-green-300">
-                      BOOK NOW <ArrowRight size={14} className="group-hover:text-green-700" />
+                    <button className="w-full bg-black/40 hover:bg-brand-gold text-gray-300 hover:text-white border border-zinc-800 hover:border-brand-gold text-[10px] font-black py-4 rounded-xl transition-all uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer">
+                      BOOK NOW <ArrowRight size={14} className="group-hover:text-white" />
                     </button>
                   </Link>
                 </div>

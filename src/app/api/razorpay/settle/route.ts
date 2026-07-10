@@ -5,10 +5,15 @@ import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../auth/[...nextauth]/route';
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID || 'rzp_test_mockkey123',
-  key_secret: process.env.RAZORPAY_KEY_SECRET || 'mocksecret123',
-});
+async function getRazorpayInstance() {
+  const settings = await prisma.siteSettings.findUnique({
+    where: { id: 'singleton' },
+  });
+  return new Razorpay({
+    key_id: settings?.razorpayKeyId || process.env.RAZORPAY_KEY_ID || 'rzp_test_mockkey123',
+    key_secret: settings?.razorpayKeySecret || process.env.RAZORPAY_KEY_SECRET || 'mocksecret123',
+  });
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -41,7 +46,8 @@ export async function POST(req: NextRequest) {
       },
     };
 
-    const order = await razorpay.orders.create(options);
+    const rzp = await getRazorpayInstance();
+    const order = await rzp.orders.create(options);
 
     if (!order) {
       return NextResponse.json({ error: 'Failed to generate payment gateway order' }, { status: 500 });

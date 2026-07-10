@@ -15,6 +15,7 @@ export default function HomePageManager({ initialData }: { initialData: any }) {
     heroTitleLine2: initialData?.heroTitleLine2 || 'WITH FREEDOM',
     heroDescription: initialData?.heroDescription || 'Premium self drive cars, chauffeur services, luxury villas and curated Rajasthan travel experiences. Built specifically for elite global explorers.',
     heroBgImage: initialData?.heroBgImage || 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=2500&q=80',
+    heroVideoUrl: initialData?.heroVideoUrl || 'https://assets.mixkit.co/videos/preview/mixkit-luxury-car-parked-at-night-42289-large.mp4',
     
     seamlessBadge: initialData?.seamlessBadge || 'Discover the Mewar Heritage',
     seamlessTitle: initialData?.seamlessTitle || 'SEAMLESS',
@@ -115,13 +116,22 @@ export default function HomePageManager({ initialData }: { initialData: any }) {
                 className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors"
               />
             </div>
-            <div>
+             <div>
               <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">
                 Hero Banner Image URL
               </label>
               <ImageUpload
                 value={formData.heroBgImage}
                 onChange={(val) => setFormData({ ...formData, heroBgImage: val })}
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">
+                Hero Banner Video URL
+              </label>
+              <ImageUpload
+                value={formData.heroVideoUrl}
+                onChange={(val) => setFormData({ ...formData, heroVideoUrl: val })}
               />
             </div>
           </div>

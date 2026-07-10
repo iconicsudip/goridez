@@ -576,6 +576,7 @@ export async function updateHomePage(formData: FormData) {
       heroTitleLine2: formData.get('heroTitleLine2') as string,
       heroDescription: formData.get('heroDescription') as string,
       heroBgImage: formData.get('heroBgImage') as string,
+      heroVideoUrl: formData.get('heroVideoUrl') as string,
       seamlessBadge: formData.get('seamlessBadge') as string,
       seamlessTitle: formData.get('seamlessTitle') as string,
       seamlessTitleHighlight: formData.get('seamlessTitleHighlight') as string,
@@ -690,6 +691,31 @@ export async function deleteTaxiFareSetting(id: string) {
     await prisma.taxiFareSetting.delete({ where: { id } });
     revalidatePath('/admin/transfers');
     revalidatePath('/taxi');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+// --- SITE SETTINGS ---
+export async function updateSiteSettings(formData: FormData) {
+  try {
+    const data = {
+      logoRidez: formData.get('logoRidez') as string || "/logo-ridez.png",
+      logoFull: formData.get('logoFull') as string || "/logo-full.png",
+      favicon: formData.get('favicon') as string || "/favicon.ico",
+      copyrightText: formData.get('copyrightText') as string || "© GoRidez. All rights reserved.",
+      razorpayKeyId: formData.get('razorpayKeyId') as string || "rzp_test_mockkey123",
+      razorpayKeySecret: formData.get('razorpayKeySecret') as string || "mocksecret123",
+    };
+
+    await prisma.siteSettings.upsert({
+      where: { id: 'singleton' },
+      update: data,
+      create: { id: 'singleton', ...data }
+    });
+
+    revalidatePath('/');
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };

@@ -151,9 +151,16 @@ export default function BookingsTable({ initialBookings }: BookingsTableProps) {
                         {b.specialRequests && <div className="text-orange-300 text-[9px] font-sans mt-1 truncate max-w-[150px]" title={b.specialRequests}>Req: {b.specialRequests}</div>}
                       </td>
                       <td className="p-5">
-                        <span className="bg-gray-100 border border-gray-200 text-gray-600 text-[9px] font-bold px-2 py-0.5 rounded">
-                          {b.type}
-                        </span>
+                        <div className="flex flex-col gap-1.5 items-start">
+                          <span className="bg-gray-100 border border-gray-200 text-gray-600 text-[9px] font-bold px-2 py-0.5 rounded">
+                            {b.type}
+                          </span>
+                          {b.serviceSubtype && (
+                            <span className="bg-green-600/10 border border-green-300 text-green-700 text-[8px] font-black tracking-wider uppercase px-2 py-0.5 rounded">
+                              {b.serviceSubtype.replace('_', ' ')}
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td className="p-5 text-gray-900 font-semibold">{details}</td>
                       <td className="p-5 text-gray-600">

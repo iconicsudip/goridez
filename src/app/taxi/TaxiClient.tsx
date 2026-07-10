@@ -240,7 +240,11 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings }:
     }
 
     addToCart({
-      serviceType: bookingMode === 'ROUND_TRIP' ? 'tours' : 'oneWayTaxi',
+      serviceType: bookingMode === 'ROUND_TRIP' 
+        ? 'roundTripTaxi' 
+        : bookingMode === 'AIRPORT_TRANSFER'
+          ? 'airportTransfer'
+          : 'oneWayTaxi',
       referenceId: car.id,
       title: `${car.make} ${car.model} (${bookingMode === 'ROUND_TRIP' ? 'Round Trip' : bookingMode === 'AIRPORT_TRANSFER' ? 'Airport Transfer' : 'One Way'})`,
       image: car.image || '',

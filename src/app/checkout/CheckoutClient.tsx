@@ -7,7 +7,7 @@ import { ShieldCheck, UploadCloud, CheckCircle2, Sparkles, Percent, Gift } from 
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 
-export default function CheckoutClient() {
+export default function CheckoutClient({ razorpayKeyId }: { razorpayKeyId?: string }) {
   const router = useRouter();
   const { data: session, status } = useSession();
   const { cartItems, clearCart, session: bookingSession } = useBookingStore();
@@ -153,7 +153,7 @@ export default function CheckoutClient() {
       script.src = 'https://checkout.razorpay.com/v1/checkout.js';
       script.onload = () => {
         const options = {
-          key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_mockkey123',
+          key: razorpayKeyId || 'rzp_test_mockkey123',
           amount: orderData.amount,
           currency: orderData.currency,
           name: 'GoRidez',
@@ -398,7 +398,7 @@ export default function CheckoutClient() {
                 <div key={item.id} className="flex justify-between items-start border-b border-gray-200 pb-4">
                   <div className="flex-1 pr-4">
                     <div className="text-[9px] text-gray-500 uppercase tracking-widest font-mono mb-1">
-                      {item.serviceType === 'selfDrive' ? 'Self Drive' : item.serviceType === 'withDriver' ? 'Chauffeur' : item.serviceType === 'villaCar' ? 'Villa Combo' : item.serviceType}
+                      {item.serviceType === 'selfDrive' ? 'Self Drive' : item.serviceType === 'withDriver' ? 'Chauffeur' : item.serviceType === 'villaCar' ? 'Villa Combo' : item.serviceType === 'oneWayTaxi' ? 'One Way Taxi' : item.serviceType === 'roundTripTaxi' ? 'Round Trip Taxi' : item.serviceType === 'airportTransfer' ? 'Airport Transfer' : item.serviceType === 'tours' ? 'Tour' : item.serviceType}
                     </div>
                     <div className="font-bold text-sm uppercase">{item.title}</div>
                     {item.extraInfo && <div className="text-[10px] text-green-700 mt-1">{item.extraInfo}</div>}

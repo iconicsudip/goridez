@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-export type ServiceType = 'selfDrive' | 'withDriver' | 'oneWayTaxi' | 'tours' | 'villaCar';
+export type ServiceType = 'selfDrive' | 'withDriver' | 'oneWayTaxi' | 'roundTripTaxi' | 'airportTransfer' | 'tours' | 'villaCar';
 
 export type CartItem = {
   id: string; // Unique cart line item id

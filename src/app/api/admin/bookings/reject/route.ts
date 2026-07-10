@@ -4,10 +4,15 @@ import Razorpay from 'razorpay';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../auth/[...nextauth]/route';
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID || 'rzp_test_mockkey123',
-  key_secret: process.env.RAZORPAY_KEY_SECRET || 'mocksecret123',
-});
+async function getRazorpayInstance() {
+  const settings = await prisma.siteSettings.findUnique({
+    where: { id: 'singleton' },
+  });
+  return new Razorpay({
+    key_id: settings?.razorpayKeyId || process.env.RAZORPAY_KEY_ID || 'rzp_test_mockkey123',
+    key_secret: settings?.razorpayKeySecret || process.env.RAZORPAY_KEY_SECRET || 'mocksecret123',
+  });
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -43,7 +48,8 @@ export async function POST(req: NextRequest) {
     // Trigger Razorpay Refund if applicable
     if (amountToRefund > 0 && booking.razorpayPaymentId) {
       try {
-        await razorpay.payments.refund(booking.razorpayPaymentId, {
+        const rzp = await getRazorpayInstance();
+        await rzp.payments.refund(booking.razorpayPaymentId, {
           amount: Math.round(amountToRefund * 100),
         });
         refundStatus = 'PROCESSED';

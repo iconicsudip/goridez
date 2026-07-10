@@ -1,11 +1,12 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 import { 
   LayoutDashboard, Car, Layers, Globe, Map, MapPin, Building, FileText, 
-  Search, Activity, Users, Percent, LogOut, UserCircle, ListOrdered, HelpCircle, Info
+  Search, Activity, Users, Percent, LogOut, UserCircle, ListOrdered, HelpCircle, Info, Settings
 } from 'lucide-react';
 
 const ADMIN_LINKS = [
@@ -21,6 +22,7 @@ const ADMIN_LINKS = [
   { href: '/admin/faqs', label: 'FAQ CMS Controls', icon: HelpCircle },
   { href: '/admin/about', label: 'About Page Editor', icon: Info },
   { href: '/admin/home-page', label: 'Home Page Editor', icon: Globe },
+  { href: '/admin/settings', label: 'Branding Settings', icon: Settings },
   { href: '/admin/bookings', label: 'Reservation Ledger', icon: ListOrdered },
   { href: '#', label: 'Search Optimization (SEO)', icon: Search },
   { href: '#', label: 'UTM & Analytics Logs', icon: Activity },
@@ -40,14 +42,14 @@ export default function AdminSidebar({ adminName, adminEmail }: { adminName: str
       <div className="p-8 pb-4 h-full flex flex-col">
         {/* Logo & Brand */}
         <div className="flex items-center gap-3 mb-8 shrink-0">
-          <div className="bg-green-600 text-white font-black text-xs w-8 h-8 rounded-lg flex items-center justify-center tracking-tighter shadow-[0_0_15px_rgba(196,240,0,0.3)]">
-            GR
-          </div>
-          <div>
-            <div className="text-sm font-black tracking-tight">
-              <span className="text-gray-900">Go</span><span className="text-green-700">Ridez</span>
-            </div>
-            <div className="text-[8px] text-gray-400 font-bold tracking-widest uppercase">Admin Panel</div>
+          <div className="relative h-9 w-28">
+            <Image 
+              src="/logo-ridez.png" 
+              alt="GoRidez Logo" 
+              fill 
+              className="object-cover object-left"
+              unoptimized 
+            />
           </div>
         </div>
 

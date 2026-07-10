@@ -35,7 +35,13 @@ export default async function DashboardPage() {
     let desc = '';
 
     if (b.type === 'CAR' && b.car) {
-      title = `Self Drive Car`;
+      if (b.serviceSubtype === 'SELF_DRIVE') title = 'Self-Drive Car';
+      else if (b.serviceSubtype === 'CHAUFFEUR') title = 'Chauffeur Car';
+      else if (b.serviceSubtype === 'ONE_WAY') title = 'One-Way Taxi';
+      else if (b.serviceSubtype === 'ROUND_TRIP') title = 'Round-Trip Taxi';
+      else if (b.serviceSubtype === 'AIRPORT_TRANSFER') title = 'Airport Transfer';
+      else title = 'Car Rental';
+
       desc = `${b.car.make} ${b.car.model}`;
     } else if (b.type === 'TOUR' && b.tour) {
       title = `Tour Package`;
@@ -101,5 +107,9 @@ export default async function DashboardPage() {
     take: 20,
   });
 
-  return <DashboardClient user={userProp} bookings={formattedBookings} wishlist={dbUser.wishlistItems} aggregates={aggregates} notifications={notifications} />;
+  const settings = await prisma.siteSettings.findUnique({
+    where: { id: 'singleton' },
+  });
+
+  return <DashboardClient user={userProp} bookings={formattedBookings} wishlist={dbUser.wishlistItems} aggregates={aggregates} notifications={notifications} razorpayKeyId={settings?.razorpayKeyId || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_mockkey123'} />;
 }

@@ -1,13 +1,18 @@
 import type { Metadata } from "next";
-import { Poppins, Inter } from "next/font/google";
+import { Cinzel, Outfit, Inter } from "next/font/google";
 import "./globals.css";
 import ClientLayout from "@/components/ClientLayout";
 import Providers from "@/components/Providers";
 import { prisma } from "@/lib/prisma";
 
-const poppins = Poppins({
-  weight: ['400', '600', '700', '800'],
-  variable: "--font-poppins",
+const cinzel = Cinzel({
+  weight: ['400', '500', '600', '700', '800', '900'],
+  variable: "--font-cinzel",
+  subsets: ["latin"],
+});
+
+const outfit = Outfit({
+  variable: "--font-outfit",
   subsets: ["latin"],
 });
 
@@ -26,12 +31,13 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [selfDriveCount, chauffeurCount, taxiCount, tourCount, villaCount] = await Promise.all([
+  const [selfDriveCount, chauffeurCount, taxiCount, tourCount, villaCount, siteSettingsData] = await Promise.all([
     prisma.car.count({ where: { serviceTypes: { has: 'SELF_DRIVE' } } }),
     prisma.car.count({ where: { serviceTypes: { has: 'WITH_DRIVER' } } }),
     prisma.car.count({ where: { serviceTypes: { has: 'TAXI' } } }),
     prisma.tour.count(),
-    prisma.villa.count()
+    prisma.villa.count(),
+    prisma.siteSettings.findUnique({ where: { id: 'singleton' } })
   ]);
 
   const navVisibility = {
@@ -42,11 +48,21 @@ export default async function RootLayout({
     showVillas: villaCount > 0
   };
 
+  const siteSettings = siteSettingsData || {
+    logoRidez: '/logo-ridez.png',
+    logoFull: '/logo-full.png',
+    favicon: '/favicon.ico',
+    copyrightText: '© GoRidez. All rights reserved.',
+  };
+
   return (
-    <html lang="en" className={`${poppins.variable} ${inter.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${cinzel.variable} ${outfit.variable} ${inter.variable}`} suppressHydrationWarning>
+      <head>
+        <link rel="icon" href={siteSettings.favicon} />
+      </head>
       <body suppressHydrationWarning>
         <Providers>
-          <ClientLayout navVisibility={navVisibility}>
+          <ClientLayout navVisibility={navVisibility} siteSettings={siteSettings}>
             <main>{children}</main>
           </ClientLayout>
         </Providers>

@@ -5,11 +5,15 @@ import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../auth/[...nextauth]/route';
 
-// Initialize Razorpay
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID || 'rzp_test_mockkey123',
-  key_secret: process.env.RAZORPAY_KEY_SECRET || 'mocksecret123',
-});
+async function getRazorpayInstance() {
+  const settings = await prisma.siteSettings.findUnique({
+    where: { id: 'singleton' },
+  });
+  return new Razorpay({
+    key_id: settings?.razorpayKeyId || process.env.RAZORPAY_KEY_ID || 'rzp_test_mockkey123',
+    key_secret: settings?.razorpayKeySecret || process.env.RAZORPAY_KEY_SECRET || 'mocksecret123',
+  });
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -60,6 +64,7 @@ export async function POST(req: NextRequest) {
       let carId = null;
       let tourId = null;
       let villaId = null;
+      let serviceSubtype = null;
 
       if (item.serviceType === 'tours') {
         type = 'TOUR';
@@ -68,9 +73,13 @@ export async function POST(req: NextRequest) {
         type = 'VILLA';
         villaId = item.referenceId;
       } else {
-        // selfDrive, withDriver, oneWayTaxi
         type = 'CAR';
         carId = item.referenceId;
+        if (item.serviceType === 'selfDrive') serviceSubtype = 'SELF_DRIVE';
+        else if (item.serviceType === 'withDriver') serviceSubtype = 'CHAUFFEUR';
+        else if (item.serviceType === 'oneWayTaxi') serviceSubtype = 'ONE_WAY';
+        else if (item.serviceType === 'roundTripTaxi') serviceSubtype = 'ROUND_TRIP';
+        else if (item.serviceType === 'airportTransfer') serviceSubtype = 'AIRPORT_TRANSFER';
       }
 
       const startDate = pickupDate ? new Date(pickupDate) : new Date();
@@ -83,6 +92,7 @@ export async function POST(req: NextRequest) {
           carId,
           tourId,
           villaId,
+          serviceSubtype,
           startDate,
           endDate,
           totalAmount: Math.round(itemTotal),
@@ -118,7 +128,8 @@ export async function POST(req: NextRequest) {
       },
     };
 
-    const order = await razorpay.orders.create(options);
+    const rzp = await getRazorpayInstance();
+    const order = await rzp.orders.create(options);
 
     if (!order) {
       return NextResponse.json({ error: 'Failed to generate payment gateway order' }, { status: 500 });

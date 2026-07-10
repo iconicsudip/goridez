@@ -155,6 +155,7 @@ model Booking {
   rejectionReason   String?
   razorpayPaymentId String?
   refundStatus      String   @default("NONE")
+  serviceSubtype    String?  // e.g. "SELF_DRIVE", "CHAUFFEUR", "ONE_WAY", "ROUND_TRIP", "AIRPORT_TRANSFER"
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   car               Car?     @relation(fields: [carId], references: [id])
@@ -278,6 +279,7 @@ model HomePage {
   heroTitleLine2         String   @default("WITH FREEDOM")
   heroDescription        String   @default("Premium self drive cars, chauffeur services, luxury villas and curated Rajasthan travel experiences. Built specifically for elite global explorers.")
   heroBgImage            String   @default("https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=2500&q=80")
+  heroVideoUrl           String   @default("https://assets.mixkit.co/videos/preview/mixkit-luxury-car-parked-at-night-42289-large.mp4")
   seamlessBadge          String   @default("Discover the Mewar Heritage")
   seamlessTitle          String   @default("SEAMLESS")
   seamlessTitleHighlight String   @default("EXPERIENCES")
@@ -297,4 +299,15 @@ model HomePage {
   blogsTitle             String   @default("FEATURED")
   blogsTitleHighlight    String   @default("STORIES")
   updatedAt              DateTime @updatedAt
+}
+
+model SiteSettings {
+  id                String   @id @default("singleton")
+  logoRidez         String   @default("/logo-ridez.png")
+  logoFull          String   @default("/logo-full.png")
+  favicon           String   @default("/favicon.ico")
+  copyrightText     String   @default("© GoRidez. All rights reserved.")
+  razorpayKeyId     String   @default("rzp_test_mockkey123")
+  razorpayKeySecret String   @default("mocksecret123")
+  updatedAt         DateTime @updatedAt
 }
