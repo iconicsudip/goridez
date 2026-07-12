@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Upload, Loader2, Maximize2, X, Trash2 } from 'lucide-react';
+import { Upload, Loader2, Maximize2, X, Trash2, Star } from 'lucide-react';
 
 interface MultiImageUploadProps {
   value: string[];
@@ -36,7 +36,10 @@ export default function MultiImageUpload({ value, onChange }: MultiImageUploadPr
       }
 
       if (newUrls.length > 0) {
-        onChange([...value, ...newUrls]);
+        // The first image in the gallery is used as the vehicle's primary/cover
+        // photo everywhere on the site, so newly uploaded photos go to the front
+        // — otherwise a freshly uploaded photo would never actually show up.
+        onChange([...newUrls, ...value]);
       }
     } catch (error) {
       console.error('Error uploading image:', error);
@@ -49,6 +52,14 @@ export default function MultiImageUpload({ value, onChange }: MultiImageUploadPr
 
   const removeImage = (indexToRemove: number) => {
     onChange(value.filter((_, idx) => idx !== indexToRemove));
+  };
+
+  const makeCover = (index: number) => {
+    if (index === 0) return;
+    const next = [...value];
+    const [chosen] = next.splice(index, 1);
+    next.unshift(chosen);
+    onChange(next);
   };
 
   return (
@@ -81,15 +92,30 @@ export default function MultiImageUpload({ value, onChange }: MultiImageUploadPr
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {value.map((url, index) => (
             <div key={index} className="relative w-full aspect-video rounded-xl overflow-hidden bg-gray-50 border border-gray-300 group">
-              <img 
-                src={url} 
-                alt={`Upload preview ${index + 1}`} 
+              {index === 0 && (
+                <span className="absolute top-2 left-2 z-10 bg-green-600 text-white text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-md shadow-sm">
+                  Cover
+                </span>
+              )}
+              <img
+                src={url}
+                alt={`Upload preview ${index + 1}`}
                 className="w-full h-full object-cover opacity-80 group-hover:opacity-50 transition-opacity"
                 onError={(e) => {
                   (e.target as HTMLImageElement).src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="%23333" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>';
                 }}
               />
               <div className="absolute inset-0 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                {index !== 0 && (
+                  <button
+                    type="button"
+                    onClick={() => makeCover(index)}
+                    title="Set as cover photo"
+                    className="bg-white/60 p-2 rounded-full text-gray-900 backdrop-blur-sm border border-gray-300 hover:bg-white/80 transition-all"
+                  >
+                    <Star size={16} />
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={() => setPreviewImage(url)}
