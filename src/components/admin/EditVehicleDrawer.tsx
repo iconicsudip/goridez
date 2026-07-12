@@ -29,7 +29,11 @@ export default function EditVehicleDrawer({ isOpen, onClose, car, cities, tiers 
       deposit: String(p.deposit),
     })) ?? []
   );
-  const [gallery, setGallery] = useState<string[]>(car?.gallery && typeof car.gallery === 'string' && car.gallery !== '[]' ? JSON.parse(car.gallery) : []);
+  const [gallery, setGallery] = useState<string[]>(
+    car?.gallery && typeof car.gallery === 'string' && car.gallery !== '[]'
+      ? JSON.parse(car.gallery)
+      : (car?.image ? [car.image] : [])
+  );
   const [content, setContent] = useState(car?.content || '');
   const [serviceTypes, setServiceTypes] = useState<string[]>(car?.serviceTypes || ['SELF_DRIVE']);
   const [features, setFeatures] = useState<string[]>(car?.features || []);
@@ -38,7 +42,11 @@ export default function EditVehicleDrawer({ isOpen, onClose, car, cities, tiers 
 
   useEffect(() => {
     if (isOpen && car) {
-      setGallery(car.gallery && typeof car.gallery === 'string' && car.gallery !== '[]' ? JSON.parse(car.gallery) : []);
+      setGallery(
+        car.gallery && typeof car.gallery === 'string' && car.gallery !== '[]'
+          ? JSON.parse(car.gallery)
+          : (car.image ? [car.image] : [])
+      );
       setSelectedCityIds(car.cityId ? [car.cityId] : []);
       setPackages(
         car.packages?.map((p: any) => ({

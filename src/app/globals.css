@@ -201,3 +201,11 @@
   color: var(--color-brand-gold) !important;
   border-top: 1px solid var(--color-brand-border) !important;
 }
+
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

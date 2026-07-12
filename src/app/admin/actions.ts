@@ -80,11 +80,6 @@ export async function updateVehicle(id: string, formData: FormData) {
       limitValue: string; extraChargePerUnit: string; deposit: string;
     }> = packagesRaw ? JSON.parse(packagesRaw) : [];
 
-    const invalidPkgs = packagesData.filter(p => p.name !== '12 Hours' && p.name !== '24 Hours');
-    if (invalidPkgs.length > 0) {
-      return { success: false, error: 'Only "12 Hours" and "24 Hours" packages are allowed for vehicles.' };
-    }
-
     const parts = fullName.split(' ');
     const make = parts[0] || 'Unknown';
     const model = parts.slice(1).join(' ') || 'Model';
@@ -316,11 +311,6 @@ export async function addVehicle(formData: FormData) {
       name: string; type: string; basePrice: string;
       limitValue: string; extraChargePerUnit: string; deposit: string;
     }> = packagesRaw ? JSON.parse(packagesRaw) : [];
-
-    const invalidPkgs = packagesData.filter(p => p.name !== '12 Hours' && p.name !== '24 Hours');
-    if (invalidPkgs.length > 0) {
-      return { success: false, error: 'Only "12 Hours" and "24 Hours" packages are allowed for vehicles.' };
-    }
 
     const parts = fullName.split(' ');
     const make = parts[0] || 'Unknown';
@@ -780,6 +770,88 @@ export async function deleteContactSubmission(id: string) {
   try {
     await prisma.contactSubmission.delete({ where: { id } });
     revalidatePath('/admin/legal');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+// --- INSTAGRAM REELS ---
+function normalizeInstagramUrl(raw: string): string | null {
+  try {
+    const url = new URL(raw.trim());
+    if (!url.hostname.includes('instagram.com')) return null;
+    const match = url.pathname.match(/\/(reel|reels|p)\/([^/]+)/);
+    if (!match) return null;
+    return `https://www.instagram.com/${match[1]}/${match[2]}/`;
+  } catch {
+    return null;
+  }
+}
+
+export async function createInstagramReel(formData: FormData) {
+  try {
+    const rawUrl = formData.get('url') as string;
+    const caption = (formData.get('caption') as string) || null;
+    const url = normalizeInstagramUrl(rawUrl);
+
+    if (!url) {
+      return { success: false, error: 'Enter a valid Instagram reel or post URL.' };
+    }
+
+    const maxOrder = await prisma.instagramReel.aggregate({ _max: { order: true } });
+
+    await prisma.instagramReel.create({
+      data: { url, caption, order: (maxOrder._max.order ?? -1) + 1 }
+    });
+
+    revalidatePath('/admin/reels');
+    revalidatePath('/');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+export async function updateInstagramReel(id: string, data: { caption?: string; isActive?: boolean }) {
+  try {
+    await prisma.instagramReel.update({ where: { id }, data });
+    revalidatePath('/admin/reels');
+    revalidatePath('/');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+export async function reorderInstagramReel(id: string, direction: 'up' | 'down') {
+  try {
+    const reels = await prisma.instagramReel.findMany({ orderBy: { order: 'asc' } });
+    const idx = reels.findIndex(r => r.id === id);
+    if (idx === -1) return { success: false, error: 'Reel not found' };
+    const swapIdx = direction === 'up' ? idx - 1 : idx + 1;
+    if (swapIdx < 0 || swapIdx >= reels.length) return { success: true };
+
+    const a = reels[idx];
+    const b = reels[swapIdx];
+    await prisma.$transaction([
+      prisma.instagramReel.update({ where: { id: a.id }, data: { order: b.order } }),
+      prisma.instagramReel.update({ where: { id: b.id }, data: { order: a.order } }),
+    ]);
+
+    revalidatePath('/admin/reels');
+    revalidatePath('/');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+export async function deleteInstagramReel(id: string) {
+  try {
+    await prisma.instagramReel.delete({ where: { id } });
+    revalidatePath('/admin/reels');
+    revalidatePath('/');
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };

@@ -255,6 +255,15 @@ model ContactSubmission {
   createdAt DateTime @default(now())
 }
 
+model InstagramReel {
+  id        String   @id @default(cuid())
+  url       String
+  caption   String?
+  isActive  Boolean  @default(true)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
 model DeliveryCharge {
   id              String   @id @default(cuid())
   cityId          String

@@ -6,17 +6,19 @@ import CityExplorer from "@/components/CityExplorer";
 import FaqAccordion from "@/components/FaqAccordion";
 import { getCarSlug } from "@/lib/utils";
 import HeroVideo from "@/components/HeroVideo";
+import InstagramReelsSection from "@/components/InstagramReelsSection";
 import { Star, Shield, Clock, Map, ChevronRight, Key, Calendar, BookOpen } from 'lucide-react';
 
 export default async function Home() {
-  const [cars, cities, blogs, faqs, homePageData, selfDriveCount, chauffeurCount] = await Promise.all([
+  const [cars, cities, blogs, faqs, homePageData, selfDriveCount, chauffeurCount, reels] = await Promise.all([
     prisma.car.findMany({ include: { packages: true }, take: 8, orderBy: { createdAt: 'desc' } }),
     prisma.city.findMany({ orderBy: { name: 'asc' } }),
     prisma.blog.findMany({ where: { isDraft: false }, take: 3, orderBy: { createdAt: 'desc' } }),
     prisma.fAQ.findMany({ where: { isActive: true }, orderBy: { createdAt: 'asc' } }),
     prisma.homePage.findUnique({ where: { id: 'singleton' } }),
     prisma.car.count({ where: { serviceTypes: { has: 'SELF_DRIVE' } } }),
-    prisma.car.count({ where: { serviceTypes: { has: 'WITH_DRIVER' } } })
+    prisma.car.count({ where: { serviceTypes: { has: 'WITH_DRIVER' } } }),
+    prisma.instagramReel.findMany({ where: { isActive: true }, orderBy: { order: 'asc' } })
   ]);
 
   const hp = homePageData || {
@@ -328,6 +330,9 @@ export default async function Home() {
         </div>
       </section>
     )}
+
+    {/* SECTION 6.5: INSTAGRAM REELS */}
+    <InstagramReelsSection reels={reels} />
 
     {/* SECTION 7: INTERACTIVE FAQS */}
     <FaqAccordion faqs={faqs} />
