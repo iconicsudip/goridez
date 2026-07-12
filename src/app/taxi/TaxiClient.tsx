@@ -147,6 +147,10 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
     const qPickupCity = searchParams.get('pickupCity');
     const qDropCity = searchParams.get('dropCity');
     const qMode = searchParams.get('mode') as any;
+    const qAtPickupName = searchParams.get('atPickupName');
+    const qAtPickupZoneId = searchParams.get('atPickupZoneId');
+    const qAtDropName = searchParams.get('atDropName');
+    const qAtDropZoneId = searchParams.get('atDropZoneId');
 
     let loadedPickup = null;
     if (qPickupDate) loadedPickup = new Date(qPickupDate);
@@ -169,6 +173,9 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
 
     if (qPickupCity && pickupLocation.name !== qPickupCity) setPickupLocation({ name: qPickupCity });
     if (qDropCity && dropoffLocation.name !== qDropCity) setDropoffLocation({ name: qDropCity });
+
+    if (qAtPickupName && qAtPickupZoneId) setAtPickup({ name: qAtPickupName, zoneId: qAtPickupZoneId });
+    if (qAtDropName && qAtDropZoneId) setAtDrop({ name: qAtDropName, zoneId: qAtDropZoneId });
     const resolvedMode =
       qMode && qMode !== 'ONE_WAY' && qMode !== 'LOCAL' ? qMode :
       session?.bookingMode && session.bookingMode !== 'ONE_WAY' && session.bookingMode !== 'LOCAL' ? session.bookingMode :

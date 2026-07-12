@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { MapPin, Calendar, Loader2, X } from 'lucide-react';
 import { useBookingStore } from '@/store/useBookingStore';
 import { searchLocation, OSMLocation } from '@/lib/osm';
+import AirportLocalitySearch, { AIRPORT_ZONE_ID } from '@/components/AirportLocalitySearch';
 import { DatePicker, ConfigProvider } from 'antd';
 import dayjs from 'dayjs';
 
@@ -163,12 +164,16 @@ function LocationField({
 // ── Main Booking Widget ───────────────────────────────────────────────────────
 export default function BookingWidget({
   cities = [],
+  airportZones = [],
+  airportName = 'the Airport',
   counts,
 }: {
   cars?: any[];
   villas?: any[];
   tours?: any[];
   cities?: any[];
+  airportZones?: any[];
+  airportName?: string;
   counts?: { selfDrive: number; chauffeur: number; taxi: number; tours: number; villas: number };
 }) {
   const [mainTab, setMainTab] = useState<MainTab>('SELF DRIVE');
@@ -191,6 +196,13 @@ export default function BookingWidget({
   const [destLoc, setDestLoc] = useState<OSMLocation | undefined>(undefined);
   const [isDifferentDropCity, setIsDifferentDropCity] = useState(false);
   const [destinations, setDestinations] = useState<string[]>(['']);
+
+  // Airport Transfer: symmetric pickup/drop pair, mirrors /taxi exactly —
+  // exactly one side must be the airport, the other a zone-constrained locality.
+  const [atPickup, setAtPickup] = useState<{ name: string; zoneId: string }>({ name: '', zoneId: '' });
+  const [atDrop, setAtDrop] = useState<{ name: string; zoneId: string }>({ name: '', zoneId: '' });
+  const atPickupIsAirport = atPickup.zoneId === AIRPORT_ZONE_ID;
+  const atDropIsAirport = atDrop.zoneId === AIRPORT_ZONE_ID;
 
   // Time filters are handled natively by Ant Design DatePicker's disabledTime prop
 
@@ -287,17 +299,24 @@ export default function BookingWidget({
     params.set('mode', mode);
     if (pickupDate) params.set('pickupDate', pickupDate.toISOString());
 
-    // Airport Transfer's actual direction + service-area selection happens on
-    // the /taxi page itself (constrained to the zones we cover) — the widget
-    // just hands off the date and lets that page own the rest of the flow.
-    if (!isAirportTransfer) {
+    if (isAirportTransfer) {
+      // Carry the Pickup/Drop pair picked here straight through to /taxi,
+      // which owns pricing for the selected zone/category.
+      const bothValid = atPickup.zoneId && atDrop.zoneId && atPickupIsAirport !== atDropIsAirport;
+      if (bothValid) {
+        params.set('atPickupName', atPickup.name);
+        params.set('atPickupZoneId', atPickup.zoneId);
+        params.set('atDropName', atDrop.name);
+        params.set('atDropZoneId', atDrop.zoneId);
+      }
+    } else {
       params.set('pickupCity', pickupCityVal);
       if (finalDropCity) params.set('dropCity', finalDropCity);
       if (returnDate) params.set('returnDate', returnDate.toISOString());
     }
 
     router.push(`${route}?${params.toString()}`);
-  }, [mainTab, subTab, sourceCity, destCity, isDifferentDropCity, destinations, pickupDate, returnDate, updateSession, router]);
+  }, [mainTab, subTab, sourceCity, destCity, isDifferentDropCity, destinations, pickupDate, returnDate, atPickup, atDrop, atPickupIsAirport, atDropIsAirport, updateSession, router]);
 
   if (!isMounted) return null;
 
@@ -386,8 +405,46 @@ export default function BookingWidget({
             )}
 
             {isAirportTransfer && (
-              <div className="bg-brand-panel border border-brand-border rounded-xl p-4 flex flex-col justify-center text-xs text-gray-500 leading-relaxed">
-                Pickup/drop area, direction, and vehicle fare are selected on the next page — we only cover specific zones in Udaipur.
+              <div className="bg-white border border-brand-border rounded-xl p-4 flex flex-col shadow-[0_2px_10px_rgba(0,0,0,0.02)] relative">
+                <label className="text-xs text-gray-500 mb-2 font-mono uppercase tracking-wider">
+                  Pickup Location
+                </label>
+                <AirportLocalitySearch
+                  zones={airportZones}
+                  value={atPickup.name}
+                  airportLabel={airportName}
+                  mode={atDropIsAirport ? 'LOCALITY_ONLY' : atDrop.zoneId ? 'AIRPORT_ONLY' : 'ANY'}
+                  onChange={(locality, zoneId) => {
+                    setAtPickup({ name: locality, zoneId });
+                    const pickupIsAirport = zoneId === AIRPORT_ZONE_ID;
+                    if (atDrop.zoneId && (atDrop.zoneId === AIRPORT_ZONE_ID) === pickupIsAirport) {
+                      setAtDrop({ name: '', zoneId: '' });
+                    }
+                  }}
+                  placeholder={`Search ${airportName} or your area...`}
+                />
+              </div>
+            )}
+
+            {isAirportTransfer && (
+              <div className="bg-white border border-brand-border rounded-xl p-4 flex flex-col shadow-[0_2px_10px_rgba(0,0,0,0.02)] relative">
+                <label className="text-xs text-gray-500 mb-2 font-mono uppercase tracking-wider">
+                  Drop Location
+                </label>
+                <AirportLocalitySearch
+                  zones={airportZones}
+                  value={atDrop.name}
+                  airportLabel={airportName}
+                  mode={atPickupIsAirport ? 'LOCALITY_ONLY' : atPickup.zoneId ? 'AIRPORT_ONLY' : 'ANY'}
+                  onChange={(locality, zoneId) => {
+                    setAtDrop({ name: locality, zoneId });
+                    const dropIsAirport = zoneId === AIRPORT_ZONE_ID;
+                    if (atPickup.zoneId && (atPickup.zoneId === AIRPORT_ZONE_ID) === dropIsAirport) {
+                      setAtPickup({ name: '', zoneId: '' });
+                    }
+                  }}
+                  placeholder={`Search ${airportName} or your area...`}
+                />
               </div>
             )}
 
