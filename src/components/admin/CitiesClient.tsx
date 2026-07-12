@@ -12,6 +12,7 @@ interface City {
   slug: string | null;
   faqQuestion: string | null;
   faqAnswer: string | null;
+  airportName: string | null;
 }
 
 function CityDrawer({ isOpen, onClose, city, mode }: { isOpen: boolean; onClose: () => void; city: City | null; mode: 'add' | 'edit' }) {
@@ -66,6 +67,15 @@ function CityDrawer({ isOpen, onClose, city, mode }: { isOpen: boolean; onClose:
                 <input name="slug" defaultValue={city?.slug ?? autoSlug} key={autoSlug}
                   placeholder="/self-drive-cars-in-jodhpur"
                   className="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 text-xs text-green-700 outline-none font-mono focus:border-green-600/40 transition-colors" />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[9px] text-gray-500 font-mono uppercase tracking-widest block">
+                  Airport Name <span className="text-gray-400">(shown in Airport Transfer booking)</span>
+                </label>
+                <input name="airportName" defaultValue={city?.airportName ?? ''}
+                  placeholder="e.g. Maharana Pratap Airport (UDR)"
+                  className="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 text-xs text-gray-900 outline-none font-mono focus:border-green-600/40 transition-colors" />
               </div>
 
               <div className="space-y-2">
@@ -171,6 +181,12 @@ export default function CitiesClient({ cities }: { cities: City[] }) {
                   <div className="text-[8px] text-gray-400 font-mono tracking-widest uppercase mb-1">SEO URL Slug</div>
                   <div className="text-green-700 font-mono text-[10px] truncate">{city.slug || `/self-drive-cars-in-${city.name.toLowerCase()}`}</div>
                 </div>
+                {city.airportName && (
+                  <div>
+                    <div className="text-[8px] text-gray-400 font-mono tracking-widest uppercase mb-1">Airport</div>
+                    <div className="text-gray-600 font-mono text-[9px] leading-relaxed line-clamp-2">{city.airportName}</div>
+                  </div>
+                )}
                 {city.faqQuestion && (
                   <div>
                     <div className="text-[8px] text-gray-400 font-mono tracking-widest uppercase mb-1">FAQ Question</div>

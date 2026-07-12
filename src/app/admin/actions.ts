@@ -15,8 +15,9 @@ export async function createCity(formData: FormData) {
     const slug = formData.get('slug') as string;
     const faqQuestion = formData.get('faqQuestion') as string;
     const faqAnswer = formData.get('faqAnswer') as string;
+    const airportName = (formData.get('airportName') as string) || null;
     if (!name) return { success: false, error: 'Name required' };
-    await prisma.city.create({ data: { name, slug, faqQuestion, faqAnswer } });
+    await prisma.city.create({ data: { name, slug, faqQuestion, faqAnswer, airportName } });
     revalidatePath('/admin/cities');
     return { success: true };
   } catch (error: any) {
@@ -30,9 +31,11 @@ export async function updateCity(id: string, formData: FormData) {
     const slug = formData.get('slug') as string;
     const faqQuestion = formData.get('faqQuestion') as string;
     const faqAnswer = formData.get('faqAnswer') as string;
+    const airportName = (formData.get('airportName') as string) || null;
     if (!name) return { success: false, error: 'Name required' };
-    await prisma.city.update({ where: { id }, data: { name, slug, faqQuestion, faqAnswer } });
+    await prisma.city.update({ where: { id }, data: { name, slug, faqQuestion, faqAnswer, airportName } });
     revalidatePath('/admin/cities');
+    revalidatePath('/taxi');
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };
@@ -691,6 +694,89 @@ export async function deleteTaxiFareSetting(id: string) {
   try {
     await prisma.taxiFareSetting.delete({ where: { id } });
     revalidatePath('/admin/transfers');
+    revalidatePath('/taxi');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+// --- AIRPORT TRANSFER ZONES ---
+export async function upsertAirportZone(formData: FormData) {
+  try {
+    const id = formData.get('id') as string;
+    const cityId = formData.get('cityId') as string;
+    const name = formData.get('name') as string;
+    const order = parseInt(formData.get('order') as string) || 0;
+    const localitiesRaw = formData.get('localities') as string;
+    const localities = localitiesRaw
+      ? localitiesRaw.split('\n').map(l => l.trim()).filter(Boolean)
+      : [];
+
+    if (!cityId || !name) return { success: false, error: 'City and Zone Name are required' };
+
+    if (id) {
+      await prisma.airportZone.update({ where: { id }, data: { cityId, name, order, localities } });
+    } else {
+      await prisma.airportZone.create({ data: { cityId, name, order, localities } });
+    }
+
+    revalidatePath('/admin/airport-zones');
+    revalidatePath('/taxi');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+export async function deleteAirportZone(id: string) {
+  try {
+    await prisma.airportZone.delete({ where: { id } });
+    revalidatePath('/admin/airport-zones');
+    revalidatePath('/taxi');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+export async function upsertAirportZoneFare(formData: FormData) {
+  try {
+    const id = formData.get('id') as string;
+    const zoneId = formData.get('zoneId') as string;
+    const vehicleCategory = formData.get('vehicleCategory') as string;
+    const pickupPrice = parseFloat(formData.get('pickupPrice') as string) || 0;
+    const dropPrice = parseFloat(formData.get('dropPrice') as string) || 0;
+    const waitChargePer30Min = parseFloat(formData.get('waitChargePer30Min') as string) || 0;
+    const nightFee = parseFloat(formData.get('nightFee') as string) || 0;
+    const meetAndGreet = formData.get('meetAndGreet') === 'true';
+
+    if (!zoneId || !vehicleCategory) return { success: false, error: 'Zone and Vehicle Category are required' };
+
+    const data = { zoneId, vehicleCategory, pickupPrice, dropPrice, waitChargePer30Min, nightFee, meetAndGreet };
+
+    if (id) {
+      await prisma.airportZoneFare.update({ where: { id }, data });
+    } else {
+      await prisma.airportZoneFare.upsert({
+        where: { zoneId_vehicleCategory: { zoneId, vehicleCategory } },
+        update: data,
+        create: data,
+      });
+    }
+
+    revalidatePath('/admin/airport-zones');
+    revalidatePath('/taxi');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+export async function deleteAirportZoneFare(id: string) {
+  try {
+    await prisma.airportZoneFare.delete({ where: { id } });
+    revalidatePath('/admin/airport-zones');
     revalidatePath('/taxi');
     return { success: true };
   } catch (error: any) {

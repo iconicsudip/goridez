@@ -12,16 +12,25 @@ import dayjs from 'dayjs';
 import Image from 'next/image';
 import Link from 'next/link';
 import LocationAutocomplete from '@/components/LocationAutocomplete';
+import AirportLocalitySearch, { AIRPORT_ZONE_ID } from '@/components/AirportLocalitySearch';
 import { calculateRoute, OSMLocation } from '@/lib/osm';
 import { getCarSlug } from '@/lib/utils';
 
-const UDAIPUR_AIRPORT: OSMLocation = {
-  place_id: -1,
-  display_name: 'Maharana Pratap Airport, Udaipur, Rajasthan, India',
-  lat: '24.6178',
-  lon: '73.8961',
-  type: 'airport'
-};
+function normalizeVehicleCategory(raw: string): string {
+  const c = (raw || '').trim().toLowerCase();
+  if (c.includes('innova') || c.includes('crysta')) return 'crysta';
+  if (c.includes('luxury')) return 'luxury';
+  if (c.includes('suv')) return 'suv';
+  if (c.includes('sedan')) return 'sedan';
+  return c;
+}
+
+const NIGHT_START_HOUR = 22;
+const NIGHT_END_HOUR = 6;
+function isNightTime(date: Date) {
+  const h = date.getHours();
+  return h >= NIGHT_START_HOUR || h < NIGHT_END_HOUR;
+}
 
 const UDAIPUR_CITY: OSMLocation = {
   place_id: -2,
@@ -37,21 +46,29 @@ const mapToRouteLocation = (loc: OSMLocation) => ({
   name: loc.display_name
 });
 
-export default function TaxiClient({ initialCars, initialCities, taxiSettings }: { initialCars: any[], initialCities: any[], taxiSettings: any[] }) {
+export default function TaxiClient({ initialCars, initialCities, taxiSettings, airportZones = [], airportName = 'the Airport' }: { initialCars: any[], initialCities: any[], taxiSettings: any[], airportZones?: any[], airportName?: string }) {
   const [activeTab, setActiveTab] = useState<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const { session, updateSession, addToCart } = useBookingStore();
-  
+
   const [bookingMode, setBookingMode] = useState<'ROUND_TRIP'|'AIRPORT_TRANSFER'>('ROUND_TRIP');
 
   // Locations
   const [pickupLocation, setPickupLocation] = useState<{name: string, data?: OSMLocation}>({ name: 'Udaipur, Rajasthan', data: UDAIPUR_CITY });
   const [dropoffLocation, setDropoffLocation] = useState<{name: string, data?: OSMLocation}>({ name: '' });
   const [destLocations, setDestLocations] = useState<{name: string, data?: OSMLocation}[]>([{ name: '' }]);
-  
-  const [atDirection, setAtDirection] = useState<'PICKUP'|'DROP'>('PICKUP');
-  const [atLocation, setAtLocation] = useState<{name: string, data?: OSMLocation}>({ name: '' });
+
+  const [atPickup, setAtPickup] = useState<{name: string, zoneId: string}>({ name: '', zoneId: '' });
+  const [atDrop, setAtDrop] = useState<{name: string, zoneId: string}>({ name: '', zoneId: '' });
+
+  const atPickupIsAirport = atPickup.zoneId === AIRPORT_ZONE_ID;
+  const atDropIsAirport = atDrop.zoneId === AIRPORT_ZONE_ID;
+  // Exactly one side must be the airport — the other resolves to a serviceable zone.
+  const atDirectionValid = !!atPickup.zoneId && !!atDrop.zoneId && (atPickupIsAirport !== atDropIsAirport);
+  const atZoneId = atDirectionValid ? (atPickupIsAirport ? atDrop.zoneId : atPickup.zoneId) : '';
+
+  const atZone = airportZones.find(z => z.id === atZoneId) || null;
 
   // Distance calculations
   const [calculatedDistance, setCalculatedDistance] = useState<number>(0);
@@ -101,26 +118,16 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings }:
           setIsCalculating(false);
         }
       } else if (bookingMode === 'AIRPORT_TRANSFER') {
-        if (atLocation.data) {
-          setIsCalculating(true);
-          const source = atDirection === 'PICKUP' ? UDAIPUR_AIRPORT : atLocation.data;
-          const dest = atDirection === 'PICKUP' ? atLocation.data : UDAIPUR_AIRPORT;
-          const route = await calculateRoute(source.lon, source.lat, dest.lon, dest.lat);
-          if (active && route) {
-            setCalculatedDistance(Math.ceil(route.distance / 1000));
-            setCalculatedDuration(route.duration);
-            setRouteGeometry(route.geometry);
-          }
-          if (active) setIsCalculating(false);
-        } else {
-          setCalculatedDistance(0);
-        }
+        // Airport transfer pricing is zone-based (fixed rate per zone/category/direction),
+        // not distance-based, so no route calculation is needed here.
+        setCalculatedDistance(0);
+        setRouteGeometry(null);
       }
     };
     
     fetchRoute();
     return () => { active = false; };
-  }, [pickupLocation.data, destLocations, bookingMode, atLocation.data, atDirection]);
+  }, [pickupLocation.data, destLocations, bookingMode]);
 
   // Dates
   const [pickupDate, setPickupDate] = useState<Date>(() => {
@@ -162,9 +169,11 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings }:
 
     if (qPickupCity && pickupLocation.name !== qPickupCity) setPickupLocation({ name: qPickupCity });
     if (qDropCity && dropoffLocation.name !== qDropCity) setDropoffLocation({ name: qDropCity });
-    if (qMode && qMode !== 'ONE_WAY' && qMode !== 'LOCAL') setBookingMode(qMode);
-    else if (session?.bookingMode && session.bookingMode !== 'ONE_WAY' && session.bookingMode !== 'LOCAL') setBookingMode(session.bookingMode as any);
-    else setBookingMode('ROUND_TRIP');
+    const resolvedMode =
+      qMode && qMode !== 'ONE_WAY' && qMode !== 'LOCAL' ? qMode :
+      session?.bookingMode && session.bookingMode !== 'ONE_WAY' && session.bookingMode !== 'LOCAL' ? session.bookingMode :
+      'ROUND_TRIP';
+    setBookingMode(resolvedMode as any);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -285,6 +294,10 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings }:
         pickupStation: pickupLocation.name,
         dropStation: destLocations[0]?.name || '',
       }),
+      ...(bookingMode === 'AIRPORT_TRANSFER' && {
+        pickupStation: atPickup.name,
+        dropStation: atDrop.name,
+      }),
     });
 
     router.push('/cart');
@@ -335,7 +348,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings }:
           >
             Round Trip Packages
           </button>
-          <button 
+          <button
             onClick={() => setBookingMode('AIRPORT_TRANSFER')}
             className={`px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
               bookingMode === 'AIRPORT_TRANSFER' ? 'bg-green-500 text-white shadow-lg shadow-green-500/20' : 'text-gray-500 hover:text-gray-900'
@@ -403,29 +416,46 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings }:
                     </div>
                   </>
                 ) : (
-                  <div>
-                    <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest mb-2">Airport Direction</label>
-                    <div className="flex gap-2 mb-4">
-                      <button 
-                        onClick={() => setAtDirection('PICKUP')}
-                        className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase transition-all ${atDirection === 'PICKUP' ? 'bg-green-500 text-white' : 'bg-white border border-gray-200 text-gray-500 hover:bg-gray-50'}`}
-                      >
-                        Pickup from Airport
-                      </button>
-                      <button 
-                        onClick={() => setAtDirection('DROP')}
-                        className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase transition-all ${atDirection === 'DROP' ? 'bg-green-500 text-white' : 'bg-white border border-gray-200 text-gray-500 hover:bg-gray-50'}`}
-                      >
-                        Drop to Airport
-                      </button>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest mb-2">Pickup Location</label>
+                      <AirportLocalitySearch
+                        zones={airportZones}
+                        value={atPickup.name}
+                        airportLabel={airportName}
+                        mode={atDropIsAirport ? 'LOCALITY_ONLY' : atDrop.zoneId ? 'AIRPORT_ONLY' : 'ANY'}
+                        onChange={(locality, zoneId) => {
+                          setAtPickup({ name: locality, zoneId });
+                          const pickupIsAirport = zoneId === AIRPORT_ZONE_ID;
+                          if (atDrop.zoneId && (atDrop.zoneId === AIRPORT_ZONE_ID) === pickupIsAirport) {
+                            setAtDrop({ name: '', zoneId: '' });
+                          }
+                        }}
+                        placeholder={`Search ${airportName} or your area...`}
+                      />
                     </div>
 
-                    <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest mb-2">Search Locality/Hotel</label>
-                    <LocationAutocomplete
-                      value={atLocation.name}
-                      onChange={(val, loc) => setAtLocation({ name: val, data: loc })}
-                      placeholder="Search destination in Udaipur..."
-                    />
+                    <div>
+                      <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest mb-2">Drop Location</label>
+                      <AirportLocalitySearch
+                        zones={airportZones}
+                        value={atDrop.name}
+                        airportLabel={airportName}
+                        mode={atPickupIsAirport ? 'LOCALITY_ONLY' : atPickup.zoneId ? 'AIRPORT_ONLY' : 'ANY'}
+                        onChange={(locality, zoneId) => {
+                          setAtDrop({ name: locality, zoneId });
+                          const dropIsAirport = zoneId === AIRPORT_ZONE_ID;
+                          if (atPickup.zoneId && (atPickup.zoneId === AIRPORT_ZONE_ID) === dropIsAirport) {
+                            setAtPickup({ name: '', zoneId: '' });
+                          }
+                        }}
+                        placeholder={`Search ${airportName} or your area...`}
+                      />
+                    </div>
+
+                    <p className="text-[9px] text-gray-400 font-mono">
+                      One side must be {airportName}; the other, your locality within the zones we cover.
+                    </p>
                   </div>
                 )}
 
@@ -453,7 +483,39 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings }:
                           },
                         }}
                       >
-                        <DatePicker.RangePicker 
+                        {bookingMode === 'AIRPORT_TRANSFER' ? (
+                          <DatePicker
+                            showTime={{ format: 'h:mm a', use12Hours: true, minuteStep: 30 }}
+                            format="DD/MM/YYYY - h:mm a"
+                            value={pickupDate ? dayjs(pickupDate) : null}
+                            onChange={(date) => {
+                              if (date) {
+                                const start = date.toDate();
+                                setPickupDate(start);
+                                setReturnDate(null);
+                                updateSession({ pickupDate: start.toISOString(), returnDate: null });
+                              }
+                            }}
+                            className="w-full bg-white border border-gray-200 rounded-xl pl-10 pr-4 py-5 text-[11px] outline-none cursor-pointer font-medium"
+                            disabledDate={(current) => current && current < dayjs().startOf('day')}
+                            disabledTime={(current) => {
+                              if (current && current.isSame(dayjs(), 'day')) {
+                                const now = dayjs();
+                                return {
+                                  disabledHours: () => Array.from({ length: now.hour() }, (_, i) => i),
+                                  disabledMinutes: (selectedHour) => {
+                                    if (selectedHour === now.hour()) {
+                                      return Array.from({ length: now.minute() }, (_, i) => i);
+                                    }
+                                    return [];
+                                  }
+                                };
+                              }
+                              return {};
+                            }}
+                          />
+                        ) : (
+                        <DatePicker.RangePicker
                           showTime={{ format: 'h:mm a', use12Hours: true, minuteStep: 30 }}
                           format="DD/MM/YYYY - h:mm a"
                           value={[pickupDate ? dayjs(pickupDate) : null, returnDate ? dayjs(returnDate) : null]}
@@ -508,6 +570,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings }:
                             return {};
                           }}
                         />
+                        )}
                       </ConfigProvider>
                     </div>
                   </div>
@@ -529,22 +592,30 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings }:
                 
                 {!isCalculating && (
                   <div className="mt-6 h-[300px] rounded-2xl overflow-hidden shadow-lg border border-gray-200">
-                    <RouteMap 
+                    <RouteMap
                       sourceLocation={mapToRouteLocation(
-                        bookingMode === 'AIRPORT_TRANSFER' ? (atDirection === 'PICKUP' ? UDAIPUR_AIRPORT : atLocation.data || UDAIPUR_CITY) :
-                        bookingMode === 'ROUND_TRIP' ? UDAIPUR_CITY :
-                        pickupLocation.data || UDAIPUR_CITY
+                        bookingMode === 'ROUND_TRIP' ? UDAIPUR_CITY : pickupLocation.data || UDAIPUR_CITY
                       )}
                       destLocation={mapToRouteLocation(
-                        bookingMode === 'AIRPORT_TRANSFER' ? (atDirection === 'PICKUP' ? atLocation.data || UDAIPUR_CITY : UDAIPUR_AIRPORT) :
-                        bookingMode === 'ROUND_TRIP' ? (destLocations[0]?.data || UDAIPUR_CITY) :
-                        dropoffLocation.data || UDAIPUR_CITY
+                        bookingMode === 'ROUND_TRIP' ? (destLocations[0]?.data || UDAIPUR_CITY) : dropoffLocation.data || UDAIPUR_CITY
                       )}
                       routeGeometry={routeGeometry}
                     />
                   </div>
                 )}
                 </>
+              )}
+
+              {bookingMode === 'AIRPORT_TRANSFER' && atZone && (
+                <div className="bg-green-600/5 border border-green-600/20 rounded-xl p-5 mt-6 font-mono text-[10px] space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-500 font-bold tracking-widest">SERVICE ZONE</span>
+                    <span className="text-green-700 font-bold text-sm">{atZone.name}</span>
+                  </div>
+                  <p className="text-gray-500 leading-relaxed normal-case font-sans text-[11px]">
+                    Fares below already reflect your selected direction and area. Wait time, night hours, and meet &amp; greet charges (if any) are shown per vehicle.
+                  </p>
+                </div>
               )}
 
             </div>
@@ -599,23 +670,21 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings }:
                   const destStr = destLocations.map(d => d.name).filter(Boolean).join(' -> ');
                   extraText = `Round Trip: Udaipur -> ${destStr} (${durationDays} Days)`;
                 } else if (bookingMode === 'AIRPORT_TRANSFER') {
-                  // AIRPORT TRANSFER logic: 
-                  // Use TaxiFareSetting based on car category
-                  const setting = taxiSettings.find(s => s.vehicleCategory.toLowerCase() === car.category.toLowerCase()) || {
-                    airportBaseFare: 0,
-                    airportRatePerKm: car.packages?.[0]?.extraChargePerUnit || 15,
-                    airportMinFare: 300
-                  };
+                  // AIRPORT TRANSFER logic:
+                  // Zone-based flat fare — looked up by service zone + vehicle category + direction.
+                  const zoneFare = atZone?.fares?.find((f: any) => normalizeVehicleCategory(f.vehicleCategory) === normalizeVehicleCategory(car.category));
 
-                  const ratePerKm = setting.airportRatePerKm;
-                  const baseFare = setting.airportBaseFare;
-                  const minFare = setting.airportMinFare;
-                  
-                  const distanceFare = Math.round(calculatedDistance * ratePerKm);
-                  flatFare = baseFare + distanceFare;
-                  if (flatFare < minFare) flatFare = minFare;
-                  
-                  extraText = `Airport Transfer (${atDirection === 'PICKUP' ? 'Pickup from Airport' : 'Drop to Airport'}): ${atLocation.name}`;
+                  const nightApplies = isNightTime(pickupDate);
+                  const meetAndGreet = zoneFare?.meetAndGreet || false;
+                  const nightFee = nightApplies ? (zoneFare?.nightFee || 0) : 0;
+                  const waitChargePer30Min = zoneFare?.waitChargePer30Min || 0;
+
+                  const basePrice = zoneFare ? (atPickupIsAirport ? zoneFare.pickupPrice : zoneFare.dropPrice) : 0;
+                  flatFare = basePrice + nightFee;
+
+                  car._airportBreakdown = { basePrice, nightApplies, nightFee, waitChargePer30Min, meetAndGreet, hasFare: !!zoneFare };
+
+                  extraText = `Airport Transfer — ${atZone?.name || 'Zone'}: ${atPickup.name} → ${atDrop.name}`;
                 }
 
                 const isAlreadyBooked = car.bookings && car.bookings.length > 0 && car.bookings.some((booking: any) => {
@@ -787,24 +856,41 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings }:
                     </div>
                     <div className="text-right shrink-0 bg-transparent flex flex-col items-end">
                       <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
-                        {bookingMode === 'ROUND_TRIP' ? `Package Fare (${durationDays}D)` : 'Flat Invoice Fare'}
+                        {bookingMode === 'ROUND_TRIP' ? `Package Fare (${durationDays}D)` : bookingMode === 'AIRPORT_TRANSFER' ? 'Flat Transfer Fare' : 'Flat Invoice Fare'}
                       </div>
-                      <div className="text-3xl font-black text-green-700 mb-4">
-                        ₹{flatFare.toLocaleString()} 
+                      <div className="text-3xl font-black text-green-700 mb-1">
+                        ₹{flatFare.toLocaleString()}
                         <span className="text-gray-400 text-[10px] font-medium lowercase ml-2">
-                          {bookingMode === 'ROUND_TRIP' ? 'total' : (returnDate ? 'round trip' : 'one way')}
+                          {bookingMode === 'ROUND_TRIP' ? 'total' : bookingMode === 'AIRPORT_TRANSFER' ? 'flat rate' : (returnDate ? 'round trip' : 'one way')}
                         </span>
                       </div>
-                      <button 
-                        onClick={() => !isAlreadyBooked && handleBook(car, flatFare, extraText)} 
-                        disabled={isAlreadyBooked || (bookingMode === 'ROUND_TRIP' && !returnDate) || calculatedDistance === 0}
+                      {bookingMode === 'AIRPORT_TRANSFER' && car._airportBreakdown?.hasFare && (
+                        <div className="text-[9px] text-gray-500 font-mono mb-4 space-y-0.5 text-right">
+                          {car._airportBreakdown.nightApplies && car._airportBreakdown.nightFee > 0 && (
+                            <div>Incl. Night Fee ₹{car._airportBreakdown.nightFee.toLocaleString()} (10PM–6AM)</div>
+                          )}
+                          {car._airportBreakdown.waitChargePer30Min > 0 && (
+                            <div>Free 30 min wait, then ₹{car._airportBreakdown.waitChargePer30Min.toLocaleString()}/30min</div>
+                          )}
+                          {car._airportBreakdown.meetAndGreet && <div>Meet &amp; Greet included</div>}
+                        </div>
+                      )}
+                      {bookingMode === 'AIRPORT_TRANSFER' && !car._airportBreakdown?.hasFare && (
+                        <div className="text-[9px] text-red-500 font-mono mb-4">No fare configured for this vehicle in this zone</div>
+                      )}
+                      <button
+                        onClick={() => !isAlreadyBooked && handleBook(car, flatFare, extraText)}
+                        disabled={isAlreadyBooked || (bookingMode === 'ROUND_TRIP' && !returnDate) || (bookingMode === 'ROUND_TRIP' && calculatedDistance === 0) || (bookingMode === 'AIRPORT_TRANSFER' && (!atZoneId || !car._airportBreakdown?.hasFare))}
                         className={`font-black text-[10px] tracking-widest uppercase py-4 px-8 rounded-xl transition-all ${
-                          isAlreadyBooked || (bookingMode === 'ROUND_TRIP' && !returnDate) || calculatedDistance === 0
-                            ? 'bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-200 shadow-none' 
+                          isAlreadyBooked || (bookingMode === 'ROUND_TRIP' && (!returnDate || calculatedDistance === 0)) || (bookingMode === 'AIRPORT_TRANSFER' && (!atZoneId || !car._airportBreakdown?.hasFare))
+                            ? 'bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-200 shadow-none'
                             : 'bg-green-500 text-white hover:bg-green-600 shadow-lg shadow-green-500/20'
                         }`}
                       >
-                        {isAlreadyBooked ? 'Booked / Unavailable' : (bookingMode === 'ROUND_TRIP' && !returnDate ? 'Select Dates First' : calculatedDistance === 0 ? 'Select Valid Route' : 'Book Cab Now')}
+                        {isAlreadyBooked ? 'Booked / Unavailable'
+                          : bookingMode === 'ROUND_TRIP' ? (!returnDate ? 'Select Dates First' : calculatedDistance === 0 ? 'Select Valid Route' : 'Book Cab Now')
+                          : bookingMode === 'AIRPORT_TRANSFER' ? (!atZoneId ? 'Select Your Area First' : !car._airportBreakdown?.hasFare ? 'Unavailable For This Vehicle' : 'Book Cab Now')
+                          : 'Book Cab Now'}
                       </button>
                     </div>
                   </div>

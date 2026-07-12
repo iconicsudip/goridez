@@ -38,11 +38,43 @@ model City {
   banner      String?
   faqQuestion String?
   faqAnswer   String?
+  airportName String?
   createdAt       DateTime @default(now())
   cars            Car[]
   tours           Tour[]
   villas          Villa[]
   deliveryCharges DeliveryCharge[]
+  airportZones    AirportZone[]
+}
+
+model AirportZone {
+  id         String   @id @default(cuid())
+  cityId     String
+  name       String
+  localities String[] @default([])
+  order      Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  city       City             @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  fares      AirportZoneFare[]
+
+  @@unique([cityId, name])
+}
+
+model AirportZoneFare {
+  id                 String   @id @default(cuid())
+  zoneId             String
+  vehicleCategory    String
+  pickupPrice        Float    @default(0)
+  dropPrice          Float    @default(0)
+  waitChargePer30Min Float    @default(0)
+  nightFee           Float    @default(0)
+  meetAndGreet       Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  zone               AirportZone @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+
+  @@unique([zoneId, vehicleCategory])
 }
 
 model Car {
