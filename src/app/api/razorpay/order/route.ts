@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
       const itemDiscount = Math.round((discount || 0) * itemWeight);
       const discountedItemPrice = Math.max(0, item.price - itemDiscount);
 
-      const itemGst = discountedItemPrice * 0.12;
+      const itemGst = discountedItemPrice * 0.18;
       const itemTotal = discountedItemPrice + itemGst;
       const itemAdvance = itemTotal * 0.3; // 30% advance hold
       const itemRemaining = itemTotal - itemAdvance;

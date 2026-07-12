@@ -50,7 +50,7 @@ export default function VehicleDrawer({ isOpen, onClose, cities, tiers }: Vehicl
 
   function toggleCity(id: string) {
     setSelectedCityIds(prev =>
-      prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]
+      prev.includes(id) ? [] : [id]
     );
   }
 
@@ -233,11 +233,18 @@ export default function VehicleDrawer({ isOpen, onClose, cities, tiers }: Vehicl
                   <div className="space-y-2">
                     <label className="text-[9px] text-gray-500 font-mono uppercase tracking-widest block">Seating Capacity <span className="text-red-500">*</span></label>
                     <select name="seatingCapacity" className="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 text-xs text-gray-900 outline-none font-mono focus:border-green-600/40 transition-colors appearance-none">
+                      <option value="2">2 Seater</option>
                       <option value="4">4 Seater</option>
                       <option value="5">5 Seater</option>
                       <option value="6">6 Seater</option>
                       <option value="7">7 Seater</option>
                       <option value="8">8 Seater</option>
+                      <option value="9">9 Seater</option>
+                      <option value="10">10 Seater</option>
+                      <option value="12">12 Seater</option>
+                      <option value="14">14 Seater</option>
+                      <option value="16">16 Seater</option>
+                      <option value="20">20 Seater</option>
                     </select>
                   </div>
                 </div>
@@ -321,30 +328,30 @@ export default function VehicleDrawer({ isOpen, onClose, cities, tiers }: Vehicl
               </div>
             )}
 
-            {/* ── SECTION: CITY COVERAGE ── */}
-            <div className="border-t border-gray-200 pt-8">
-              <p className="text-[9px] text-green-700 font-mono uppercase tracking-widest mb-4">— Active City Coverage (Multi-Select)</p>
-              <div className="flex flex-wrap gap-2">
-                {cities.map(c => {
-                  const selected = selectedCityIds.includes(c.id);
-                  return (
-                    <button key={c.id} type="button" onClick={() => toggleCity(c.id)}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-[10px] font-bold uppercase tracking-widest transition-all ${
-                        selected
-                          ? 'bg-green-600/10 border-green-600 text-green-700 shadow-sm'
-                          : 'bg-gray-100 border-gray-300 text-gray-500 hover:border-white/30 hover:text-gray-900/80'
-                      }`}>
-                      {selected && <Check size={11} strokeWidth={3} />}
-                      {c.name}
-                    </button>
-                  );
-                })}
-                {cities.length === 0 && <p className="text-[10px] text-gray-400 font-mono">No cities configured.</p>}
-              </div>
-              {selectedCityIds.length > 0 && (
-                <p className="text-[9px] text-gray-400 font-mono mt-2">{selectedCityIds.length} city hub{selectedCityIds.length > 1 ? 's' : ''} selected</p>
-              )}
-            </div>
+             {/* ── SECTION: CITY HUB ── */}
+             <div className="border-t border-gray-200 pt-8">
+               <p className="text-[9px] text-green-700 font-mono uppercase tracking-widest mb-4">— Active City Hub (Select One) <span className="text-red-500">*</span></p>
+               <div className="flex flex-wrap gap-2">
+                 {cities.map(c => {
+                   const selected = selectedCityIds.includes(c.id);
+                   return (
+                     <button key={c.id} type="button" onClick={() => toggleCity(c.id)}
+                       className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-[10px] font-bold uppercase tracking-widest transition-all ${
+                         selected
+                           ? 'bg-green-600/10 border-green-600 text-green-700 shadow-sm'
+                           : 'bg-gray-100 border-gray-300 text-gray-500 hover:border-white/30 hover:text-gray-900/80'
+                       }`}>
+                       {selected && <Check size={11} strokeWidth={3} />}
+                       {c.name}
+                     </button>
+                   );
+                 })}
+                 {cities.length === 0 && <p className="text-[10px] text-gray-400 font-mono">No cities configured.</p>}
+               </div>
+               {selectedCityIds.length > 0 && (
+                 <p className="text-[9px] text-gray-400 font-mono mt-2">Operational Hub: <span className="text-green-700 font-bold">{cities.find(c => c.id === selectedCityIds[0])?.name}</span></p>
+               )}
+             </div>
 
             {/* ── SECTION: PRICING PACKAGES ── */}
             <div className="border-t border-gray-200 pt-8">

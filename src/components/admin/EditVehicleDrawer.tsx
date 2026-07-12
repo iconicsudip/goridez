@@ -93,7 +93,7 @@ export default function EditVehicleDrawer({ isOpen, onClose, car, cities, tiers 
   }
 
   function toggleCity(id: string) {
-    setSelectedCityIds(prev => prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]);
+    setSelectedCityIds(prev => prev.includes(id) ? [] : [id]);
   }
 
   function addBlankPackage() {
@@ -213,10 +213,21 @@ export default function EditVehicleDrawer({ isOpen, onClose, car, cities, tiers 
                       <option>Automatic Gearbox</option><option>Manual Gearbox</option>
                     </select>
                   </div>
-                  <div className="space-y-2">
+                   <div className="space-y-2">
                     <label className="text-[9px] text-gray-500 font-mono uppercase tracking-widest block">Seating Capacity <span className="text-yellow-400">*</span></label>
                     <select name="seatingCapacity" defaultValue={String(car.seatingCapacity)} className="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 text-xs text-gray-900 outline-none font-mono appearance-none">
-                      <option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
+                      <option value="2">2 Seater</option>
+                      <option value="4">4 Seater</option>
+                      <option value="5">5 Seater</option>
+                      <option value="6">6 Seater</option>
+                      <option value="7">7 Seater</option>
+                      <option value="8">8 Seater</option>
+                      <option value="9">9 Seater</option>
+                      <option value="10">10 Seater</option>
+                      <option value="12">12 Seater</option>
+                      <option value="14">14 Seater</option>
+                      <option value="16">16 Seater</option>
+                      <option value="20">20 Seater</option>
                     </select>
                   </div>
                 </div>
@@ -235,7 +246,7 @@ export default function EditVehicleDrawer({ isOpen, onClose, car, cities, tiers 
               </div>
             </div>
 
-            {/* City Multi-Select */}
+            {/* City Hub Single-Select */}
             {/* ── SECTION: SERVICE TYPES ── */}
             <div className="border-t border-gray-200 pt-8">
               <p className="text-[9px] text-green-700 font-mono uppercase tracking-widest mb-4">— Categorization</p>
@@ -268,13 +279,13 @@ export default function EditVehicleDrawer({ isOpen, onClose, car, cities, tiers 
             </div>
 
             <div className="border-t border-gray-200 pt-8 mt-8">
-              <p className="text-[9px] text-yellow-400 font-mono uppercase tracking-widest mb-4">— City Coverage</p>
+              <p className="text-[9px] text-yellow-400 font-mono uppercase tracking-widest mb-4">— Active City Hub (Select One) <span className="text-yellow-400">*</span></p>
               <div className="flex flex-wrap gap-2">
                 {cities.map(c => {
                   const selected = selectedCityIds.includes(c.id);
                   return (
                     <button key={c.id} type="button" onClick={() => toggleCity(c.id)}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-[10px] font-bold uppercase tracking-widest transition-all ${selected ? 'bg-yellow-400/10 border-yellow-400 text-yellow-400' : 'bg-gray-100 border-gray-300 text-gray-500 hover:border-white/30'}`}>
+                      className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-[10px] font-bold uppercase tracking-widest transition-all ${selected ? 'bg-yellow-400/10 border-yellow-400 text-yellow-455' : 'bg-gray-100 border-gray-300 text-gray-500 hover:border-white/30'}`}>
                       {selected && <Check size={11} strokeWidth={3} />}{c.name}
                     </button>
                   );

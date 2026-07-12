@@ -26,6 +26,9 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
   const totalAdvance = bookings.reduce((acc, b) => acc + b.advancePaid, 0);
   const totalRemaining = bookings.reduce((acc, b) => acc + b.remainingAmount, 0);
   const totalDeposit = bookings.reduce((acc, b) => acc + b.depositAmount, 0);
+  
+  const baseFare = Math.round(totalAmount / 1.18);
+  const gstAmount = totalAmount - baseFare;
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 flex flex-col items-center justify-center p-4 pt-28 pb-20">
@@ -38,7 +41,7 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
         <p className="text-gray-600 mb-8 max-w-md mx-auto text-xs leading-relaxed font-mono">
           Your advance hold payment has been verified successfully. Your booking is confirmed under ledger ID: <span className="text-green-700">{bookingIds.join(', ') || 'N/A'}</span>
         </p>
-
+ 
         {/* Customer Info Card */}
         <div className="bg-white border border-gray-200 rounded-2xl p-5 mb-6 text-left">
           <div className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-3">Primary Client Details</div>
@@ -53,7 +56,7 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
             </div>
           </div>
         </div>
-
+ 
         {/* Booked Items Summary */}
         <div className="space-y-4 mb-8 text-left">
           <div className="text-[9px] font-black text-gray-400 uppercase tracking-widest pl-1">Reserved Items Ledger</div>
@@ -61,7 +64,7 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
             let itemTitle = 'Luxury Reservation';
             let itemTypeLabel = 'Rental Service';
             let Icon = ShieldCheck;
-
+ 
             if (booking.type === 'CAR' && booking.car) {
               itemTitle = `${booking.car.make} ${booking.car.model}`;
               itemTypeLabel = 'Luxury Fleet';
@@ -75,7 +78,7 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
               itemTypeLabel = 'Exclusive Stay';
               Icon = MapPin;
             }
-
+ 
             return (
               <div key={booking.id} className="bg-white border border-gray-200 rounded-2xl p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div className="flex gap-4 items-center">
@@ -99,13 +102,23 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
             );
           })}
         </div>
-
+ 
         {/* Ledger Calculations */}
         <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-8 font-mono text-xs text-left space-y-4">
           <div className="text-[9px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-200 pb-2">Financial Invoice Summaries</div>
           
           <div className="flex justify-between text-gray-600">
-            <span>Total Package Price</span>
+            <span>Base Fare Component</span>
+            <span>₹{baseFare.toLocaleString()}</span>
+          </div>
+
+          <div className="flex justify-between text-gray-600">
+            <span>Total Taxes (18% GST)</span>
+            <span>₹{gstAmount.toLocaleString()}</span>
+          </div>
+
+          <div className="flex justify-between text-gray-900 font-bold">
+            <span>Gross Total Package (incl. GST)</span>
             <span>₹{totalAmount.toLocaleString()}</span>
           </div>
 
@@ -113,12 +126,12 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
             <span>Advance Hold Paid (30%)</span>
             <span>₹{totalAdvance.toLocaleString()}</span>
           </div>
-
+ 
           <div className="flex justify-between text-gray-600">
             <span>Security Deposit Hold</span>
             <span>₹{totalDeposit.toLocaleString()}</span>
           </div>
-
+ 
           <div className="flex justify-between border-t border-gray-200 pt-3 text-orange-400 font-bold">
             <span>Payable at Counter/Delivery</span>
             <span>₹{(totalRemaining + totalDeposit).toLocaleString()}</span>

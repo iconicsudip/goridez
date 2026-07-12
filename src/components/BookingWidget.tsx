@@ -5,11 +5,11 @@ import { useRouter } from 'next/navigation';
 import { MapPin, Calendar, Loader2, X } from 'lucide-react';
 import { useBookingStore } from '@/store/useBookingStore';
 import { searchLocation, OSMLocation } from '@/lib/osm';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+import { DatePicker, ConfigProvider } from 'antd';
+import dayjs from 'dayjs';
 
-type MainTab = 'CHAUFFEUR' | 'SELF DRIVE' | 'VILLAS' | 'TOURS';
-type SubTab = 'LOCAL' | 'ROUND TRIP';
+type MainTab = 'SELF DRIVE' | 'CHAUFFEUR';
+type SubTab = 'ROUND TRIP' | 'AIRPORT TRANSFER';
 
 // ── Inline OSM Location Search Field ─────────────────────────────────────────
 // Matches the same style as the booking widget card cells
@@ -171,8 +171,8 @@ export default function BookingWidget({
   cities?: any[];
   counts?: { selfDrive: number; chauffeur: number; taxi: number; tours: number; villas: number };
 }) {
-  const [mainTab, setMainTab] = useState<MainTab>('CHAUFFEUR');
-  const [subTab, setSubTab] = useState<SubTab>('LOCAL');
+  const [mainTab, setMainTab] = useState<MainTab>('SELF DRIVE');
+  const [subTab, setSubTab] = useState<SubTab>('ROUND TRIP');
 
   const router = useRouter();
   const { session, updateSession } = useBookingStore();
@@ -192,10 +192,51 @@ export default function BookingWidget({
   const [isDifferentDropCity, setIsDifferentDropCity] = useState(false);
   const [destinations, setDestinations] = useState<string[]>(['']);
 
+  // Time filters are handled natively by Ant Design DatePicker's disabledTime prop
+
+  const handlePickupDateChange = (d: Date | null) => {
+    if (!d) {
+      setPickupDate(null);
+      return;
+    }
+    const now = new Date();
+    const adjusted = d.getTime() < now.getTime() ? now : d;
+    setPickupDate(adjusted);
+    updateSession({ pickupDate: adjusted.toISOString() });
+
+    if (returnDate && returnDate.getTime() <= adjusted.getTime()) {
+      const newReturn = new Date(adjusted.getTime() + 2 * 60 * 60 * 1000); // 2 hours later
+      setReturnDate(newReturn);
+      updateSession({ returnDate: newReturn.toISOString() });
+    }
+  };
+
+  const handleReturnDateChange = (d: Date | null) => {
+    if (!d) {
+      setReturnDate(null);
+      return;
+    }
+    const minTime = pickupDate ? pickupDate.getTime() : Date.now();
+    const adjusted = d.getTime() <= minTime ? new Date(minTime + 2 * 60 * 60 * 1000) : d;
+    setReturnDate(adjusted);
+    updateSession({ returnDate: adjusted.toISOString() });
+  };
+
   useEffect(() => {
     setIsMounted(true);
-    if (session?.pickupDate) setPickupDate(new Date(session.pickupDate));
-    if (session?.returnDate) setReturnDate(new Date(session.returnDate));
+    let loadedPickup = session?.pickupDate ? new Date(session.pickupDate) : null;
+    let loadedReturn = session?.returnDate ? new Date(session.returnDate) : null;
+    const now = new Date();
+
+    if (loadedPickup && loadedPickup.getTime() < now.getTime()) {
+      loadedPickup = new Date(now.getTime() + 60 * 60 * 1000); // 1 hour from now
+    }
+    if (loadedReturn && loadedPickup && loadedReturn.getTime() <= loadedPickup.getTime()) {
+      loadedReturn = new Date(loadedPickup.getTime() + 4 * 24 * 60 * 60 * 1000);
+    }
+
+    if (loadedPickup) setPickupDate(loadedPickup);
+    if (loadedReturn) setReturnDate(loadedReturn);
     if (session?.pickupCity) setSourceCity(session.pickupCity);
     if (session?.dropCity) setDestCity(session.dropCity);
   }, []);
@@ -218,11 +259,9 @@ export default function BookingWidget({
     let mode: any = 'LOCAL';
 
     if (mainTab === 'SELF DRIVE') { stype = 'selfDrive'; route = '/self-drive'; }
-    else if (mainTab === 'VILLAS') { stype = 'villaCar'; route = '/villas'; }
-    else if (mainTab === 'TOURS') { stype = 'tours'; route = '/tours'; }
     else {
       if (subTab === 'ROUND TRIP') { stype = 'roundTripTaxi'; route = '/taxi'; mode = 'ROUND_TRIP'; }
-      else { stype = 'withDriver'; route = '/chauffeur'; mode = 'LOCAL'; }
+      else { stype = 'airportTransfer'; route = '/taxi'; mode = 'AIRPORT_TRANSFER'; }
     }
 
     const isRoundTrip = mainTab === 'CHAUFFEUR' && subTab === 'ROUND TRIP';
@@ -264,17 +303,19 @@ export default function BookingWidget({
 
       {/* ── Main Tabs ─────────────────────────────────────────────────────── */}
       <div className="flex w-full sm:w-max max-w-full overflow-x-auto hide-scrollbar bg-brand-panel/95 backdrop-blur-xl rounded-t-3xl shadow-lg border border-brand-border border-b-0">
-        {(['CHAUFFEUR', 'SELF DRIVE', 'VILLAS', 'TOURS'] as MainTab[]).map((tab) => {
+        {(['SELF DRIVE', 'CHAUFFEUR'] as MainTab[]).map((tab) => {
           if (counts) {
             if (tab === 'SELF DRIVE' && counts.selfDrive === 0) return null;
-            if (tab === 'VILLAS' && counts.villas === 0) return null;
-            if (tab === 'TOURS' && counts.tours === 0) return null;
             if (tab === 'CHAUFFEUR' && counts.chauffeur === 0 && counts.taxi === 0) return null;
           }
           return (
             <button
               key={tab}
-              onClick={() => { setMainTab(tab); setIsDifferentDropCity(false); }}
+              onClick={() => { 
+                setMainTab(tab); 
+                setIsDifferentDropCity(false);
+                if (tab === 'CHAUFFEUR') setSubTab('ROUND TRIP');
+              }}
               className={`px-6 md:px-10 py-4 text-xs md:text-sm font-black tracking-widest transition-all whitespace-nowrap flex-shrink-0 cursor-pointer ${
                 mainTab === tab
                   ? 'bg-brand-gold text-white shadow-md shadow-brand-gold/40'
@@ -293,7 +334,7 @@ export default function BookingWidget({
         {/* Sub Tabs */}
         {mainTab === 'CHAUFFEUR' && (
           <div className="flex flex-wrap items-center gap-3 mb-8">
-            {(['LOCAL', 'ROUND TRIP'] as SubTab[]).map((sub) => (
+            {(['ROUND TRIP', 'AIRPORT TRANSFER'] as SubTab[]).map((sub) => (
               <button
                 key={sub}
                 type="button"
@@ -309,8 +350,8 @@ export default function BookingWidget({
                 }`}>
                   {subTab === sub && <div className="w-2 h-2 rounded-full bg-brand-gold" />}
                 </div>
-                {sub === 'LOCAL' && 'Local Rental'}
                 {sub === 'ROUND TRIP' && 'Round Trip'}
+                {sub === 'AIRPORT TRANSFER' && 'Airport Transfer'}
               </button>
             ))}
           </div>
@@ -385,49 +426,86 @@ export default function BookingWidget({
               />
             ) : null}
 
-            {/* ── Pickup Date ───────────────────────────────────────── */}
-            <div className="bg-white border border-brand-border hover:border-brand-gold/50 transition-colors rounded-xl p-4 flex flex-col shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+            {/* ── Travel Date Range ───────────────────────────────────────── */}
+            <div className="bg-white border border-brand-border hover:border-brand-gold/50 transition-colors rounded-xl p-4 flex flex-col shadow-[0_2px_10px_rgba(0,0,0,0.02)] md:col-span-2">
               <label className="text-xs text-gray-500 mb-2 font-mono uppercase tracking-wider">
-                Pickup Date – Time
+                Travel Date Range (Required)
               </label>
-              <div className="flex items-center gap-2 text-gray-800">
+              <div className="flex items-center gap-2 text-gray-800 w-full">
                 <Calendar size={16} className="text-gray-400 shrink-0" />
-                <DatePicker
-                  selected={pickupDate}
-                  onChange={(d: Date | null) => setPickupDate(d)}
-                  showTimeSelect
-                  timeFormat="h:mm aa"
-                  timeIntervals={30}
-                  dateFormat="dd MMM yyyy - h:mm aa"
-                  placeholderText="Pick date & time"
-                  className="w-full bg-transparent text-sm font-semibold outline-none cursor-pointer placeholder-gray-400 text-gray-900"
-                  wrapperClassName="w-full"
-                />
+                <ConfigProvider
+                  theme={{
+                    token: {
+                      colorPrimary: '#15803d',
+                      borderRadius: 8,
+                      fontSize: 11,
+                    },
+                    components: {
+                      DatePicker: {
+                        cellWidth: 28,
+                        cellHeight: 20,
+                        timeColumnWidth: 48,
+                        timeCellHeight: 22,
+                      },
+                    },
+                  }}
+                >
+                  <DatePicker.RangePicker
+                    showTime={{ format: 'h:mm a', use12Hours: true, minuteStep: 30 }}
+                    format="DD MMM YYYY - h:mm a"
+                    value={[pickupDate ? dayjs(pickupDate) : null, returnDate ? dayjs(returnDate) : null]}
+                    onChange={(dates) => {
+                      if (dates && dates[0]) {
+                        const start = dates[0].toDate();
+                        let end = dates[1] ? dates[1].toDate() : null;
+                        if (end && (end.getTime() - start.getTime()) < 12 * 60 * 60 * 1000) {
+                          end = new Date(start.getTime() + 12 * 60 * 60 * 1000);
+                        }
+                        handlePickupDateChange(start);
+                        handleReturnDateChange(end);
+                      } else {
+                        handlePickupDateChange(null);
+                        handleReturnDateChange(null);
+                      }
+                    }}
+                    placeholder={['Pickup Date & Time', 'Return Date & Time']}
+                    variant="borderless"
+                    className="w-full text-xs font-semibold cursor-pointer text-gray-900 !p-0"
+                    disabledDate={(current) => current && current < dayjs().startOf('day')}
+                    disabledTime={(current, type) => {
+                      if (type === 'start') {
+                        if (current && current.isSame(dayjs(), 'day')) {
+                          const now = dayjs();
+                          return {
+                            disabledHours: () => Array.from({ length: now.hour() }, (_, i) => i),
+                            disabledMinutes: (selectedHour) => {
+                              if (selectedHour === now.hour()) {
+                                return Array.from({ length: now.minute() }, (_, i) => i);
+                              }
+                              return [];
+                            }
+                          };
+                        }
+                      } else if (type === 'end') {
+                        if (current && pickupDate && current.isSame(dayjs(pickupDate), 'day')) {
+                          const p = dayjs(pickupDate);
+                          return {
+                            disabledHours: () => Array.from({ length: p.hour() }, (_, i) => i),
+                            disabledMinutes: (selectedHour) => {
+                              if (selectedHour === p.hour()) {
+                                return Array.from({ length: p.minute() }, (_, i) => i);
+                              }
+                              return [];
+                            }
+                          };
+                        }
+                      }
+                      return {};
+                    }}
+                  />
+                </ConfigProvider>
               </div>
             </div>
-
-            {/* ── Return Date ───────────────────────────────────────── */}
-            {true && (
-              <div className="bg-white border border-brand-border hover:border-brand-gold/50 transition-colors rounded-xl p-4 flex flex-col shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
-                <label className="text-xs text-gray-500 mb-2 font-mono uppercase tracking-wider">
-                  Drop Date
-                </label>
-                <div className="flex items-center gap-2 text-gray-800">
-                  <Calendar size={16} className="text-gray-400 shrink-0" />
-                  <DatePicker
-                    selected={returnDate}
-                    onChange={(d: Date | null) => setReturnDate(d)}
-                    showTimeSelect
-                    timeFormat="h:mm aa"
-                    timeIntervals={30}
-                    dateFormat="dd MMM yyyy - h:mm aa"
-                    placeholderText="Pick return date"
-                    className="w-full bg-transparent text-sm font-semibold outline-none cursor-pointer placeholder-gray-400 text-gray-900"
-                    wrapperClassName="w-full"
-                  />
-                </div>
-              </div>
-            )}
 
           </div>
 

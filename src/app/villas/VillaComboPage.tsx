@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { ShieldCheck, ChevronRight, ChevronLeft, Check, Calendar } from 'lucide-react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+import { DatePicker, ConfigProvider } from 'antd';
+import dayjs from 'dayjs';
 import { useRouter } from 'next/navigation';
 import { useBookingStore } from '@/store/useBookingStore';
 
@@ -23,63 +23,39 @@ export default function VillaComboPage({ initialVillas, cities, initialCars = []
   const [selectedCar, setSelectedCar] = useState<string | null>(initialCars[0]?.id || null);
   const [driverOption, setDriverOption] = useState<boolean>(true);
   const [pickupOption, setPickupOption] = useState<string>('Udaipur Railway Terminal Concierge');
-  const [pickupDate, setPickupDate] = useState<Date>(new Date(Date.now() + 86400000));
-  const [returnDate, setReturnDate] = useState<Date | null>(new Date(Date.now() + 4 * 86400000));
+  const [pickupDate, setPickupDate] = useState<Date>(() => {
+    const d = new Date();
+    d.setHours(d.getHours() + 1, 0, 0, 0);
+    return d;
+  });
+  const [returnDate, setReturnDate] = useState<Date | null>(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 4);
+    d.setHours(10, 0, 0, 0);
+    return d;
+  });
   const [isMounted, setIsMounted] = useState(false);
+
+  // Time filters are handled natively by Ant Design DatePicker
 
   useEffect(() => {
     setIsMounted(true);
-    if (session?.pickupDate) {
-      setPickupDate(new Date(session.pickupDate));
+    let loadedPickup = session?.pickupDate ? new Date(session.pickupDate) : null;
+    let loadedReturn = session?.returnDate ? new Date(session.returnDate) : null;
+    const now = new Date();
+
+    if (loadedPickup && loadedPickup.getTime() < now.getTime()) {
+      loadedPickup = new Date(now.getTime() + 60 * 60 * 1000);
     }
-    if (session?.returnDate) {
-      setReturnDate(new Date(session.returnDate));
+    if (loadedReturn && loadedPickup && loadedReturn.getTime() <= loadedPickup.getTime()) {
+      loadedReturn = new Date(loadedPickup.getTime() + 4 * 24 * 60 * 60 * 1000);
     }
+
+    if (loadedPickup) setPickupDate(loadedPickup);
+    if (loadedReturn) setReturnDate(loadedReturn);
   }, [session?.pickupDate, session?.returnDate]);
 
-  const handleDateRangeChange = (update: [Date | null, Date | null]) => {
-    const [start, end] = update;
-    let nextStart = pickupDate;
-    let nextEnd = returnDate;
-
-    if (start) {
-      nextStart = new Date(start);
-      nextStart.setHours(pickupDate.getHours(), pickupDate.getMinutes());
-      setPickupDate(nextStart);
-    }
-    if (end) {
-      nextEnd = new Date(end);
-      nextEnd.setHours(returnDate ? returnDate.getHours() : 10, returnDate ? returnDate.getMinutes() : 0);
-      setReturnDate(nextEnd);
-      updateSession({
-        pickupDate: nextStart.toISOString(),
-        returnDate: nextEnd.toISOString()
-      });
-    } else {
-      setReturnDate(null);
-    }
-  };
-
-  const handlePickupTimeChange = (timeStr: string) => {
-    const [h, m] = timeStr.split(':').map(Number);
-    const newDate = new Date(pickupDate);
-    newDate.setHours(h, m);
-    setPickupDate(newDate);
-    updateSession({
-      pickupDate: newDate.toISOString()
-    });
-  };
-
-  const handleReturnTimeChange = (timeStr: string) => {
-    if (!returnDate) return;
-    const [h, m] = timeStr.split(':').map(Number);
-    const newDate = new Date(returnDate);
-    newDate.setHours(h, m);
-    setReturnDate(newDate);
-    updateSession({
-      returnDate: newDate.toISOString()
-    });
-  };
+  // Handlers removed because DatePicker handles both date and time selection natively
 
   const [guests, setGuests] = useState(4);
   
@@ -151,6 +127,8 @@ export default function VillaComboPage({ initialVillas, cities, initialCars = []
       deposit: 0,
       extraInfo: extra
     });
+
+    router.push('/cart');
   }
 
   const villaTotal = activeVilla ? Math.round(activeVilla.startingPrice * duration) : 0;
@@ -337,7 +315,7 @@ export default function VillaComboPage({ initialVillas, cities, initialCars = []
                             : (isSelected ? 'border-green-600 bg-[#16160A]' : 'border-gray-200 bg-white hover:border-gray-400')
                         }`}
                       >
-                        <div className="relative w-full md:w-[140px] h-[90px] rounded-xl overflow-hidden shrink-0 border border-gray-300">
+                        <div className="relative w-full md:w-[140px] h-[90px] rounded-xl overflow-hidden shrink-0 border border-gray-300 bg-white flex items-center justify-center">
                           <Image src={car.image} alt={car.model} fill className="object-cover" unoptimized />
                         </div>
                         
@@ -554,46 +532,75 @@ export default function VillaComboPage({ initialVillas, cities, initialCars = []
 
             <div className="space-y-4 mb-4">
               <div>
-                <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest mb-2">Stay Date Range</label>
-                <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-green-700 pointer-events-none" size={14} />
-                  <DatePicker 
-                    selectsRange={true}
-                    startDate={pickupDate}
-                    endDate={returnDate}
-                    onChange={handleDateRangeChange} 
-                    dateFormat="dd/MM/yyyy" 
-                    placeholderText="Select Check-in & Check-out dates"
-                    className="w-full bg-white border border-gray-200 rounded-lg pl-9 pr-3 py-3 text-xs outline-none focus:border-green-600 transition-colors cursor-pointer font-medium" 
-                    wrapperClassName="w-full" portalId="datepicker-root"
-                  />
+                <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest mb-2">Stay Date Range & Time</label>
+                <div className="relative w-full">
+                  <ConfigProvider
+                    theme={{
+                      token: {
+                        colorPrimary: '#15803d',
+                        borderRadius: 8,
+                      },
+                    }}
+                  >
+                    <DatePicker.RangePicker 
+                      showTime={{ format: 'h:mm a', use12Hours: true, minuteStep: 30 }}
+                      format="DD/MM/YYYY - h:mm a"
+                      value={[pickupDate ? dayjs(pickupDate) : null, returnDate ? dayjs(returnDate) : null]}
+                      onChange={(dates) => {
+                        if (dates) {
+                          const start = dates[0]?.toDate() || new Date();
+                          const end = dates[1]?.toDate() || null;
+                          setPickupDate(start);
+                          setReturnDate(end);
+                          updateSession({
+                            pickupDate: start.toISOString(),
+                            returnDate: end ? end.toISOString() : null
+                          });
+                        } else {
+                          setReturnDate(null);
+                          updateSession({ returnDate: null });
+                        }
+                      }}
+                      className="w-full bg-white border border-gray-200 rounded-lg px-3 py-3 text-xs outline-none cursor-pointer font-medium"
+                      disabledDate={(current) => current && current < dayjs().startOf('day')}
+                      disabledTime={(current, type) => {
+                        if (type === 'start') {
+                          if (current && current.isSame(dayjs(), 'day')) {
+                            const now = dayjs();
+                            return {
+                              disabledHours: () => Array.from({ length: now.hour() }, (_, i) => i),
+                              disabledMinutes: (selectedHour) => {
+                                if (selectedHour === now.hour()) {
+                                  return Array.from({ length: now.minute() }, (_, i) => i);
+                                }
+                                return [];
+                              }
+                            };
+                          }
+                        } else if (type === 'end') {
+                          if (current && pickupDate && current.isSame(dayjs(pickupDate), 'day')) {
+                            const p = dayjs(pickupDate);
+                            return {
+                              disabledHours: () => Array.from({ length: p.hour() }, (_, i) => i),
+                              disabledMinutes: (selectedHour) => {
+                                if (selectedHour === p.hour()) {
+                                  return Array.from({ length: p.minute() }, (_, i) => i);
+                                }
+                                return [];
+                              }
+                            };
+                          }
+                        }
+                        return {};
+                      }}
+                    />
+                  </ConfigProvider>
                 </div>
                 {isComboBooked && (
                   <div className="mt-2 bg-[#220B0B] border border-red-500/20 rounded-xl p-3 text-[10px] text-red-400 font-mono">
                     ⚠️ Selected stay components or companion wheels are already booked on these dates.
                   </div>
                 )}
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[8px] text-gray-500 font-bold uppercase tracking-widest mb-1">Check-in Time</label>
-                  <input 
-                    type="time" 
-                    value={`${String(pickupDate.getHours()).padStart(2, '0')}:${String(pickupDate.getMinutes()).padStart(2, '0')}`}
-                    onChange={(e) => handlePickupTimeChange(e.target.value)}
-                    className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 outline-none focus:border-green-600 font-mono"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[8px] text-gray-500 font-bold uppercase tracking-widest mb-1">Check-out Time</label>
-                  <input 
-                    type="time" 
-                    value={returnDate ? `${String(returnDate.getHours()).padStart(2, '0')}:${String(returnDate.getMinutes()).padStart(2, '0')}` : '10:00'}
-                    onChange={(e) => handleReturnTimeChange(e.target.value)}
-                    disabled={!returnDate}
-                    className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 outline-none focus:border-green-600 font-mono disabled:opacity-50"
-                  />
-                </div>
               </div>
             </div>
 

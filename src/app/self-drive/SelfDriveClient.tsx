@@ -4,8 +4,8 @@ import { useState, useMemo, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Sparkles, Calendar } from 'lucide-react';
 import SelfDriveList from '@/components/SelfDriveList';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+import { DatePicker, ConfigProvider } from 'antd';
+import dayjs from 'dayjs';
 import { useBookingStore } from '@/store/useBookingStore';
 
 export default function SelfDriveClient({ initialCars, initialCities }: { initialCars: any[], initialCities: any[] }) {
@@ -19,9 +19,20 @@ export default function SelfDriveClient({ initialCars, initialCities }: { initia
   const [fuelType, setFuelType] = useState('Any Fuel Type');
   const [maxPrice, setMaxPrice] = useState(40000);
   
-  const [pickupDate, setPickupDate] = useState<Date>(new Date(Date.now() + 86400000));
-  const [returnDate, setReturnDate] = useState<Date | null>(new Date(Date.now() + 4 * 86400000));
+  const [pickupDate, setPickupDate] = useState<Date>(() => {
+    const d = new Date();
+    d.setHours(d.getHours() + 1, 0, 0, 0);
+    return d;
+  });
+  const [returnDate, setReturnDate] = useState<Date | null>(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 4);
+    d.setHours(10, 0, 0, 0);
+    return d;
+  });
   const [isMounted, setIsMounted] = useState(false);
+
+  // Time filters are handled natively by Ant Design DatePicker
 
   useEffect(() => {
     setIsMounted(true);
@@ -30,11 +41,24 @@ export default function SelfDriveClient({ initialCars, initialCities }: { initia
     const qReturnDate = searchParams.get('returnDate');
     const qPickupCity = searchParams.get('pickupCity');
 
-    if (qPickupDate) setPickupDate(new Date(qPickupDate));
-    else if (session?.pickupDate) setPickupDate(new Date(session.pickupDate));
+    let loadedPickup = null;
+    if (qPickupDate) loadedPickup = new Date(qPickupDate);
+    else if (session?.pickupDate) loadedPickup = new Date(session.pickupDate);
 
-    if (qReturnDate) setReturnDate(new Date(qReturnDate));
-    else if (session?.returnDate) setReturnDate(new Date(session.returnDate));
+    let loadedReturn = null;
+    if (qReturnDate) loadedReturn = new Date(qReturnDate);
+    else if (session?.returnDate) loadedReturn = new Date(session.returnDate);
+
+    const now = new Date();
+    if (loadedPickup && loadedPickup.getTime() < now.getTime()) {
+      loadedPickup = new Date(now.getTime() + 60 * 60 * 1000); // 1 hour from now
+    }
+    if (loadedReturn && loadedPickup && loadedReturn.getTime() <= loadedPickup.getTime()) {
+      loadedReturn = new Date(loadedPickup.getTime() + 24 * 60 * 60 * 1000);
+    }
+
+    if (loadedPickup) setPickupDate(loadedPickup);
+    if (loadedReturn) setReturnDate(loadedReturn);
 
     if (qPickupCity) {
       const city = initialCities.find(c => c.name === qPickupCity);
@@ -44,49 +68,7 @@ export default function SelfDriveClient({ initialCars, initialCities }: { initia
     }
   }, [session?.pickupDate, session?.returnDate, session?.pickupCity, searchParams]);
 
-  const handleDateRangeChange = (update: [Date | null, Date | null]) => {
-    const [start, end] = update;
-    let nextStart = pickupDate;
-    let nextEnd = returnDate;
-
-    if (start) {
-      nextStart = new Date(start);
-      nextStart.setHours(pickupDate.getHours(), pickupDate.getMinutes());
-      setPickupDate(nextStart);
-    }
-    if (end) {
-      nextEnd = new Date(end);
-      nextEnd.setHours(returnDate ? returnDate.getHours() : 10, returnDate ? returnDate.getMinutes() : 0);
-      setReturnDate(nextEnd);
-      updateSession({
-        pickupDate: nextStart.toISOString(),
-        returnDate: nextEnd.toISOString()
-      });
-    } else {
-      setReturnDate(null);
-    }
-  };
-
-  const handlePickupTimeChange = (timeStr: string) => {
-    const [h, m] = timeStr.split(':').map(Number);
-    const newDate = new Date(pickupDate);
-    newDate.setHours(h, m);
-    setPickupDate(newDate);
-    updateSession({
-      pickupDate: newDate.toISOString()
-    });
-  };
-
-  const handleReturnTimeChange = (timeStr: string) => {
-    if (!returnDate) return;
-    const [h, m] = timeStr.split(':').map(Number);
-    const newDate = new Date(returnDate);
-    newDate.setHours(h, m);
-    setReturnDate(newDate);
-    updateSession({
-      returnDate: newDate.toISOString()
-    });
-  };
+  // Handlers removed because DatePicker handles both date and time selection natively
 
   const availableCategories = ['All', ...Array.from(new Set(initialCars.map(c => c.category))).filter(Boolean)];
   const availableTransmissions = Array.from(new Set(initialCars.map(c => c.transmission))).filter(Boolean);
@@ -174,7 +156,7 @@ export default function SelfDriveClient({ initialCars, initialCities }: { initia
           Premium driving, independent schedules, and zero limitations. Select dynamic mileage tiers with 100% security deposit guarantee.
         </p>
         <div className="inline-flex items-center gap-2 border border-green-300 bg-green-600/10 text-green-700 px-4 py-2 rounded-xl text-[10px] font-bold tracking-widest uppercase">
-          <Sparkles size={14} /> Search Pre-set: {selectedCityIds.length === 0 ? 'All Cities' : `${selectedCityIds.length} Cities Selected`} ({pickupDate.toLocaleDateString('en-GB')} - {returnDate ? returnDate.toLocaleDateString('en-GB') : 'Select Return'})
+          <Sparkles size={14} /> Search Pre-set: {selectedCityIds.length === 0 ? 'All Cities' : `${selectedCityIds.length} Cities Selected`} ({pickupDate.toLocaleDateString('en-GB')} at {String(pickupDate.getHours()).padStart(2, '0')}:{String(pickupDate.getMinutes()).padStart(2, '0')})
         </div>
       </div>
 
@@ -198,42 +180,86 @@ export default function SelfDriveClient({ initialCars, initialCities }: { initia
           <div className="space-y-6">
             
             {/* Date Selection */}
-            <div className="space-y-4">
+            <div className="space-y-4 font-sans">
               <div>
-                <label className="block text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-3">Rental Period (Date Range)</label>
-                <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-green-700 pointer-events-none" size={14} />
-                  <DatePicker 
-                    selectsRange={true}
-                    startDate={pickupDate}
-                    endDate={returnDate}
-                    onChange={handleDateRangeChange} 
-                    dateFormat="dd/MM/yyyy" 
-                    placeholderText="Select pickup & return dates"
-                    className="w-full bg-white border border-gray-200 rounded-xl pl-9 pr-3 py-3 text-xs outline-none focus:border-green-600 transition-colors cursor-pointer" 
-                    wrapperClassName="w-full" portalId="datepicker-root"
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest mb-1.5">Pickup Time</label>
-                  <input 
-                    type="time" 
-                    value={`${String(pickupDate.getHours()).padStart(2, '0')}:${String(pickupDate.getMinutes()).padStart(2, '0')}`}
-                    onChange={(e) => handlePickupTimeChange(e.target.value)}
-                    className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 outline-none focus:border-green-600"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest mb-1.5">Return Time</label>
-                  <input 
-                    type="time" 
-                    value={returnDate ? `${String(returnDate.getHours()).padStart(2, '0')}:${String(returnDate.getMinutes()).padStart(2, '0')}` : '10:00'}
-                    onChange={(e) => handleReturnTimeChange(e.target.value)}
-                    disabled={!returnDate}
-                    className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 outline-none focus:border-green-600 disabled:opacity-50"
-                  />
+                <label className="block text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-3">Travel Date Range (Required)</label>
+                <div className="relative flex items-center bg-white border border-gray-200 rounded-xl px-3 py-3 w-full">
+                  <Calendar className="text-green-700 mr-2 shrink-0" size={14} />
+                  <ConfigProvider
+                    theme={{
+                      token: {
+                        colorPrimary: '#15803d',
+                        borderRadius: 8,
+                        fontSize: 11,
+                      },
+                      components: {
+                        DatePicker: {
+                          cellWidth: 28,
+                          cellHeight: 20,
+                          timeColumnWidth: 48,
+                          timeCellHeight: 22,
+                        },
+                      },
+                    }}
+                  >
+                    <DatePicker.RangePicker 
+                      showTime={{ format: 'h:mm a', use12Hours: true, minuteStep: 30 }}
+                      format="DD/MM/YYYY - h:mm a"
+                      value={[pickupDate ? dayjs(pickupDate) : null, returnDate ? dayjs(returnDate) : null]}
+                      onChange={(dates) => {
+                        if (dates && dates[0]) {
+                          const start = dates[0].toDate();
+                          let end = dates[1] ? dates[1].toDate() : null;
+                          if (end && (end.getTime() - start.getTime()) < 12 * 60 * 60 * 1000) {
+                            end = new Date(start.getTime() + 12 * 60 * 60 * 1000);
+                          }
+                          setPickupDate(start);
+                          setReturnDate(end);
+                          updateSession({
+                            pickupDate: start.toISOString(),
+                            returnDate: end ? end.toISOString() : null
+                          });
+                        } else {
+                          setReturnDate(null);
+                          updateSession({ returnDate: null });
+                        }
+                      }}
+                      placeholder={['Pickup Date & Time', 'Return Date & Time']}
+                      variant="borderless"
+                      className="w-full text-xs font-semibold cursor-pointer text-gray-900 !p-0"
+                      disabledDate={(current) => current && current < dayjs().startOf('day')}
+                      disabledTime={(current, type) => {
+                        if (type === 'start') {
+                          if (current && current.isSame(dayjs(), 'day')) {
+                            const now = dayjs();
+                            return {
+                              disabledHours: () => Array.from({ length: now.hour() }, (_, i) => i),
+                              disabledMinutes: (selectedHour) => {
+                                if (selectedHour === now.hour()) {
+                                  return Array.from({ length: now.minute() }, (_, i) => i);
+                                }
+                                return [];
+                              }
+                            };
+                          }
+                        } else if (type === 'end') {
+                          if (current && pickupDate && current.isSame(dayjs(pickupDate), 'day')) {
+                            const p = dayjs(pickupDate);
+                            return {
+                              disabledHours: () => Array.from({ length: p.hour() }, (_, i) => i),
+                              disabledMinutes: (selectedHour) => {
+                                if (selectedHour === p.hour()) {
+                                  return Array.from({ length: p.minute() }, (_, i) => i);
+                                }
+                                return [];
+                              }
+                            };
+                          }
+                        }
+                        return {};
+                      }}
+                    />
+                  </ConfigProvider>
                 </div>
               </div>
             </div>

@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Compass, Calendar, MapPin, Users } from 'lucide-react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+import { DatePicker, ConfigProvider } from 'antd';
+import dayjs from 'dayjs';
 import { useRouter } from 'next/navigation';
 import { useBookingStore } from '@/store/useBookingStore';
 
@@ -28,63 +28,39 @@ export default function ToursClientPage({ initialTours, cities }: { initialTours
   const [adults, setAdults] = useState(2);
   const [children, setChildren] = useState(0);
 
-  const [pickupDate, setPickupDate] = useState<Date>(new Date(Date.now() + 86400000));
-  const [returnDate, setReturnDate] = useState<Date | null>(new Date(Date.now() + 4 * 86400000));
+  const [pickupDate, setPickupDate] = useState<Date>(() => {
+    const d = new Date();
+    d.setHours(d.getHours() + 1, 0, 0, 0);
+    return d;
+  });
+  const [returnDate, setReturnDate] = useState<Date | null>(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 4);
+    d.setHours(10, 0, 0, 0);
+    return d;
+  });
   const [isMounted, setIsMounted] = useState(false);
+
+  // Time filters are handled natively by Ant Design DatePicker
 
   useEffect(() => {
     setIsMounted(true);
-    if (session?.pickupDate) {
-      setPickupDate(new Date(session.pickupDate));
+    let loadedPickup = session?.pickupDate ? new Date(session.pickupDate) : null;
+    let loadedReturn = session?.returnDate ? new Date(session.returnDate) : null;
+    const now = new Date();
+
+    if (loadedPickup && loadedPickup.getTime() < now.getTime()) {
+      loadedPickup = new Date(now.getTime() + 60 * 60 * 1000);
     }
-    if (session?.returnDate) {
-      setReturnDate(new Date(session.returnDate));
+    if (loadedReturn && loadedPickup && loadedReturn.getTime() <= loadedPickup.getTime()) {
+      loadedReturn = new Date(loadedPickup.getTime() + 4 * 24 * 60 * 60 * 1000);
     }
+
+    if (loadedPickup) setPickupDate(loadedPickup);
+    if (loadedReturn) setReturnDate(loadedReturn);
   }, [session?.pickupDate, session?.returnDate]);
 
-  const handleDateRangeChange = (update: [Date | null, Date | null]) => {
-    const [start, end] = update;
-    let nextStart = pickupDate;
-    let nextEnd = returnDate;
-
-    if (start) {
-      nextStart = new Date(start);
-      nextStart.setHours(pickupDate.getHours(), pickupDate.getMinutes());
-      setPickupDate(nextStart);
-    }
-    if (end) {
-      nextEnd = new Date(end);
-      nextEnd.setHours(returnDate ? returnDate.getHours() : 12, returnDate ? returnDate.getMinutes() : 0);
-      setReturnDate(nextEnd);
-      updateSession({
-        pickupDate: nextStart.toISOString(),
-        returnDate: nextEnd.toISOString()
-      });
-    } else {
-      setReturnDate(null);
-    }
-  };
-
-  const handlePickupTimeChange = (timeStr: string) => {
-    const [h, m] = timeStr.split(':').map(Number);
-    const newDate = new Date(pickupDate);
-    newDate.setHours(h, m);
-    setPickupDate(newDate);
-    updateSession({
-      pickupDate: newDate.toISOString()
-    });
-  };
-
-  const handleReturnTimeChange = (timeStr: string) => {
-    if (!returnDate) return;
-    const [h, m] = timeStr.split(':').map(Number);
-    const newDate = new Date(returnDate);
-    newDate.setHours(h, m);
-    setReturnDate(newDate);
-    updateSession({
-      returnDate: newDate.toISOString()
-    });
-  };
+  // Handlers removed because DatePicker handles both date and time selection natively
 
   function toggleCity(id: string) {
     setSelectedCityIds(prev => prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]);
@@ -113,6 +89,8 @@ export default function ToursClientPage({ initialTours, cities }: { initialTours
       deposit: 0,
       extraInfo: extra
     });
+
+    router.push('/cart');
   }
 
   return (
@@ -136,35 +114,69 @@ export default function ToursClientPage({ initialTours, cities }: { initialTours
             <div className="flex flex-col md:flex-row gap-6">
 
               {/* Date Selection */}
-              <div className="flex flex-col gap-2 min-w-[280px]">
-                <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-green-700 pointer-events-none" size={14} />
-                  <DatePicker
-                    selectsRange={true}
-                    startDate={pickupDate}
-                    endDate={returnDate}
-                    onChange={handleDateRangeChange}
-                    dateFormat="dd/MM/yyyy"
-                    placeholderText="Select Tour Dates"
-                    className="w-full bg-gray-100 border border-gray-200 rounded-xl pl-9 pr-3 py-3 text-xs outline-none focus:border-green-600 transition-colors cursor-pointer font-medium"
-                    wrapperClassName="w-full" portalId="datepicker-root"
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <input
-                    type="time"
-                    value={`${String(pickupDate.getHours()).padStart(2, '0')}:${String(pickupDate.getMinutes()).padStart(2, '0')}`}
-                    onChange={(e) => handlePickupTimeChange(e.target.value)}
-                    className="w-full bg-gray-100 border border-gray-200 rounded-xl px-2 py-1 text-[10px] text-gray-900 outline-none focus:border-green-600 font-mono"
-                  />
-                  {returnDate && (
-                    <input
-                      type="time"
-                      value={`${String(returnDate.getHours()).padStart(2, '0')}:${String(returnDate.getMinutes()).padStart(2, '0')}`}
-                      onChange={(e) => handleReturnTimeChange(e.target.value)}
-                      className="w-full bg-gray-100 border border-gray-200 rounded-xl px-2 py-1 text-[10px] text-gray-900 outline-none focus:border-green-600 font-mono"
+              <div className="flex flex-col gap-2 min-w-[320px]">
+                <div className="relative w-full">
+                  <ConfigProvider
+                    theme={{
+                      token: {
+                        colorPrimary: '#15803d',
+                        borderRadius: 8,
+                      },
+                    }}
+                  >
+                    <DatePicker.RangePicker 
+                      showTime={{ format: 'h:mm a', use12Hours: true, minuteStep: 30 }}
+                      format="DD/MM/YYYY - h:mm a"
+                      value={[pickupDate ? dayjs(pickupDate) : null, returnDate ? dayjs(returnDate) : null]}
+                      onChange={(dates) => {
+                        if (dates) {
+                          const start = dates[0]?.toDate() || new Date();
+                          const end = dates[1]?.toDate() || null;
+                          setPickupDate(start);
+                          setReturnDate(end);
+                          updateSession({
+                            pickupDate: start.toISOString(),
+                            returnDate: end ? end.toISOString() : null
+                          });
+                        } else {
+                          setReturnDate(null);
+                          updateSession({ returnDate: null });
+                        }
+                      }}
+                      className="w-full bg-gray-100 border border-gray-200 rounded-xl px-3 py-3 text-xs outline-none cursor-pointer font-medium"
+                      disabledDate={(current) => current && current < dayjs().startOf('day')}
+                      disabledTime={(current, type) => {
+                        if (type === 'start') {
+                          if (current && current.isSame(dayjs(), 'day')) {
+                            const now = dayjs();
+                            return {
+                              disabledHours: () => Array.from({ length: now.hour() }, (_, i) => i),
+                              disabledMinutes: (selectedHour) => {
+                                if (selectedHour === now.hour()) {
+                                  return Array.from({ length: now.minute() }, (_, i) => i);
+                                }
+                                return [];
+                              }
+                            };
+                          }
+                        } else if (type === 'end') {
+                          if (current && pickupDate && current.isSame(dayjs(pickupDate), 'day')) {
+                            const p = dayjs(pickupDate);
+                            return {
+                              disabledHours: () => Array.from({ length: p.hour() }, (_, i) => i),
+                              disabledMinutes: (selectedHour) => {
+                                if (selectedHour === p.hour()) {
+                                  return Array.from({ length: p.minute() }, (_, i) => i);
+                                }
+                                return [];
+                              }
+                            };
+                          }
+                        }
+                        return {};
+                      }}
                     />
-                  )}
+                  </ConfigProvider>
                 </div>
               </div>
 

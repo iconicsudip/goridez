@@ -1,10 +1,9 @@
 import { prisma } from '@/lib/prisma';
 import GrowthChart from '@/components/admin/GrowthChart';
-import { DollarSign, ListOrdered, Navigation, ShieldCheck, Globe } from 'lucide-react';
+import { DollarSign, ListOrdered, ShieldCheck, Globe, Car } from 'lucide-react';
 
 export default async function AdminDashboard() {
-  const totalVillas = await prisma.villa.count();
-  const totalTours = await prisma.tour.count();
+  const totalCars = await prisma.car.count();
 
   // Sum of totalAmount for CONFIRMED bookings
   const revenueAgg = await prisma.booking.aggregate({
@@ -56,12 +55,12 @@ export default async function AdminDashboard() {
 
         <div className="bg-white p-6 rounded-2xl border border-gray-200 relative overflow-hidden group">
           <div className="flex justify-between items-start mb-6">
-            <h3 className="text-gray-500 text-[10px] uppercase font-bold tracking-widest">Tours & Villas active</h3>
-            <Navigation className="text-green-700" size={16} />
+            <h3 className="text-gray-500 text-[10px] uppercase font-bold tracking-widest">Total Fleet Size</h3>
+            <Car className="text-green-700" size={16} />
           </div>
-          <div className="text-4xl font-black mb-2">{totalVillas + totalTours} Listings</div>
-          <div className="text-green-700 text-[10px] font-bold uppercase tracking-widest">VIP Rajasthan entries</div>
-          <div className="text-gray-400 text-[9px] uppercase tracking-widest mt-1">Catalog Combo Count</div>
+          <div className="text-4xl font-black mb-2">{totalCars} Vehicles</div>
+          <div className="text-green-700 text-[10px] font-bold uppercase tracking-widest">Active Fleet Capacity</div>
+          <div className="text-gray-400 text-[9px] uppercase tracking-widest mt-1">Self Drive & Chauffeur Cars</div>
         </div>
 
         <div className="bg-white p-6 rounded-2xl border border-gray-200 relative overflow-hidden group">

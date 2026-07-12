@@ -5,39 +5,33 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { MapPin, ArrowRight, Car, User, Navigation, Home, Map } from 'lucide-react';
 
-type Tab = 'SELF DRIVE' | 'CHAUFFEUR' | 'TAXI' | 'VILLAS' | 'TOURS';
+type Tab = 'SELF DRIVE' | 'CHAUFFEUR';
 
 export default function CityExplorer({ 
   cities, 
   cars, 
-  villas, 
-  tours 
+  villas = [], 
+  tours = [] 
 }: { 
   cities: any[], 
   cars: any[], 
-  villas: any[], 
-  tours: any[] 
+  villas?: any[], 
+  tours?: any[] 
 }) {
   // Only include cities that have at least some data
   const validCities = cities.filter(city => 
-    cars.some(c => c.cityId === city.id) || 
-    villas.some(v => v.cityId === city.id) || 
-    tours.some(t => t.cityId === city.id)
+    cars.some(c => c.cityId === city.id)
   );
 
   const [activeCityId, setActiveCityId] = useState(validCities[0]?.id || '');
 
   // Determine which tabs have data for the active city
-  const availableTabs = (['SELF DRIVE', 'CHAUFFEUR', 'TAXI', 'VILLAS', 'TOURS'] as Tab[]).filter(tab => {
+  const availableTabs = (['SELF DRIVE', 'CHAUFFEUR'] as Tab[]).filter(tab => {
     switch (tab) {
       case 'SELF DRIVE':
+        return cars.some(c => c.cityId === activeCityId && c.serviceTypes.includes('SELF_DRIVE'));
       case 'CHAUFFEUR':
-      case 'TAXI':
-        return cars.some(c => c.cityId === activeCityId);
-      case 'VILLAS':
-        return villas.some(v => v.cityId === activeCityId);
-      case 'TOURS':
-        return tours.some(t => t.cityId === activeCityId);
+        return cars.some(c => c.cityId === activeCityId && c.serviceTypes.includes('WITH_DRIVER'));
       default:
         return false;
     }
@@ -56,14 +50,9 @@ export default function CityExplorer({
   const getDisplayItems = () => {
     switch (activeTab) {
       case 'SELF DRIVE':
+        return cars.filter(c => c.cityId === activeCityId && c.serviceTypes.includes('SELF_DRIVE'));
       case 'CHAUFFEUR':
-      case 'TAXI':
-        // Assuming cars are available for these services
-        return cars.filter(c => c.cityId === activeCityId);
-      case 'VILLAS':
-        return villas.filter(v => v.cityId === activeCityId);
-      case 'TOURS':
-        return tours.filter(t => t.cityId === activeCityId);
+        return cars.filter(c => c.cityId === activeCityId && c.serviceTypes.includes('WITH_DRIVER'));
       default:
         return [];
     }
@@ -74,10 +63,7 @@ export default function CityExplorer({
   const getLinkForTab = () => {
     switch (activeTab) {
       case 'SELF DRIVE': return '/self-drive';
-      case 'CHAUFFEUR': return '/chauffeur';
-      case 'TAXI': return '/taxi';
-      case 'VILLAS': return '/villas';
-      case 'TOURS': return '/tours';
+      case 'CHAUFFEUR': return '/taxi';
     }
   };
 
@@ -135,9 +121,6 @@ export default function CityExplorer({
             >
               {tab === 'SELF DRIVE' && <Car size={16} />}
               {tab === 'CHAUFFEUR' && <User size={16} />}
-              {tab === 'TAXI' && <Navigation size={16} />}
-              {tab === 'VILLAS' && <Home size={16} />}
-              {tab === 'TOURS' && <Map size={16} />}
               {tab}
             </button>
           ))}
@@ -165,7 +148,7 @@ export default function CityExplorer({
                 
                 <div className="flex flex-col flex-grow">
                   <div className="text-[10px] text-brand-gold font-bold tracking-[0.2em] uppercase mb-1">
-                    {item.category || (activeTab === 'VILLAS' ? 'Palace Stay' : 'Experience')}
+                    {item.category || 'Experience'}
                   </div>
                   <h3 className="text-2xl font-black uppercase tracking-tight mb-4 text-white">
                     {item.name || `${item.make || ''} ${item.model || ''}`.trim() || item.title}

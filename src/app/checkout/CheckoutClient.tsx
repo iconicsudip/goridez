@@ -64,7 +64,7 @@ export default function CheckoutClient({ razorpayKeyId }: { razorpayKeyId?: stri
       : appliedCoupon.discountValue
     : 0;
   const discountedSubtotal = Math.max(0, subtotal - discount);
-  const gst = Math.round(discountedSubtotal * 0.12);
+  const gst = Math.round(discountedSubtotal * 0.18);
   const totalDeposit = cartItems.reduce((acc, item) => acc + item.deposit, 0);
   const totalAmount = discountedSubtotal + gst;
   const advanceHold = Math.round(totalAmount * 0.3); // 30% hold
@@ -467,7 +467,7 @@ export default function CheckoutClient({ razorpayKeyId }: { razorpayKeyId?: stri
                 </div>
               )}
               <div className="flex justify-between text-gray-600">
-                <span>Total Tax Invoice (12% GST)</span>
+                <span>Total Tax Invoice (18% GST)</span>
                 <span>₹{gst.toLocaleString()}</span>
               </div>
               <div className="flex justify-between border-t border-gray-300 pt-3 text-gray-900 font-bold">

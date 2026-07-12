@@ -29,7 +29,7 @@ export default function CartDrawer() {
   if (!mounted || !isCartOpen) return null;
 
   const subtotal = cartItems.reduce((acc, item) => acc + item.price, 0);
-  const gst = subtotal * 0.12;
+  const gst = subtotal * 0.18;
   const totalDeposit = cartItems.reduce((acc, item) => acc + item.deposit, 0);
   const totalAmount = subtotal + gst;
   const advanceHold = totalAmount * 0.3; // 30% advance hold
@@ -72,7 +72,7 @@ export default function CartDrawer() {
           ) : (
             cartItems.map((item) => (
               <div key={item.id} className="flex gap-4 bg-brand-panel p-4 rounded-2xl border border-brand-border relative group">
-                <div className="relative w-24 h-20 bg-white rounded-xl overflow-hidden shrink-0 border border-brand-border">
+                <div className="relative w-24 h-20 bg-white rounded-xl overflow-hidden shrink-0 border border-brand-border flex items-center justify-center">
                   <Image src={item.image} alt={item.title} fill className="object-cover" unoptimized />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -103,7 +103,7 @@ export default function CartDrawer() {
                 <span className="text-gray-900 font-bold">₹{subtotal.toLocaleString()}</span>
               </div>
               <div className="flex justify-between">
-                <span>GST (12%)</span>
+                <span>GST (18%)</span>
                 <span className="text-gray-900 font-bold">₹{gst.toLocaleString()}</span>
               </div>
               <div className="flex justify-between border-t border-brand-border pt-3 text-gray-900">

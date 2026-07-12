@@ -12,7 +12,7 @@ export default function Navbar({ navVisibility, siteSettings }: { navVisibility?
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const { data: session, status } = useSession();
-  const { cartItems, openCart } = useBookingStore();
+  const { cartItems } = useBookingStore();
   const [mounted, setMounted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -51,19 +51,16 @@ export default function Navbar({ navVisibility, siteSettings }: { navVisibility?
   ];
 
   const links = [
-    ...(navVisibility?.showSelfDrive ? [{ name: 'Cars', href: '/self-drive' }] : []),
-    ...(navVisibility?.showChauffeur ? [{ name: 'Chauffeur', href: '/chauffeur' }] : []),
-    ...(navVisibility?.showTaxi ? [{ name: 'Taxi', href: '/taxi' }] : []),
-    ...(navVisibility?.showTours ? [{ name: 'Tours', href: '/tours' }] : []),
-    ...(navVisibility?.showVillas ? [{ name: 'Villas', href: '/villas' }] : []),
+    { name: 'Self Drive', href: '/self-drive' },
+    { name: 'Chauffeur', href: '/taxi' },
     ...baseLinks
   ];
 
   return (
     <>
       <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${isTransparent
-          ? 'bg-transparent border-transparent'
-          : 'bg-white/90 backdrop-blur-xl border-b border-brand-border shadow-sm'
+        ? 'bg-transparent border-transparent'
+        : 'bg-white/90 backdrop-blur-xl border-b border-brand-border shadow-sm'
         }`}>
         <div className="container mx-auto px-4 py-3 flex justify-between items-center">
 
@@ -87,8 +84,8 @@ export default function Navbar({ navVisibility, siteSettings }: { navVisibility?
                 key={link.name}
                 href={link.href}
                 className={`text-sm transition-colors ${pathname?.startsWith(link.href)
-                    ? 'text-[#ADFF00] font-black'
-                    : (isTransparent ? 'text-gray-300 hover:text-white font-medium' : 'text-gray-650 hover:text-gray-900 font-medium')
+                  ? 'text-green-500 font-black'
+                  : (isTransparent ? 'text-gray-300 hover:text-white font-medium' : 'text-gray-650 hover:text-gray-900 font-medium')
                   }`}
               >
                 {link.name}
@@ -122,8 +119,8 @@ export default function Navbar({ navVisibility, siteSettings }: { navVisibility?
             )}
 
             <div className="flex items-center gap-4">
-              <button
-                onClick={openCart}
+              <Link
+                href="/cart"
                 className={`relative p-2 transition-colors ${isTransparent ? 'text-white hover:text-gray-200' : 'text-gray-700 hover:text-white'}`}
               >
                 <ShoppingBag size={20} />
@@ -132,7 +129,7 @@ export default function Navbar({ navVisibility, siteSettings }: { navVisibility?
                     {cartItems.length}
                   </span>
                 )}
-              </button>
+              </Link>
               <Link href="/self-drive" className="bg-brand-gold hover:bg-[#8dbb00] text-white px-6 py-2.5 rounded-full text-sm font-bold transition-all shadow-[0_0_15px_rgba(173,255,0,0.3)] border border-[#ADFF00]">
                 Book Now
               </Link>
@@ -181,14 +178,22 @@ export default function Navbar({ navVisibility, siteSettings }: { navVisibility?
               href={link.href}
               onClick={() => setIsOpen(false)}
               className={`py-2 transition-colors ${pathname?.startsWith(link.href)
-                  ? 'text-[#ADFF00] font-black'
-                  : 'text-gray-600 font-medium hover:text-gray-900'
+                ? 'text-[#ADFF00] font-black'
+                : 'text-gray-600 font-medium hover:text-gray-900'
                 }`}
             >
               {link.name}
             </Link>
           ))}
           <div className="border-t border-gray-100 pt-6 mt-2 flex flex-col gap-4">
+            <Link href="/cart" onClick={() => setIsOpen(false)} className="font-medium py-2 text-gray-650 hover:text-gray-900 flex items-center justify-between">
+              <span>My Garage Cart</span>
+              {cartItems.length > 0 && (
+                <span className="bg-brand-gold text-white text-[10px] font-black px-2 py-0.5 rounded-full">
+                  {cartItems.length}
+                </span>
+              )}
+            </Link>
             {status === 'authenticated' ? (
               <>
                 <Link href="/dashboard" onClick={() => setIsOpen(false)} className="font-medium py-2 text-gray-600 hover:text-gray-900">

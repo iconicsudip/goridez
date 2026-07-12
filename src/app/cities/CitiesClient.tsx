@@ -125,7 +125,7 @@ export default function CitiesClient({ initialCities, initialCars, initialVillas
               ) : (
                 cityCars.map((car: any) => (
                   <div key={car.id} className="bg-white border border-gray-200 rounded-2xl p-6 group hover:border-green-300 transition-all">
-                    <div className="relative w-full h-[140px] mb-4">
+                    <div className="relative w-full h-[140px] mb-4 flex items-center justify-center bg-gray-50 rounded-xl overflow-hidden">
                       <Image src={car.image} alt={car.model} fill className="object-cover" unoptimized />
                     </div>
                     <div className="text-[9px] text-green-700 font-bold uppercase tracking-widest mb-1">{car.category}</div>
@@ -150,7 +150,7 @@ export default function CitiesClient({ initialCities, initialCars, initialVillas
               ) : (
                 taxiCars.map((car: any) => (
                   <div key={car.id} className="bg-white border border-gray-200 rounded-2xl p-6 group hover:border-green-300 transition-all">
-                    <div className="relative w-full h-[140px] mb-4">
+                    <div className="relative w-full h-[140px] mb-4 flex items-center justify-center bg-gray-50 rounded-xl overflow-hidden">
                       <Image src={car.image} alt={car.model} fill className="object-cover" unoptimized />
                     </div>
                     <div className="text-[9px] text-green-700 font-bold uppercase tracking-widest mb-1">{car.category}</div>

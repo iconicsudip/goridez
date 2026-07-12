@@ -623,7 +623,7 @@ export default function DashboardClient({ user, bookings, aggregates, wishlist =
       {/* === RECEIPT MODAL === */}
       {showReceiptModal && activeInvoice && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white/80 backdrop-blur-sm">
-          <div className="bg-gray-100 border border-gray-300 w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
+          <div id="printable-receipt-modal" className="bg-gray-100 border border-gray-300 w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
             <div className="p-8 border-b border-gray-200 relative">
               <button onClick={() => setShowReceiptModal(null)} className="absolute top-8 right-8 border border-gray-300 hover:bg-gray-100 px-3 py-1.5 rounded-lg text-xs font-mono text-gray-600 hover:text-gray-900 flex items-center gap-2 transition-colors">
                 Close <X size={14}/>
@@ -654,7 +654,7 @@ export default function DashboardClient({ user, bookings, aggregates, wishlist =
                 <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
                   <div className="flex justify-between font-bold text-sm mb-4 font-body">
                     <div>{activeInvoice.title}</div>
-                    <div>₹{Math.round(activeInvoice.totalAmount * 0.82).toLocaleString()}</div>
+                    <div>₹{Math.round(activeInvoice.totalAmount / 1.18).toLocaleString()}</div>
                   </div>
                   <div className="text-gray-500 text-xs">{activeInvoice.desc}</div>
                 </div>
@@ -663,11 +663,11 @@ export default function DashboardClient({ user, bookings, aggregates, wishlist =
               <div className="space-y-2 text-xs border-b border-gray-200 pb-6">
                 <div className="flex justify-between text-gray-600">
                   <div>BASE FARE COMPONENT</div>
-                  <div>₹{Math.round(activeInvoice.totalAmount * 0.82).toLocaleString()}</div>
+                  <div>₹{Math.round(activeInvoice.totalAmount / 1.18).toLocaleString()}</div>
                 </div>
                 <div className="flex justify-between text-gray-600">
                   <div>CGST (9%) & SGST (9%) INCLUDED</div>
-                  <div>₹{Math.round(activeInvoice.totalAmount * 0.18).toLocaleString()}</div>
+                  <div>₹{Math.round(activeInvoice.totalAmount - (activeInvoice.totalAmount / 1.18)).toLocaleString()}</div>
                 </div>
                 {activeInvoice.depositAmount > 0 && (
                   <div className="flex justify-between font-bold text-green-700 pt-2">
@@ -698,11 +698,36 @@ export default function DashboardClient({ user, bookings, aggregates, wishlist =
               </div>
             </div>
 
-            <div className="p-8 pt-0">
-              <button className="w-full bg-green-600 hover:bg-brand-hover text-black font-black text-sm uppercase tracking-widest py-4 rounded-xl flex justify-center items-center gap-2 transition-colors shadow-md">
-                 SAVE DIGITAL PDF COPY
+            <div className="p-8 pt-0 print:hidden">
+              <button 
+                onClick={() => window.print()}
+                className="w-full bg-green-600 hover:bg-brand-hover text-black font-black text-sm uppercase tracking-widest py-4 rounded-xl flex justify-center items-center gap-2 transition-colors shadow-md cursor-pointer"
+              >
+                 Print / Save GST Invoice PDF
               </button>
             </div>
+            
+            <style>{`
+              @media print {
+                body * {
+                  visibility: hidden;
+                }
+                #printable-receipt-modal, #printable-receipt-modal * {
+                  visibility: visible;
+                }
+                #printable-receipt-modal {
+                  position: absolute;
+                  left: 0;
+                  top: 0;
+                  width: 100%;
+                  background: white !important;
+                  border: none !important;
+                  padding: 0 !important;
+                  margin: 0 !important;
+                  box-shadow: none !important;
+                }
+              }
+            `}</style>
           </div>
         </div>
       )}

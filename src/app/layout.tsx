@@ -4,6 +4,7 @@ import "./globals.css";
 import ClientLayout from "@/components/ClientLayout";
 import Providers from "@/components/Providers";
 import { prisma } from "@/lib/prisma";
+import { AntdRegistry } from '@ant-design/nextjs-registry';
 
 const cinzel = Cinzel({
   weight: ['400', '500', '600', '700', '800', '900'],
@@ -61,11 +62,13 @@ export default async function RootLayout({
         <link rel="icon" href={siteSettings.favicon} />
       </head>
       <body suppressHydrationWarning>
-        <Providers>
-          <ClientLayout navVisibility={navVisibility} siteSettings={siteSettings}>
-            <main>{children}</main>
-          </ClientLayout>
-        </Providers>
+        <AntdRegistry>
+          <Providers>
+            <ClientLayout navVisibility={navVisibility} siteSettings={siteSettings}>
+              <main>{children}</main>
+            </ClientLayout>
+          </Providers>
+        </AntdRegistry>
         {/* Portal target for react-datepicker — renders above all stacking contexts */}
         <div id="datepicker-root" style={{ position: 'relative', zIndex: 9999 }} />
       </body>

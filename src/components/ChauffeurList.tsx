@@ -3,38 +3,35 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useBookingStore } from '@/store/useBookingStore';
-import CompareSpecsModal from './CompareSpecsModal';
+import Link from 'next/link';
 import ChauffeurBookingModal from './ChauffeurBookingModal';
+import { useBookingStore } from '@/store/useBookingStore';
 
 import { ShieldCheck, CheckCircle, User, Fuel, MapPin, Navigation } from 'lucide-react';
+import { getCarSlug } from '@/lib/utils';
 
 export default function ChauffeurList({ initialCars, pickupDate, returnDate }: { initialCars: any[], pickupDate?: Date, returnDate?: Date | null }) {
   const router = useRouter();
   const { addToCart } = useBookingStore();
-  const [compareCarId, setCompareCarId] = useState<string | null>(null);
-
   const [selectedBookingCarId, setSelectedBookingCarId] = useState<string | null>(null);
 
   return (
-    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div className="grid md:grid-cols-2 gap-8">
       {initialCars.map((car) => {
         const currentPackage = car.packages?.[0];
         const basePrice = currentPackage?.basePrice || 10000;
         
-        const durationHours = pickupDate && returnDate 
-          ? Math.max(1, (returnDate.getTime() - pickupDate.getTime()) / (1000 * 60 * 60))
-          : 24;
-        const durationDays = durationHours / 24;
+        const durationHours = 24;
+        const durationDays = 1;
           
-        const finalPrice = Math.round(basePrice * durationDays);
+        const finalPrice = basePrice;
 
         const isAlreadyBooked = car.bookings && car.bookings.length > 0 && car.bookings.some((booking: any) => {
           if (booking.status === 'CANCELLED') return false;
           const bStart = new Date(booking.startDate);
           const bEnd = new Date(booking.endDate);
           const currentStart = pickupDate || new Date();
-          const currentEnd = returnDate || new Date();
+          const currentEnd = new Date(currentStart.getTime() + 24 * 60 * 60 * 1000);
           return currentStart <= bEnd && currentEnd >= bStart;
         });
 
@@ -42,7 +39,7 @@ export default function ChauffeurList({ initialCars, pickupDate, returnDate }: {
           <div key={car.id} className="bg-white border border-gray-200 rounded-3xl overflow-hidden flex flex-col group hover:border-green-300 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
             
             {/* Top Image Section */}
-            <div className="relative h-[220px] w-full bg-gray-50">
+            <div className="relative h-[220px] w-full bg-white flex items-center justify-center">
               {/* Badge */}
               <div className="absolute top-4 left-4 z-10">
                 <span className="bg-white/90 backdrop-blur-md text-green-700 px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider shadow-sm flex items-center gap-1">
@@ -55,7 +52,7 @@ export default function ChauffeurList({ initialCars, pickupDate, returnDate }: {
                 src={car.image} 
                 alt={`${car.make} ${car.model}`}
                 fill
-                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                className="object-contain p-4 group-hover:scale-105 transition-transform duration-500"
                 unoptimized
               />
             </div>
@@ -94,33 +91,41 @@ export default function ChauffeurList({ initialCars, pickupDate, returnDate }: {
               </div>
 
               {/* Fare Summary */}
-              <div className="flex justify-between items-end mb-6 mt-auto">
-                <div>
-                  <div className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-2">
-                    {durationDays > 1 ? `Total Fare (${Math.round(durationDays * 10) / 10} Days)` : 'Package Fare'}
-                  </div>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-green-700 text-3xl font-black">₹{finalPrice.toLocaleString()}</span>
-                    {durationDays === 1 && <span className="text-[10px] text-gray-400">/ day</span>}
-                  </div>
+              <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 mb-6 text-xs font-mono">
+                <div className="flex justify-between items-center mb-2 pb-2 border-b border-gray-200/60">
+                  <span className="text-gray-500 font-bold uppercase tracking-wider">
+                    {durationDays > 1 ? `Base Fare (${Math.round(durationDays * 10) / 10} Days)` : 'Base Fare'}
+                  </span>
+                  <span className="text-gray-900 font-bold">₹{finalPrice.toLocaleString()}</span>
                 </div>
-                <div className="text-xs text-gray-500 pb-1">
-                  Security Deposit: ₹0
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-gray-500">GST (18%)</span>
+                  <span className="text-gray-900 font-semibold">₹{Math.round(finalPrice * 0.18).toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-gray-500">Refundable Deposit</span>
+                  <span className="text-green-700 font-bold">₹{(currentPackage?.deposit || 0).toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between items-end pt-2 border-t border-dashed border-gray-300">
+                  <div>
+                    <div className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">EST. TRIP TOTAL</div>
+                    <div className="text-green-700 text-2xl font-black">₹{Math.round(finalPrice * 1.18).toLocaleString()}</div>
+                  </div>
+                  <div className="text-right text-[10px] text-gray-400">
+                    <div>Inc. Chauffeur</div>
+                  </div>
                 </div>
               </div>
 
               {/* Action Buttons */}
               <div className="flex gap-4 mt-auto items-stretch h-12">
-                <button 
-                  onClick={() => setCompareCarId(car.id)}
-                  className="flex-1 flex items-center justify-center text-center px-4 py-0 text-sm font-semibold rounded-xl border border-gray-300 hover:bg-gray-100 transition-colors"
-                >
-                  Compare
-                </button>
+                <Link href={`/cars/${getCarSlug(car)}`} className="flex-grow flex items-center justify-center text-center px-4 py-0 text-sm font-semibold rounded-xl border border-gray-300 hover:bg-gray-100 transition-colors">
+                  Details
+                </Link>
                 <button 
                   onClick={() => !isAlreadyBooked && setSelectedBookingCarId(car.id)}
                   disabled={isAlreadyBooked}
-                  className={`flex-1 flex items-center justify-center text-center px-4 py-0 text-sm font-semibold rounded-xl transition-all ${
+                  className={`flex-grow flex items-center justify-center text-center px-4 py-0 text-sm font-semibold rounded-xl transition-all ${
                     isAlreadyBooked 
                       ? 'bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-200 shadow-none' 
                       : 'bg-green-600 text-white shadow-lg shadow-green-600/20 hover:shadow-xl hover:shadow-green-600/30 hover:-translate-y-0.5 relative overflow-hidden group/btn'
@@ -136,24 +141,7 @@ export default function ChauffeurList({ initialCars, pickupDate, returnDate }: {
         );
       })}
 
-      {compareCarId && (() => {
-        const selectedCompareCar = initialCars.find(c => c.id === compareCarId);
-        if (!selectedCompareCar) return null;
-        return (
-          <CompareSpecsModal 
-            isOpen={!!compareCarId}
-            onClose={() => setCompareCarId(null)}
-            selectedCar={selectedCompareCar}
-            allCars={initialCars}
-            onSelectCar={(carId) => {
-              setCompareCarId(null);
-              setSelectedBookingCarId(carId);
-            }}
-            pickupDate={pickupDate}
-            returnDate={returnDate}
-          />
-        );
-      })()}
+
 
       <ChauffeurBookingModal 
         isOpen={!!selectedBookingCarId}

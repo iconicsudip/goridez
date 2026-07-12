@@ -20,18 +20,15 @@ export default function Footer({ siteSettings }: { siteSettings?: any }) {
             </div>
           </Link>
           <p className="text-gray-400 leading-relaxed max-w-sm text-sm">
-            Experience the ultimate luxury travel across Rajasthan with our premium fleet of self-drive cars, chauffeur services, and palace villa stays.
+            Experience the ultimate luxury travel across Rajasthan with our premium fleet of self-drive cars and chauffeur services.
           </p>
         </div>
 
         <div>
           <h4 className="text-lg font-bold font-heading mb-4 text-brand-gold">Services</h4>
           <ul className="flex flex-col gap-2">
-            <li><Link href="/self-drive" className="text-gray-400 hover:text-white transition-colors text-sm">Self-Drive Rentals</Link></li>
-            <li><Link href="/chauffeur" className="text-gray-400 hover:text-white transition-colors text-sm">Chauffeur Driven</Link></li>
-            <li><Link href="/taxi" className="text-gray-400 hover:text-white transition-colors text-sm">One-Way Taxi</Link></li>
-            <li><Link href="/tours" className="text-gray-400 hover:text-white transition-colors text-sm">Tour Packages</Link></li>
-            <li><Link href="/villas" className="text-gray-400 hover:text-white transition-colors text-sm">Villa + Car</Link></li>
+            <li><Link href="/self-drive" className="text-gray-400 hover:text-white transition-colors text-sm">Self-Drive</Link></li>
+            <li><Link href="/taxi" className="text-gray-400 hover:text-white transition-colors text-sm">Chauffeur</Link></li>
           </ul>
         </div>
 

@@ -112,10 +112,8 @@ async function main() {
       availability: true, cityId: udaipur.id,
       packages: {
         create: [
-          { type: 'KM',   name: '120 KM Package',  basePrice: 18000, deposit: 15000, limitValue: 120, extraChargePerUnit: 50 },
-          { type: 'KM',   name: '250 KM Package',  basePrice: 28000, deposit: 15000, limitValue: 250, extraChargePerUnit: 60 },
-          { type: 'HOUR', name: '8 Hours Local',   basePrice: 14000, deposit: 15000, limitValue: 8,   extraChargePerUnit: 2000 },
-          { type: 'HOUR', name: '12 Hours Package', basePrice: 20000, deposit: 15000, limitValue: 12, extraChargePerUnit: 2200 },
+          { type: 'KM', name: '12 Hours', basePrice: 14000, deposit: 15000, limitValue: 120, extraChargePerUnit: 50 },
+          { type: 'KM', name: '24 Hours', basePrice: 20000, deposit: 15000, limitValue: 250, extraChargePerUnit: 60 }
         ]
       }
     }
@@ -129,9 +127,8 @@ async function main() {
       availability: true, cityId: jaipur.id,
       packages: {
         create: [
-          { type: 'KM',   name: '120 KM Package',  basePrice: 12000, deposit: 10000, limitValue: 120, extraChargePerUnit: 45 },
-          { type: 'KM',   name: '250 KM Package',  basePrice: 20000, deposit: 10000, limitValue: 250, extraChargePerUnit: 55 },
-          { type: 'TRANSFER', name: 'Airport Transfer', basePrice: 4500, deposit: 0, limitValue: null, extraChargePerUnit: null },
+          { type: 'KM', name: '12 Hours', basePrice: 12000, deposit: 10000, limitValue: 120, extraChargePerUnit: 45 },
+          { type: 'KM', name: '24 Hours', basePrice: 20000, deposit: 10000, limitValue: 250, extraChargePerUnit: 55 }
         ]
       }
     }
@@ -145,11 +142,8 @@ async function main() {
       availability: true, cityId: udaipur.id,
       packages: {
         create: [
-          { type: 'KM',   name: '120 KM Package',  basePrice: 5500, deposit: 5000, limitValue: 120, extraChargePerUnit: 30 },
-          { type: 'KM',   name: '250 KM Package',  basePrice: 9500, deposit: 5000, limitValue: 250, extraChargePerUnit: 35 },
-          { type: 'KM',   name: '350 KM Package',  basePrice: 13000, deposit: 5000, limitValue: 350, extraChargePerUnit: 40 },
-          { type: 'HOUR', name: '12 Hours Package', basePrice: 6000, deposit: 5000, limitValue: 12, extraChargePerUnit: 600 },
-          { type: 'TRANSFER', name: 'Airport Transfer', basePrice: 2200, deposit: 0, limitValue: null, extraChargePerUnit: null },
+          { type: 'KM', name: '12 Hours', basePrice: 6000, deposit: 5000, limitValue: 120, extraChargePerUnit: 30 },
+          { type: 'KM', name: '24 Hours', basePrice: 9500, deposit: 5000, limitValue: 250, extraChargePerUnit: 35 }
         ]
       }
     }
@@ -163,9 +157,8 @@ async function main() {
       availability: true, cityId: jodhpur.id,
       packages: {
         create: [
-          { type: 'KM', name: '120 KM Package',  basePrice: 4500, deposit: 4000, limitValue: 120, extraChargePerUnit: 28 },
-          { type: 'KM', name: '250 KM Package',  basePrice: 7500, deposit: 4000, limitValue: 250, extraChargePerUnit: 32 },
-          { type: 'KM', name: '350 KM Package',  basePrice: 10500, deposit: 4000, limitValue: 350, extraChargePerUnit: 38 },
+          { type: 'KM', name: '12 Hours', basePrice: 4500, deposit: 4000, limitValue: 120, extraChargePerUnit: 28 },
+          { type: 'KM', name: '24 Hours', basePrice: 7500, deposit: 4000, limitValue: 250, extraChargePerUnit: 32 }
         ]
       }
     }
@@ -179,10 +172,8 @@ async function main() {
       availability: true, cityId: udaipur.id,
       packages: {
         create: [
-          { type: 'KM',   name: '120 KM Package',  basePrice: 15000, deposit: 12000, limitValue: 120, extraChargePerUnit: 55 },
-          { type: 'KM',   name: '250 KM Package',  basePrice: 25000, deposit: 12000, limitValue: 250, extraChargePerUnit: 65 },
-          { type: 'HOUR', name: '12 Hours Package', basePrice: 16000, deposit: 12000, limitValue: 12, extraChargePerUnit: 1800 },
-          { type: 'TRANSFER', name: 'Airport Transfer', basePrice: 6000, deposit: 0, limitValue: null, extraChargePerUnit: null },
+          { type: 'KM', name: '12 Hours', basePrice: 15000, deposit: 12000, limitValue: 120, extraChargePerUnit: 55 },
+          { type: 'KM', name: '24 Hours', basePrice: 25000, deposit: 12000, limitValue: 250, extraChargePerUnit: 65 }
         ]
       }
     }
@@ -196,10 +187,8 @@ async function main() {
       availability: true, cityId: jaipur.id,
       packages: {
         create: [
-          { type: 'KM',   name: '120 KM Package',  basePrice: 7500, deposit: 6000, limitValue: 120, extraChargePerUnit: 35 },
-          { type: 'KM',   name: '250 KM Package',  basePrice: 13000, deposit: 6000, limitValue: 250, extraChargePerUnit: 40 },
-          { type: 'KM',   name: '350 KM Package',  basePrice: 18000, deposit: 6000, limitValue: 350, extraChargePerUnit: 45 },
-          { type: 'TRANSFER', name: 'Airport Transfer', basePrice: 3200, deposit: 0, limitValue: null, extraChargePerUnit: null },
+          { type: 'KM', name: '12 Hours', basePrice: 7500, deposit: 6000, limitValue: 120, extraChargePerUnit: 35 },
+          { type: 'KM', name: '24 Hours', basePrice: 13000, deposit: 6000, limitValue: 250, extraChargePerUnit: 40 }
         ]
       }
     }
@@ -213,9 +202,8 @@ async function main() {
       availability: true, cityId: mount_abu.id,
       packages: {
         create: [
-          { type: 'KM',   name: '120 KM Package',  basePrice: 3200, deposit: 3000, limitValue: 120, extraChargePerUnit: 20 },
-          { type: 'KM',   name: '250 KM Package',  basePrice: 5500, deposit: 3000, limitValue: 250, extraChargePerUnit: 25 },
-          { type: 'HOUR', name: '12 Hours Package', basePrice: 3800, deposit: 3000, limitValue: 12, extraChargePerUnit: 400 },
+          { type: 'KM', name: '12 Hours', basePrice: 3200, deposit: 3000, limitValue: 120, extraChargePerUnit: 20 },
+          { type: 'KM', name: '24 Hours', basePrice: 5500, deposit: 3000, limitValue: 250, extraChargePerUnit: 25 }
         ]
       }
     }
@@ -229,10 +217,8 @@ async function main() {
       availability: true, cityId: jaipur.id,
       packages: {
         create: [
-          { type: 'KM',   name: '120 KM Package',  basePrice: 10000, deposit: 10000, limitValue: 120, extraChargePerUnit: 42 },
-          { type: 'KM',   name: '250 KM Package',  basePrice: 17000, deposit: 10000, limitValue: 250, extraChargePerUnit: 50 },
-          { type: 'HOUR', name: '8 Hours Local',   basePrice: 9000,  deposit: 10000, limitValue: 8,  extraChargePerUnit: 1500 },
-          { type: 'TRANSFER', name: 'Airport Transfer', basePrice: 4000, deposit: 0, limitValue: null, extraChargePerUnit: null },
+          { type: 'KM', name: '12 Hours', basePrice: 9000, deposit: 10000, limitValue: 120, extraChargePerUnit: 42 },
+          { type: 'KM', name: '24 Hours', basePrice: 17000, deposit: 10000, limitValue: 250, extraChargePerUnit: 50 }
         ]
       }
     }

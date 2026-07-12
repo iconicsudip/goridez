@@ -7,12 +7,13 @@ import { ArrowDownUp, MapPin, Calendar, Briefcase, Loader2, Map as MapIcon } fro
 import dynamic from 'next/dynamic';
 
 const RouteMap = dynamic(() => import('@/components/RouteMap'), { ssr: false, loading: () => <div className="w-full h-64 bg-gray-100 rounded-2xl animate-pulse flex items-center justify-center text-gray-400 font-mono text-[10px] uppercase tracking-widest">Loading Map...</div> });
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+import { DatePicker, ConfigProvider } from 'antd';
+import dayjs from 'dayjs';
 import Image from 'next/image';
 import Link from 'next/link';
 import LocationAutocomplete from '@/components/LocationAutocomplete';
 import { calculateRoute, OSMLocation } from '@/lib/osm';
+import { getCarSlug } from '@/lib/utils';
 
 const UDAIPUR_AIRPORT: OSMLocation = {
   place_id: -1,
@@ -122,9 +123,15 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings }:
   }, [pickupLocation.data, destLocations, bookingMode, atLocation.data, atDirection]);
 
   // Dates
-  const [pickupDate, setPickupDate] = useState<Date>(new Date(Date.now() + 86400000));
+  const [pickupDate, setPickupDate] = useState<Date>(() => {
+    const d = new Date();
+    d.setHours(d.getHours() + 1, 0, 0, 0);
+    return d;
+  });
   const [returnDate, setReturnDate] = useState<Date | null>(null);
   const [isMounted, setIsMounted] = useState(false);
+
+  // Time filters are handled natively by Ant Design DatePicker
 
   useEffect(() => {
     setIsMounted(true);
@@ -134,11 +141,24 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings }:
     const qDropCity = searchParams.get('dropCity');
     const qMode = searchParams.get('mode') as any;
 
-    if (qPickupDate) setPickupDate(new Date(qPickupDate));
-    else if (session?.pickupDate) setPickupDate(new Date(session.pickupDate));
+    let loadedPickup = null;
+    if (qPickupDate) loadedPickup = new Date(qPickupDate);
+    else if (session?.pickupDate) loadedPickup = new Date(session.pickupDate);
 
-    if (qReturnDate) setReturnDate(new Date(qReturnDate));
-    else if (session?.returnDate) setReturnDate(new Date(session.returnDate));
+    let loadedReturn = null;
+    if (qReturnDate) loadedReturn = new Date(qReturnDate);
+    else if (session?.returnDate) loadedReturn = new Date(session.returnDate);
+
+    const now = new Date();
+    if (loadedPickup && loadedPickup.getTime() < now.getTime()) {
+      loadedPickup = new Date(now.getTime() + 60 * 60 * 1000);
+    }
+    if (loadedReturn && loadedPickup && loadedReturn.getTime() <= loadedPickup.getTime()) {
+      loadedReturn = new Date(loadedPickup.getTime() + 2 * 60 * 60 * 1000);
+    }
+
+    if (loadedPickup) setPickupDate(loadedPickup);
+    if (loadedReturn) setReturnDate(loadedReturn);
 
     if (qPickupCity && pickupLocation.name !== qPickupCity) setPickupLocation({ name: qPickupCity });
     if (qDropCity && dropoffLocation.name !== qDropCity) setDropoffLocation({ name: qDropCity });
@@ -186,11 +206,19 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings }:
     if (start) {
       nextStart = new Date(start);
       nextStart.setHours(pickupDate.getHours(), pickupDate.getMinutes());
+      const now = new Date();
+      if (nextStart.getTime() < now.getTime()) {
+        nextStart.setTime(now.getTime());
+      }
       setPickupDate(nextStart);
     }
     if (end) {
       nextEnd = new Date(end);
       nextEnd.setHours(returnDate ? returnDate.getHours() : 12, returnDate ? returnDate.getMinutes() : 0);
+      const minTime = nextStart.getTime();
+      if (nextEnd.getTime() <= minTime) {
+        nextEnd.setTime(minTime + 2 * 60 * 60 * 1000);
+      }
       setReturnDate(nextEnd);
     } else {
       nextEnd = null;
@@ -207,8 +235,18 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings }:
     const [h, m] = timeStr.split(':').map(Number);
     const newDate = new Date(pickupDate);
     newDate.setHours(h, m);
+    const now = new Date();
+    if (newDate.getTime() < now.getTime()) {
+      newDate.setTime(now.getTime());
+    }
     setPickupDate(newDate);
     updateSession({ pickupDate: newDate.toISOString() });
+
+    if (returnDate && returnDate.getTime() <= newDate.getTime()) {
+      const nextReturn = new Date(newDate.getTime() + 2 * 60 * 60 * 1000);
+      setReturnDate(nextReturn);
+      updateSession({ returnDate: nextReturn.toISOString() });
+    }
   };
 
   const handleReturnTimeChange = (timeStr: string) => {
@@ -216,6 +254,10 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings }:
     const [h, m] = timeStr.split(':').map(Number);
     const newDate = new Date(returnDate);
     newDate.setHours(h, m);
+    const minTime = pickupDate.getTime();
+    if (newDate.getTime() <= minTime) {
+      newDate.setTime(minTime + 2 * 60 * 60 * 1000);
+    }
     setReturnDate(newDate);
     updateSession({ returnDate: newDate.toISOString() });
   };
@@ -240,6 +282,8 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings }:
       deposit: 0,
       extraInfo: extra
     });
+
+    router.push('/cart');
   };
 
   const updateDestination = (index: number, val: string, data?: OSMLocation) => {
@@ -267,13 +311,13 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings }:
         {/* Header Section */}
         <div className="bg-white border border-gray-200 rounded-3xl p-10 mb-10 bg-gradient-to-br from-white to-green-50">
           <div className="text-green-700 text-[10px] font-black tracking-widest uppercase mb-4">
-            Intercity Fares & Packages
+            Premium Driver Services
           </div>
           <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tight mb-4">
-            INTERCITY <span className="text-outline-neon">TAXI & ROUTES</span>
+            CHAUFFEUR <span className="text-outline-neon">SERVICES & TRANSFERS</span>
           </h1>
           <p className="text-gray-600 max-w-2xl text-sm leading-relaxed">
-            Premium door-to-door direct pick-ups. Powered by OpenStreetMap for accurate routing.
+            Premium door-to-door luxury journeys. Powered by professional drivers and accurate routing.
           </p>
         </div>
 
@@ -386,60 +430,82 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings }:
                     <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest mb-2">
                       {bookingMode === 'ROUND_TRIP' ? 'Travel Date Range (Required)' : bookingMode === 'AIRPORT_TRANSFER' ? 'Transfer Date' : 'Travel Date Range'}
                     </label>
-                    <div className="relative">
-                      <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-green-700 pointer-events-none" size={14} />
-                      {bookingMode === 'AIRPORT_TRANSFER' ? (
-                        <DatePicker 
-                          selectsRange={false}
-                          selected={pickupDate}
-                          onChange={(date: Date | null) => {
-                            if (date) {
-                              const nextStart = new Date(date);
-                              nextStart.setHours(pickupDate.getHours(), pickupDate.getMinutes());
-                              setPickupDate(nextStart);
-                              updateSession({ pickupDate: nextStart.toISOString() });
+                    <div className="relative w-full">
+                      <ConfigProvider
+                        theme={{
+                          token: {
+                            colorPrimary: '#15803d',
+                            borderRadius: 12,
+                            fontSize: 11,
+                            controlHeight: 52,
+                          },
+                          components: {
+                            DatePicker: {
+                              cellWidth: 28,
+                              cellHeight: 20,
+                              timeColumnWidth: 48,
+                              timeCellHeight: 22,
+                            },
+                          },
+                        }}
+                      >
+                        <DatePicker.RangePicker 
+                          showTime={{ format: 'h:mm a', use12Hours: true, minuteStep: 30 }}
+                          format="DD/MM/YYYY - h:mm a"
+                          value={[pickupDate ? dayjs(pickupDate) : null, returnDate ? dayjs(returnDate) : null]}
+                          onChange={(dates) => {
+                             if (dates && dates[0]) {
+                               const start = dates[0].toDate();
+                               let end = dates[1] ? dates[1].toDate() : null;
+                               if (end && (end.getTime() - start.getTime()) < 12 * 60 * 60 * 1000) {
+                                 end = new Date(start.getTime() + 12 * 60 * 60 * 1000);
+                               }
+                               setPickupDate(start);
+                               setReturnDate(end);
+                               updateSession({
+                                 pickupDate: start.toISOString(),
+                                 returnDate: end ? end.toISOString() : null
+                               });
+                             } else {
+                               setReturnDate(null);
+                               updateSession({ returnDate: null });
+                             }
+                           }}
+                          className="w-full bg-white border border-gray-200 rounded-xl pl-10 pr-4 py-5 text-[11px] outline-none cursor-pointer font-medium"
+                          disabledDate={(current) => current && current < dayjs().startOf('day')}
+                          disabledTime={(current, type) => {
+                            if (type === 'start') {
+                              if (current && current.isSame(dayjs(), 'day')) {
+                                const now = dayjs();
+                                return {
+                                  disabledHours: () => Array.from({ length: now.hour() }, (_, i) => i),
+                                  disabledMinutes: (selectedHour) => {
+                                    if (selectedHour === now.hour()) {
+                                      return Array.from({ length: now.minute() }, (_, i) => i);
+                                    }
+                                    return [];
+                                  }
+                                };
+                              }
+                            } else if (type === 'end') {
+                              if (current && pickupDate && current.isSame(dayjs(pickupDate), 'day')) {
+                                const p = dayjs(pickupDate);
+                                return {
+                                  disabledHours: () => Array.from({ length: p.hour() }, (_, i) => i),
+                                  disabledMinutes: (selectedHour) => {
+                                    if (selectedHour === p.hour()) {
+                                      return Array.from({ length: p.minute() }, (_, i) => i);
+                                    }
+                                    return [];
+                                  }
+                                };
+                              }
                             }
+                            return {};
                           }}
-                          dateFormat="dd/MM/yyyy" 
-                          placeholderText="Transfer Date"
-                          className="w-full bg-white border border-gray-200 rounded-xl pl-10 pr-4 py-4 text-xs outline-none cursor-pointer font-medium" 
-                          wrapperClassName="w-full" portalId="datepicker-root"
                         />
-                      ) : (
-                        <DatePicker 
-                          selectsRange={true}
-                          startDate={pickupDate}
-                          endDate={returnDate}
-                          onChange={handleDateRangeChange as any} 
-                          dateFormat="dd/MM/yyyy" 
-                          placeholderText={bookingMode === 'ROUND_TRIP' ? 'Select Start & End Date' : 'One Way (or Select Return)'}
-                          className="w-full bg-white border border-gray-200 rounded-xl pl-10 pr-4 py-4 text-xs outline-none cursor-pointer font-medium" 
-                          wrapperClassName="w-full" portalId="datepicker-root"
-                        />
-                      )}
+                      </ConfigProvider>
                     </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-[8px] text-gray-400 font-bold uppercase tracking-widest mb-1">Pickup Time</label>
-                      <input 
-                        type="time" 
-                        value={`${String(pickupDate.getHours()).padStart(2, '0')}:${String(pickupDate.getMinutes()).padStart(2, '0')}`}
-                        onChange={(e) => handlePickupTimeChange(e.target.value)}
-                        className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 outline-none focus:border-green-600 font-mono"
-                      />
-                    </div>
-                    {returnDate && bookingMode !== 'AIRPORT_TRANSFER' && (
-                      <div>
-                        <label className="block text-[8px] text-gray-400 font-bold uppercase tracking-widest mb-1 font-bold">Return Time</label>
-                        <input 
-                          type="time" 
-                          value={`${String(returnDate.getHours()).padStart(2, '0')}:${String(returnDate.getMinutes()).padStart(2, '0')}`}
-                          onChange={(e) => handleReturnTimeChange(e.target.value)}
-                          className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 outline-none focus:border-green-600 font-mono"
-                        />
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>
@@ -566,8 +632,8 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings }:
                     <div key={car.id} className="bg-gray-100 border border-gray-200 rounded-3xl p-6 md:p-8 flex flex-col hover:border-gray-300 transition-colors mb-6 font-sans">
                       <div className="flex flex-col md:flex-row items-center gap-8">
                         <div className="shrink-0 w-full md:w-48 relative h-40 flex items-center justify-center">
-                          <Link href={`/cars/${car.id}`} className="block w-full h-full relative">
-                            <Image src={car.image || '/placeholder-car.png'} alt={`${car.make} ${car.model}`} fill className="object-cover hover:scale-105 transition-transform" unoptimized />
+                          <Link href={`/cars/${getCarSlug(car)}`} className="block w-full h-full relative">
+                            <Image src={car.image || '/placeholder-car.png'} alt={`${car.make} ${car.model}`} fill className="object-contain p-2 bg-white rounded-2xl hover:scale-105 transition-transform" unoptimized />
                           </Link>
                         </div>
                         
@@ -580,7 +646,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings }:
                             </div>
                             
                             <h3 className="text-3xl font-black text-gray-900 uppercase tracking-tighter mb-4">
-                              <Link href={`/cars/${car.id}`} className="hover:text-green-700 transition-colors">
+                              <Link href={`/cars/${getCarSlug(car)}`} className="hover:text-green-700 transition-colors">
                                 {car.make} {car.model} <span className="text-gray-500 text-xl">{car.seatingCapacity} SEATER</span>
                               </Link>
                             </h3>
@@ -696,8 +762,8 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings }:
                 return (
                   <div key={car.id} className="bg-gray-100 border border-gray-200 rounded-3xl p-6 md:p-8 flex flex-col md:flex-row justify-between items-center gap-6 hover:border-gray-300 transition-colors mb-6">
                     <div className="shrink-0 w-full md:w-48 relative h-40 flex items-center justify-center">
-                      <Link href={`/cars/${car.id}`} className="block w-full h-full relative">
-                        <Image src={car.image || '/placeholder-car.png'} alt={`${car.make} ${car.model}`} fill className="object-cover hover:scale-105 transition-transform" unoptimized />
+                      <Link href={`/cars/${getCarSlug(car)}`} className="block w-full h-full relative">
+                        <Image src={car.image || '/placeholder-car.png'} alt={`${car.make} ${car.model}`} fill className="object-contain p-2 bg-white rounded-2xl hover:scale-105 transition-transform" unoptimized />
                       </Link>
                     </div>
                     <div className="flex-1">
@@ -706,7 +772,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings }:
                         <span className="text-[10px] text-gray-400 font-mono">{car.seatingCapacity} Seats • {car.transmission}</span>
                       </div>
                       <h3 className="text-xl font-black mb-1">
-                        <Link href={`/cars/${car.id}`} className="hover:text-green-700 transition-colors">
+                        <Link href={`/cars/${getCarSlug(car)}`} className="hover:text-green-700 transition-colors">
                           {car.make} {car.model}
                         </Link>
                       </h3>

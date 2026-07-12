@@ -2,11 +2,11 @@
 
 import { useBookingStore } from '@/store/useBookingStore';
 import { Car } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 export default function FloatingCart() {
-  const { cartItems, openCart } = useBookingStore();
+  const { cartItems } = useBookingStore();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -22,17 +22,17 @@ export default function FloatingCart() {
   if (itemCount === 0) return null;
 
   return (
-    <button
-      onClick={openCart}
-      className="fixed bottom-8 right-8 z-50 bg-brand-gold hover:bg-[#8dbb00] text-white p-4 rounded-3xl shadow-lg shadow-brand-gold/30 transition-all hover:scale-105"
+    <Link
+      href="/cart"
+      className="fixed bottom-8 right-8 z-50 bg-[#C4F000] hover:bg-[#b0d800] text-black p-4 rounded-3xl shadow-lg shadow-[#C4F000]/30 transition-all hover:scale-105 flex items-center justify-center cursor-pointer"
       aria-label="View Cart"
     >
       <div className="relative">
         <Car size={28} strokeWidth={2.5} />
-        <span className="absolute -top-4 -right-4 bg-white text-black border-2 border-brand-gold w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-black">
+        <span className="absolute -top-4 -right-4 bg-white text-black border-2 border-[#C4F000] w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-black">
           {itemCount}
         </span>
       </div>
-    </button>
+    </Link>
   );
 }

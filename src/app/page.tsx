@@ -4,21 +4,19 @@ import { prisma } from '@/lib/prisma';
 import BookingWidget from "@/components/BookingWidget";
 import CityExplorer from "@/components/CityExplorer";
 import FaqAccordion from "@/components/FaqAccordion";
+import { getCarSlug } from "@/lib/utils";
 import HeroVideo from "@/components/HeroVideo";
 import { Star, Shield, Clock, Map, ChevronRight, Key, Calendar, BookOpen } from 'lucide-react';
 
 export default async function Home() {
-  const [cars, villas, tours, cities, blogs, faqs, homePageData, selfDriveCount, chauffeurCount, taxiCount] = await Promise.all([
+  const [cars, cities, blogs, faqs, homePageData, selfDriveCount, chauffeurCount] = await Promise.all([
     prisma.car.findMany({ include: { packages: true }, take: 8, orderBy: { createdAt: 'desc' } }),
-    prisma.villa.findMany({ take: 4 }),
-    prisma.tour.findMany({ take: 6 }),
     prisma.city.findMany({ orderBy: { name: 'asc' } }),
     prisma.blog.findMany({ where: { isDraft: false }, take: 3, orderBy: { createdAt: 'desc' } }),
     prisma.fAQ.findMany({ where: { isActive: true }, orderBy: { createdAt: 'asc' } }),
     prisma.homePage.findUnique({ where: { id: 'singleton' } }),
     prisma.car.count({ where: { serviceTypes: { has: 'SELF_DRIVE' } } }),
-    prisma.car.count({ where: { serviceTypes: { has: 'WITH_DRIVER' } } }),
-    prisma.car.count({ where: { serviceTypes: { has: 'TAXI' } } })
+    prisma.car.count({ where: { serviceTypes: { has: 'WITH_DRIVER' } } })
   ]);
 
   const hp = homePageData || {
@@ -117,7 +115,7 @@ export default async function Home() {
 
           {/* Floating Booking Widget */}
           <div className="w-full max-w-5xl relative z-20">
-            <BookingWidget cars={cars} villas={villas} tours={tours} cities={cities} counts={{ selfDrive: selfDriveCount, chauffeur: chauffeurCount, taxi: taxiCount, tours: tours.length, villas: villas.length }} />
+            <BookingWidget cars={cars} cities={cities} counts={{ selfDrive: selfDriveCount, chauffeur: chauffeurCount, taxi: 0, tours: 0, villas: 0 }} />
           </div>
 
         </div>
@@ -168,42 +166,10 @@ export default async function Home() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/10" />
                 <div className="absolute bottom-0 left-0 p-8 w-full">
                   <div className="text-brand-gold text-[10px] font-bold tracking-widest uppercase mb-1">Professional Driver Guided</div>
-                  <h3 className="text-3xl font-black uppercase tracking-tight mb-6 text-white">CHAUFFEUR COLLECTION</h3>
-                  <Link href="/chauffeur">
+                  <h3 className="text-3xl font-black uppercase tracking-tight mb-6 text-white">CHAUFFEUR SERVICE</h3>
+                  <Link href="/taxi">
                     <button className="bg-white hover:bg-brand-gold hover:text-white text-black text-[10px] font-bold px-4 py-2.5 rounded transition-colors flex items-center gap-2 border border-white hover:border-brand-gold cursor-pointer">
-                      EXPLORE COLLECTION <ChevronRight size={14} />
-                    </button>
-                  </Link>
-                </div>
-              </div>
-            )}
-            {/* Card 3 */}
-            {villas.length > 0 && (
-              <div className="group relative h-[400px] rounded-2xl overflow-hidden cursor-pointer shadow-2xl border border-brand-border/10">
-                <Image src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?auto=format&fit=crop&w=1000&q=80" alt="Villas" fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className="object-cover group-hover:scale-105 transition-transform duration-700" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/10" />
-                <div className="absolute bottom-0 left-0 p-8 w-full">
-                  <div className="text-brand-gold text-[10px] font-bold tracking-widest uppercase mb-1">Exclusive Private Stays</div>
-                  <h3 className="text-3xl font-black uppercase tracking-tight mb-6 text-white">LUXURY VILLAS</h3>
-                  <Link href="/villas">
-                    <button className="bg-white hover:bg-brand-gold hover:text-white text-black text-[10px] font-bold px-4 py-2.5 rounded transition-colors flex items-center gap-2 border border-white hover:border-brand-gold cursor-pointer">
-                      VIEW ESTATES <ChevronRight size={14} />
-                    </button>
-                  </Link>
-                </div>
-              </div>
-            )}
-            {/* Card 4 */}
-            {tours.length > 0 && (
-              <div className="group relative h-[400px] rounded-2xl overflow-hidden cursor-pointer md:col-span-2 shadow-2xl border border-brand-border/10">
-                <Image src="https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?auto=format&fit=crop&w=1500&q=80" alt="Tours" fill sizes="100vw" className="object-cover group-hover:scale-105 transition-transform duration-700" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/10" />
-                <div className="absolute bottom-0 left-0 p-8 w-full">
-                  <div className="text-brand-gold text-[10px] font-bold tracking-widest uppercase mb-1">Curated Heritage Trails</div>
-                  <h3 className="text-3xl font-black uppercase tracking-tight mb-6 text-white">SIGNATURE TOURS</h3>
-                  <Link href="/tours">
-                    <button className="bg-white hover:bg-brand-gold hover:text-white text-black text-[10px] font-bold px-4 py-2.5 rounded transition-colors flex items-center gap-2 border border-white hover:border-brand-gold cursor-pointer">
-                      BROWSE ITINERARIES <ChevronRight size={14} />
+                      BOOK NOW <ChevronRight size={14} />
                     </button>
                   </Link>
                 </div>
@@ -215,7 +181,7 @@ export default async function Home() {
 
       {/* NEW SECTION: CITY EXPLORER */}
       {cities.length > 0 && (
-        <CityExplorer cities={cities} cars={cars} villas={villas} tours={tours} />
+        <CityExplorer cities={cities} cars={cars} />
       )}
 
       {/* SECTION 3: VEHICLE COLLECTION */}
@@ -249,7 +215,7 @@ export default async function Home() {
               return (
                 <div key={car.id} className="bg-white rounded-3xl overflow-hidden border border-brand-border hover:border-brand-gold hover:shadow-md hover:shadow-brand-gold/15 hover:-translate-y-1 transition-all duration-300 group flex flex-col h-full shadow-lg">
                   <div className="relative h-56 w-full bg-gray-50 p-4 flex items-center justify-center border-b border-brand-border">
-                    <Image src={car.image} alt={car.model} fill className="object-cover group-hover:scale-105 transition-transform duration-700" unoptimized />
+                    <Image src={car.image} alt={car.model} fill className="object-contain p-4 group-hover:scale-105 transition-transform duration-700" unoptimized />
                     <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-lg text-xs font-bold text-brand-gold shadow-sm flex items-center gap-1 border border-brand-border">
                       <Star size={12} fill="currentColor" /> 4.8
                     </div>
@@ -274,7 +240,7 @@ export default async function Home() {
                       </div>
                     </div>
 
-                    <Link href={`/cars/${car.id}`} className="w-full">
+                    <Link href={`/cars/${getCarSlug(car)}`} className="w-full">
                       <button className="w-full bg-brand-gold hover:bg-[#8dbb00] hover:shadow-lg text-white text-sm font-semibold py-4 rounded-xl transition-all relative overflow-hidden group/btn shadow-md shadow-brand-gold/20 cursor-pointer">
                         <span className="absolute inset-0 w-full h-full -ml-[100%] bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover/btn:animate-shimmer"></span>
                         <span className="relative z-10">Book Vehicle</span>
@@ -287,78 +253,6 @@ export default async function Home() {
             </div>
           </div>
         </section>
-      )}
-
-
-      {/* SECTION 5: PREMIUM TOUR EXPERIENCES */}
-      {tours.length > 0 && (
-        <section className="py-24 bg-[#0A0A0A] relative border-t border-zinc-900 overflow-hidden">
-          {/* Decorative Luxury Background Glows */}
-          <div className="absolute top-1/4 left-1/12 w-[450px] h-[450px] bg-brand-gold/[0.035] blur-[130px] rounded-full pointer-events-none -z-10" />
-          <div className="absolute bottom-1/4 right-1/12 w-[450px] h-[450px] bg-brand-gold/[0.035] blur-[130px] rounded-full pointer-events-none -z-10" />
-
-          <div className="container mx-auto px-4 relative z-10">
-          
-          <div className="flex flex-col md:flex-row justify-between items-end mb-16">
-            <div className="max-w-2xl">
-              <div className="flex items-center gap-3 mb-4">
-                <span className="h-[2px] w-8 bg-brand-gold rounded-full"></span>
-                <div className="text-brand-gold text-xs font-bold tracking-[0.2em] uppercase">Premium Expeditions</div>
-              </div>
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight uppercase mb-4 text-white">
-                {hp.toursTitle} <span className="text-outline-neon">{hp.toursTitleHighlight}</span>
-              </h2>
-              <p className="text-gray-400 text-sm md:text-base max-w-3xl">
-                {hp.toursDescription}
-              </p>
-              <div className="w-20 h-1 bg-brand-gold mt-6 rounded-full"></div>
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {tours.map((tour, idx) => {
-              const tags = ['ONE DAY TOURS', 'WEEKEND GETAWAYS', 'TEMPLE & SPIRITUAL TOURS'];
-              return (
-                <div key={tour.id} className="bg-[#1F1F1F] rounded-2xl overflow-hidden border border-zinc-800 hover:border-brand-gold transition-all group flex flex-col h-full shadow-lg">
-                  <div className="relative h-60 w-full bg-black/40">
-                    <Image src={tour.image} alt={tour.title} fill className="object-cover" unoptimized />
-                    <div className="absolute top-4 left-4 bg-brand-gold text-white px-3 py-1 text-[10px] font-black uppercase tracking-widest shadow-md">
-                      {tags[idx % 3]}
-                    </div>
-                    <div className="absolute bottom-4 right-4 bg-black/80 backdrop-blur-md px-3 py-1.5 rounded text-[10px] font-bold text-brand-gold border border-zinc-750 flex items-center gap-1.5">
-                      ⏱ {tour.duration * 4} Hours
-                    </div>
-                  </div>
-                  <div className="p-6 flex flex-col flex-grow">
-                    <h3 className="text-xl font-black uppercase tracking-tight mb-4 text-white group-hover:text-brand-gold transition-colors">{tour.title}</h3>
-                    
-                    <div className="mb-6 flex-grow">
-                      <div className="flex items-center gap-2 text-[10px] text-brand-gold font-bold uppercase tracking-widest mb-2">
-                        <Key size={12} /> Places:
-                      </div>
-                      <p className="text-xs text-gray-400 leading-relaxed">
-                        City Palace, Lake Pichola, Jagdish Temple, Saheliyon-ki-Bari, Fort Citadel Trails.
-                      </p>
-                    </div>
-
-                    <div className="flex justify-between items-end mt-auto pt-6 border-t border-zinc-800">
-                      <div>
-                        <div className="text-[9px] text-gray-500 uppercase tracking-widest mb-1">UPFRONT FARE</div>
-                        <div className="text-brand-gold text-2xl font-bold">₹{tour.adultPrice.toLocaleString()}</div>
-                      </div>
-                      <Link href="/tours">
-                        <button className="bg-transparent hover:bg-brand-gold border border-brand-gold text-brand-gold hover:text-white text-[10px] font-bold px-6 py-3 rounded-lg transition-colors uppercase tracking-widest cursor-pointer shadow-md">
-                          LOCK EXCURSION
-                        </button>
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
       )}
 
     {/* SECTION 6: FEATURED BLOGS / JOURNAL */}

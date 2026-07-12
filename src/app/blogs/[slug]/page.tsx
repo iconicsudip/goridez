@@ -78,17 +78,17 @@ export default async function BlogDetails({ params }: { params: Promise<{ slug: 
         <div className="blog-content mb-16" dangerouslySetInnerHTML={{ __html: blog.content }} />
 
         {/* CTA Section (Premium integration) */}
-        <div className="bg-gradient-to-br from-[#111] to-[#0A0A0A] border border-gray-200 rounded-3xl p-8 md:p-12 text-center md:text-left flex flex-col md:flex-row justify-between items-center gap-8 shadow-2xl relative overflow-hidden">
+        <div className="bg-gradient-to-br from-[#111] to-[#0A0A0A] border border-gray-800 rounded-3xl p-8 md:p-12 text-center md:text-left flex flex-col md:flex-row justify-between items-center gap-8 shadow-2xl relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-green-600/5 rounded-full blur-3xl pointer-events-none" />
           
           <div className="flex-1">
-            <div className="text-green-700 text-[10px] font-black uppercase tracking-widest mb-3 flex items-center gap-1.5 justify-center md:justify-start">
+            <div className="text-green-500 text-[10px] font-black uppercase tracking-widest mb-3 flex items-center gap-1.5 justify-center md:justify-start">
               <Sparkles size={12} /> Mewar Heritage Awaits
             </div>
-            <h3 className="text-2xl md:text-3xl font-black uppercase tracking-tight mb-3">
+            <h3 className="text-2xl md:text-3xl font-black uppercase tracking-tight mb-3 text-white">
               READY TO PLAN YOUR <span className="text-outline-neon">JOURNEY?</span>
             </h3>
-            <p className="text-gray-500 text-xs md:text-sm max-w-lg leading-relaxed">
+            <p className="text-gray-400 text-xs md:text-sm max-w-lg leading-relaxed">
               Rent a premium self-drive vehicle or secure a private heritage villa with custom airport transfers to mirror the destinations described in this journal.
             </p>
           </div>
@@ -123,9 +123,9 @@ export default async function BlogDetails({ params }: { params: Promise<{ slug: 
           text-transform: uppercase;
           margin-top: 3rem;
           margin-bottom: 1.25rem;
-          color: #ffffff;
+          color: #111827;
           letter-spacing: -0.025em;
-          border-left: 3px solid #C4F000;
+          border-left: 3px solid #16a34a;
           padding-left: 0.75rem;
         }
         .blog-content h3 {
@@ -134,29 +134,29 @@ export default async function BlogDetails({ params }: { params: Promise<{ slug: 
           text-transform: uppercase;
           margin-top: 2rem;
           margin-bottom: 1rem;
-          color: #ffffff;
+          color: #1f2937;
           letter-spacing: -0.02em;
         }
         .blog-content p {
           margin-bottom: 1.5rem;
           line-height: 1.85;
-          color: rgba(255, 255, 255, 0.7);
+          color: #374151;
         }
         .blog-content a {
-          color: #C4F000;
+          color: #16a34a;
           text-decoration: underline;
           transition: color 0.2s;
         }
         .blog-content a:hover {
-          color: #ffffff;
+          color: #15803d;
         }
         .blog-content strong {
-          color: #ffffff;
+          color: #111827;
           font-weight: 800;
         }
         .blog-content em {
           font-style: italic;
-          color: rgba(255, 255, 255, 0.85);
+          color: #4b5563;
         }
         .blog-content ul {
           list-style-type: square;
@@ -171,10 +171,26 @@ export default async function BlogDetails({ params }: { params: Promise<{ slug: 
         .blog-content li {
           margin-bottom: 0.5rem;
           line-height: 1.7;
-          color: rgba(255, 255, 255, 0.7);
+          color: #374151;
         }
         .blog-content li::marker {
-          color: #C4F000;
+          color: #16a34a;
+        }
+        .blog-content blockquote {
+          margin: 2rem 0;
+          padding: 1rem 1.5rem;
+          background-color: #f3f4f6;
+          border-left: 4px solid #16a34a;
+          border-radius: 0.5rem;
+          font-style: italic;
+          color: #4b5563;
+        }
+        .blog-content img {
+          max-width: 100%;
+          height: auto;
+          border-radius: 1rem;
+          margin: 2rem auto;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
         }
       ` }} />
     </div>

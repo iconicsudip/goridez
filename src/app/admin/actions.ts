@@ -80,6 +80,11 @@ export async function updateVehicle(id: string, formData: FormData) {
       limitValue: string; extraChargePerUnit: string; deposit: string;
     }> = packagesRaw ? JSON.parse(packagesRaw) : [];
 
+    const invalidPkgs = packagesData.filter(p => p.name !== '12 Hours' && p.name !== '24 Hours');
+    if (invalidPkgs.length > 0) {
+      return { success: false, error: 'Only "12 Hours" and "24 Hours" packages are allowed for vehicles.' };
+    }
+
     const parts = fullName.split(' ');
     const make = parts[0] || 'Unknown';
     const model = parts.slice(1).join(' ') || 'Model';
@@ -285,6 +290,7 @@ export async function addVehicle(formData: FormData) {
     const image = formData.get('imageUrl') as string;
     const fuelType = formData.get('fuelType') as string;
     const transmission = formData.get('transmission') as string;
+    const seatingCapacity = parseInt(formData.get('seatingCapacity') as string) || 4;
     const content = formData.get('content') as string || '';
 
     const extraHourCharge = formData.get('extraHourCharge') ? parseFloat(formData.get('extraHourCharge') as string) : null;
@@ -311,6 +317,11 @@ export async function addVehicle(formData: FormData) {
       limitValue: string; extraChargePerUnit: string; deposit: string;
     }> = packagesRaw ? JSON.parse(packagesRaw) : [];
 
+    const invalidPkgs = packagesData.filter(p => p.name !== '12 Hours' && p.name !== '24 Hours');
+    if (invalidPkgs.length > 0) {
+      return { success: false, error: 'Only "12 Hours" and "24 Hours" packages are allowed for vehicles.' };
+    }
+
     const parts = fullName.split(' ');
     const make = parts[0] || 'Unknown';
     const model = parts.slice(1).join(' ') || 'Model';
@@ -327,7 +338,7 @@ export async function addVehicle(formData: FormData) {
         gallery,
         fuelType,
         transmission,
-        seatingCapacity: 4,
+        seatingCapacity,
         cityId: primaryCityId,
         content,
         serviceTypes,

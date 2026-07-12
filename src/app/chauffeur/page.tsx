@@ -1,21 +1,5 @@
-import { prisma } from '@/lib/prisma';
-import ChauffeurClient from './ChauffeurClient';
-import { Suspense } from 'react';
+import { redirect } from 'next/navigation';
 
-export default async function ChauffeurPage() {
-  const [cars, cities] = await Promise.all([
-    prisma.car.findMany({ 
-      where: { serviceTypes: { has: 'WITH_DRIVER' } },
-      include: { packages: true, city: true, bookings: true } 
-    }),
-    prisma.city.findMany({ orderBy: { name: 'asc' } })
-  ]);
-
-  return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 font-body pt-24 pb-20">
-      <Suspense fallback={<div className="text-center py-20">Loading luxury chauffeur fleet...</div>}>
-        <ChauffeurClient initialCars={cars} initialCities={cities} />
-      </Suspense>
-    </div>
-  );
+export default function ChauffeurPage() {
+  redirect('/');
 }
