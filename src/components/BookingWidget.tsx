@@ -264,6 +264,7 @@ export default function BookingWidget({
       else { stype = 'airportTransfer'; route = '/taxi'; mode = 'AIRPORT_TRANSFER'; }
     }
 
+    const isAirportTransfer = mainTab === 'CHAUFFEUR' && subTab === 'AIRPORT TRANSFER';
     const isRoundTrip = mainTab === 'CHAUFFEUR' && subTab === 'ROUND TRIP';
     const pickupCityVal = isRoundTrip ? 'Udaipur' : sourceCity;
     const finalDropCity = isRoundTrip
@@ -275,7 +276,7 @@ export default function BookingWidget({
     updateSession({
       serviceType: stype,
       pickupDate: (pickupDate ?? makeTomorrow()).toISOString(),
-      returnDate: (returnDate ?? makePlus4()).toISOString(),
+      returnDate: isAirportTransfer ? null : (returnDate ?? makePlus4()).toISOString(),
       driverOption: mainTab === 'CHAUFFEUR',
       pickupCity: pickupCityVal,
       dropCity: finalDropCity,
@@ -284,16 +285,23 @@ export default function BookingWidget({
 
     const params = new URLSearchParams();
     params.set('mode', mode);
-    params.set('pickupCity', pickupCityVal);
-    if (finalDropCity) params.set('dropCity', finalDropCity);
     if (pickupDate) params.set('pickupDate', pickupDate.toISOString());
-    if (returnDate) params.set('returnDate', returnDate.toISOString());
+
+    // Airport Transfer's actual direction + service-area selection happens on
+    // the /taxi page itself (constrained to the zones we cover) — the widget
+    // just hands off the date and lets that page own the rest of the flow.
+    if (!isAirportTransfer) {
+      params.set('pickupCity', pickupCityVal);
+      if (finalDropCity) params.set('dropCity', finalDropCity);
+      if (returnDate) params.set('returnDate', returnDate.toISOString());
+    }
 
     router.push(`${route}?${params.toString()}`);
   }, [mainTab, subTab, sourceCity, destCity, isDifferentDropCity, destinations, pickupDate, returnDate, updateSession, router]);
 
   if (!isMounted) return null;
 
+  const isAirportTransfer = mainTab === 'CHAUFFEUR' && subTab === 'AIRPORT TRANSFER';
   const showDropCity =
     (mainTab === 'CHAUFFEUR' && subTab === 'ROUND TRIP') ||
     (mainTab === 'SELF DRIVE' && isDifferentDropCity);
@@ -361,7 +369,7 @@ export default function BookingWidget({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
             {/* ── Source / Pickup Location ──────────────────────────── */}
-            {mainTab === 'CHAUFFEUR' && subTab === 'ROUND TRIP' ? (
+            {isAirportTransfer ? null : mainTab === 'CHAUFFEUR' && subTab === 'ROUND TRIP' ? (
               <LocationField
                 label="Source City"
                 value="Udaipur, Rajasthan"
@@ -375,6 +383,12 @@ export default function BookingWidget({
                 onChange={(name, loc) => { setSourceCity(name); setSourceLoc(loc); }}
                 placeholder="Search city or area..."
               />
+            )}
+
+            {isAirportTransfer && (
+              <div className="bg-brand-panel border border-brand-border rounded-xl p-4 flex flex-col justify-center text-xs text-gray-500 leading-relaxed">
+                Pickup/drop area, direction, and vehicle fare are selected on the next page — we only cover specific zones in Udaipur.
+              </div>
             )}
 
             {/* ── Destination / Drop Location ───────────────────────── */}
@@ -426,10 +440,10 @@ export default function BookingWidget({
               />
             ) : null}
 
-            {/* ── Travel Date Range ───────────────────────────────────────── */}
-            <div className="bg-white border border-brand-border hover:border-brand-gold/50 transition-colors rounded-xl p-4 flex flex-col shadow-[0_2px_10px_rgba(0,0,0,0.02)] md:col-span-2">
+            {/* ── Travel Date(s) ───────────────────────────────────────── */}
+            <div className={`bg-white border border-brand-border hover:border-brand-gold/50 transition-colors rounded-xl p-4 flex flex-col shadow-[0_2px_10px_rgba(0,0,0,0.02)] ${isAirportTransfer ? '' : 'md:col-span-2'}`}>
               <label className="text-xs text-gray-500 mb-2 font-mono uppercase tracking-wider">
-                Travel Date Range (Required)
+                {isAirportTransfer ? 'Transfer Date (Required)' : 'Travel Date Range (Required)'}
               </label>
               <div className="flex items-center gap-2 text-gray-800 w-full">
                 <Calendar size={16} className="text-gray-400 shrink-0" />
@@ -450,6 +464,33 @@ export default function BookingWidget({
                     },
                   }}
                 >
+                  {isAirportTransfer ? (
+                    <DatePicker
+                      showTime={{ format: 'h:mm a', use12Hours: true, minuteStep: 30 }}
+                      format="DD MMM YYYY - h:mm a"
+                      value={pickupDate ? dayjs(pickupDate) : null}
+                      onChange={(date) => handlePickupDateChange(date ? date.toDate() : null)}
+                      placeholder="Transfer Date & Time"
+                      variant="borderless"
+                      className="w-full text-xs font-semibold cursor-pointer text-gray-900 !p-0"
+                      disabledDate={(current) => current && current < dayjs().startOf('day')}
+                      disabledTime={(current) => {
+                        if (current && current.isSame(dayjs(), 'day')) {
+                          const now = dayjs();
+                          return {
+                            disabledHours: () => Array.from({ length: now.hour() }, (_, i) => i),
+                            disabledMinutes: (selectedHour) => {
+                              if (selectedHour === now.hour()) {
+                                return Array.from({ length: now.minute() }, (_, i) => i);
+                              }
+                              return [];
+                            }
+                          };
+                        }
+                        return {};
+                      }}
+                    />
+                  ) : (
                   <DatePicker.RangePicker
                     showTime={{ format: 'h:mm a', use12Hours: true, minuteStep: 30 }}
                     format="DD MMM YYYY - h:mm a"
@@ -503,6 +544,7 @@ export default function BookingWidget({
                       return {};
                     }}
                   />
+                  )}
                 </ConfigProvider>
               </div>
             </div>
