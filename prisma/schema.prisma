@@ -236,6 +236,25 @@ model AboutPage {
   updatedAt DateTime @updatedAt
 }
 
+model LegalPage {
+  id        String   @id // 'privacy' | 'terms' | 'contact'
+  title     String
+  content   String
+  imageUrl  String?
+  updatedAt DateTime @updatedAt
+}
+
+model ContactSubmission {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  subject   String?
+  message   String
+  status    String   @default("NEW")
+  createdAt DateTime @default(now())
+}
+
 model DeliveryCharge {
   id              String   @id @default(cuid())
   cityId          String

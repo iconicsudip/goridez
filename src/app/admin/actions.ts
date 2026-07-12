@@ -732,3 +732,56 @@ export async function updateSiteSettings(formData: FormData) {
     return { success: false, error: error.message };
   }
 }
+
+// --- LEGAL PAGES ---
+const LEGAL_PAGE_ROUTES: Record<string, string> = {
+  privacy: '/privacy',
+  terms: '/terms',
+  'cancellation-refund': '/cancellation-refund',
+  'shipping-policy': '/shipping-policy',
+  contact: '/contact',
+};
+
+export async function updateLegalPage(id: string, formData: FormData) {
+  if (!LEGAL_PAGE_ROUTES[id]) {
+    return { success: false, error: 'Unknown legal page' };
+  }
+
+  try {
+    const title = formData.get('title') as string;
+    const content = formData.get('content') as string;
+    const imageUrl = (formData.get('imageUrl') as string) || null;
+
+    await prisma.legalPage.upsert({
+      where: { id },
+      update: { title, content, imageUrl },
+      create: { id, title, content, imageUrl }
+    });
+
+    revalidatePath(LEGAL_PAGE_ROUTES[id]);
+    revalidatePath('/admin/legal');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+export async function updateContactSubmissionStatus(id: string, status: string) {
+  try {
+    await prisma.contactSubmission.update({ where: { id }, data: { status } });
+    revalidatePath('/admin/legal');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+export async function deleteContactSubmission(id: string) {
+  try {
+    await prisma.contactSubmission.delete({ where: { id } });
+    revalidatePath('/admin/legal');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}

@@ -26,6 +26,7 @@ type BookingStore = {
   // Cart Actions
   addToCart: (item: Omit<CartItem, 'id'>) => void;
   removeFromCart: (id: string) => void;
+  updateCartItem: (id: string, updates: Partial<CartItem>) => void;
   clearCart: () => void;
   openCart: () => void;
   closeCart: () => void;
@@ -46,8 +47,11 @@ export const useBookingStore = create<BookingStore>()(
         cartItems: [...state.cartItems, { ...item, id: Math.random().toString(36).substring(2, 9) }],
         isCartOpen: true 
       })),
-      removeFromCart: (id) => set((state) => ({ 
-        cartItems: state.cartItems.filter(i => i.id !== id) 
+      removeFromCart: (id) => set((state) => ({
+        cartItems: state.cartItems.filter(i => i.id !== id)
+      })),
+      updateCartItem: (id, updates) => set((state) => ({
+        cartItems: state.cartItems.map(i => i.id === id ? { ...i, ...updates } : i)
       })),
       clearCart: () => set({ cartItems: [] }),
       openCart: () => set({ isCartOpen: true }),

@@ -5,9 +5,12 @@ import { Trash2, ShoppingBag, ArrowLeft, ShieldCheck, Calendar, MapPin, Tag, Car
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import LocationAutocomplete from '@/components/LocationAutocomplete';
+
+const LOCATION_EDITABLE_SERVICE_TYPES = ['selfDrive', 'roundTripTaxi'];
 
 export default function CartClient() {
-  const { cartItems, removeFromCart } = useBookingStore();
+  const { cartItems, removeFromCart, updateCartItem } = useBookingStore();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -27,6 +30,10 @@ export default function CartClient() {
   const totalDeposit = cartItems.reduce((acc, item) => acc + item.deposit, 0);
   const totalAmount = subtotal + gst;
   const advanceHold = totalAmount * 0.3; // 30% advance hold
+
+  const itemsMissingLocation = cartItems.filter(
+    (item) => LOCATION_EDITABLE_SERVICE_TYPES.includes(item.serviceType) && (!item.pickupStation || !item.dropStation)
+  );
 
   return (
     <div className="bg-white min-h-screen text-gray-900 font-sans pt-32 pb-24">
@@ -73,38 +80,66 @@ export default function CartClient() {
             <div className="lg:col-span-2 space-y-6">
               <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 font-mono">Items Overview</div>
               {cartItems.map((item) => (
-                <div key={item.id} className="bg-gray-50 border border-gray-200/60 rounded-[24px] p-6 relative group flex flex-col md:flex-row gap-6 items-start md:items-center hover:border-gray-300 transition-all shadow-sm">
-                  {/* Item Image */}
-                  <div className="relative w-full md:w-36 h-28 bg-white rounded-2xl overflow-hidden shrink-0 border border-gray-200/60 flex items-center justify-center shadow-sm">
-                    <Image src={item.image} alt={item.title} fill className="object-cover" unoptimized />
+                <div key={item.id} className="bg-gray-50 border border-gray-200/60 rounded-[24px] p-6 relative group hover:border-gray-300 transition-all shadow-sm">
+                  <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
+                    {/* Item Image */}
+                    <div className="relative w-full md:w-36 h-28 bg-white rounded-2xl overflow-hidden shrink-0 border border-gray-200/60 flex items-center justify-center shadow-sm">
+                      <Image src={item.image} alt={item.title} fill className="object-cover" unoptimized />
+                    </div>
+
+                    {/* Item Details */}
+                    <div className="flex-1 min-w-0">
+                      <div className="inline-flex items-center gap-1.5 bg-green-50 text-green-700 px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest mb-2 border border-green-200 font-mono">
+                        {item.serviceType === 'selfDrive' ? 'Self Drive' : item.serviceType === 'withDriver' ? 'Chauffeur' : item.serviceType === 'roundTripTaxi' ? 'Round Trip' : item.serviceType}
+                      </div>
+                      <h3 className="font-black text-xl uppercase tracking-tight mb-2 text-gray-900">{item.title}</h3>
+                      <p className="text-xs text-gray-500 font-mono mb-4">{item.extraInfo}</p>
+
+                      <div className="flex items-center gap-4 text-[10px] text-gray-500 font-mono">
+                        <div className="flex items-center gap-1.5"><ShieldCheck size={14} className="text-green-600" /> Refundable: ₹{item.deposit.toLocaleString()}</div>
+                      </div>
+                    </div>
+
+                    {/* Price and Delete Actions */}
+                    <div className="flex md:flex-col justify-between items-end w-full md:w-auto self-stretch shrink-0 font-mono md:border-l border-gray-200/60 md:pl-6 pt-4 md:pt-0">
+                      <button
+                        onClick={() => removeFromCart(item.id)}
+                        className="text-gray-400 hover:text-red-500 transition-colors md:mb-auto self-start md:self-end flex items-center gap-2 text-[10px] uppercase font-bold tracking-widest cursor-pointer"
+                      >
+                        <Trash2 size={16} /> <span className="md:hidden">Remove</span>
+                      </button>
+                      <div className="text-right">
+                        <div className="text-[9px] text-gray-400 uppercase tracking-widest mb-0.5">Reservation Rate</div>
+                        <div className="text-2xl font-black text-green-700">₹{item.price.toLocaleString()}</div>
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Item Details */}
-                  <div className="flex-1 min-w-0">
-                    <div className="inline-flex items-center gap-1.5 bg-green-50 text-green-700 px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest mb-2 border border-green-200 font-mono">
-                      {item.serviceType === 'selfDrive' ? 'Self Drive' : item.serviceType === 'withDriver' ? 'Chauffeur' : item.serviceType}
+                  {/* Pickup / Drop Location Selection */}
+                  {LOCATION_EDITABLE_SERVICE_TYPES.includes(item.serviceType) && (
+                    <div className="mt-6 pt-6 border-t border-gray-200/60 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-[9px] text-gray-400 uppercase tracking-widest mb-2 font-bold font-mono">
+                          Pickup Location
+                        </label>
+                        <LocationAutocomplete
+                          value={item.pickupStation || ''}
+                          onChange={(name) => updateCartItem(item.id, { pickupStation: name })}
+                          placeholder="Search pickup hotel, airport, station..."
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[9px] text-gray-400 uppercase tracking-widest mb-2 font-bold font-mono">
+                          Drop Location
+                        </label>
+                        <LocationAutocomplete
+                          value={item.dropStation || ''}
+                          onChange={(name) => updateCartItem(item.id, { dropStation: name })}
+                          placeholder="Search drop hotel, airport, station..."
+                        />
+                      </div>
                     </div>
-                    <h3 className="font-black text-xl uppercase tracking-tight mb-2 text-gray-900">{item.title}</h3>
-                    <p className="text-xs text-gray-500 font-mono mb-4">{item.extraInfo}</p>
-
-                    <div className="flex items-center gap-4 text-[10px] text-gray-500 font-mono">
-                      <div className="flex items-center gap-1.5"><ShieldCheck size={14} className="text-green-600" /> Refundable: ₹{item.deposit.toLocaleString()}</div>
-                    </div>
-                  </div>
-
-                  {/* Price and Delete Actions */}
-                  <div className="flex md:flex-col justify-between items-end w-full md:w-auto self-stretch shrink-0 font-mono md:border-l border-gray-200/60 md:pl-6 pt-4 md:pt-0">
-                    <button
-                      onClick={() => removeFromCart(item.id)}
-                      className="text-gray-400 hover:text-red-500 transition-colors md:mb-auto self-start md:self-end flex items-center gap-2 text-[10px] uppercase font-bold tracking-widest cursor-pointer"
-                    >
-                      <Trash2 size={16} /> <span className="md:hidden">Remove</span>
-                    </button>
-                    <div className="text-right">
-                      <div className="text-[9px] text-gray-400 uppercase tracking-widest mb-0.5">Reservation Rate</div>
-                      <div className="text-2xl font-black text-green-700">₹{item.price.toLocaleString()}</div>
-                    </div>
-                  </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -145,11 +180,17 @@ export default function CartClient() {
                   </div>
                 </div>
 
-                <Link href="/checkout" className="block w-full">
-                  <button className="w-full bg-green-600 hover:bg-[#8dbb00] text-white font-black uppercase tracking-widest text-xs py-4 rounded-xl shadow-md hover:shadow-lg transition-all cursor-pointer">
-                    Proceed to Checkout
-                  </button>
-                </Link>
+                {itemsMissingLocation.length > 0 ? (
+                  <div className="bg-amber-50 border border-amber-200 text-amber-700 text-[10px] font-bold uppercase tracking-widest rounded-xl p-4 text-center leading-relaxed">
+                    Please set a pickup and drop location for all self-drive and round-trip items before checkout.
+                  </div>
+                ) : (
+                  <Link href="/checkout" className="block w-full">
+                    <button className="w-full bg-green-600 hover:bg-[#8dbb00] text-white font-black uppercase tracking-widest text-xs py-4 rounded-xl shadow-md hover:shadow-lg transition-all cursor-pointer">
+                      Proceed to Checkout
+                    </button>
+                  </Link>
+                )}
 
                 <div className="text-[9px] text-gray-400 font-mono text-center tracking-widest uppercase flex items-center justify-center gap-1.5">
                   <ShieldCheck size={12} className="text-green-600" /> 100% Secured reservation hold

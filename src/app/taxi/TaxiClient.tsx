@@ -270,8 +270,8 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings }:
     }
 
     addToCart({
-      serviceType: bookingMode === 'ROUND_TRIP' 
-        ? 'roundTripTaxi' 
+      serviceType: bookingMode === 'ROUND_TRIP'
+        ? 'roundTripTaxi'
         : bookingMode === 'AIRPORT_TRANSFER'
           ? 'airportTransfer'
           : 'oneWayTaxi',
@@ -280,7 +280,11 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings }:
       image: car.image || '',
       price: price,
       deposit: 0,
-      extraInfo: extra
+      extraInfo: extra,
+      ...(bookingMode === 'ROUND_TRIP' && {
+        pickupStation: pickupLocation.name,
+        dropStation: destLocations[0]?.name || '',
+      }),
     });
 
     router.push('/cart');

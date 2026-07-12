@@ -37,6 +37,8 @@ export default function Footer({ siteSettings }: { siteSettings?: any }) {
           <ul className="flex flex-col gap-2">
             <li><Link href="/privacy" className="text-gray-400 hover:text-white transition-colors text-sm">Privacy Policy</Link></li>
             <li><Link href="/terms" className="text-gray-400 hover:text-white transition-colors text-sm">Terms of Service</Link></li>
+            <li><Link href="/cancellation-refund" className="text-gray-400 hover:text-white transition-colors text-sm">Cancellation & Refund Policy</Link></li>
+            <li><Link href="/shipping-policy" className="text-gray-400 hover:text-white transition-colors text-sm">Shipping & Service Delivery Policy</Link></li>
             <li><Link href="/contact" className="text-gray-400 hover:text-white transition-colors text-sm">Contact Us</Link></li>
           </ul>
         </div>

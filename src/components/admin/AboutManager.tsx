@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { updateAboutPage } from '@/app/admin/actions';
 import { Info, Save, X, Image as ImageIcon } from 'lucide-react';
 import ImageUpload from './ImageUpload';
+import RichTextEditor from './RichTextEditor';
 
 interface AboutPageData {
   title: string;
@@ -21,24 +22,6 @@ export default function AboutManager({ initialData }: { initialData: AboutPageDa
     imageUrl: initialData?.imageUrl || '',
     content: initialData?.content || ''
   });
-
-  const insertTag = (openTag: string, closeTag: string) => {
-    const textarea = document.getElementById('about-editor-textarea') as HTMLTextAreaElement;
-    if (!textarea) return;
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const text = textarea.value;
-    const selected = text.substring(start, end);
-    const replacement = openTag + selected + closeTag;
-    const newValue = text.substring(0, start) + replacement + text.substring(end);
-    
-    setFormData({ ...formData, content: newValue });
-    
-    setTimeout(() => {
-      textarea.focus();
-      textarea.setSelectionRange(start + openTag.length, start + openTag.length + selected.length);
-    }, 0);
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -146,39 +129,13 @@ export default function AboutManager({ initialData }: { initialData: AboutPageDa
 
           <div>
             <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">
-              Body Content (HTML Supported)
+              Body Content
             </label>
-            <div className="bg-gray-50 rounded-xl border border-gray-300 overflow-hidden focus-within:border-green-600 transition-colors">
-              {/* Toolbar */}
-              <div className="bg-gray-100 border-b border-gray-300 p-2 flex flex-wrap gap-1">
-                {[
-                  { label: 'Paragraph', open: '<p class="text-gray-600 mb-6 leading-relaxed">', close: '</p>' },
-                  { label: 'Heading 2', open: '<h2 class="text-2xl font-black uppercase tracking-tight text-gray-900 mt-8 mb-4">', close: '</h2>' },
-                  { label: 'Heading 3', open: '<h3 class="text-lg font-bold uppercase text-green-700 mt-6 mb-3">', close: '</h3>' },
-                  { label: 'Bold', open: '<strong>', close: '</strong>' },
-                  { label: 'Italic', open: '<em>', close: '</em>' },
-                  { label: 'Bullet list', open: '<ul class="list-disc pl-5 mb-6 text-gray-600 space-y-2">', close: '</ul>' },
-                  { label: 'List Item', open: '<li>', close: '</li>' },
-                ].map((btn) => (
-                  <button
-                    key={btn.label}
-                    type="button"
-                    onClick={() => insertTag(btn.open, btn.close)}
-                    className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 border border-gray-200 text-[9px] font-bold uppercase tracking-widest text-gray-600 hover:text-gray-900 rounded-lg transition-colors"
-                  >
-                    {btn.label}
-                  </button>
-                ))}
-              </div>
-              <textarea
-                id="about-editor-textarea"
-                required
-                value={formData.content}
-                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                placeholder="Write your brand story here (HTML tags are supported)..."
-                className="w-full bg-transparent p-4 min-h-[400px] font-mono text-xs text-gray-900 outline-none border-0 resize-y"
-              />
-            </div>
+            <RichTextEditor
+              value={formData.content}
+              onChange={(value) => setFormData({ ...formData, content: value })}
+              placeholder="Write your brand story here..."
+            />
           </div>
         </div>
 

@@ -4,9 +4,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
-import { 
-  LayoutDashboard, Car, Layers, Globe, Map, MapPin, Building, FileText, 
-  Search, Activity, Users, Percent, LogOut, UserCircle, ListOrdered, HelpCircle, Info, Settings
+import {
+  LayoutDashboard, Car, Layers, Globe, Map, MapPin, Building, FileText,
+  Search, Activity, Users, Percent, LogOut, UserCircle, ListOrdered, HelpCircle, Info, Settings, ShieldCheck
 } from 'lucide-react';
 
 const ADMIN_LINKS = [
@@ -20,6 +20,7 @@ const ADMIN_LINKS = [
   { href: '/admin/faqs', label: 'FAQ CMS Controls', icon: HelpCircle },
   { href: '/admin/about', label: 'About Page Editor', icon: Info },
   { href: '/admin/home-page', label: 'Home Page Editor', icon: Globe },
+  { href: '/admin/legal', label: 'Legal Pages & Contact', icon: ShieldCheck },
   { href: '/admin/settings', label: 'Branding Settings', icon: Settings },
   { href: '/admin/bookings', label: 'Reservation Ledger', icon: ListOrdered },
   { href: '#', label: 'Search Optimization (SEO)', icon: Search },

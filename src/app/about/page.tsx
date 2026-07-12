@@ -63,9 +63,9 @@ export default async function AboutPage() {
       <section className="container mx-auto px-4 -mt-10 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left / Center: Story Content */}
-          <div className="lg:col-span-2 bg-gray-100 border border-gray-200 p-8 md:p-12 rounded-3xl shadow-xl">
+          <div className="lg:col-span-2 bg-gray-100 border border-gray-200 p-8 md:p-12 rounded-3xl shadow-xl overflow-hidden">
             <div
-              className="prose prose-gray max-w-none prose-sm md:prose-base prose-headings:font-black prose-headings:text-gray-900 prose-p:text-gray-700 prose-p:leading-relaxed"
+              className="prose prose-gray max-w-none prose-sm md:prose-base break-words prose-headings:font-black prose-headings:text-gray-900 prose-p:text-gray-700 prose-p:leading-relaxed"
               dangerouslySetInnerHTML={{ __html: content }}
             />
           </div>
