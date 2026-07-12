@@ -159,7 +159,7 @@ export default function CitiesClient({ cities }: { cities: City[] }) {
               className={`bg-gray-100 border border-gray-200 hover:border-gray-300 rounded-2xl p-6 relative overflow-hidden group transition-all ${isDeleting ? 'opacity-40 pointer-events-none' : ''}`}>
 
               {/* Glow */}
-              <div className="absolute -top-6 -right-6 w-24 h-24 bg-green-600/5 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="absolute -top-6 -right-6 w-24 h-24 bg-green-600/5 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
 
               <div className="flex justify-between items-start mb-5">
                 <div className="flex items-center gap-3">
