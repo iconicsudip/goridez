@@ -118,10 +118,14 @@ export default function CitiesClient({ cities }: { cities: City[] }) {
     : list;
 
   async function handleDelete(id: string) {
-    if (!confirm('Remove this city? All linked vehicles, tours, and villas will lose this city assignment.')) return;
+    if (!confirm('Remove this city? This cannot be undone.')) return;
     setDeletingId(id);
-    await deleteCity(id);
-    setList(prev => prev.filter(c => c.id !== id));
+    const res = await deleteCity(id);
+    if (res?.success) {
+      setList(prev => prev.filter(c => c.id !== id));
+    } else {
+      alert(res?.error || 'Failed to delete city.');
+    }
     setDeletingId(null);
   }
 

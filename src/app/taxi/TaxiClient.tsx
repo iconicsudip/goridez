@@ -652,7 +652,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                   
                   const basicFare = Math.round(billableKm * ratePerKm);
                   const driverAllowance = driverAllowancePerDay * durationDays;
-                  const gstAmount = Math.round(basicFare * 0.05); // 5% GST
+                  const gstAmount = Math.round(basicFare * 0.18); // 18% GST
                   
                   flatFare = basicFare + driverAllowance + gstAmount;
 
@@ -794,7 +794,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                               <div className="flex-1 bg-white p-6 rounded-2xl border border-gray-200 space-y-4">
                                 <div className="flex justify-between items-center"><span className="text-gray-400">Basic Fare</span><span className="font-bold text-gray-900">₹{bd.basicFare}</span></div><div className="w-full h-px bg-white/5"></div>
                                 <div className="flex justify-between items-center"><span className="text-gray-400">Driver Allowances</span><span className="font-bold text-gray-900">₹{bd.driverAllowance}</span></div><div className="w-full h-px bg-white/5"></div>
-                                <div className="flex justify-between items-center"><span className="text-gray-400">GST (5%)</span><span className="font-bold text-gray-900">₹{bd.gstAmount}</span></div><div className="w-full h-px bg-white/5"></div>
+                                <div className="flex justify-between items-center"><span className="text-gray-400">GST (18%)</span><span className="font-bold text-gray-900">₹{bd.gstAmount}</span></div><div className="w-full h-px bg-white/5"></div>
                                 <div className="flex justify-between items-center mt-4"><span className="text-green-700 font-bold">Total Amount</span><span className="font-bold text-green-700 text-lg">₹{flatFare}</span></div>
                               </div>
                               <div className="flex-1 bg-white p-6 rounded-2xl border border-gray-200 space-y-4">

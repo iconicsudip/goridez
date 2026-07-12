@@ -5,8 +5,31 @@ import { revalidatePath } from 'next/cache';
 
 // --- CITIES ---
 export async function deleteCity(id: string) {
+  const [carCount, tourCount, villaCount, deliveryChargeCount, airportZoneCount] = await Promise.all([
+    prisma.car.count({ where: { cityId: id } }),
+    prisma.tour.count({ where: { cityId: id } }),
+    prisma.villa.count({ where: { cityId: id } }),
+    prisma.deliveryCharge.count({ where: { cityId: id } }),
+    prisma.airportZone.count({ where: { cityId: id } }),
+  ]);
+
+  const blockers: string[] = [];
+  if (carCount > 0) blockers.push(`${carCount} vehicle${carCount > 1 ? 's' : ''}`);
+  if (tourCount > 0) blockers.push(`${tourCount} tour${tourCount > 1 ? 's' : ''}`);
+  if (villaCount > 0) blockers.push(`${villaCount} villa${villaCount > 1 ? 's' : ''}`);
+  if (deliveryChargeCount > 0) blockers.push(`${deliveryChargeCount} delivery charge config${deliveryChargeCount > 1 ? 's' : ''}`);
+  if (airportZoneCount > 0) blockers.push(`${airportZoneCount} airport transfer zone${airportZoneCount > 1 ? 's' : ''}`);
+
+  if (blockers.length > 0) {
+    return {
+      success: false,
+      error: `Cannot delete this city — it still has ${blockers.join(', ')} assigned to it. Reassign or remove those first.`,
+    };
+  }
+
   await prisma.city.delete({ where: { id } });
   revalidatePath('/admin/cities');
+  return { success: true };
 }
 
 export async function createCity(formData: FormData) {
