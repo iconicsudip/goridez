@@ -110,7 +110,7 @@ export default function CartClient() {
             </div>
 
             {/* Pricing Summary Sidepanel */}
-            <div className="lg:col-span-1 space-y-6">
+            <div className="lg:col-span-1 space-y-6 sticky top-[70px]">
               <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 font-mono">Ledger Summary</div>
 
               <div className="bg-gray-50 border border-gray-200 rounded-[24px] p-8 shadow-sm space-y-6">
