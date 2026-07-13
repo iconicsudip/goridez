@@ -324,6 +324,13 @@ export default function BookingWidget({
   const showDropCity =
     (mainTab === 'CHAUFFEUR' && subTab === 'ROUND TRIP') ||
     (mainTab === 'SELF DRIVE' && isDifferentDropCity);
+  // The 3-column grid only divides evenly when the date field's span matches
+  // how many location fields sit ahead of it — 1 field (default self-drive)
+  // needs a 2-column date to fill the row; 2 fields (round trip destination,
+  // airport pickup/drop) need a 1-column date so all three tiles land evenly
+  // in a single row instead of wrapping with empty gaps at wide viewports.
+  const locationFieldCount = isAirportTransfer ? 2 : showDropCity ? 1 + destinations.length : 1;
+  const dateSpansTwo = locationFieldCount === 1;
 
   return (
     <div className="w-full max-w-5xl mx-auto font-body mt-8 z-10 relative text-left">
@@ -498,7 +505,7 @@ export default function BookingWidget({
             ) : null}
 
             {/* ── Travel Date(s) ───────────────────────────────────────── */}
-            <div className={`bg-white border border-brand-border hover:border-brand-gold/50 transition-colors rounded-xl p-4 flex flex-col shadow-[0_2px_10px_rgba(0,0,0,0.02)] ${isAirportTransfer ? '' : 'md:col-span-2'}`}>
+            <div className={`bg-white border border-brand-border hover:border-brand-gold/50 transition-colors rounded-xl p-4 flex flex-col shadow-[0_2px_10px_rgba(0,0,0,0.02)] ${dateSpansTwo ? 'md:col-span-2' : ''}`}>
               <label className="text-xs text-gray-500 mb-2 font-mono uppercase tracking-wider">
                 {isAirportTransfer ? 'Transfer Date (Required)' : 'Travel Date Range (Required)'}
               </label>
@@ -524,7 +531,7 @@ export default function BookingWidget({
                   {isAirportTransfer ? (
                     <DatePicker
                       showTime={{ format: 'h:mm a', use12Hours: true, minuteStep: 30 }}
-                      format="DD MMM YYYY - h:mm a"
+                      format="DD MMM, h:mm a"
                       value={pickupDate ? dayjs(pickupDate) : null}
                       onChange={(date) => handlePickupDateChange(date ? date.toDate() : null)}
                       placeholder="Transfer Date & Time"
