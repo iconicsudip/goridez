@@ -557,7 +557,7 @@ export default function BookingWidget({
                   ) : (
                   <DatePicker.RangePicker
                     showTime={{ format: 'h:mm a', use12Hours: true, minuteStep: 30 }}
-                    format="DD MMM YYYY - h:mm a"
+                    format="DD MMM, h:mma"
                     value={[pickupDate ? dayjs(pickupDate) : null, returnDate ? dayjs(returnDate) : null]}
                     onChange={(dates) => {
                       if (dates && dates[0]) {
