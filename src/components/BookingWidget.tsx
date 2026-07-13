@@ -505,7 +505,7 @@ export default function BookingWidget({
             ) : null}
 
             {/* ── Travel Date(s) ───────────────────────────────────────── */}
-            <div className={`bg-white border border-brand-border hover:border-brand-gold/50 transition-colors rounded-xl p-4 flex flex-col shadow-[0_2px_10px_rgba(0,0,0,0.02)] ${dateSpansTwo ? 'md:col-span-2' : ''}`}>
+            <div className={`bg-white border border-brand-border hover:border-brand-gold/50 transition-colors rounded-xl flex flex-col shadow-[0_2px_10px_rgba(0,0,0,0.02)] ${dateSpansTwo ? 'p-4 md:col-span-2' : 'p-4 md:px-2.5'}`}>
               <label className="text-xs text-gray-500 mb-2 font-mono uppercase tracking-wider">
                 {isAirportTransfer ? 'Transfer Date (Required)' : 'Travel Date Range (Required)'}
               </label>
