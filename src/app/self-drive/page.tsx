@@ -6,7 +6,8 @@ export default async function SelfDrivePage() {
   const [cars, cities] = await Promise.all([
     prisma.car.findMany({ 
       where: { serviceTypes: { has: 'SELF_DRIVE' } },
-      include: { packages: true, city: true, bookings: true } 
+      include: { packages: true, city: true, bookings: true },
+      orderBy: { createdAt: 'desc' }
     }),
     prisma.city.findMany({ orderBy: { name: 'asc' } })
   ]);

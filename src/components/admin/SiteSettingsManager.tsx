@@ -16,6 +16,8 @@ export default function SiteSettingsManager({ initialData }: { initialData: any 
     copyrightText: initialData?.copyrightText || '© GoRidez. All rights reserved.',
     razorpayKeyId: initialData?.razorpayKeyId || 'rzp_test_mockkey123',
     razorpayKeySecret: initialData?.razorpayKeySecret || 'mocksecret123',
+    taxiExclusions: initialData?.taxiExclusions || '',
+    taxiTerms: initialData?.taxiTerms || '',
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -156,6 +158,39 @@ export default function SiteSettingsManager({ initialData }: { initialData: any 
                   onChange={handleChange}
                   required
                   className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors font-mono"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Taxi Round Trip Exclusions & Terms Configuration */}
+          <div className="border-t border-gray-100 pt-8 mt-8">
+            <h3 className="text-sm font-black uppercase tracking-tight mb-4 text-gray-900">Taxi / Round Trip Package Terms</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div>
+                <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">
+                  Taxi Exclusions (One Item Per Line)
+                </label>
+                <textarea
+                  name="taxiExclusions"
+                  value={formData.taxiExclusions}
+                  onChange={handleChange}
+                  rows={5}
+                  placeholder="Enter excluded items..."
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors"
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">
+                  Taxi Terms & Conditions (One Item Per Line)
+                </label>
+                <textarea
+                  name="taxiTerms"
+                  value={formData.taxiTerms}
+                  onChange={handleChange}
+                  rows={5}
+                  placeholder="Enter terms and conditions..."
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors"
                 />
               </div>
             </div>

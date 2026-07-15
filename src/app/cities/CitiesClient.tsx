@@ -118,29 +118,41 @@ export default function CitiesClient({ initialCities, initialCars, initialVillas
         <div className="bg-gray-100 border border-gray-200 rounded-3xl p-8 min-h-[400px]">
           
           {/* Self Drive or Chauffeur */}
-          {(activeSegment === 'Self Drive' || activeSegment === 'Chauffeur') && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {cityCars.length === 0 ? (
-                <div className="col-span-full text-center py-20 text-gray-500 font-mono text-sm">No cars available in {activeCity?.name}</div>
-              ) : (
-                cityCars.map((car: any) => (
-                  <div key={car.id} className="bg-white border border-gray-200 rounded-2xl p-6 group hover:border-green-300 transition-all">
-                    <div className="relative w-full h-[140px] mb-4 flex items-center justify-center bg-gray-50 rounded-xl overflow-hidden">
-                      <Image src={car.image} alt={car.model} fill className="object-cover" unoptimized />
+          {(activeSegment === 'Self Drive' || activeSegment === 'Chauffeur') && (() => {
+            const filteredCityCars = cityCars.filter((car: any) => {
+              if (activeSegment === 'Self Drive') {
+                return car.serviceTypes?.includes('SELF_DRIVE');
+              }
+              if (activeSegment === 'Chauffeur') {
+                return car.serviceTypes?.includes('WITH_DRIVER');
+              }
+              return true;
+            });
+
+            return (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredCityCars.length === 0 ? (
+                  <div className="col-span-full text-center py-20 text-gray-500 font-mono text-sm">No cars available in {activeCity?.name}</div>
+                ) : (
+                  filteredCityCars.map((car: any) => (
+                    <div key={car.id} className="bg-white border border-gray-200 rounded-2xl p-6 group hover:border-green-300 transition-all">
+                      <div className="relative w-full h-[140px] mb-4 flex items-center justify-center bg-gray-50 rounded-xl overflow-hidden">
+                        <Image src={car.image} alt={car.model} fill className="object-cover" unoptimized />
+                      </div>
+                      <div className="text-[9px] text-green-700 font-bold uppercase tracking-widest mb-1">{car.category}</div>
+                      <h3 className="text-lg font-black uppercase mb-4">{car.make} {car.model}</h3>
+                      <button 
+                        onClick={() => handleBookCar(car, activeSegment === 'Chauffeur')}
+                        className="w-full bg-gray-100 group-hover:bg-green-600 group-hover:text-black text-gray-900 px-4 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all"
+                      >
+                        Book Now <ArrowRight size={14} />
+                      </button>
                     </div>
-                    <div className="text-[9px] text-green-700 font-bold uppercase tracking-widest mb-1">{car.category}</div>
-                    <h3 className="text-lg font-black uppercase mb-4">{car.make} {car.model}</h3>
-                    <button 
-                      onClick={() => handleBookCar(car, activeSegment === 'Chauffeur')}
-                      className="w-full bg-gray-100 group-hover:bg-green-600 group-hover:text-black text-gray-900 px-4 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all"
-                    >
-                      Book Now <ArrowRight size={14} />
-                    </button>
-                  </div>
-                ))
-              )}
-            </div>
-          )}
+                  ))
+                )}
+              </div>
+            );
+          })()}
 
           {/* Taxi */}
           {activeSegment === 'Taxi' && (

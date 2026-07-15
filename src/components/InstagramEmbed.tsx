@@ -22,7 +22,13 @@ export function InstagramEmbedScript() {
 
 export function useInstagramEmbedProcess(deps: React.DependencyList) {
   useEffect(() => {
-    window.instgrm?.Embeds.process();
+    if (typeof window !== 'undefined') {
+      window.instgrm?.Embeds.process();
+      const t = setTimeout(() => {
+        window.instgrm?.Embeds.process();
+      }, 100);
+      return () => clearTimeout(t);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 }

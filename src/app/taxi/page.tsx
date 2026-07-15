@@ -3,13 +3,15 @@ import { prisma } from '@/lib/prisma';
 import TaxiClient from './TaxiClient';
 
 export default async function TaxiPage() {
-  const [cars, cities, taxiSettings] = await Promise.all([
+  const [cars, cities, taxiSettings, siteSettings] = await Promise.all([
     prisma.car.findMany({
-      where: { serviceTypes: { has: 'TAXI' } },
-      include: { packages: true, city: true, bookings: true }
+      where: { serviceTypes: { hasSome: ['TAXI', 'AIRPORT_TRANSFER'] } },
+      include: { packages: true, city: true, bookings: true },
+      orderBy: { createdAt: 'desc' }
     }),
     prisma.city.findMany({ orderBy: { name: 'asc' } }),
-    prisma.taxiFareSetting.findMany({ orderBy: { vehicleCategory: 'asc' } })
+    prisma.taxiFareSetting.findMany({ orderBy: { vehicleCategory: 'asc' } }),
+    prisma.siteSettings.findUnique({ where: { id: 'singleton' } })
   ]);
 
   // Airport Transfers currently operate out of Udaipur only (matches the hardcoded
@@ -31,6 +33,7 @@ export default async function TaxiPage() {
         taxiSettings={taxiSettings}
         airportZones={airportZones}
         airportName={udaipur?.airportName || 'the Airport'}
+        siteSettings={siteSettings}
       />
     </Suspense>
   );

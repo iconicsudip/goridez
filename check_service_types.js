@@ -3,9 +3,9 @@ const prisma = new PrismaClient();
 
 async function run() {
   const cars = await prisma.car.findMany();
-  console.log("All cars and features:");
+  console.log("Cars serviceTypes:");
   cars.forEach(c => {
-    console.log(`ID: ${c.id} | Model: "${c.make} ${c.model}" | Features: ${JSON.stringify(c.features)}`);
+    console.log(`Model: "${c.make} ${c.model}" | serviceTypes: ${JSON.stringify(c.serviceTypes)}`);
   });
 }
 

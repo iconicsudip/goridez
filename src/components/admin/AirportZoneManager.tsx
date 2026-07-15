@@ -44,6 +44,7 @@ export default function AirportZoneManager({ zones, cities }: { zones: Zone[]; c
   const [fareZoneTarget, setFareZoneTarget] = useState<string | null>(null); // zoneId currently adding/editing a fare for
   const [fareForm, setFareForm] = useState(FARE_FORM_DEFAULT);
   const [savingFare, setSavingFare] = useState(false);
+  const [isCustomCategory, setIsCustomCategory] = useState(false);
 
   const startAddZone = () => {
     setIsAddingZone(true);
@@ -87,11 +88,15 @@ export default function AirportZoneManager({ zones, cities }: { zones: Zone[]; c
 
   const startAddFare = (zoneId: string) => {
     setFareZoneTarget(zoneId);
+    setIsCustomCategory(false);
     setFareForm({ ...FARE_FORM_DEFAULT, zoneId });
   };
 
   const startEditFare = (zoneId: string, fare: Fare) => {
     setFareZoneTarget(zoneId);
+    const standardCats = ['Sedan', 'SUV', 'Hatchback', 'MUV', 'Luxury', 'Tempo Traveller'];
+    const isCustom = fare.vehicleCategory ? !standardCats.includes(fare.vehicleCategory) : false;
+    setIsCustomCategory(isCustom);
     setFareForm({
       id: fare.id,
       zoneId,
@@ -235,7 +240,52 @@ export default function AirportZoneManager({ zones, cities }: { zones: Zone[]; c
                 <div className="grid grid-cols-2 md:grid-cols-6 gap-3 mb-3">
                   <div className="space-y-1 col-span-2 md:col-span-1">
                     <label className="text-[9px] text-gray-500 font-mono uppercase tracking-widest block">Category <span className="text-red-500">*</span></label>
-                    <input required value={fareForm.vehicleCategory} onChange={e => setFareForm(f => ({ ...f, vehicleCategory: e.target.value }))} placeholder="Sedan" className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2.5 text-xs text-gray-900 outline-none focus:border-green-600 font-mono" />
+                    {isCustomCategory ? (
+                      <div className="relative flex items-center bg-white border border-gray-300 rounded-xl pr-2">
+                        <input
+                          required
+                          value={fareForm.vehicleCategory}
+                          onChange={e => setFareForm(f => ({ ...f, vehicleCategory: e.target.value }))}
+                          placeholder="e.g. Vintage"
+                          className="w-full bg-transparent px-3 py-2.5 text-xs text-gray-900 outline-none font-mono"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsCustomCategory(false);
+                            setFareForm(f => ({ ...f, vehicleCategory: '' }));
+                          }}
+                          className="text-gray-400 hover:text-gray-900 px-2 cursor-pointer font-sans text-xs font-bold"
+                          title="Choose standard category"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ) : (
+                      <select
+                        required
+                        value={fareForm.vehicleCategory}
+                        onChange={e => {
+                          const val = e.target.value;
+                          if (val === 'CUSTOM') {
+                            setIsCustomCategory(true);
+                            setFareForm(f => ({ ...f, vehicleCategory: '' }));
+                          } else {
+                            setFareForm(f => ({ ...f, vehicleCategory: val }));
+                          }
+                        }}
+                        className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2.5 text-xs text-gray-900 outline-none focus:border-green-600 font-mono appearance-none"
+                      >
+                        <option value="">Select</option>
+                        <option value="Sedan">Sedan</option>
+                        <option value="SUV">SUV</option>
+                        <option value="Hatchback">Hatchback</option>
+                        <option value="MUV">MUV</option>
+                        <option value="Luxury">Luxury</option>
+                        <option value="Tempo Traveller">Tempo Traveller</option>
+                        <option value="CUSTOM">Other (Type Custom)...</option>
+                      </select>
+                    )}
                   </div>
                   <div className="space-y-1">
                     <label className="text-[9px] text-gray-500 font-mono uppercase tracking-widest block">Pickup (₹)</label>

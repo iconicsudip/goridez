@@ -4,7 +4,10 @@ import CitiesClient from './CitiesClient';
 export default async function CitiesPage() {
   const [cities, cars, villas, tours] = await Promise.all([
     prisma.city.findMany({ orderBy: { name: 'asc' } }),
-    prisma.car.findMany({ include: { packages: true, city: true } }),
+    prisma.car.findMany({ 
+      include: { packages: true, city: true },
+      orderBy: { createdAt: 'desc' }
+    }),
     prisma.villa.findMany({ include: { city: true } }),
     prisma.tour.findMany({ include: { city: true } })
   ]);

@@ -263,6 +263,7 @@ export default function EditVehicleDrawer({ isOpen, onClose, car, cities, tiers 
                   { id: 'SELF_DRIVE', label: 'Self Drive' },
                   { id: 'WITH_DRIVER', label: 'With Driver' },
                   { id: 'TAXI', label: 'One Way / Round Trip' },
+                  { id: 'AIRPORT_TRANSFER', label: 'Airport Transfer' },
                   { id: 'VILLA', label: 'Villa + Car' },
                   { id: 'TOUR', label: 'Tour Packages' }
                 ].map(type => {

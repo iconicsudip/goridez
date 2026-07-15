@@ -52,7 +52,7 @@ export default function Navbar({ navVisibility, siteSettings }: { navVisibility?
 
   const links = [
     { name: 'Self Drive', href: '/self-drive' },
-    { name: 'Chauffeur', href: '/taxi' },
+    { name: 'Taxi', href: '/taxi' },
     ...baseLinks
   ];
 

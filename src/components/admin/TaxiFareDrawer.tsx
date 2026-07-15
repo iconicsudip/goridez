@@ -15,11 +15,16 @@ export default function TaxiFareDrawer({ isOpen, onClose, setting }: { isOpen: b
     driverAllowancePerDay: 350,
   });
   const [loading, setLoading] = useState(false);
+  const [isCustomCategory, setIsCustomCategory] = useState(false);
 
   useEffect(() => {
     if (setting) {
       setFormData(setting);
+      const standardCats = ['Sedan', 'SUV', 'Hatchback', 'MUV', 'Luxury', 'Tempo Traveller'];
+      const isCustom = setting.vehicleCategory ? !standardCats.includes(setting.vehicleCategory) : false;
+      setIsCustomCategory(isCustom);
     } else {
+      setIsCustomCategory(false);
       setFormData({
         vehicleCategory: '',
         airportBaseFare: 0,
@@ -70,14 +75,61 @@ export default function TaxiFareDrawer({ isOpen, onClose, setting }: { isOpen: b
               <h3 className="text-[10px] text-green-700 font-bold border-b border-gray-200 pb-2">Vehicle Category</h3>
               <div>
                 <label className="block text-gray-500 mb-1">Category Name (e.g. Sedan, SUV)</label>
-                <input
-                  required
-                  type="text"
-                  disabled={!!setting}
-                  value={formData.vehicleCategory}
-                  onChange={(e) => setFormData({ ...formData, vehicleCategory: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg p-3 outline-none focus:border-green-600 disabled:bg-gray-100"
-                />
+                {setting ? (
+                  <input
+                    required
+                    type="text"
+                    disabled
+                    value={formData.vehicleCategory}
+                    className="w-full border border-gray-300 rounded-lg p-3 outline-none focus:border-green-600 disabled:bg-gray-100 font-mono"
+                  />
+                ) : isCustomCategory ? (
+                  <div className="relative flex items-center border border-gray-300 rounded-lg bg-white pr-2">
+                    <input
+                      required
+                      type="text"
+                      value={formData.vehicleCategory}
+                      onChange={(e) => setFormData({ ...formData, vehicleCategory: e.target.value })}
+                      placeholder="e.g. Premium SUV"
+                      className="w-full p-3 outline-none focus:border-green-600 bg-transparent font-mono"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsCustomCategory(false);
+                        setFormData(prev => ({ ...prev, vehicleCategory: '' }));
+                      }}
+                      className="text-gray-400 hover:text-gray-900 px-2 cursor-pointer font-sans text-xs font-bold"
+                      title="Choose standard category"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ) : (
+                  <select
+                    required
+                    value={formData.vehicleCategory}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val === 'CUSTOM') {
+                        setIsCustomCategory(true);
+                        setFormData(prev => ({ ...prev, vehicleCategory: '' }));
+                      } else {
+                        setFormData(prev => ({ ...prev, vehicleCategory: val }));
+                      }
+                    }}
+                    className="w-full border border-gray-300 rounded-lg p-3 outline-none focus:border-green-600 bg-white"
+                  >
+                    <option value="">Select Category</option>
+                    <option value="Sedan">Sedan</option>
+                    <option value="SUV">SUV</option>
+                    <option value="Hatchback">Hatchback</option>
+                    <option value="MUV">MUV</option>
+                    <option value="Luxury">Luxury</option>
+                    <option value="Tempo Traveller">Tempo Traveller</option>
+                    <option value="CUSTOM">Other (Type Custom)...</option>
+                  </select>
+                )}
               </div>
             </div>
 

@@ -12,6 +12,7 @@ import dayjs from 'dayjs';
 import Image from 'next/image';
 import Link from 'next/link';
 import LocationAutocomplete from '@/components/LocationAutocomplete';
+import CarImageSlider from '@/components/CarImageSlider';
 import AirportLocalitySearch, { AIRPORT_ZONE_ID } from '@/components/AirportLocalitySearch';
 import { calculateRoute, OSMLocation } from '@/lib/osm';
 import { getCarSlug } from '@/lib/utils';
@@ -46,13 +47,35 @@ const mapToRouteLocation = (loc: OSMLocation) => ({
   name: loc.display_name
 });
 
-export default function TaxiClient({ initialCars, initialCities, taxiSettings, airportZones = [], airportName = 'the Airport' }: { initialCars: any[], initialCities: any[], taxiSettings: any[], airportZones?: any[], airportName?: string }) {
+export default function TaxiClient({ initialCars, initialCities, taxiSettings, airportZones = [], airportName = 'the Airport', siteSettings }: { initialCars: any[], initialCities: any[], taxiSettings: any[], airportZones?: any[], airportName?: string, siteSettings?: any }) {
   const [activeTab, setActiveTab] = useState<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const { session, updateSession, addToCart } = useBookingStore();
 
   const [bookingMode, setBookingMode] = useState<'ROUND_TRIP'|'AIRPORT_TRANSFER'>('ROUND_TRIP');
+
+  const exclusionsList = useMemo(() => {
+    if (siteSettings?.taxiExclusions) {
+      return siteSettings.taxiExclusions.split('\n').map((item: string) => item.trim()).filter(Boolean);
+    }
+    return [
+      "Toll Tax and Parking charges are not included in the above fare.",
+      "State Tax (if applicable crossing borders) is extra.",
+      "Any extra km or hours driven beyond the package limit will be charged additionally."
+    ];
+  }, [siteSettings]);
+
+  const termsList = useMemo(() => {
+    if (siteSettings?.taxiTerms) {
+      return siteSettings.taxiTerms.split('\n').map((item: string) => item.trim()).filter(Boolean);
+    }
+    return [
+      "A/C will be switched off in hilly areas.",
+      "Night allowance applies if the driver drives between 10 PM and 6 AM.",
+      "Kilometers are calculated from garage to garage."
+    ];
+  }, [siteSettings]);
 
   // Locations
   const [pickupLocation, setPickupLocation] = useState<{name: string, data?: OSMLocation}>({ name: 'Udaipur, Rajasthan', data: UDAIPUR_CITY });
@@ -69,6 +92,25 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
   const atZoneId = atDirectionValid ? (atPickupIsAirport ? atDrop.zoneId : atPickup.zoneId) : '';
 
   const atZone = airportZones.find(z => z.id === atZoneId) || null;
+
+  // Filter cars by booking mode
+  const modeFilteredCars = useMemo(() => {
+    if (bookingMode === 'AIRPORT_TRANSFER') {
+      return initialCars.filter((c: any) => c.serviceTypes?.includes('AIRPORT_TRANSFER'));
+    }
+    return initialCars.filter((c: any) => c.serviceTypes?.includes('TAXI'));
+  }, [bookingMode, initialCars]);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const CARS_PER_PAGE = 5;
+
+  const totalPages = Math.ceil(modeFilteredCars.length / CARS_PER_PAGE);
+  const paginatedCars = modeFilteredCars.slice((currentPage - 1) * CARS_PER_PAGE, currentPage * CARS_PER_PAGE);
+
+  // Reset to page 1 whenever booking mode or filtered cars list changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [bookingMode, modeFilteredCars.length]);
 
   // Distance calculations
   const [calculatedDistance, setCalculatedDistance] = useState<number>(0);
@@ -338,7 +380,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
             Premium Driver Services
           </div>
           <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tight mb-4">
-            CHAUFFEUR <span className="text-outline-neon">SERVICES & TRANSFERS</span>
+            TAXI <span className="text-outline-neon">SERVICES & TRANSFERS</span>
           </h1>
           <p className="text-gray-600 max-w-2xl text-sm leading-relaxed">
             Premium door-to-door luxury journeys. Powered by professional drivers and accurate routing.
@@ -635,7 +677,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
             
             <div className="space-y-6">
               
-              {initialCars.map((car) => {
+              {paginatedCars.map((car) => {
                 const durationDays = returnDate 
                   ? Math.max(1, Math.ceil((returnDate.getTime() - pickupDate.getTime()) / (1000 * 60 * 60 * 24)))
                   : 1;
@@ -707,129 +749,160 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                   const bd = car._breakdown;
                   const isTabActive = (tab: string) => activeTab === `${car.id}-${tab}`;
                   const toggleTab = (tab: string) => setActiveTab(prev => prev === `${car.id}-${tab}` ? null : `${car.id}-${tab}`);
+                  const destStr = destLocations.map(d => d.name).filter(Boolean).join(' -> ');
                   
                   return (
-                    <div key={car.id} className="bg-gray-100 border border-gray-200 rounded-3xl p-6 md:p-8 flex flex-col hover:border-gray-300 transition-colors mb-6 font-sans">
-                      <div className="flex flex-col md:flex-row items-center gap-8">
-                        <div className="shrink-0 w-full md:w-48 relative h-40 flex items-center justify-center">
-                          <Link href={`/cars/${getCarSlug(car)}`} className="block w-full h-full relative">
-                            <Image src={car.image || '/placeholder-car.png'} alt={`${car.make} ${car.model}`} fill className="object-contain p-2 bg-white rounded-2xl hover:scale-105 transition-transform" unoptimized />
-                          </Link>
+                    <div key={car.id} className="bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md hover:border-green-200 transition-all mb-5 overflow-hidden font-sans">
+                      <div className="flex flex-col md:flex-row">
+
+                        {/* ── Left: Image ── */}
+                        <div className="relative md:w-64 shrink-0 bg-gray-50 min-h-[180px]">
+                          {/* Image container with its own overflow-hidden so badges aren't clipped */}
+                          <div className="absolute inset-0 overflow-hidden">
+                            <Link href={`/cars/${getCarSlug(car)}`} className="block w-full h-full">
+                              <CarImageSlider mainImage={car.image} galleryJson={car.gallery} alt={`${car.make} ${car.model}`} imageClassName="object-contain hover:scale-105 transition-transform duration-500 w-full h-full" />
+                            </Link>
+                          </div>
+                          {/* Category badge – top left */}
+                          <span className="absolute top-3 left-3 z-10 bg-white/95 border border-gray-200 text-gray-700 text-[8px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg shadow-sm">
+                            {car.category.replace(/\bClass\b/gi, '').trim()}
+                          </span>
+                          {/* Availability badge – top right */}
+                          <span className={`absolute top-3 right-3 z-10 text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-lg flex items-center gap-1 ${car.availability ? 'bg-green-500 text-white' : 'bg-red-100 text-red-600 border border-red-200'}`}>
+                            <span className={`w-1.5 h-1.5 rounded-full ${car.availability ? 'bg-white' : 'bg-red-500'}`}></span>
+                            {car.availability ? 'Available' : 'Unavailable'}
+                          </span>
                         </div>
-                        
-                        <div className="flex-1 flex flex-col justify-between w-full">
-                          <div>
-                            <div className="flex items-center justify-between mb-2">
-                              <div className="flex items-center gap-3">
-                                <span className="text-green-700 text-xs font-black tracking-widest uppercase">{car.category} AC</span>
-                              </div>
-                            </div>
-                            
-                            <h3 className="text-3xl font-black text-gray-900 uppercase tracking-tighter mb-4">
-                              <Link href={`/cars/${getCarSlug(car)}`} className="hover:text-green-700 transition-colors">
-                                {car.make} {car.model} <span className="text-gray-500 text-xl">{car.seatingCapacity} SEATER</span>
+
+                        {/* ── Center: Info ── */}
+                        <div className="flex-1 flex flex-col">
+                          <div className="flex-1 p-5 border-b border-gray-100">
+                            {/* Title */}
+                            <h3 className="text-xl font-black text-gray-900 leading-tight mb-1">
+                              <Link href={`/cars/${getCarSlug(car)}`} className="hover:text-green-600 transition-colors">
+                                {car.make} {car.model}
                               </Link>
                             </h3>
-                            
-                            <div className="flex flex-wrap items-center gap-3 text-xs font-semibold text-gray-700 mb-6">
-                              <span className="bg-gray-100 px-3 py-1 rounded border border-gray-200">{car.transmission}</span>
-                              <span className="bg-gray-100 px-3 py-1 rounded border border-gray-200">{car.fuelType}</span>
-                              {car.features && car.features.length > 0 ? car.features.slice(0, 2).map((feat: string, idx: number) => (
-                                <span key={idx} className="bg-gray-100 px-3 py-1 rounded border border-gray-200 flex items-center gap-1">
-                                  {feat}
-                                </span>
-                              )) : (
-                                <span className="bg-gray-100 px-3 py-1 rounded border border-gray-200 flex items-center gap-1">
-                                  <Briefcase size={12} className="text-green-700"/> LUGGAGE ALLOWED
-                                </span>
+                            {/* Specs subtitle */}
+                            <p className="text-[11px] text-gray-400 font-mono mb-3">
+                              {car.seatingCapacity} Seats &nbsp;•&nbsp; {car.transmission.replace(' Gearbox', '')} &nbsp;•&nbsp; {car.fuelType}
+                            </p>
+                            {/* Feature pills */}
+                            {car.features && car.features.length > 0 && (
+                              <div className="flex flex-wrap gap-1.5 mb-4">
+                                {car.features.map((feat: string, idx: number) => (
+                                  <span key={idx} className="bg-gray-900 text-white text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full">
+                                    {feat}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                            {/* Package details table */}
+                            <div className="w-full text-xs font-mono text-gray-700 space-y-2">
+                              <div className="flex justify-between border-b border-gray-100 pb-2">
+                                <span className="text-gray-400">Package</span>
+                                <span className="font-medium">Outstation (Round Trip)</span>
+                              </div>
+                              {destStr && (
+                                <div className="flex justify-between border-b border-gray-100 pb-2">
+                                  <span className="text-gray-400">Route</span>
+                                  <span className="font-medium font-sans text-right">Udaipur → {destStr} → Udaipur</span>
+                                </div>
                               )}
-                            </div>
-                            
-                            <div className="w-full max-w-lg text-xs font-mono text-gray-900/70 mb-6">
-                              <div className="space-y-3">
-                                <div className="flex justify-between border-b border-gray-200 pb-2">
-                                  <span className="text-gray-400">Package</span>
-                                  <span className="text-gray-900 font-medium">Outstation (Round Trip)</span>
-                                </div>
-                                <div className="flex justify-between border-b border-gray-200 pb-2">
-                                  <span className="text-gray-400">Charged Distance</span>
-                                  <span className="text-gray-900 font-medium">{bd.chargedDistance} Km</span>
-                                </div>
-                                <div className="flex justify-between pb-2">
-                                  <span className="text-gray-400">Extra Charge</span>
-                                  <span className="text-gray-900 font-medium">₹{bd.ratePerKm}/Km (Beyond {bd.chargedDistance}Km)</span>
-                                </div>
+                              <div className="flex justify-between border-b border-gray-100 pb-2">
+                                <span className="text-gray-400">Charged Distance</span>
+                                <span className="font-medium">{bd.chargedDistance} Km</span>
+                              </div>
+                              <div className="flex justify-between pb-1">
+                                <span className="text-gray-400">Extra Charge</span>
+                                <span className="font-medium">₹{bd.ratePerKm}/Km (Beyond {bd.chargedDistance}Km)</span>
                               </div>
                             </div>
                           </div>
-                          
-                          <div className="mt-2">
-                            <button onClick={() => toggleTab("fare")} className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-green-700 hover:text-gray-900 transition-colors">
-                              View Breakdown & Terms {isTabActive("fare") ? <ArrowDownUp size={14} /> : <ArrowDownUp size={14} />}
+
+                          {/* Inclusions strip */}
+                          <div className="px-5 py-3 flex flex-wrap items-center gap-4 bg-gray-50">
+                            <span className="flex items-center gap-1.5 text-[10px] font-semibold text-gray-600">
+                              <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/></svg>
+                              Inc. GST &amp; Driver Allowance
+                            </span>
+                            <span className="flex items-center gap-1.5 text-[10px] font-semibold text-gray-400">
+                              <svg className="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                              Exc. Toll Tax &amp; Parking
+                            </span>
+                            <button onClick={() => toggleTab("fare")} className="ml-auto flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-green-700 hover:text-green-800 transition-colors">
+                              View Breakdown &amp; Terms <ArrowDownUp size={12} />
                             </button>
                           </div>
                         </div>
-                        
-                        <div className="shrink-0 w-full md:w-56 flex flex-col justify-center items-end text-right md:border-l border-gray-200 md:pl-8 mt-6 md:mt-0 pt-6 md:pt-0 border-t md:border-t-0">
-                          <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
-                            Package Fare ({bd.days}D)
+
+                        {/* ── Right: Fare Panel ── */}
+                        <div className="shrink-0 md:w-52 bg-green-50 border-l border-green-100 p-5 flex flex-col items-center justify-between">
+                          <div className="text-center w-full">
+                            <div className="text-[9px] font-black uppercase tracking-widest text-green-700/60 mb-2">Package Fare ({bd.days}D)</div>
+                            <div className="text-4xl font-black text-green-700 leading-none">
+                              ₹{flatFare.toLocaleString()}
+                            </div>
+                            <div className="text-[10px] text-green-600/70 font-mono mt-1 mb-3">all inclusive</div>
                           </div>
-                          <p className="text-4xl font-black text-green-700 mb-2">₹{flatFare.toLocaleString()}</p>
-                          <p className="text-xs text-gray-500 mb-1">Inc. GST & Driver Allowance</p>
-                          <p className="text-xs text-gray-500 mb-6">Exc. Toll Tax & Parking</p>
-                          
-                          <button onClick={() => !isAlreadyBooked && handleBook(car, flatFare, extraText)} disabled={isAlreadyBooked || !returnDate || calculatedDistance === 0} className={`w-full font-medium text-base py-4 px-6 rounded-2xl transition-all ${
-                            isAlreadyBooked || !returnDate || calculatedDistance === 0
-                              ? 'bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-200 shadow-none' 
-                              : 'bg-green-500 text-white hover:bg-green-600 shadow-lg'
-                          }`}>
-                            {isAlreadyBooked ? 'Booked' : !returnDate ? 'Select Dates First' : calculatedDistance === 0 ? 'Select Valid Route' : 'Book Now'}
+                          <button
+                            onClick={() => !isAlreadyBooked && handleBook(car, flatFare, extraText)}
+                            disabled={isAlreadyBooked || !returnDate || calculatedDistance === 0}
+                            className={`w-full mt-4 font-black text-[10px] tracking-widest uppercase py-3.5 px-4 rounded-xl transition-all ${
+                              isAlreadyBooked || !returnDate || calculatedDistance === 0
+                                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                                : 'bg-green-500 text-white hover:bg-green-600 shadow-md shadow-green-500/30'
+                            }`}
+                          >
+                            {isAlreadyBooked ? 'Already Booked' : !returnDate ? 'Select Dates First' : calculatedDistance === 0 ? 'Select Valid Route' : 'Book Now'}
                           </button>
                         </div>
+
                       </div>
-                      
+
+                      {/* Expandable breakdown tabs */}
                       {activeTab?.startsWith(`${car.id}-`) && (
-                        <div className="mt-8 border-t border-gray-200 pt-8">
+                        <div className="border-t border-gray-100 px-6 py-6">
                           <div className="flex flex-wrap gap-3 mb-6">
                             <button onClick={() => toggleTab("fare")} className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-colors ${isTabActive("fare") ? "bg-green-500 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-200"}`}>Fare Details</button>
                             <button onClick={() => toggleTab("exclusion")} className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-colors ${isTabActive("exclusion") ? "bg-green-500 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-200"}`}>Exclusions</button>
-                            <button onClick={() => toggleTab("terms")} className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-colors ${isTabActive("terms") ? "bg-green-500 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-200"}`}>Terms & Conditions</button>
+                            <button onClick={() => toggleTab("terms")} className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-colors ${isTabActive("terms") ? "bg-green-500 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-200"}`}>Terms &amp; Conditions</button>
                           </div>
-                          
+
                           {isTabActive("fare") && (
                             <div className="flex flex-col md:flex-row gap-8 text-xs font-mono">
-                              <div className="flex-1 bg-white p-6 rounded-2xl border border-gray-200 space-y-4">
-                                <div className="flex justify-between items-center"><span className="text-gray-400">Basic Fare</span><span className="font-bold text-gray-900">₹{bd.basicFare}</span></div><div className="w-full h-px bg-white/5"></div>
-                                <div className="flex justify-between items-center"><span className="text-gray-400">Driver Allowances</span><span className="font-bold text-gray-900">₹{bd.driverAllowance}</span></div><div className="w-full h-px bg-white/5"></div>
-                                <div className="flex justify-between items-center"><span className="text-gray-400">GST (18%)</span><span className="font-bold text-gray-900">₹{bd.gstAmount}</span></div><div className="w-full h-px bg-white/5"></div>
-                                <div className="flex justify-between items-center mt-4"><span className="text-green-700 font-bold">Total Amount</span><span className="font-bold text-green-700 text-lg">₹{flatFare}</span></div>
+                              <div className="flex-1 bg-gray-50 p-6 rounded-2xl border border-gray-200 space-y-4">
+                                <div className="flex justify-between items-center"><span className="text-gray-400">Basic Fare</span><span className="font-bold text-gray-900">₹{bd.basicFare}</span></div>
+                                <div className="flex justify-between items-center"><span className="text-gray-400">Driver Allowances</span><span className="font-bold text-gray-900">₹{bd.driverAllowance}</span></div>
+                                <div className="flex justify-between items-center"><span className="text-gray-400">GST (18%)</span><span className="font-bold text-gray-900">₹{bd.gstAmount}</span></div>
+                                <div className="flex justify-between items-center pt-3 border-t border-gray-200"><span className="text-green-700 font-bold">Total Amount</span><span className="font-bold text-green-700 text-lg">₹{flatFare}</span></div>
                               </div>
-                              <div className="flex-1 bg-white p-6 rounded-2xl border border-gray-200 space-y-4">
-                                <div className="flex justify-between items-center"><span className="text-gray-400">Rate/Km</span><span className="font-bold text-gray-900">₹{bd.ratePerKm}/Km</span></div><div className="w-full h-px bg-white/5"></div>
-                                <div className="flex justify-between items-center"><span className="text-gray-400">No. of Days</span><span className="font-bold text-gray-900">{bd.days} Days</span></div><div className="w-full h-px bg-white/5"></div>
-                                <div className="flex justify-between items-center"><span className="text-gray-400">Min Km/Day ({bd.minKmPerDay}*{bd.days})</span><span className="font-bold text-gray-900">{bd.chargedDistance} Km</span></div><div className="w-full h-px bg-white/5"></div>
-                                <div className="flex justify-between items-center"><span className="text-gray-400">Running Distance</span><span className="font-bold text-gray-900">{bd.runningDistance} Km</span></div><div className="w-full h-px bg-white/5"></div>
+                              <div className="flex-1 bg-gray-50 p-6 rounded-2xl border border-gray-200 space-y-4">
+                                <div className="flex justify-between items-center"><span className="text-gray-400">Rate/Km</span><span className="font-bold text-gray-900">₹{bd.ratePerKm}/Km</span></div>
+                                <div className="flex justify-between items-center"><span className="text-gray-400">No. of Days</span><span className="font-bold text-gray-900">{bd.days} Days</span></div>
+                                <div className="flex justify-between items-center"><span className="text-gray-400">Min Km/Day ({bd.minKmPerDay}*{bd.days})</span><span className="font-bold text-gray-900">{bd.chargedDistance} Km</span></div>
+                                <div className="flex justify-between items-center"><span className="text-gray-400">Running Distance</span><span className="font-bold text-gray-900">{bd.runningDistance} Km</span></div>
                                 <div className="flex justify-between items-center"><span className="text-gray-400">Charged Distance</span><span className="font-bold text-gray-900">{bd.chargedDistance} Km</span></div>
                               </div>
                             </div>
                           )}
-                          
+
                           {isTabActive("exclusion") && (
-                            <div className="text-xs font-mono text-gray-600 p-6 bg-white rounded-2xl border border-gray-200">
+                            <div className="text-xs font-mono text-gray-600 p-6 bg-gray-50 rounded-2xl border border-gray-200">
                               <ul className="list-disc pl-5 space-y-3">
-                                <li>Toll Tax and Parking charges are not included in the above fare.</li>
-                                <li>State Tax (if applicable crossing borders) is extra.</li>
-                                <li>Any extra km or hours driven beyond the package limit will be charged additionally.</li>
+                                {exclusionsList.map((item: string, idx: number) => (
+                                  <li key={idx}>{item}</li>
+                                ))}
                               </ul>
                             </div>
                           )}
-                          
+
                           {isTabActive("terms") && (
-                            <div className="text-xs font-mono text-gray-600 p-6 bg-white rounded-2xl border border-gray-200">
+                            <div className="text-xs font-mono text-gray-600 p-6 bg-gray-50 rounded-2xl border border-gray-200">
                               <ul className="list-disc pl-5 space-y-3">
-                                <li>A/C will be switched off in hilly areas.</li>
-                                <li>Night allowance applies if the driver drives between 10 PM and 6 AM.</li>
-                                <li>Kilometers are calculated from garage to garage.</li>
+                                {termsList.map((item: string, idx: number) => (
+                                  <li key={idx}>{item}</li>
+                                ))}
                               </ul>
                             </div>
                           )}
@@ -840,69 +913,178 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                 }
 
                 return (
-                  <div key={car.id} className="bg-gray-100 border border-gray-200 rounded-3xl p-6 md:p-8 flex flex-col md:flex-row justify-between items-center gap-6 hover:border-gray-300 transition-colors mb-6">
-                    <div className="shrink-0 w-full md:w-48 relative h-40 flex items-center justify-center">
-                      <Link href={`/cars/${getCarSlug(car)}`} className="block w-full h-full relative">
-                        <Image src={car.image || '/placeholder-car.png'} alt={`${car.make} ${car.model}`} fill className="object-contain p-2 bg-white rounded-2xl hover:scale-105 transition-transform" unoptimized />
-                      </Link>
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-4">
-                        <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded text-[9px] font-bold uppercase tracking-widest border border-gray-200">{car.category} Class</span>
-                        <span className="text-[10px] text-gray-400 font-mono">{car.seatingCapacity} Seats • {car.transmission}</span>
-                      </div>
-                      <h3 className="text-xl font-black mb-1">
-                        <Link href={`/cars/${getCarSlug(car)}`} className="hover:text-green-700 transition-colors">
-                          {car.make} {car.model}
-                        </Link>
-                      </h3>
-                      <p className="text-[10px] text-gray-500 font-mono mb-6">{car.fuelType} Engine {car.features && car.features.length > 0 ? `• ${car.features.join(' • ')}` : '• Fully Air-Conditioned'}</p>
-                      <div className="flex items-center gap-2 text-[10px] text-gray-600 font-mono">
-                        <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div> {car.content || 'Guaranteed private. No ridesharing. No multiple stops.'}
-                      </div>
-                    </div>
-                    <div className="text-right shrink-0 bg-transparent flex flex-col items-end">
-                      <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
-                        {bookingMode === 'ROUND_TRIP' ? `Package Fare (${durationDays}D)` : bookingMode === 'AIRPORT_TRANSFER' ? 'Flat Transfer Fare' : 'Flat Invoice Fare'}
-                      </div>
-                      <div className="text-3xl font-black text-green-700 mb-1">
-                        ₹{flatFare.toLocaleString()}
-                        <span className="text-gray-400 text-[10px] font-medium lowercase ml-2">
-                          {bookingMode === 'ROUND_TRIP' ? 'total' : bookingMode === 'AIRPORT_TRANSFER' ? 'flat rate' : (returnDate ? 'round trip' : 'one way')}
+                  <div key={car.id} className="bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md hover:border-green-200 transition-all mb-5 overflow-hidden">
+                    <div className="flex flex-col md:flex-row">
+
+                      {/* ── Left: Image ── */}
+                      <div className="relative md:w-64 shrink-0 bg-gray-50 flex items-center justify-center min-h-[180px]">
+                        {/* Image with its own overflow-hidden so badges aren't clipped */}
+                        <div className="absolute inset-0 overflow-hidden">
+                          <Link href={`/cars/${getCarSlug(car)}`} className="block w-full h-full">
+                            <CarImageSlider mainImage={car.image || '/placeholder-car.png'} galleryJson={car.gallery} alt={`${car.make} ${car.model}`} imageClassName="object-contain hover:scale-105 transition-transform duration-500 w-full h-full" />
+                          </Link>
+                        </div>
+                        {/* Category badge – top left */}
+                        <span className="absolute top-3 left-3 z-10 bg-white/95 border border-gray-200 text-gray-700 text-[8px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg shadow-sm">
+                          {car.category.replace(/\bClass\b/gi, '').trim()}
+                        </span>
+                        {/* Available badge – top right */}
+                        <span className={`absolute top-3 right-3 z-10 text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-lg flex items-center gap-1 ${car.availability ? 'bg-green-500 text-white' : 'bg-red-100 text-red-600 border border-red-200'}`}>
+                          <span className={`w-1.5 h-1.5 rounded-full ${car.availability ? 'bg-white' : 'bg-red-500'}`}></span>
+                          {car.availability ? 'Available' : 'Unavailable'}
                         </span>
                       </div>
-                      {bookingMode === 'AIRPORT_TRANSFER' && car._airportBreakdown?.hasFare && (
-                        <div className="text-[9px] text-gray-500 font-mono mb-4 space-y-0.5 text-right">
-                          {car._airportBreakdown.nightApplies && car._airportBreakdown.nightFee > 0 && (
-                            <div>Incl. Night Fee ₹{car._airportBreakdown.nightFee.toLocaleString()} (10PM–6AM)</div>
+
+                      {/* ── Center: Info + Inclusions ── */}
+                      <div className="flex-1 flex flex-col">
+                        {/* Top: Name + specs + features + description */}
+                        <div className="flex-1 p-5 border-b border-gray-100">
+                          {/* Title row */}
+                          <h3 className="text-xl font-black text-gray-900 leading-tight mb-1">
+                            <Link href={`/cars/${getCarSlug(car)}`} className="hover:text-green-600 transition-colors">
+                              {car.make} {car.model}
+                            </Link>
+                          </h3>
+                          {/* Specs subtitle */}
+                          <p className="text-[11px] text-gray-400 font-mono mb-3">
+                            {car.seatingCapacity} Seats &nbsp;•&nbsp; {car.transmission.replace(' Gearbox','')} &nbsp;•&nbsp; {car.fuelType}
+                          </p>
+                          {/* Feature pills */}
+                          {car.features && car.features.length > 0 && (
+                            <div className="flex flex-wrap gap-1.5 mb-3">
+                              {car.features.map((feat: string, idx: number) => (
+                                <span key={idx} className="bg-gray-900 text-white text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full">
+                                  {feat}
+                                </span>
+                              ))}
+                            </div>
                           )}
-                          {car._airportBreakdown.waitChargePer30Min > 0 && (
-                            <div>Free 30 min wait, then ₹{car._airportBreakdown.waitChargePer30Min.toLocaleString()}/30min</div>
+                          {/* Description */}
+                          {car.content && car.content.replace(/<[^>]*>/g, '').trim() ? (
+                            <div className="text-xs text-gray-500 leading-relaxed line-clamp-3" dangerouslySetInnerHTML={{ __html: car.content }} />
+                          ) : (
+                            <p className="text-xs text-gray-400">Guaranteed private ride. No ridesharing. No multiple stops.</p>
                           )}
-                          {car._airportBreakdown.meetAndGreet && <div>Meet &amp; Greet included</div>}
                         </div>
-                      )}
-                      {bookingMode === 'AIRPORT_TRANSFER' && !car._airportBreakdown?.hasFare && (
-                        <div className="text-[9px] text-red-500 font-mono mb-4">No fare configured for this vehicle in this zone</div>
-                      )}
-                      <button
-                        onClick={() => !isAlreadyBooked && handleBook(car, flatFare, extraText)}
-                        disabled={isAlreadyBooked || (bookingMode === 'ROUND_TRIP' && !returnDate) || (bookingMode === 'ROUND_TRIP' && calculatedDistance === 0) || (bookingMode === 'AIRPORT_TRANSFER' && (!atZoneId || !car._airportBreakdown?.hasFare))}
-                        className={`font-black text-[10px] tracking-widest uppercase py-4 px-8 rounded-xl transition-all ${
-                          isAlreadyBooked || (bookingMode === 'ROUND_TRIP' && (!returnDate || calculatedDistance === 0)) || (bookingMode === 'AIRPORT_TRANSFER' && (!atZoneId || !car._airportBreakdown?.hasFare))
-                            ? 'bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-200 shadow-none'
-                            : 'bg-green-500 text-white hover:bg-green-600 shadow-lg shadow-green-500/20'
-                        }`}
-                      >
-                        {isAlreadyBooked ? 'Booked / Unavailable'
-                          : bookingMode === 'ROUND_TRIP' ? (!returnDate ? 'Select Dates First' : calculatedDistance === 0 ? 'Select Valid Route' : 'Book Cab Now')
-                          : bookingMode === 'AIRPORT_TRANSFER' ? (!atZoneId ? 'Select Your Area First' : !car._airportBreakdown?.hasFare ? 'Unavailable For This Vehicle' : 'Book Cab Now')
-                          : 'Book Cab Now'}
-                      </button>
+
+                        {/* Bottom: Inclusions strip */}
+                        <div className="px-5 py-3 flex flex-wrap items-center gap-4 bg-gray-50">
+                          <span className="flex items-center gap-1.5 text-[10px] font-semibold text-gray-600">
+                            <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/></svg>
+                            30 min free wait
+                          </span>
+                          {car._airportBreakdown?.meetAndGreet && (
+                            <span className="flex items-center gap-1.5 text-[10px] font-semibold text-gray-600">
+                              <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/></svg>
+                              Meet &amp; Greet
+                            </span>
+                          )}
+                          {car._airportBreakdown?.nightFee > 0 && (
+                            <span className="flex items-center gap-1.5 text-[10px] font-semibold text-gray-600">
+                              <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/></svg>
+                              Night charge: ₹{car._airportBreakdown.nightFee.toLocaleString()}
+                            </span>
+                          )}
+                          {car._airportBreakdown?.waitChargePer30Min > 0 && (
+                            <span className="flex items-center gap-1.5 text-[10px] font-semibold text-gray-400">
+                              <svg className="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                              +₹{car._airportBreakdown.waitChargePer30Min}/30min extra wait
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* ── Right: Fare Panel ── */}
+                      <div className="shrink-0 md:w-52 bg-green-50 border-l border-green-100 p-5 flex flex-col items-center justify-between">
+                        <div className="text-center w-full">
+                          <div className="text-[9px] font-black uppercase tracking-widest text-green-700/60 mb-2">Flat Fare</div>
+                          {car._airportBreakdown?.hasFare ? (
+                            <>
+                              <div className="text-4xl font-black text-green-700 leading-none">
+                                ₹{flatFare.toLocaleString()}
+                              </div>
+                              <div className="text-[10px] text-green-600/70 font-mono mt-1 mb-3">all inclusive</div>
+                              {car._airportBreakdown.nightApplies && car._airportBreakdown.nightFee > 0 && (
+                                <div className="text-[9px] text-blue-600 bg-blue-50 border border-blue-100 rounded-lg px-2 py-1.5 font-mono">
+                                  Night fee included
+                                </div>
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              <div className="text-3xl font-black text-gray-300 leading-none">—</div>
+                              <div className="text-[9px] text-red-500 bg-red-50 border border-red-100 rounded-lg px-2 py-1.5 mt-2 font-mono leading-relaxed">
+                                No fare configured for this zone
+                              </div>
+                            </>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => !isAlreadyBooked && handleBook(car, flatFare, extraText)}
+                          disabled={isAlreadyBooked || !atZoneId || !car._airportBreakdown?.hasFare}
+                          className={`w-full mt-4 font-black text-[10px] tracking-widest uppercase py-3.5 px-4 rounded-xl transition-all ${
+                            isAlreadyBooked || !atZoneId || !car._airportBreakdown?.hasFare
+                              ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                              : 'bg-green-500 text-white hover:bg-green-600 shadow-md shadow-green-500/30'
+                          }`}
+                        >
+                          {isAlreadyBooked ? 'Already Booked'
+                            : !atZoneId ? 'Select Area First'
+                            : !car._airportBreakdown?.hasFare ? 'Not Available'
+                            : 'Book Transfer'}
+                        </button>
+                      </div>
+
                     </div>
                   </div>
                 );
               })}
+
+
+
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="flex justify-center items-center gap-2 mt-12 border-t border-gray-200 pt-8">
+                  <button
+                    onClick={() => {
+                      setCurrentPage(prev => Math.max(1, prev - 1));
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    disabled={currentPage === 1}
+                    className="w-10 h-10 rounded-xl border border-gray-200 flex items-center justify-center text-gray-700 hover:border-green-600 hover:text-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer bg-white"
+                  >
+                    &larr;
+                  </button>
+                  
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                    <button
+                      key={page}
+                      onClick={() => {
+                        setCurrentPage(page);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
+                      className={`w-10 h-10 rounded-xl border text-sm font-bold transition-all cursor-pointer ${
+                        currentPage === page
+                          ? 'bg-green-600 border-green-600 text-white shadow-md'
+                          : 'border-gray-200 bg-white text-gray-700 hover:border-green-600 hover:text-green-700'
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  ))}
+
+                  <button
+                    onClick={() => {
+                      setCurrentPage(prev => Math.min(totalPages, prev + 1));
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    disabled={currentPage === totalPages}
+                    className="w-10 h-10 rounded-xl border border-gray-200 flex items-center justify-center text-gray-700 hover:border-green-600 hover:text-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer bg-white"
+                  >
+                    &rarr;
+                  </button>
+                </div>
+              )}
 
             </div>
           </div>

@@ -1,24 +1,30 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useBookingStore } from '@/store/useBookingStore';
-import { ArrowLeftRight, ShieldCheck, CheckCircle } from 'lucide-react';
-import { getCarSlug, calculatePackagePricing, getPackageDurationHours } from '@/lib/utils';
+import { ShieldCheck, CheckCircle } from 'lucide-react';
+import { getCarSlug, calculatePackagePricing } from '@/lib/utils';
+
+import CarImageSlider from '@/components/CarImageSlider';
 
 export default function SelfDriveList({ initialCars, pickupDate, returnDate }: { initialCars: any[], pickupDate?: Date, returnDate?: Date | null }) {
   const router = useRouter();
-  const { addToCart, session } = useBookingStore();
+  const { addToCart } = useBookingStore();
 
-  // Keep track of which package is selected for which car
   const [selectedPackages, setSelectedPackages] = useState<Record<string, number>>({});
+  const [currentPage, setCurrentPage] = useState(1);
+  const CARS_PER_PAGE = 6;
 
+  // Reset pagination when list filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [initialCars.length]);
 
-  const handlePackageSelect = (carId: string, limitValue: number) => {
-    setSelectedPackages(prev => ({ ...prev, [carId]: limitValue }));
-  };
+  const totalPages = Math.ceil(initialCars.length / CARS_PER_PAGE);
+  const paginatedCars = initialCars.slice((currentPage - 1) * CARS_PER_PAGE, currentPage * CARS_PER_PAGE);
 
   const handleBook = (carId: string) => {
     const car = initialCars.find(c => c.id === carId);
@@ -46,153 +52,236 @@ export default function SelfDriveList({ initialCars, pickupDate, returnDate }: {
   };
 
   return (
-    <div className="grid md:grid-cols-2 gap-8">
-      {initialCars.map((car) => {
-        const durationHours = pickupDate && returnDate 
-          ? Math.max(1, (returnDate.getTime() - pickupDate.getTime()) / (1000 * 60 * 60))
-          : 24;
+    <div className="flex flex-col w-full">
+      <div className="flex flex-col gap-5">
+        {paginatedCars.map((car) => {
+          const durationHours = pickupDate && returnDate 
+            ? Math.max(1, (returnDate.getTime() - pickupDate.getTime()) / (1000 * 60 * 60))
+            : 24;
 
-        const priceInfo = calculatePackagePricing(car.packages || [], durationHours);
-        const finalPrice = priceInfo.basePrice;
-        const usedPackageIds = priceInfo.usedPkgIds;
-        const activePackage = priceInfo.selectedPkg || car.packages?.[0];
-        
-        const isAlreadyBooked = car.bookings && car.bookings.length > 0 && car.bookings.some((booking: any) => {
-          if (booking.status === 'CANCELLED') return false;
-          const bStart = new Date(booking.startDate);
-          const bEnd = new Date(booking.endDate);
-          const currentStart = pickupDate || new Date();
-          const currentEnd = new Date(currentStart.getTime() + 24 * 60 * 60 * 1000);
-          return currentStart <= bEnd && currentEnd >= bStart;
-        });
+          const priceInfo = calculatePackagePricing(car.packages || [], durationHours);
+          const finalPrice = priceInfo.basePrice;
+          const usedPackageIds = priceInfo.usedPkgIds;
+          const activePackage = priceInfo.selectedPkg || car.packages?.[0];
+          
+          const isAlreadyBooked = car.bookings && car.bookings.length > 0 && car.bookings.some((booking: any) => {
+            if (booking.status === 'CANCELLED') return false;
+            const bStart = new Date(booking.startDate);
+            const bEnd = new Date(booking.endDate);
+            const currentStart = pickupDate || new Date();
+            const currentEnd = new Date(currentStart.getTime() + 24 * 60 * 60 * 1000);
+            return currentStart <= bEnd && currentEnd >= bStart;
+          });
 
-        const extraCharge = activePackage?.extraChargePerUnit || 0;
-        const deposit = activePackage?.deposit || 0;
-        const unitType = activePackage?.type === 'KM' ? 'KM' : 'Hour';
+          const extraCharge = activePackage?.extraChargePerUnit || 0;
+          const deposit = activePackage?.deposit || 0;
+          const unitType = activePackage?.type === 'KM' ? 'KM' : 'Hour';
 
-        const allowedPackages = (car.packages || []).filter(
-          (p: any) => p.name === '12 Hours' || p.name === '24 Hours'
-        );
+          const allowedPackages = (car.packages || []).filter(
+            (p: any) => p.name === '12 Hours' || p.name === '24 Hours'
+          );
 
-        return (
-          <div key={car.id} className="bg-white border border-gray-200 rounded-3xl overflow-hidden flex flex-col group hover:border-green-300 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
-            
-            {/* Top Image Section */}
-            <div className="relative h-[220px] w-full bg-white flex items-center justify-center">
-              
-              {/* Badges */}
-              <div className="absolute top-4 left-4 z-10 flex gap-2">
-                <span className="bg-white/90 backdrop-blur-md text-green-700 px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider shadow-sm flex items-center gap-1">
-                  <ShieldCheck size={14} /> Self-Drive
-                </span>
-                <span className="bg-green-500 text-white px-3 py-1 rounded text-[9px] font-bold uppercase tracking-widest shadow-[0_0_15px_rgba(196,240,0,0.3)]">VIP Choice</span>
-              </div>
+          return (
+            <div key={car.id} className="bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md hover:border-green-200 transition-all overflow-hidden group">
+              <div className="flex flex-col md:flex-row">
 
-              {/* Car Image */}
-              <Link href={`/cars/${getCarSlug(car)}`} className="relative w-full h-full block">
-                <Image 
-                  src={car.image} 
-                  alt={`${car.make} ${car.model}`}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  unoptimized
-                />
-              </Link>
-            </div>
+                {/* ── Left: Image ── */}
+                <div className="relative md:w-64 shrink-0 bg-gray-50 min-h-[200px]">
+                  <div className="absolute inset-0 overflow-hidden">
+                    <Link href={`/cars/${getCarSlug(car)}`} className="block w-full h-full">
+                      <CarImageSlider
+                        mainImage={car.image}
+                        galleryJson={car.gallery}
+                        alt={`${car.make} ${car.model}`}
+                        imageClassName="object-contain group-hover:scale-105 transition-transform duration-500 w-full h-full"
+                      />
+                    </Link>
+                  </div>
+                  {/* Self-Drive badge – top left */}
+                  <span className="absolute top-3 left-3 z-10 bg-white/95 border border-gray-200 text-gray-700 text-[8px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg shadow-sm flex items-center gap-1">
+                    <ShieldCheck size={10} /> Self-Drive
+                  </span>
+                  {/* Availability badge – top right */}
+                  <span className={`absolute top-3 right-3 z-10 text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-lg flex items-center gap-1 ${car.availability ? 'bg-green-500 text-white' : 'bg-red-100 text-red-600 border border-red-200'}`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${car.availability ? 'bg-white' : 'bg-red-500'}`}></span>
+                    {car.availability ? 'Available' : 'Unavailable'}
+                  </span>
+                </div>
 
-            {/* Middle Specs Row */}
-            <div className="grid grid-cols-3 border-y border-gray-200 bg-white">
-              <div className="py-3 text-center text-xs text-gray-600 font-medium capitalize border-r border-gray-200">{car.transmission} Gearbox</div>
-              <div className="py-3 text-center text-xs text-gray-600 font-medium capitalize border-r border-gray-200">{car.fuelType}</div>
-              <div className="py-3 text-center text-xs text-gray-600 font-medium capitalize">{car.seatingCapacity} Seats</div>
-            </div>
+                {/* ── Center: Info ── */}
+                <div className="flex-1 flex flex-col">
+                  <div className="flex-1 p-5 border-b border-gray-100">
+                    {/* Title */}
+                    <h3 className="text-xl font-black text-gray-900 leading-tight mb-1">
+                      <Link href={`/cars/${getCarSlug(car)}`} className="hover:text-green-600 transition-colors">
+                        {car.make} {car.model}
+                      </Link>
+                    </h3>
+                    {/* Specs subtitle */}
+                    <p className="text-[11px] text-gray-400 font-mono mb-3">
+                      {car.seatingCapacity} Seats &nbsp;•&nbsp; {car.transmission} &nbsp;•&nbsp; {car.fuelType}
+                    </p>
+                    {/* Trust badges */}
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      <span className="flex items-center gap-1 bg-green-50 text-green-700 border border-green-100 px-2.5 py-1 rounded-lg text-[9px] font-bold uppercase tracking-widest">
+                        <ShieldCheck size={10}/> Insured
+                      </span>
+                      <span className="flex items-center gap-1 bg-blue-50 text-blue-700 border border-blue-100 px-2.5 py-1 rounded-lg text-[9px] font-bold uppercase tracking-widest">
+                        <CheckCircle size={10}/> GPS Tracked
+                      </span>
+                    </div>
+                    {/* Features pills */}
+                    {car.features && car.features.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 mb-4">
+                        {car.features.map((feat: string, idx: number) => (
+                          <span key={idx} className="bg-gray-900 text-white text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full">
+                            {feat}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    {/* Package selector */}
+                    {allowedPackages.length > 0 && (
+                      <div className="flex gap-2 pointer-events-none">
+                        {allowedPackages.map((pkg: any) => {
+                          const isSelected = usedPackageIds.has(pkg.id);
+                          return (
+                            <div
+                              key={pkg.id}
+                              className={`px-3 py-2 text-[9px] font-bold rounded-xl text-center border transition-all ${
+                                isSelected
+                                  ? 'bg-green-600 border-green-600 text-white'
+                                  : 'bg-gray-50 border-gray-200 text-gray-400 opacity-50'
+                              }`}
+                            >
+                              {pkg.name} ({pkg.limitValue} {pkg.type === 'KM' ? 'KM' : 'Hrs'})
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
 
-            {/* Bottom Content */}
-            <div className="p-6 md:p-8 flex-1 flex flex-col">
-              
-              <Link href={`/cars/${getCarSlug(car)}`}>
-                <h3 className="text-xl font-black mb-2 hover:text-green-700 transition-colors">{car.make} {car.model}</h3>
-              </Link>
-              <div className="flex flex-wrap gap-2 mb-6">
-                <span className="flex items-center gap-1 bg-green-50 text-green-700 px-2 py-1 rounded border border-green-100 text-[10px] font-semibold">
-                  <ShieldCheck size={12}/> Insured
-                </span>
-                <span className="flex items-center gap-1 bg-blue-50 text-blue-700 px-2 py-1 rounded border border-blue-100 text-[10px] font-semibold">
-                  <CheckCircle size={12}/> GPS Tracked
-                </span>
-              </div>
+                  {/* Bottom: Inclusions strip */}
+                  <div className="px-5 py-3 flex flex-wrap items-center gap-4 bg-gray-50">
+                    <span className="flex items-center gap-1.5 text-[10px] font-semibold text-gray-600">
+                      <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/></svg>
+                      Insured vehicle
+                    </span>
+                    <span className="flex items-center gap-1.5 text-[10px] font-semibold text-gray-600">
+                      <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/></svg>
+                      GPS Tracked
+                    </span>
+                    {deposit > 0 && (
+                      <span className="flex items-center gap-1.5 text-[10px] font-semibold text-gray-400">
+                        <svg className="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        ₹{deposit.toLocaleString()} refundable deposit
+                      </span>
+                    )}
+                    {extraCharge > 0 && (
+                      <span className="flex items-center gap-1.5 text-[10px] font-semibold text-gray-400">
+                        <svg className="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        ₹{extraCharge}/{unitType} extra limit
+                      </span>
+                    )}
+                  </div>
+                </div>
 
-              {/* Package Selector (Read Only) */}
-              <div className="flex gap-2 mb-8 border-b border-gray-200 pb-8 overflow-x-auto custom-scrollbar pointer-events-none">
-                {allowedPackages.map((pkg: any) => {
-                  const isSelected = usedPackageIds.has(pkg.id);
-                  return (
-                    <div 
-                      key={pkg.id}
-                      className={`flex-1 py-2.5 px-4 text-xs font-bold rounded-xl text-center border transition-all ${
-                        isSelected 
-                          ? 'bg-green-600 border-green-600 text-white shadow-sm font-black' 
-                          : 'bg-gray-50 border-gray-200 text-gray-400 opacity-60'
+                {/* ── Right: Fare Panel ── */}
+                <div className="shrink-0 md:w-52 bg-green-50 border-l border-green-100 p-5 flex flex-col items-center justify-between">
+                  <div className="text-center w-full">
+                    <div className="text-[9px] font-black uppercase tracking-widest text-green-700/60 mb-1">Est. Trip Total</div>
+                    <div className="text-4xl font-black text-green-700 leading-none">
+                      ₹{Math.round(finalPrice * 1.18).toLocaleString()}
+                    </div>
+                    <div className="text-[9px] text-green-600/70 font-mono mt-1">incl. 18% GST</div>
+                    <div className="mt-3 w-full space-y-1.5 text-left">
+                      <div className="flex justify-between text-[9px] font-mono text-gray-500">
+                        <span>Base fare</span>
+                        <span className="font-bold text-gray-700">₹{finalPrice.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between text-[9px] font-mono text-gray-500">
+                        <span>GST (18%)</span>
+                        <span className="font-bold text-gray-700">₹{Math.round(finalPrice * 0.18).toLocaleString()}</span>
+                      </div>
+                      {deposit > 0 && (
+                        <div className="flex justify-between text-[9px] font-mono text-gray-500 border-t border-green-100 pt-1.5 mt-1">
+                          <span>Refundable deposit</span>
+                          <span className="font-bold text-green-700">₹{deposit.toLocaleString()}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="w-full mt-4 flex flex-col gap-2">
+                    <button
+                      onClick={() => !isAlreadyBooked && handleBook(car.id)}
+                      disabled={isAlreadyBooked}
+                      className={`w-full font-black text-[10px] tracking-widest uppercase py-3.5 px-4 rounded-xl transition-all ${
+                        isAlreadyBooked
+                          ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                          : 'bg-green-500 text-white hover:bg-green-600 shadow-md shadow-green-500/30'
                       }`}
                     >
-                      {pkg.name} ({pkg.limitValue} {pkg.type === 'KM' ? 'KM' : 'Hours'})
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Fare Summary */}
-              <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 mb-6 text-xs font-mono">
-                <div className="flex justify-between items-center mb-2 pb-2 border-b border-gray-200/60">
-                  <span className="text-gray-500 font-bold uppercase tracking-wider">
-                    Base Fare ({priceInfo.extraInfo})
-                  </span>
-                  <span className="text-gray-900 font-bold">₹{finalPrice.toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-gray-500">GST (18%)</span>
-                  <span className="text-gray-900 font-semibold">₹{Math.round(finalPrice * 0.18).toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between items-center mb-3">
-                  <span className="text-gray-500">Refundable Deposit</span>
-                  <span className="text-green-750 font-bold">₹{deposit.toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between items-end pt-2 border-t border-dashed border-gray-300">
-                  <div>
-                    <div className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">EST. TRIP TOTAL</div>
-                    <div className="text-green-700 text-2xl font-black">₹{Math.round(finalPrice * 1.18).toLocaleString()}</div>
-                  </div>
-                  <div className="text-right text-[10px] text-gray-500">
-                    <div>Extra Limit: ₹{extraCharge}/{unitType}</div>
+                      {isAlreadyBooked ? 'Already Booked' : 'Book Now'}
+                    </button>
+                    <Link
+                      href={`/cars/${getCarSlug(car)}`}
+                      className="w-full font-black text-[10px] tracking-widest uppercase py-3 px-4 rounded-xl border border-gray-200 text-gray-600 text-center hover:border-green-300 hover:text-green-700 transition-all"
+                    >
+                      View Details
+                    </Link>
                   </div>
                 </div>
-              </div>
 
-              {/* Action Buttons */}
-              <div className="flex gap-4 mt-auto items-stretch h-12">
-                <Link href={`/cars/${getCarSlug(car)}`} className="flex-grow flex items-center justify-center text-center px-4 py-0 text-sm font-semibold rounded-xl border border-gray-300 hover:bg-gray-100 transition-colors">
-                  Details
-                </Link>
-                <button 
-                  onClick={() => !isAlreadyBooked && handleBook(car.id)}
-                  disabled={isAlreadyBooked}
-                  className={`flex-grow flex items-center justify-center text-center px-4 py-0 text-sm font-semibold rounded-xl transition-all ${
-                    isAlreadyBooked 
-                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-200 shadow-none' 
-                      : 'bg-green-600 text-white shadow-lg shadow-green-600/20 hover:shadow-xl hover:shadow-green-600/30 hover:-translate-y-0.5 relative overflow-hidden group/btn'
-                  }`}
-                >
-                  <span className="absolute inset-0 w-full h-full -ml-[100%] bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover/btn:animate-shimmer"></span>
-                  <span className="relative z-10">{isAlreadyBooked ? 'Booked' : 'Book Now'}</span>
-                </button>
               </div>
-              
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
 
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-2 mt-12 border-t border-gray-250 pt-8">
+          <button
+            onClick={() => {
+              setCurrentPage(prev => Math.max(1, prev - 1));
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            disabled={currentPage === 1}
+            className="w-10 h-10 rounded-xl border border-gray-200 flex items-center justify-center text-gray-700 hover:border-green-600 hover:text-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer bg-white"
+          >
+            &larr;
+          </button>
+          
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+            <button
+              key={page}
+              onClick={() => {
+                setCurrentPage(page);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className={`w-10 h-10 rounded-xl border text-sm font-bold transition-all cursor-pointer ${
+                currentPage === page
+                  ? 'bg-green-600 border-green-600 text-white shadow-md'
+                  : 'border-gray-200 bg-white text-gray-700 hover:border-green-600 hover:text-green-700'
+              }`}
+            >
+              {page}
+            </button>
+          ))}
 
+          <button
+            onClick={() => {
+              setCurrentPage(prev => Math.min(totalPages, prev + 1));
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            disabled={currentPage === totalPages}
+            className="w-10 h-10 rounded-xl border border-gray-200 flex items-center justify-center text-gray-700 hover:border-green-600 hover:text-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer bg-white"
+          >
+            &rarr;
+          </button>
+        </div>
+      )}
     </div>
   );
 }

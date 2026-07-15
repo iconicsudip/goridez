@@ -291,6 +291,7 @@ model InstagramReel {
   id        String   @id @default(cuid())
   url       String
   caption   String?
+  category  String   @default("Customer Reels")
   isActive  Boolean  @default(true)
   order     Int      @default(0)
   createdAt DateTime @default(now())
@@ -358,6 +359,9 @@ model HomePage {
   blogsBadge             String   @default("GoRidez Editorial Journal")
   blogsTitle             String   @default("FEATURED")
   blogsTitleHighlight    String   @default("STORIES")
+  selfDriveImage         String   @default("https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=1000&q=80")
+  chauffeurImage         String   @default("https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=1000&q=80")
+  airportTransferImage   String   @default("https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1000&q=80")
   updatedAt              DateTime @updatedAt
 }
 
@@ -369,5 +373,7 @@ model SiteSettings {
   copyrightText     String   @default("© GoRidez. All rights reserved.")
   razorpayKeyId     String   @default("rzp_test_mockkey123")
   razorpayKeySecret String   @default("mocksecret123")
+  taxiExclusions    String   @default("Toll Tax and Parking charges are not included in the above fare.\nState Tax (if applicable crossing borders) is extra.\nAny extra km or hours driven beyond the package limit will be charged additionally.")
+  taxiTerms         String   @default("A/C will be switched off in hilly areas.\nNight allowance applies if the driver drives between 10 PM and 6 AM.\nKilometers are calculated from garage to garage.")
   updatedAt         DateTime @updatedAt
 }

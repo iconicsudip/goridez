@@ -9,7 +9,7 @@ import AirportLocalitySearch, { AIRPORT_ZONE_ID } from '@/components/AirportLoca
 import { DatePicker, ConfigProvider } from 'antd';
 import dayjs from 'dayjs';
 
-type MainTab = 'SELF DRIVE' | 'CHAUFFEUR';
+type MainTab = 'SELF DRIVE' | 'TAXI';
 type SubTab = 'ROUND TRIP' | 'AIRPORT TRANSFER';
 
 // ── Inline OSM Location Search Field ─────────────────────────────────────────
@@ -276,8 +276,8 @@ export default function BookingWidget({
       else { stype = 'airportTransfer'; route = '/taxi'; mode = 'AIRPORT_TRANSFER'; }
     }
 
-    const isAirportTransfer = mainTab === 'CHAUFFEUR' && subTab === 'AIRPORT TRANSFER';
-    const isRoundTrip = mainTab === 'CHAUFFEUR' && subTab === 'ROUND TRIP';
+    const isAirportTransfer = mainTab === 'TAXI' && subTab === 'AIRPORT TRANSFER';
+    const isRoundTrip = mainTab === 'TAXI' && subTab === 'ROUND TRIP';
     const pickupCityVal = isRoundTrip ? 'Udaipur' : sourceCity;
     const finalDropCity = isRoundTrip
       ? destinations.filter(d => d.trim()).join(',')
@@ -289,7 +289,7 @@ export default function BookingWidget({
       serviceType: stype,
       pickupDate: (pickupDate ?? makeTomorrow()).toISOString(),
       returnDate: isAirportTransfer ? null : (returnDate ?? makePlus4()).toISOString(),
-      driverOption: mainTab === 'CHAUFFEUR',
+      driverOption: mainTab === 'TAXI',
       pickupCity: pickupCityVal,
       dropCity: finalDropCity,
       bookingMode: mode,
@@ -320,9 +320,9 @@ export default function BookingWidget({
 
   if (!isMounted) return null;
 
-  const isAirportTransfer = mainTab === 'CHAUFFEUR' && subTab === 'AIRPORT TRANSFER';
+  const isAirportTransfer = mainTab === 'TAXI' && subTab === 'AIRPORT TRANSFER';
   const showDropCity =
-    (mainTab === 'CHAUFFEUR' && subTab === 'ROUND TRIP') ||
+    (mainTab === 'TAXI' && subTab === 'ROUND TRIP') ||
     (mainTab === 'SELF DRIVE' && isDifferentDropCity);
   // The 3-column grid only divides evenly when the date field's span matches
   // how many location fields sit ahead of it — 1 field (default self-drive)
@@ -337,10 +337,10 @@ export default function BookingWidget({
 
       {/* ── Main Tabs ─────────────────────────────────────────────────────── */}
       <div className="flex w-full sm:w-max max-w-full overflow-x-auto hide-scrollbar bg-brand-panel/95 backdrop-blur-xl rounded-t-3xl shadow-lg border border-brand-border border-b-0">
-        {(['SELF DRIVE', 'CHAUFFEUR'] as MainTab[]).map((tab) => {
+        {(['SELF DRIVE', 'TAXI'] as MainTab[]).map((tab) => {
           if (counts) {
             if (tab === 'SELF DRIVE' && counts.selfDrive === 0) return null;
-            if (tab === 'CHAUFFEUR' && counts.chauffeur === 0 && counts.taxi === 0) return null;
+            if (tab === 'TAXI' && counts.chauffeur === 0 && counts.taxi === 0) return null;
           }
           return (
             <button
@@ -348,7 +348,7 @@ export default function BookingWidget({
               onClick={() => { 
                 setMainTab(tab); 
                 setIsDifferentDropCity(false);
-                if (tab === 'CHAUFFEUR') setSubTab('ROUND TRIP');
+                if (tab === 'TAXI') setSubTab('ROUND TRIP');
               }}
               className={`px-6 md:px-10 py-4 text-xs md:text-sm font-black tracking-widest transition-all whitespace-nowrap flex-shrink-0 cursor-pointer ${
                 mainTab === tab
@@ -366,7 +366,7 @@ export default function BookingWidget({
       <div className="bg-white/95 backdrop-blur-xl border border-brand-border rounded-3xl md:rounded-tl-none p-6 md:p-10 shadow-2xl relative text-gray-900">
 
         {/* Sub Tabs */}
-        {mainTab === 'CHAUFFEUR' && (
+        {mainTab === 'TAXI' && (
           <div className="flex flex-wrap items-center gap-3 mb-8">
             {(['ROUND TRIP', 'AIRPORT TRANSFER'] as SubTab[]).map((sub) => (
               <button
@@ -395,7 +395,7 @@ export default function BookingWidget({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
             {/* ── Source / Pickup Location ──────────────────────────── */}
-            {isAirportTransfer ? null : mainTab === 'CHAUFFEUR' && subTab === 'ROUND TRIP' ? (
+            {isAirportTransfer ? null : mainTab === 'TAXI' && subTab === 'ROUND TRIP' ? (
               <LocationField
                 label="Source City"
                 value="Udaipur, Rajasthan"
@@ -456,7 +456,7 @@ export default function BookingWidget({
             )}
 
             {/* ── Destination / Drop Location ───────────────────────── */}
-            {showDropCity && mainTab === 'CHAUFFEUR' && subTab === 'ROUND TRIP' ? (
+            {showDropCity && mainTab === 'TAXI' && subTab === 'ROUND TRIP' ? (
               <>
                 {destinations.map((dest, idx) => (
                   <div
@@ -621,7 +621,7 @@ export default function BookingWidget({
               type="submit"
               className="w-full md:w-[320px] bg-brand-gold hover:bg-[#8dbb00] text-white font-bold tracking-widest uppercase text-base px-8 py-3.5 rounded-xl transition-all shadow-md shadow-brand-gold/30 border border-brand-gold cursor-pointer"
             >
-              Search
+              Search Cars
             </button>
           </div>
         </form>

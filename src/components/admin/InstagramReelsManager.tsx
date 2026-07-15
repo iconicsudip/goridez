@@ -10,6 +10,7 @@ interface Reel {
   id: string;
   url: string;
   caption: string | null;
+  category: string;
   isActive: boolean;
   order: number;
 }
@@ -19,6 +20,7 @@ export default function InstagramReelsManager({ reels }: { reels: Reel[] }) {
   const [isPending, startTransition] = useTransition();
   const [url, setUrl] = useState('');
   const [caption, setCaption] = useState('');
+  const [category, setCategory] = useState('Customer Reels');
   const [adding, setAdding] = useState(false);
   const [error, setError] = useState('');
 
@@ -32,6 +34,7 @@ export default function InstagramReelsManager({ reels }: { reels: Reel[] }) {
     const data = new FormData();
     data.append('url', url);
     data.append('caption', caption);
+    data.append('category', category);
 
     const res = await createInstagramReel(data);
     setAdding(false);
@@ -39,6 +42,7 @@ export default function InstagramReelsManager({ reels }: { reels: Reel[] }) {
     if (res.success) {
       setUrl('');
       setCaption('');
+      setCategory('Customer Reels');
       router.refresh();
     } else {
       setError(res.error || 'Failed to add reel.');
@@ -48,6 +52,13 @@ export default function InstagramReelsManager({ reels }: { reels: Reel[] }) {
   const handleToggleActive = (id: string, isActive: boolean) => {
     startTransition(async () => {
       await updateInstagramReel(id, { isActive: !isActive });
+      router.refresh();
+    });
+  };
+
+  const handleUpdateCategory = (id: string, newCategory: string) => {
+    startTransition(async () => {
+      await updateInstagramReel(id, { category: newCategory });
       router.refresh();
     });
   };
@@ -75,7 +86,7 @@ export default function InstagramReelsManager({ reels }: { reels: Reel[] }) {
             <Camera className="text-green-700" size={32} /> Instagram Reels
           </h1>
           <p className="text-gray-500 text-[13px]">
-            Paste public Instagram reel or post URLs below. Toggle a reel active to show it in the "Latest Reels" section on the home page.
+            Paste public Instagram reel or post URLs below. Categorize and toggle reels active to display them dynamically on the home page.
           </p>
         </div>
       </div>
@@ -114,10 +125,23 @@ export default function InstagramReelsManager({ reels }: { reels: Reel[] }) {
             className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors"
           />
         </div>
+        <div>
+          <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">
+            Category
+          </label>
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors"
+          >
+            <option value="Customer Reels">Customer Reels</option>
+            <option value="Vehicle Walkarounds">Vehicle Walkarounds</option>
+          </select>
+        </div>
         <button
           type="submit"
           disabled={adding}
-          className="bg-green-600 hover:bg-brand-hover text-black px-6 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all shadow-md flex items-center gap-2 disabled:opacity-50"
+          className="bg-green-600 hover:bg-brand-hover text-black px-6 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all shadow-md flex items-center gap-2 disabled:opacity-50 cursor-pointer"
         >
           <Plus size={14} /> {adding ? 'Adding...' : 'Add Reel'}
         </button>
@@ -131,56 +155,76 @@ export default function InstagramReelsManager({ reels }: { reels: Reel[] }) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {reels.map((reel, idx) => (
-          <div key={reel.id} className="bg-gray-100 border border-gray-200 rounded-2xl p-5 flex flex-col">
+          <div key={reel.id} className="bg-gray-100 border border-gray-200 rounded-2xl p-5 flex flex-col justify-between">
             {/* Header row: link, status, actions — always visible regardless of embed height */}
-            <div className="flex flex-col gap-3 mb-4">
+            <div className="flex flex-col gap-4 mb-4">
               <div className="min-w-0">
                 <a
                   href={reel.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs text-gray-600 hover:text-green-700 font-mono flex items-center gap-1.5 mb-1.5 break-all"
+                  className="text-xs text-gray-600 hover:text-green-700 font-mono flex items-center gap-1.5 mb-1.5 break-all font-bold"
                 >
                   <ExternalLink size={12} className="shrink-0" /> {reel.url}
                 </a>
-                {reel.caption && <p className="text-xs text-gray-500 mb-1.5">{reel.caption}</p>}
-                <span
-                  className={`inline-block text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md border ${
-                    reel.isActive
-                      ? 'bg-green-600/10 text-green-700 border-green-600/20'
-                      : 'bg-gray-200 text-gray-500 border-gray-300'
-                  }`}
-                >
-                  {reel.isActive ? 'Visible on Home Page' : 'Hidden'}
-                </span>
+                {reel.caption && <p className="text-xs text-gray-500 mb-2">{reel.caption}</p>}
+                
+                <div className="flex flex-wrap gap-2 items-center mb-3">
+                  <span
+                    className={`inline-block text-[9px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-md border ${
+                      reel.isActive
+                        ? 'bg-green-600/10 text-green-700 border-green-600/20'
+                        : 'bg-gray-250 text-gray-500 border-gray-300'
+                    }`}
+                  >
+                    {reel.isActive ? 'Active' : 'Hidden'}
+                  </span>
+                  <span className="inline-block text-[9px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-md border bg-brand-gold/10 text-brand-gold border-brand-gold/20">
+                    {reel.category}
+                  </span>
+                </div>
               </div>
 
-              <div className="flex items-center flex-wrap gap-2">
+              {/* Inline Category Updater */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Update Category</label>
+                <select
+                  value={reel.category || 'Customer Reels'}
+                  onChange={(e) => handleUpdateCategory(reel.id, e.target.value)}
+                  disabled={isPending}
+                  className="w-full bg-white border border-gray-300 rounded-lg px-2.5 py-1.5 text-xs outline-none text-gray-900 cursor-pointer"
+                >
+                  <option value="Customer Reels">Customer Reels</option>
+                  <option value="Vehicle Walkarounds">Vehicle Walkarounds</option>
+                </select>
+              </div>
+
+              <div className="flex items-center flex-wrap gap-2 pt-2 border-t border-gray-200">
                 <button
                   disabled={isPending}
                   onClick={() => handleToggleActive(reel.id, reel.isActive)}
-                  className="px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest bg-gray-200 hover:bg-gray-300 text-gray-700 transition-colors disabled:opacity-50"
+                  className="px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest bg-gray-200 hover:bg-gray-300 text-gray-700 transition-colors disabled:opacity-50 cursor-pointer"
                 >
                   {reel.isActive ? 'Hide' : 'Show'}
                 </button>
                 <button
                   disabled={isPending || idx === 0}
                   onClick={() => handleMove(reel.id, 'up')}
-                  className="p-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 transition-colors disabled:opacity-30"
+                  className="p-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 transition-colors disabled:opacity-30 cursor-pointer"
                 >
                   <ArrowUp size={14} />
                 </button>
                 <button
                   disabled={isPending || idx === reels.length - 1}
                   onClick={() => handleMove(reel.id, 'down')}
-                  className="p-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 transition-colors disabled:opacity-30"
+                  className="p-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 transition-colors disabled:opacity-30 cursor-pointer"
                 >
                   <ArrowDown size={14} />
                 </button>
                 <button
                   disabled={isPending}
                   onClick={() => handleDelete(reel.id)}
-                  className="p-2 rounded-lg bg-red-500/5 hover:bg-red-500/10 text-red-500 transition-colors disabled:opacity-50 ml-auto"
+                  className="p-2 rounded-lg bg-red-500/5 hover:bg-red-500/10 text-red-500 transition-colors disabled:opacity-50 ml-auto cursor-pointer"
                 >
                   <Trash2 size={14} />
                 </button>
@@ -188,7 +232,7 @@ export default function InstagramReelsManager({ reels }: { reels: Reel[] }) {
             </div>
 
             {/* Embed preview — scrollable so a tall reel doesn't dominate the card */}
-            <div className="w-full flex justify-center bg-white rounded-xl border border-gray-200 max-h-[520px] overflow-y-auto overflow-x-hidden custom-scrollbar">
+            <div className="w-full flex justify-center bg-white rounded-xl border border-gray-200 max-h-[400px] overflow-y-auto overflow-x-hidden custom-scrollbar">
               <div className="w-full min-w-[326px]">
                 <InstagramEmbed url={reel.url} caption={reel.caption} />
               </div>

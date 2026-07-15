@@ -21,6 +21,9 @@ export default function HomePageManager({ initialData }: { initialData: any }) {
     seamlessTitle: initialData?.seamlessTitle || 'SEAMLESS',
     seamlessTitleHighlight: initialData?.seamlessTitleHighlight || 'EXPERIENCES',
     seamlessDescription: initialData?.seamlessDescription || 'Navigate through our curated premium transportation lists and elite private escapes.',
+    selfDriveImage: initialData?.selfDriveImage || 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=1000&q=80',
+    chauffeurImage: initialData?.chauffeurImage || 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=1000&q=80',
+    airportTransferImage: initialData?.airportTransferImage || 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
     
     vehiclesBadge: initialData?.vehiclesBadge || 'Real Automotive Collection',
     vehiclesTitle: initialData?.vehiclesTitle || 'VEHICLE',
@@ -186,6 +189,35 @@ export default function HomePageManager({ initialData }: { initialData: any }) {
           <div className="mb-6">
             <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">Description</label>
             <textarea name="seamlessDescription" value={formData.seamlessDescription} onChange={handleChange} className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors h-20" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div>
+              <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">
+                Self Drive Card Image
+              </label>
+              <ImageUpload
+                value={formData.selfDriveImage}
+                onChange={(val) => setFormData({ ...formData, selfDriveImage: val })}
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">
+                Taxi Service Card Image
+              </label>
+              <ImageUpload
+                value={formData.chauffeurImage}
+                onChange={(val) => setFormData({ ...formData, chauffeurImage: val })}
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">
+                Airport Transfer Card Image
+              </label>
+              <ImageUpload
+                value={formData.airportTransferImage}
+                onChange={(val) => setFormData({ ...formData, airportTransferImage: val })}
+              />
+            </div>
           </div>
 
           {/* VEHICLES SECTION */}

@@ -5,31 +5,44 @@ import { revalidatePath } from 'next/cache';
 
 // --- CITIES ---
 export async function deleteCity(id: string) {
-  const [carCount, tourCount, villaCount, deliveryChargeCount, airportZoneCount] = await Promise.all([
-    prisma.car.count({ where: { cityId: id } }),
-    prisma.tour.count({ where: { cityId: id } }),
-    prisma.villa.count({ where: { cityId: id } }),
-    prisma.deliveryCharge.count({ where: { cityId: id } }),
-    prisma.airportZone.count({ where: { cityId: id } }),
-  ]);
+  try {
+    // Dissociate cars, tours, and villas (set cityId to null)
+    await prisma.car.updateMany({
+      where: { cityId: id },
+      data: { cityId: null }
+    });
+    
+    await prisma.tour.updateMany({
+      where: { cityId: id },
+      data: { cityId: null }
+    });
 
-  const blockers: string[] = [];
-  if (carCount > 0) blockers.push(`${carCount} vehicle${carCount > 1 ? 's' : ''}`);
-  if (tourCount > 0) blockers.push(`${tourCount} tour${tourCount > 1 ? 's' : ''}`);
-  if (villaCount > 0) blockers.push(`${villaCount} villa${villaCount > 1 ? 's' : ''}`);
-  if (deliveryChargeCount > 0) blockers.push(`${deliveryChargeCount} delivery charge config${deliveryChargeCount > 1 ? 's' : ''}`);
-  if (airportZoneCount > 0) blockers.push(`${airportZoneCount} airport transfer zone${airportZoneCount > 1 ? 's' : ''}`);
+    await prisma.villa.updateMany({
+      where: { cityId: id },
+      data: { cityId: null }
+    });
 
-  if (blockers.length > 0) {
-    return {
-      success: false,
-      error: `Cannot delete this city — it still has ${blockers.join(', ')} assigned to it. Reassign or remove those first.`,
-    };
+    // Cascade delete DeliveryCharge and AirportZone records linked to this city
+    await prisma.deliveryCharge.deleteMany({
+      where: { cityId: id }
+    });
+
+    await prisma.airportZone.deleteMany({
+      where: { cityId: id }
+    });
+
+    // Finally delete the city
+    await prisma.city.delete({ where: { id } });
+    
+    revalidatePath('/admin/cities');
+    revalidatePath('/admin/delivery-charges');
+    revalidatePath('/admin/airport-zones');
+    revalidatePath('/');
+    return { success: true };
+  } catch (error: any) {
+    console.error("Failed to delete city:", error);
+    return { success: false, error: error?.message || "Failed to delete city" };
   }
-
-  await prisma.city.delete({ where: { id } });
-  revalidatePath('/admin/cities');
-  return { success: true };
 }
 
 export async function createCity(formData: FormData) {
@@ -71,6 +84,62 @@ export async function deleteCar(id: string) {
   await prisma.car.delete({ where: { id } });
   revalidatePath('/admin/vehicles');
 }
+
+export async function bulkUpdateVehicles(ids: string[], patch: {
+  serviceTypesAdd?: string[];
+  serviceTypesRemove?: string[];
+  serviceTypesSet?: string[];
+  cityId?: string | null;
+  availability?: boolean;
+  category?: string;
+}) {
+  try {
+    if (ids.length === 0) return { success: false, error: 'No vehicles selected' };
+
+    if (patch.serviceTypesSet !== undefined) {
+      // Replace entire serviceTypes array
+      await prisma.car.updateMany({ where: { id: { in: ids } }, data: { serviceTypes: patch.serviceTypesSet } });
+    } else if (patch.serviceTypesAdd || patch.serviceTypesRemove) {
+      // Add / remove individual service types
+      const cars = await prisma.car.findMany({ where: { id: { in: ids } }, select: { id: true, serviceTypes: true } });
+      await Promise.all(cars.map(car => {
+        let types = [...car.serviceTypes];
+        if (patch.serviceTypesAdd) types = Array.from(new Set([...types, ...patch.serviceTypesAdd]));
+        if (patch.serviceTypesRemove) types = types.filter((t: string) => !patch.serviceTypesRemove!.includes(t));
+        return prisma.car.update({ where: { id: car.id }, data: { serviceTypes: types } });
+      }));
+    }
+
+    const scalarPatch: Record<string, any> = {};
+    if (patch.cityId !== undefined) scalarPatch.cityId = patch.cityId;
+    if (patch.availability !== undefined) scalarPatch.availability = patch.availability;
+    if (patch.category !== undefined) scalarPatch.category = patch.category;
+
+    if (Object.keys(scalarPatch).length > 0) {
+      await prisma.car.updateMany({ where: { id: { in: ids } }, data: scalarPatch });
+    }
+
+    revalidatePath('/admin/vehicles');
+    return { success: true };
+  } catch (error: any) {
+    console.error('Bulk update failed:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function bulkDeleteVehicles(ids: string[]) {
+  try {
+    if (ids.length === 0) return { success: false, error: 'No vehicles selected' };
+    await prisma.carPackage.deleteMany({ where: { carId: { in: ids } } });
+    await prisma.car.deleteMany({ where: { id: { in: ids } } });
+    revalidatePath('/admin/vehicles');
+    return { success: true };
+  } catch (error: any) {
+    console.error('Bulk delete failed:', error);
+    return { success: false, error: error.message };
+  }
+}
+
 
 export async function updateVehicle(id: string, formData: FormData) {
   try {
@@ -622,6 +691,9 @@ export async function updateHomePage(formData: FormData) {
       blogsBadge: formData.get('blogsBadge') as string,
       blogsTitle: formData.get('blogsTitle') as string,
       blogsTitleHighlight: formData.get('blogsTitleHighlight') as string,
+      selfDriveImage: formData.get('selfDriveImage') as string,
+      chauffeurImage: formData.get('chauffeurImage') as string,
+      airportTransferImage: formData.get('airportTransferImage') as string,
     };
 
     await prisma.homePage.upsert({
@@ -817,6 +889,8 @@ export async function updateSiteSettings(formData: FormData) {
       copyrightText: formData.get('copyrightText') as string || "© GoRidez. All rights reserved.",
       razorpayKeyId: formData.get('razorpayKeyId') as string || "rzp_test_mockkey123",
       razorpayKeySecret: formData.get('razorpayKeySecret') as string || "mocksecret123",
+      taxiExclusions: formData.get('taxiExclusions') as string || "",
+      taxiTerms: formData.get('taxiTerms') as string || "",
     };
 
     await prisma.siteSettings.upsert({
@@ -902,6 +976,7 @@ export async function createInstagramReel(formData: FormData) {
   try {
     const rawUrl = formData.get('url') as string;
     const caption = (formData.get('caption') as string) || null;
+    const category = (formData.get('category') as string) || 'Customer Reels';
     const url = normalizeInstagramUrl(rawUrl);
 
     if (!url) {
@@ -911,7 +986,7 @@ export async function createInstagramReel(formData: FormData) {
     const maxOrder = await prisma.instagramReel.aggregate({ _max: { order: true } });
 
     await prisma.instagramReel.create({
-      data: { url, caption, order: (maxOrder._max.order ?? -1) + 1 }
+      data: { url, caption, category, order: (maxOrder._max.order ?? -1) + 1 }
     });
 
     revalidatePath('/admin/reels');
@@ -922,7 +997,7 @@ export async function createInstagramReel(formData: FormData) {
   }
 }
 
-export async function updateInstagramReel(id: string, data: { caption?: string; isActive?: boolean }) {
+export async function updateInstagramReel(id: string, data: { caption?: string; isActive?: boolean; category?: string }) {
   try {
     await prisma.instagramReel.update({ where: { id }, data });
     revalidatePath('/admin/reels');

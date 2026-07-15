@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { MapPin, ArrowRight, Car, User, Navigation, Home, Map } from 'lucide-react';
 
-type Tab = 'SELF DRIVE' | 'CHAUFFEUR';
+type Tab = 'SELF DRIVE' | 'TAXI';
 
 export default function CityExplorer({ 
   cities, 
@@ -26,11 +26,11 @@ export default function CityExplorer({
   const [activeCityId, setActiveCityId] = useState(validCities[0]?.id || '');
 
   // Determine which tabs have data for the active city
-  const availableTabs = (['SELF DRIVE', 'CHAUFFEUR'] as Tab[]).filter(tab => {
+  const availableTabs = (['SELF DRIVE', 'TAXI'] as Tab[]).filter(tab => {
     switch (tab) {
       case 'SELF DRIVE':
         return cars.some(c => c.cityId === activeCityId && c.serviceTypes.includes('SELF_DRIVE'));
-      case 'CHAUFFEUR':
+      case 'TAXI':
         return cars.some(c => c.cityId === activeCityId && c.serviceTypes.includes('WITH_DRIVER'));
       default:
         return false;
@@ -51,7 +51,7 @@ export default function CityExplorer({
     switch (activeTab) {
       case 'SELF DRIVE':
         return cars.filter(c => c.cityId === activeCityId && c.serviceTypes.includes('SELF_DRIVE'));
-      case 'CHAUFFEUR':
+      case 'TAXI':
         return cars.filter(c => c.cityId === activeCityId && c.serviceTypes.includes('WITH_DRIVER'));
       default:
         return [];
@@ -63,7 +63,7 @@ export default function CityExplorer({
   const getLinkForTab = () => {
     switch (activeTab) {
       case 'SELF DRIVE': return '/self-drive';
-      case 'CHAUFFEUR': return '/taxi';
+      case 'TAXI': return '/taxi';
     }
   };
 
@@ -120,7 +120,7 @@ export default function CityExplorer({
               }`}
             >
               {tab === 'SELF DRIVE' && <Car size={16} />}
-              {tab === 'CHAUFFEUR' && <User size={16} />}
+              {tab === 'TAXI' && <User size={16} />}
               {tab}
             </button>
           ))}
