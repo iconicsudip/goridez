@@ -37,7 +37,7 @@ export default function CartClient() {
 
   return (
     <div className="bg-white min-h-screen text-gray-900 font-sans pt-32 pb-24">
-      <div className="container mx-auto px-4 max-w-7xl">
+      <div className="container mx-auto px-4 max-w-[1500px] md:px-10 lg:px-16">
 
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
@@ -136,6 +136,7 @@ export default function CartClient() {
                           value={item.dropStation || ''}
                           onChange={(name) => updateCartItem(item.id, { dropStation: name })}
                           placeholder="Search drop hotel, airport, station..."
+                          searchAnywhere={true}
                         />
                       </div>
                     </div>

@@ -402,6 +402,23 @@ export default function CheckoutClient({ razorpayKeyId }: { razorpayKeyId?: stri
                     </div>
                     <div className="font-bold text-sm uppercase">{item.title}</div>
                     {item.extraInfo && <div className="text-[10px] text-green-700 mt-1">{item.extraInfo}</div>}
+                    
+                    {(item.pickupStation || item.dropStation) && (
+                      <div className="mt-2 space-y-1">
+                        {item.pickupStation && (
+                          <div className="flex gap-1.5 text-[9px] text-gray-600">
+                            <span className="font-bold uppercase tracking-wider text-gray-400">Pickup:</span>
+                            <span className="truncate">{item.pickupStation}</span>
+                          </div>
+                        )}
+                        {item.dropStation && (
+                          <div className="flex gap-1.5 text-[9px] text-gray-600">
+                            <span className="font-bold uppercase tracking-wider text-gray-400">Drop:</span>
+                            <span className="truncate">{item.dropStation}</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                   <div className="text-sm font-bold text-right shrink-0">
                     ₹{item.price.toLocaleString()}

@@ -45,5 +45,7 @@ const nextConfig: NextConfig = {
 
 export default nextConfig;
 
+// Trigger dev server config reload to apply connection limits
+
 // Trigger dev server config reload after schema update
 

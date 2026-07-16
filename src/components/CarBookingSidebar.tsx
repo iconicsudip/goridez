@@ -32,9 +32,9 @@ export default function CarBookingSidebar({ car, packages, cities }: CarBookingS
   const [selectedCity, setSelectedCity] = useState(searchParams.get('city') || searchParams.get('cities')?.split(',')[0] || '');
   const [pickupLocation, setPickupLocation] = useState(() => {
     const initialCityId = searchParams.get('city') || searchParams.get('cities')?.split(',')[0] || '';
-    return searchParams.get('pickupLocation') || cities.find(c => c.id === initialCityId)?.name || '';
+    return searchParams.get('pickupLocation') || searchParams.get('pickupCity') || cities.find(c => c.id === initialCityId)?.name || '';
   });
-  const [dropLocation, setDropLocation] = useState(searchParams.get('dropLocation') || '');
+  const [dropLocation, setDropLocation] = useState(searchParams.get('dropLocation') || searchParams.get('dropCity') || '');
   
   const [pickupDateTime, setPickupDateTime] = useState<Date>(() => {
     const pickupParam = searchParams.get('pickupDate');
@@ -161,6 +161,7 @@ export default function CarBookingSidebar({ car, packages, cities }: CarBookingS
               onChange={(name) => setDropLocation(name)}
               placeholder="Search drop hotel, airport, station..."
               className="font-bold text-gray-900 !py-3.5"
+              searchAnywhere={true}
             />
           </div>
         </div>

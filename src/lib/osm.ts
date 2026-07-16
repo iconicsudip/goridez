@@ -22,12 +22,16 @@ const UDAIPUR_VIEWBOX = '73.55,24.75,74.05,24.40';
  * Restricted to the Udaipur service area — see UDAIPUR_VIEWBOX above.
  * Rate limit: 1 request per second.
  */
-export async function searchLocation(query: string): Promise<OSMLocation[]> {
+export async function searchLocation(query: string, searchAnywhere = false): Promise<OSMLocation[]> {
   if (!query || query.length < 3) return [];
 
   try {
+    const url = searchAnywhere
+      ? `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=in&limit=5`
+      : `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=in&viewbox=${UDAIPUR_VIEWBOX}&bounded=1&limit=5`;
+
     const response = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=in&viewbox=${UDAIPUR_VIEWBOX}&bounded=1&limit=5`,
+      url,
       {
         headers: {
           'User-Agent': 'GoRidezBookingSystem/1.0 (contact@goridez.com)'

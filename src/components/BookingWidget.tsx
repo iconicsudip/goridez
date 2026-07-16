@@ -6,162 +6,14 @@ import { MapPin, Calendar, Loader2, X } from 'lucide-react';
 import { useBookingStore } from '@/store/useBookingStore';
 import { searchLocation, OSMLocation } from '@/lib/osm';
 import AirportLocalitySearch, { AIRPORT_ZONE_ID } from '@/components/AirportLocalitySearch';
+import LocationField from '@/components/LocationField';
 import { DatePicker, ConfigProvider } from 'antd';
 import dayjs from 'dayjs';
 
 type MainTab = 'SELF DRIVE' | 'TAXI';
 type SubTab = 'ROUND TRIP' | 'AIRPORT TRANSFER';
 
-// ── Inline OSM Location Search Field ─────────────────────────────────────────
-// Matches the same style as the booking widget card cells
-function LocationField({
-  label,
-  value,
-  onChange,
-  placeholder = 'Search city or area...',
-  readOnly = false,
-}: {
-  label: string;
-  value: string;
-  onChange: (name: string, loc?: OSMLocation) => void;
-  placeholder?: string;
-  readOnly?: boolean;
-}) {
-  const [query, setQuery] = useState(value);
-  const [results, setResults] = useState<OSMLocation[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-  const wrapRef = useRef<HTMLDivElement>(null);
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Sync external value → local query
-  const prevValue = useRef(value);
-  useEffect(() => {
-    if (value !== prevValue.current) {
-      setQuery(value);
-      prevValue.current = value;
-    }
-  }, [value]);
-
-  // Debounced OSM search
-  useEffect(() => {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    if (!query || query.length < 3) {
-      setResults([]);
-      setIsOpen(false);
-      return;
-    }
-    debounceRef.current = setTimeout(async () => {
-      setIsLoading(true);
-      const data = await searchLocation(query);
-      setResults(data);
-      setIsOpen(data.length > 0);
-      setIsLoading(false);
-    }, 450);
-    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
-  }, [query]);
-
-  // Click outside closes
-  useEffect(() => {
-    function handler(e: MouseEvent) {
-      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
-
-  const handleSelect = (loc: OSMLocation) => {
-    const parts = loc.display_name.split(',');
-    const name = parts.length > 1
-      ? `${parts[0].trim()}, ${parts[1].trim()}`
-      : parts[0].trim();
-    setQuery(name);
-    onChange(name, loc);
-    setIsOpen(false);
-    setResults([]);
-  };
-
-  const handleClear = () => {
-    setQuery('');
-    onChange('');
-    setResults([]);
-    setIsOpen(false);
-  };
-
-  return (
-    <div
-      ref={wrapRef}
-      className="bg-white border border-brand-border hover:border-brand-gold/50 transition-colors rounded-xl p-4 flex flex-col shadow-[0_2px_10px_rgba(0,0,0,0.03)] relative"
-    >
-      <label className="text-xs text-gray-500 mb-2 font-mono uppercase tracking-wider">
-        {label}
-      </label>
-      <div className="flex items-center gap-2 text-gray-800">
-        <MapPin size={16} className="text-green-600 shrink-0" />
-        {readOnly ? (
-          <span className="text-sm font-semibold text-gray-400 select-none">
-            {value || placeholder}
-          </span>
-        ) : (
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => {
-              setQuery(e.target.value);
-              // If user clears the field, reset parent too
-              if (!e.target.value) onChange('');
-            }}
-            onFocus={() => { if (results.length > 0) setIsOpen(true); }}
-            placeholder={placeholder}
-            className="w-full bg-transparent text-sm font-semibold outline-none text-gray-900 placeholder-gray-400 min-w-0"
-            autoComplete="off"
-            autoCorrect="off"
-            spellCheck={false}
-          />
-        )}
-        {isLoading ? (
-          <Loader2 size={14} className="text-gray-400 shrink-0 animate-spin" />
-        ) : query && !readOnly ? (
-          <button
-            type="button"
-            onMouseDown={(e) => { e.preventDefault(); handleClear(); }}
-            className="text-gray-400 hover:text-red-500 shrink-0 transition-colors"
-          >
-            <X size={14} />
-          </button>
-        ) : null}
-      </div>
-
-      {/* OSM Results Dropdown */}
-      {isOpen && results.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-2 z-[9999] bg-white border border-gray-200 rounded-xl shadow-2xl overflow-hidden max-h-60 overflow-y-auto">
-          {results.map((loc, idx) => (
-            <button
-              key={`${loc.place_id}-${idx}`}
-              type="button"
-              onMouseDown={(e) => { e.preventDefault(); handleSelect(loc); }}
-              className="w-full text-left px-4 py-3 hover:bg-green-50 border-b border-gray-50 last:border-0 flex items-start gap-3 transition-colors group"
-            >
-              <MapPin size={14} className="text-gray-400 group-hover:text-green-600 mt-0.5 shrink-0 transition-colors" />
-              <div className="min-w-0">
-                <div className="text-sm font-semibold text-gray-900 truncate">
-                  {loc.display_name.split(',')[0]}
-                </div>
-                <div className="text-[10px] text-gray-400 truncate mt-0.5">
-                  {loc.display_name}
-                </div>
-              </div>
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ── Main Booking Widget ───────────────────────────────────────────────────────
 export default function BookingWidget({
   cities = [],
   airportZones = [],
@@ -412,88 +264,74 @@ export default function BookingWidget({
             )}
 
             {isAirportTransfer && (
-              <div className="bg-white border border-brand-border rounded-xl p-4 flex flex-col shadow-[0_2px_10px_rgba(0,0,0,0.02)] relative">
-                <label className="text-xs text-gray-500 mb-2 font-mono uppercase tracking-wider">
-                  Pickup Location
-                </label>
-                <AirportLocalitySearch
-                  zones={airportZones}
-                  value={atPickup.name}
-                  airportLabel={airportName}
-                  mode={atDropIsAirport ? 'LOCALITY_ONLY' : atDrop.zoneId ? 'AIRPORT_ONLY' : 'ANY'}
-                  onChange={(locality, zoneId) => {
-                    setAtPickup({ name: locality, zoneId });
-                    const pickupIsAirport = zoneId === AIRPORT_ZONE_ID;
-                    if (atDrop.zoneId && (atDrop.zoneId === AIRPORT_ZONE_ID) === pickupIsAirport) {
-                      setAtDrop({ name: '', zoneId: '' });
-                    }
-                  }}
-                  placeholder={`Search ${airportName} or your area...`}
-                />
-              </div>
+              <AirportLocalitySearch
+                label="Pickup Location"
+                zones={airportZones}
+                value={atPickup.name}
+                airportLabel={airportName}
+                mode={atDropIsAirport ? 'LOCALITY_ONLY' : atDrop.zoneId ? 'AIRPORT_ONLY' : 'ANY'}
+                onChange={(locality, zoneId) => {
+                  setAtPickup({ name: locality, zoneId });
+                  const pickupIsAirport = zoneId === AIRPORT_ZONE_ID;
+                  if (atDrop.zoneId && (atDrop.zoneId === AIRPORT_ZONE_ID) === pickupIsAirport) {
+                    setAtDrop({ name: '', zoneId: '' });
+                  }
+                }}
+                placeholder={`Search ${airportName} or your area...`}
+              />
             )}
 
             {isAirportTransfer && (
-              <div className="bg-white border border-brand-border rounded-xl p-4 flex flex-col shadow-[0_2px_10px_rgba(0,0,0,0.02)] relative">
-                <label className="text-xs text-gray-500 mb-2 font-mono uppercase tracking-wider">
-                  Drop Location
-                </label>
-                <AirportLocalitySearch
-                  zones={airportZones}
-                  value={atDrop.name}
-                  airportLabel={airportName}
-                  mode={atPickupIsAirport ? 'LOCALITY_ONLY' : atPickup.zoneId ? 'AIRPORT_ONLY' : 'ANY'}
-                  onChange={(locality, zoneId) => {
-                    setAtDrop({ name: locality, zoneId });
-                    const dropIsAirport = zoneId === AIRPORT_ZONE_ID;
-                    if (atPickup.zoneId && (atPickup.zoneId === AIRPORT_ZONE_ID) === dropIsAirport) {
-                      setAtPickup({ name: '', zoneId: '' });
-                    }
-                  }}
-                  placeholder={`Search ${airportName} or your area...`}
-                />
-              </div>
+              <AirportLocalitySearch
+                label="Drop Location"
+                zones={airportZones}
+                value={atDrop.name}
+                airportLabel={airportName}
+                mode={atPickupIsAirport ? 'LOCALITY_ONLY' : atPickup.zoneId ? 'AIRPORT_ONLY' : 'ANY'}
+                onChange={(locality, zoneId) => {
+                  setAtDrop({ name: locality, zoneId });
+                  const dropIsAirport = zoneId === AIRPORT_ZONE_ID;
+                  if (atPickup.zoneId && (atPickup.zoneId === AIRPORT_ZONE_ID) === dropIsAirport) {
+                    setAtPickup({ name: '', zoneId: '' });
+                  }
+                }}
+                placeholder={`Search ${airportName} or your area...`}
+              />
             )}
 
             {/* ── Destination / Drop Location ───────────────────────── */}
             {showDropCity && mainTab === 'TAXI' && subTab === 'ROUND TRIP' ? (
               <>
-                {destinations.map((dest, idx) => (
-                  <div
-                    key={idx}
-                    className="bg-white border border-brand-border hover:border-brand-gold/50 transition-colors rounded-xl p-4 flex flex-col shadow-[0_2px_10px_rgba(0,0,0,0.02)] relative pr-12"
-                  >
-                    <label className="text-xs text-gray-500 mb-2 font-mono uppercase tracking-wider">
-                      Destination City
-                    </label>
-                    <div className="flex items-center gap-2">
-                      <MapPin size={16} className="text-green-600 shrink-0" />
-                      <input
-                        type="text"
-                        value={dest}
-                        onChange={(e) => updateDestination(idx, e.target.value)}
-                        placeholder="E.g., Jaipur, Jodhpur..."
-                        className="w-full bg-transparent text-sm font-semibold outline-none placeholder-gray-400 text-gray-900"
-                        required
-                      />
-                    </div>
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                {destinations.map((dest, idx) => {
+                  const rightBtn = (
+                    <div className="flex items-center gap-1">
                       {idx === destinations.length - 1 && destinations.length < 3 ? (
-                        <button type="button" onClick={addDestination} className="text-brand-gold hover:text-[#8dbb00] p-1">
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/>
+                        <button type="button" onClick={addDestination} className="text-brand-gold hover:text-[#8dbb00] p-1 bg-white rounded-full transition-transform active:scale-95 shadow-[0_2px_8px_rgba(0,0,0,0.05)] border border-gray-100">
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
                           </svg>
                         </button>
                       ) : (idx > 0 || destinations.length > 1) ? (
-                        <button type="button" onClick={() => removeDestination(idx)} className="text-red-400 hover:text-red-600 p-1">
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <circle cx="12" cy="12" r="10"/><path d="M8 12h8"/>
+                        <button type="button" onClick={() => removeDestination(idx)} className="text-red-400 hover:text-red-600 p-1 bg-white rounded-full transition-transform active:scale-95 shadow-[0_2px_8px_rgba(0,0,0,0.05)] border border-gray-100">
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"/>
                           </svg>
                         </button>
                       ) : null}
                     </div>
-                  </div>
-                ))}
+                  );
+                  return (
+                    <LocationField
+                      key={idx}
+                      label={`Destination City ${idx > 0 ? idx + 1 : ''}`}
+                      value={dest}
+                      onChange={(name) => updateDestination(idx, name)}
+                      placeholder="Search destination..."
+                      searchAnywhere={true}
+                      rightElement={rightBtn}
+                    />
+                  );
+                })}
               </>
             ) : showDropCity ? (
               <LocationField
@@ -501,6 +339,7 @@ export default function BookingWidget({
                 value={destCity}
                 onChange={(name, loc) => { setDestCity(name); setDestLoc(loc); }}
                 placeholder="Search destination..."
+                searchAnywhere={true}
               />
             ) : null}
 

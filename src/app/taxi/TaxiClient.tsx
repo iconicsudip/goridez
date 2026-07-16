@@ -128,12 +128,16 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
         let totalDur = 0;
         let currentLoc = UDAIPUR_CITY;
         let validDests = destLocations.filter(d => d.data);
+        let allCoordinates: [number, number][] = [];
         
         for (const dest of validDests) {
           const route = await calculateRoute(currentLoc.lon, currentLoc.lat, dest.data!.lon, dest.data!.lat);
           if (route) {
             totalKm += Math.ceil(route.distance / 1000);
             totalDur += route.duration;
+            if (route.geometry?.coordinates) {
+              allCoordinates = [...allCoordinates, ...route.geometry.coordinates];
+            }
           }
           currentLoc = dest.data!;
         }
@@ -144,12 +148,8 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
           if (returnRoute) {
             totalKm += Math.ceil(returnRoute.distance / 1000);
             totalDur += returnRoute.duration;
-            // Optionally, we just keep the geometry of the first leg or null for round trips
-            if (validDests.length === 1 && returnRoute.geometry) {
-               // Only 1 destination round trip
-               setRouteGeometry(returnRoute.geometry);
-            } else {
-               setRouteGeometry(null);
+            if (returnRoute.geometry?.coordinates) {
+              allCoordinates = [...allCoordinates, ...returnRoute.geometry.coordinates];
             }
           }
         }
@@ -157,6 +157,14 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
         if (active) {
           setCalculatedDistance(Math.ceil(totalKm / 2)); // Return OW distance for base calculations if needed
           setCalculatedDuration(totalDur);
+          if (allCoordinates.length > 0) {
+            setRouteGeometry({
+              type: 'LineString',
+              coordinates: allCoordinates
+            });
+          } else {
+            setRouteGeometry(null);
+          }
           setIsCalculating(false);
         }
       } else if (bookingMode === 'AIRPORT_TRANSFER') {
@@ -223,6 +231,13 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
       session?.bookingMode && session.bookingMode !== 'ONE_WAY' && session.bookingMode !== 'LOCAL' ? session.bookingMode :
       'ROUND_TRIP';
     setBookingMode(resolvedMode as any);
+
+    if (resolvedMode === 'ROUND_TRIP' && qDropCity) {
+      const parts = qDropCity.split(',').map(d => d.trim()).filter(Boolean);
+      if (parts.length > 0) {
+        setDestLocations(parts.map(p => ({ name: p })));
+      }
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -452,6 +467,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                                 value={dest.name}
                                 onChange={(val, loc) => updateDestination(idx, val, loc)}
                                 placeholder={`Destination ${idx + 1}...`}
+                                searchAnywhere={true}
                               />
                             </div>
                             {destLocations.length > 1 && (

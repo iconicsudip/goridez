@@ -18,6 +18,7 @@ interface Option {
 export const AIRPORT_ZONE_ID = 'AIRPORT';
 
 export default function AirportLocalitySearch({
+  label,
   zones,
   value,
   onChange,
@@ -25,6 +26,7 @@ export default function AirportLocalitySearch({
   airportLabel = 'Airport',
   mode = 'ANY',
 }: {
+  label?: string;
   zones: ZoneLite[];
   value: string;
   onChange: (locality: string, zoneId: string) => void;
@@ -73,9 +75,17 @@ export default function AirportLocalitySearch({
   };
 
   return (
-    <div className="relative w-full" ref={wrapperRef}>
-      <div className="relative flex items-center">
-        <div className="absolute left-4 z-10 flex items-center justify-center">
+    <div
+      className="bg-white border border-brand-border hover:border-brand-gold/50 transition-colors rounded-xl p-4 flex flex-col shadow-[0_2px_10px_rgba(0,0,0,0.03)] relative"
+      ref={wrapperRef}
+    >
+      {label && (
+        <label className="text-xs text-gray-500 mb-2 font-mono uppercase tracking-wider">
+          {label}
+        </label>
+      )}
+      <div className="flex items-center gap-2 text-gray-800 relative">
+        <div className="flex items-center justify-center shrink-0">
           {value === airportLabel ? <Plane className="text-green-700" size={16} /> : <MapPin className="text-green-700" size={16} />}
         </div>
         <input
@@ -85,24 +95,22 @@ export default function AirportLocalitySearch({
             const next = e.target.value;
             setQuery(next);
             setIsOpen(true);
-            // Manually clearing the field (not just editing it) should immediately
-            // reset the committed selection too, not just the visible text.
             if (next === '' && value !== '') {
               onChange('', '');
             }
           }}
           onFocus={() => setIsOpen(true)}
           placeholder={placeholder || 'Search airport or your area...'}
-          className="w-full bg-white border border-gray-200 rounded-xl pl-12 pr-10 py-4 text-sm outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600 transition-colors font-medium"
+          className="w-full bg-transparent text-sm font-semibold outline-none text-gray-900 placeholder-gray-400 min-w-0"
         />
         {query && (
           <button
             type="button"
             onClick={handleClear}
-            className="absolute right-3 z-10 p-1.5 text-gray-400 hover:text-gray-700 transition-colors"
+            className="text-gray-400 hover:text-red-500 shrink-0 transition-colors"
             aria-label="Clear"
           >
-            <X size={15} />
+            <X size={14} />
           </button>
         )}
       </div>

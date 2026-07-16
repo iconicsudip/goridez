@@ -5,19 +5,23 @@ import { searchLocation, OSMLocation } from '@/lib/osm';
 import { MapPin, Search, Loader2 } from 'lucide-react';
 
 interface LocationAutocompleteProps {
+  label?: string;
   value: string;
   onChange: (value: string, location?: OSMLocation) => void;
   placeholder?: string;
   icon?: React.ReactNode;
   className?: string;
+  searchAnywhere?: boolean;
 }
 
 export default function LocationAutocomplete({
+  label,
   value,
   onChange,
   placeholder = 'Search location...',
   icon = <MapPin className="text-green-700" size={16} />,
-  className = ''
+  className = '',
+  searchAnywhere = false
 }: LocationAutocompleteProps) {
   const [query, setQuery] = useState(value);
   const [results, setResults] = useState<OSMLocation[]>([]);
@@ -30,7 +34,7 @@ export default function LocationAutocomplete({
     const timer = setTimeout(async () => {
       if (query && query.length >= 3 && query !== value) {
         setIsLoading(true);
-        const data = await searchLocation(query);
+        const data = await searchLocation(query, searchAnywhere);
         setResults(data);
         setIsOpen(true);
         setIsLoading(false);
@@ -41,7 +45,7 @@ export default function LocationAutocomplete({
     }, 500); // 500ms debounce
     
     return () => clearTimeout(timer);
-  }, [query, value]);
+  }, [query, value, searchAnywhere]);
 
   const prevValueRef = useRef(value);
 
@@ -72,9 +76,17 @@ export default function LocationAutocomplete({
   };
 
   return (
-    <div className="relative w-full" ref={wrapperRef}>
-      <div className="relative flex items-center">
-        <div className="absolute left-4 z-10 flex items-center justify-center">
+    <div
+      className="bg-white border border-brand-border hover:border-brand-gold/50 transition-colors rounded-xl p-4 flex flex-col shadow-[0_2px_10px_rgba(0,0,0,0.03)] relative w-full"
+      ref={wrapperRef}
+    >
+      {label && (
+        <label className="text-xs text-gray-500 mb-2 font-mono uppercase tracking-wider">
+          {label}
+        </label>
+      )}
+      <div className="flex items-center gap-2 text-gray-800 relative">
+        <div className="flex items-center justify-center shrink-0">
           {icon}
         </div>
         <input
@@ -85,11 +97,11 @@ export default function LocationAutocomplete({
             if (results.length > 0) setIsOpen(true);
           }}
           placeholder={placeholder}
-          className={`w-full bg-white border border-gray-200 rounded-xl pl-12 pr-10 py-4 text-sm outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600 transition-colors font-medium ${className}`}
+          className={`w-full bg-transparent text-sm font-semibold outline-none text-gray-900 placeholder-gray-400 min-w-0 ${className}`}
         />
         {isLoading && (
-          <div className="absolute right-4 z-10">
-            <Loader2 className="animate-spin text-gray-400" size={16} />
+          <div className="shrink-0 flex items-center justify-center">
+            <Loader2 className="animate-spin text-gray-400" size={14} />
           </div>
         )}
       </div>

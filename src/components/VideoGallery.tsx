@@ -170,7 +170,7 @@ export default function VideoGallery({ reels }: { reels: Reel[] }) {
               filteredReels.map((reel) => (
                 <div 
                   key={reel.id} 
-                  className="flex-[0_0_100%] sm:flex-[0_0_50%] md:flex-[0_0_33.333%] min-w-0 pl-6"
+                  className="flex-[0_0_85%] sm:flex-[0_0_50%] md:flex-[0_0_33.333%] min-w-0 pl-6"
                 >
                   <div 
                     className="bg-white border border-gray-200 rounded-3xl p-4 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col justify-between h-full group"

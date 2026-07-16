@@ -5,7 +5,7 @@ export default function Footer({ siteSettings }: { siteSettings?: any }) {
   const logoSrc = siteSettings?.logoRidez || '/logo-ridez.png';
 
   return (
-    <footer className="bg-[#0A0A0A] border-t border-zinc-900 mt-20 py-12 text-gray-300">
+    <footer className="bg-[#0A0A0A] border-t border-zinc-900 py-12 text-gray-300">
       <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
         <div className="col-span-1 md:col-span-2">
           <Link href="/" className="mb-4 inline-block">

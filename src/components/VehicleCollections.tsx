@@ -10,33 +10,31 @@ import { getCarSlug } from '@/lib/utils';
 
 interface VehicleCollectionsProps {
   cars: any[];
+  title?: React.ReactNode;
+  subtitle?: string;
+  description?: string;
+  hideTabs?: boolean;
 }
 
-export default function VehicleCollections({ cars }: VehicleCollectionsProps) {
-  const [activeTab, setActiveTab] = useState<'self-drive' | 'sedan-taxi' | 'suv-taxi' | 'luxury-taxi' | 'outstation-taxi'>('self-drive');
+export default function VehicleCollections({ 
+  cars,
+  title = <>VEHICLE <span className="text-[#8dbb00] font-sans font-black">COLLECTION</span></>,
+  subtitle = 'Premium Fleet',
+  description = 'Explore our select range of high-end vehicles vetted for Udaipur and Rajasthan adventures.',
+  hideTabs = false
+}: VehicleCollectionsProps) {
+  const [activeTab, setActiveTab] = useState<'self-drive' | 'roundtrip-taxi' | 'airport-transfers'>('self-drive');
 
   // Filter cars based on active category tab
   const activeCars = useMemo(() => {
+    if (hideTabs) return cars;
     switch (activeTab) {
       case 'self-drive':
         return cars.filter(c => c.serviceTypes?.includes('SELF_DRIVE'));
-      case 'sedan-taxi':
-        return cars.filter(c => 
-          (c.serviceTypes?.includes('TAXI') || c.serviceTypes?.includes('WITH_DRIVER')) && 
-          c.category?.toLowerCase() === 'sedan'
-        );
-      case 'suv-taxi':
-        return cars.filter(c => 
-          (c.serviceTypes?.includes('TAXI') || c.serviceTypes?.includes('WITH_DRIVER')) && 
-          (c.category?.toLowerCase() === 'suv' || c.category?.toLowerCase() === 'innova' || c.category?.toLowerCase() === 'tempo')
-        );
-      case 'luxury-taxi':
-        return cars.filter(c => 
-          (c.serviceTypes?.includes('TAXI') || c.serviceTypes?.includes('WITH_DRIVER')) && 
-          c.category?.toLowerCase()?.includes('luxury')
-        );
-      case 'outstation-taxi':
+      case 'roundtrip-taxi':
         return cars.filter(c => c.serviceTypes?.includes('TAXI') || c.serviceTypes?.includes('WITH_DRIVER'));
+      case 'airport-transfers':
+        return cars.filter(c => c.serviceTypes?.includes('AIRPORT_TRANSFER'));
       default:
         return [];
     }
@@ -100,11 +98,9 @@ export default function VehicleCollections({ cars }: VehicleCollectionsProps) {
   }, [activeTab, activeCars.length, emblaApi]);
 
   const tabs = [
-    { id: 'self-drive', label: 'Self Drive Cars' },
-    { id: 'sedan-taxi', label: 'Sedan Taxi' },
-    { id: 'suv-taxi', label: 'SUV Taxi' },
-    { id: 'luxury-taxi', label: 'Luxury Taxi' },
-    { id: 'outstation-taxi', label: 'Outstation Taxi' }
+    { id: 'self-drive', label: 'Self-Drive' },
+    { id: 'roundtrip-taxi', label: 'Roundtrip Taxi' },
+    { id: 'airport-transfers', label: 'Airport Transfers' }
   ] as const;
 
   return (
@@ -120,13 +116,13 @@ export default function VehicleCollections({ cars }: VehicleCollectionsProps) {
           <div>
             <div className="flex items-center justify-center md:justify-start gap-3 mb-4">
               <span className="h-[2px] w-8 bg-brand-gold rounded-full"></span>
-              <div className="text-brand-gold text-xs font-bold tracking-[0.2em] uppercase">Premium Fleet</div>
+              <div className="text-brand-gold text-xs font-bold tracking-[0.2em] uppercase">{subtitle}</div>
             </div>
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tighter leading-none mb-4 text-gray-900 font-serif">
-              VEHICLE <span className="text-[#8dbb00] font-sans font-black">COLLECTION</span>
+              {title}
             </h2>
             <p className="text-gray-600 text-sm md:text-base max-w-xl">
-              Explore our select range of high-end vehicles vetted for Udaipur and Rajasthan adventures.
+              {description}
             </p>
           </div>
 
@@ -160,7 +156,8 @@ export default function VehicleCollections({ cars }: VehicleCollectionsProps) {
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex gap-2 overflow-x-auto pb-4 mb-10 scrollbar-hide justify-start md:justify-start border-b border-brand-border/10">
+        {!hideTabs && (
+          <div className="flex gap-2 overflow-x-auto pb-4 mb-10 scrollbar-hide justify-start md:justify-start border-b border-brand-border/10">
           {tabs.map(tab => (
             <button
               key={tab.id}
@@ -174,9 +171,10 @@ export default function VehicleCollections({ cars }: VehicleCollectionsProps) {
               {tab.label}
             </button>
           ))}
-        </div>
+          </div>
+        )}
 
-        {/* Embla Carousel Viewport */}
+        {/* Carousel View (activeCars) */}
         <div className="overflow-hidden px-1" ref={emblaRef}>
           <div className="flex -ml-6">
             {activeCars.length === 0 ? (
@@ -185,121 +183,133 @@ export default function VehicleCollections({ cars }: VehicleCollectionsProps) {
               </div>
             ) : (
               activeCars.map((car) => {
-                const cheapestPkg = car.packages?.sort((a: any, b: any) => a.basePrice - b.basePrice)[0];
-                const startingPrice = cheapestPkg ? cheapestPkg.basePrice : 2000;
-                const priceUnit = activeTab === 'self-drive' ? 'day' : 'trip';
-
-                return (
-                  <div
-                    key={car.id}
-                    className="flex-[0_0_100%] sm:flex-[0_0_50%] md:flex-[0_0_33.333%] lg:flex-[0_0_25%] min-w-0 pl-6"
-                  >
-                    <div
-                      className="bg-white border border-gray-200 hover:border-brand-gold hover:shadow-2xl rounded-3xl overflow-hidden flex flex-col group transition-all duration-300 shadow-md h-full p-4"
-                    >
-                      {/* Image Area */}
-                      <div className="relative h-[200px] w-full bg-white flex items-center justify-center overflow-hidden border border-gray-100 rounded-2xl mb-4 z-0">
-                        <Image
-                          src={car.image}
-                          alt={`${car.make} ${car.model}`}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-500"
-                          unoptimized
-                        />
-                        <div className="absolute top-3 left-3 z-10">
-                          <span className="bg-[#0A0A00] text-white text-[8px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md border border-brand-gold/30">
-                            {car.category}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Content Details */}
-                      <div className="flex flex-col flex-grow justify-between">
-                        <div>
-                          <h3 className="text-lg font-serif font-black text-gray-900 uppercase tracking-tight mb-4 group-hover:text-brand-gold transition-colors">
-                            {car.make} {car.model}
-                          </h3>
-
-                          {/* Specs grid */}
-                          <div className="grid grid-cols-3 border border-gray-100 rounded-2xl bg-gray-50/50 py-3 mb-6 text-[10px] text-gray-500 font-medium font-mono">
-                            <div className="flex flex-col items-center justify-center gap-1">
-                              <Fuel size={14} className="text-brand-gold" />
-                              <span className="capitalize">{car.fuelType}</span>
-                            </div>
-                            <div className="flex flex-col items-center justify-center gap-1 border-x border-gray-100">
-                              <Users size={14} className="text-brand-gold" />
-                              <span>{car.seatingCapacity} Seats</span>
-                            </div>
-                            <div className="flex flex-col items-center justify-center gap-1">
-                              <Settings2 size={14} className="text-brand-gold" />
-                              <span className="capitalize text-[8px]">{car.transmission.replace(' Gearbox', '')}</span>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Pricing and Action */}
-                        <div>
-                          <div className="flex justify-between items-end mb-4">
-                            <div>
-                              <div className="text-[9px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">Starting From</div>
-                              <div className="text-gray-900 font-black text-2xl group-hover:text-brand-gold transition-colors">
-                                ₹{startingPrice.toLocaleString()}
-                              </div>
-                            </div>
-                            <div className="text-right text-[10px] text-gray-600 font-semibold font-mono">
-                              per {priceUnit}
-                            </div>
-                          </div>
-
-                          <Link href={activeTab === 'self-drive' ? `/cars/${getCarSlug(car)}` : `/taxi`}>
-                            <button className="w-full bg-brand-gold group-hover:bg-[#8dbb00] text-white font-bold tracking-widest uppercase text-[10px] py-4.5 rounded-2xl transition-all shadow-md shadow-brand-gold/10 hover:shadow-lg cursor-pointer">
-                              Book Now
-                            </button>
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </div>
-
-        {/* Carousel Dots representing scroll groups/pages */}
-        {scrollSnaps.length > 1 && (
-          <div className="flex justify-center gap-2 mt-8">
-            {scrollSnaps.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => scrollTo(index)}
-                className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
-                  selectedIndex === index 
-                    ? 'w-8 bg-brand-gold shadow-md shadow-brand-gold/20' 
-                    : 'w-2.5 bg-gray-300 hover:bg-gray-400'
-                }`}
-                aria-label={`Go to page ${index + 1}`}
-              />
-            ))}
-          </div>
-        )}
-
-        {/* Bottom Navigation CTA */}
-        <div className="mt-12 flex justify-center">
-          {activeTab === 'self-drive' ? (
-            <Link href="/self-drive">
-              <button className="bg-brand-gold hover:bg-[#8dbb00] text-white font-bold tracking-widest uppercase text-[10px] px-8 py-4.5 rounded-xl transition-all shadow-lg shadow-brand-gold/20 flex items-center gap-2 cursor-pointer">
-                View All Self Drive Cars <ArrowRight size={14} />
-              </button>
-            </Link>
-          ) : (
-            <Link href="/taxi">
-              <button className="bg-brand-gold hover:bg-[#8dbb00] text-white font-bold tracking-widest uppercase text-[10px] px-8 py-4.5 rounded-xl transition-all shadow-lg shadow-brand-gold/20 flex items-center gap-2 cursor-pointer">
-                View All Taxi Services <ArrowRight size={14} />
-              </button>
-            </Link>
-          )}
-        </div>
+                 const cheapestPkg = car.packages?.sort((a: any, b: any) => a.basePrice - b.basePrice)[0];
+                 const startingPrice = cheapestPkg ? cheapestPkg.basePrice : 2000;
+                 const priceUnit = activeTab === 'self-drive' ? 'day' : activeTab === 'airport-transfers' ? 'transfer' : 'trip';
+ 
+                 return (
+                   <div
+                     key={car.id}
+                     className="flex-[0_0_85%] sm:flex-[0_0_50%] md:flex-[0_0_33.333%] lg:flex-[0_0_25%] min-w-0 pl-6"
+                   >
+                     <div
+                       className="bg-white border border-gray-200 hover:border-brand-gold hover:shadow-2xl rounded-3xl overflow-hidden flex flex-col group transition-all duration-300 shadow-md h-full p-4"
+                     >
+                       {/* Image Area */}
+                       <div className="relative h-[200px] w-full bg-white flex items-center justify-center overflow-hidden border border-gray-100 rounded-2xl mb-4 z-0">
+                         <Image
+                           src={car.image}
+                           alt={`${car.make} ${car.model}`}
+                           fill
+                           className="object-cover group-hover:scale-105 transition-transform duration-500"
+                           unoptimized
+                         />
+                         <div className="absolute top-3 left-3 z-10">
+                           <span className="bg-[#0A0A00] text-white text-[8px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md border border-brand-gold/30">
+                             {car.category}
+                           </span>
+                         </div>
+                       </div>
+ 
+                       {/* Content Details */}
+                       <div className="flex flex-col flex-grow justify-between">
+                         <div>
+                           <h3 className="text-lg font-serif font-black text-gray-900 uppercase tracking-tight mb-4 group-hover:text-brand-gold transition-colors">
+                             {car.make} {car.model}
+                           </h3>
+ 
+                           {/* Specs grid */}
+                           <div className="grid grid-cols-3 border border-gray-100 rounded-2xl bg-gray-50/50 py-3 mb-6 text-[10px] text-gray-500 font-medium font-mono">
+                             <div className="flex flex-col items-center justify-center gap-1">
+                               <Fuel size={14} className="text-brand-gold" />
+                               <span className="capitalize">{car.fuelType}</span>
+                             </div>
+                             <div className="flex flex-col items-center justify-center gap-1 border-x border-gray-100">
+                               <Users size={14} className="text-brand-gold" />
+                               <span>{car.seatingCapacity} Seats</span>
+                             </div>
+                             <div className="flex flex-col items-center justify-center gap-1">
+                               <Settings2 size={14} className="text-brand-gold" />
+                               <span className="capitalize text-[8px]">{car.transmission.replace(' Gearbox', '')}</span>
+                             </div>
+                           </div>
+                         </div>
+ 
+                         {/* Pricing and Action */}
+                         <div>
+                           <div className="flex justify-between items-end mb-4">
+                             <div>
+                               <div className="text-[9px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">Starting From</div>
+                               <div className="text-gray-900 font-black text-2xl group-hover:text-brand-gold transition-colors">
+                                 ₹{startingPrice.toLocaleString()}
+                               </div>
+                             </div>
+                             <div className="text-right text-[10px] text-gray-600 font-semibold font-mono">
+                               per {priceUnit}
+                             </div>
+                           </div>
+ 
+                           <Link href={
+                             activeTab === 'self-drive'
+                               ? `/cars/${getCarSlug(car)}`
+                               : activeTab === 'airport-transfers'
+                               ? `/taxi?mode=AIRPORT_TRANSFER`
+                               : `/taxi`
+                           }>
+                             <button className="w-full bg-brand-gold group-hover:bg-[#8dbb00] text-white font-bold tracking-widest uppercase text-[10px] py-4.5 rounded-2xl transition-all shadow-md shadow-brand-gold/10 hover:shadow-lg cursor-pointer">
+                               Book Now
+                             </button>
+                           </Link>
+                         </div>
+                       </div>
+                     </div>
+                   </div>
+                 );
+               })
+             )}
+           </div>
+         </div>
+ 
+         {/* Carousel Dots representing scroll groups/pages */}
+         {scrollSnaps.length > 1 && (
+           <div className="flex justify-center gap-2 mt-8">
+             {scrollSnaps.map((_, index) => (
+               <button
+                 key={index}
+                 onClick={() => scrollTo(index)}
+                 className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
+                   selectedIndex === index 
+                     ? 'w-8 bg-brand-gold shadow-md shadow-brand-gold/20' 
+                     : 'w-2.5 bg-gray-300 hover:bg-gray-400'
+                 }`}
+                 aria-label={`Go to page ${index + 1}`}
+               />
+             ))}
+           </div>
+         )}
+ 
+         {/* Bottom Navigation CTA */}
+         <div className="mt-12 flex justify-center">
+           {activeTab === 'self-drive' ? (
+             <Link href="/self-drive">
+               <button className="bg-brand-gold hover:bg-[#8dbb00] text-white font-bold tracking-widest uppercase text-[10px] px-8 py-4.5 rounded-xl transition-all shadow-lg shadow-brand-gold/20 flex items-center gap-2 cursor-pointer">
+                 View All Self Drive Cars <ArrowRight size={14} />
+               </button>
+             </Link>
+           ) : activeTab === 'airport-transfers' ? (
+             <Link href="/taxi?mode=AIRPORT_TRANSFER">
+               <button className="bg-brand-gold hover:bg-[#8dbb00] text-white font-bold tracking-widest uppercase text-[10px] px-8 py-4.5 rounded-xl transition-all shadow-lg shadow-brand-gold/20 flex items-center gap-2 cursor-pointer">
+                 View All Airport Transfers <ArrowRight size={14} />
+               </button>
+             </Link>
+           ) : (
+             <Link href="/taxi">
+               <button className="bg-brand-gold hover:bg-[#8dbb00] text-white font-bold tracking-widest uppercase text-[10px] px-8 py-4.5 rounded-xl transition-all shadow-lg shadow-brand-gold/20 flex items-center gap-2 cursor-pointer">
+                 View All Taxi Services <ArrowRight size={14} />
+               </button>
+             </Link>
+           )}
+         </div>
 
       </div>
     </section>

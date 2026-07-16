@@ -3,8 +3,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, CheckCircle2, ChevronRight, Settings2, Fuel, MapPin, Users, ShieldCheck, Cog, Calendar } from 'lucide-react';
-import CarBookingSidebar from '@/components/CarBookingSidebar';
+import UnifiedCarBookingSidebar from '@/components/UnifiedCarBookingSidebar';
 import CarDetailsGallery from '@/components/CarDetailsGallery';
+import VehicleCollections from '@/components/VehicleCollections';
 import { getCarSlug } from '@/lib/utils';
 
 export default async function CarDetailsPage({ params }: { params: Promise<{ id: string }> }) {
@@ -34,9 +35,11 @@ export default async function CarDetailsPage({ params }: { params: Promise<{ id:
     car = allCars.find(c => getCarSlug(c) === id) || null;
   }
 
-  const cities = await prisma.city.findMany({
-    orderBy: { name: 'asc' }
-  });
+  const [cities, taxiSettings, airportZones] = await Promise.all([
+    prisma.city.findMany({ orderBy: { name: 'asc' } }),
+    prisma.taxiFareSetting.findMany(),
+    prisma.airportZone.findMany({ include: { fares: true } })
+  ]);
 
   if (!car) {
     notFound();
@@ -47,7 +50,7 @@ export default async function CarDetailsPage({ params }: { params: Promise<{ id:
       category: car.category,
       id: { not: car.id },
     },
-    take: 3,
+    take: 10,
     include: {
       city: true,
       packages: {
@@ -59,7 +62,7 @@ export default async function CarDetailsPage({ params }: { params: Promise<{ id:
   return (
     <div className="bg-white min-h-screen text-gray-900 font-sans pt-32 pb-24">
       {/* Container */}
-      <div className="container mx-auto px-4 max-w-7xl">
+      <div className="container mx-auto px-4 max-w-[1500px] md:px-10 lg:px-16">
 
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-400 mb-8">
@@ -192,50 +195,27 @@ export default async function CarDetailsPage({ params }: { params: Promise<{ id:
 
           {/* Right Sidebar - Booking Form */}
           <div className="lg:col-span-1">
-            <CarBookingSidebar car={car} packages={car.packages} cities={cities} />
+            <UnifiedCarBookingSidebar 
+              car={car} 
+              packages={car.packages} 
+              cities={cities} 
+              taxiSettings={taxiSettings}
+              airportZones={airportZones}
+              airportName={cities.find(c => c.name === 'Udaipur')?.airportName || 'the Airport'}
+            />
           </div>
         </div>
 
         {/* Related Cars */}
         {relatedCars.length > 0 && (
           <div className="mt-24 pt-16 border-t border-gray-200">
-            <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tight mb-12 text-center font-sans text-gray-900">
-              SIMILAR VEHICLES
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {relatedCars.map((relatedCar) => (
-                <div key={relatedCar.id} className="bg-gray-50 border border-gray-200/80 rounded-[24px] overflow-hidden group hover:border-green-600/30 transition-all flex flex-col h-full shadow-sm">
-                  <div className="bg-white p-4 font-black uppercase text-[10px] tracking-widest text-center border-b border-gray-200/60 text-gray-500 font-mono">
-                    {relatedCar.make}
-                  </div>
-                  <div className="h-56 relative bg-white flex items-center justify-center p-4 border-b border-gray-200/60">
-                    <Image src={relatedCar.image || '/placeholder-car.png'} alt={relatedCar.model} fill className="object-contain p-2 group-hover:scale-105 transition-transform duration-700" unoptimized />
-                  </div>
-                  <div className="p-8 flex flex-col flex-1 bg-white">
-                    <h3 className="text-2xl font-black uppercase tracking-tight mb-6 text-gray-900">{relatedCar.model}</h3>
-
-                    <div className="flex items-center justify-between text-[9px] font-black uppercase tracking-widest text-gray-500 mb-8 border-t border-b border-gray-200 py-4 font-mono">
-                      <div className="flex items-center gap-2"><Settings2 size={14} className="text-green-600" /> {relatedCar.transmission}</div>
-                      <div className="flex items-center gap-2"><Users size={14} className="text-green-600" /> {relatedCar.seatingCapacity} SEATS</div>
-                    </div>
-
-                    <div className="flex items-center justify-between mb-8 mt-auto">
-                      <div className="flex items-center gap-1.5 text-gray-500 text-xs font-semibold">
-                        <MapPin size={14} className="text-green-600" /> {relatedCar.city?.name || 'Unknown'}
-                      </div>
-                      <div className="text-right font-mono">
-                        <div className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Starting From</div>
-                        <div className="text-xl font-black text-green-600">₹{(relatedCar.packages?.[0]?.basePrice || 2500).toLocaleString()}<span className="text-xs text-gray-500 font-medium">/Day</span></div>
-                      </div>
-                    </div>
-
-                    <Link href={`/cars/${getCarSlug(relatedCar)}`} className="w-full flex items-center justify-center gap-2 bg-gray-900 hover:bg-green-600 text-white font-black text-[10px] uppercase tracking-widest py-4 rounded-xl transition-all font-mono hover:scale-101 active:scale-99">
-                      <Calendar size={14} /> VIEW DETAILS
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <VehicleCollections 
+              cars={relatedCars} 
+              title={<>SIMILAR <span className="text-[#8dbb00] font-sans font-black">VEHICLES</span></>}
+              subtitle="SAME CATEGORY"
+              description="Explore other vehicles in the same category for your trip."
+              hideTabs={true}
+            />
           </div>
         )}
       </div>
