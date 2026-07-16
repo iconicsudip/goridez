@@ -28,7 +28,11 @@ export default function Footer({ siteSettings }: { siteSettings?: any }) {
           <h4 className="text-lg font-bold font-heading mb-4 text-brand-gold">Services</h4>
           <ul className="flex flex-col gap-2">
             <li><Link href="/self-drive" className="text-gray-400 hover:text-white transition-colors text-sm">Self-Drive</Link></li>
-            <li><Link href="/taxi" className="text-gray-400 hover:text-white transition-colors text-sm">Taxi</Link></li>
+            <li><Link href="/taxi" className="text-gray-400 hover:text-white transition-colors text-sm">Taxi / Round Trip</Link></li>
+            <li><Link href="/taxi?mode=AIRPORT_TRANSFER" className="text-gray-400 hover:text-white transition-colors text-sm">Airport Transfers</Link></li>
+            <li><Link href="/chauffeur" className="text-gray-400 hover:text-white transition-colors text-sm">Chauffeur</Link></li>
+            <li><Link href="/tours" className="text-gray-400 hover:text-white transition-colors text-sm">Tour Packages</Link></li>
+            <li><Link href="/villas" className="text-gray-400 hover:text-white transition-colors text-sm">Villas</Link></li>
           </ul>
         </div>
 

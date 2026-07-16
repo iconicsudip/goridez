@@ -45,3 +45,5 @@ const nextConfig: NextConfig = {
 
 export default nextConfig;
 
+// Trigger dev server config reload after schema update
+

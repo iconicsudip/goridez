@@ -366,14 +366,31 @@ model HomePage {
 }
 
 model SiteSettings {
-  id                String   @id @default("singleton")
-  logoRidez         String   @default("/logo-ridez.png")
-  logoFull          String   @default("/logo-full.png")
-  favicon           String   @default("/favicon.ico")
-  copyrightText     String   @default("© GoRidez. All rights reserved.")
-  razorpayKeyId     String   @default("rzp_test_mockkey123")
-  razorpayKeySecret String   @default("mocksecret123")
-  taxiExclusions    String   @default("Toll Tax and Parking charges are not included in the above fare.\nState Tax (if applicable crossing borders) is extra.\nAny extra km or hours driven beyond the package limit will be charged additionally.")
-  taxiTerms         String   @default("A/C will be switched off in hilly areas.\nNight allowance applies if the driver drives between 10 PM and 6 AM.\nKilometers are calculated from garage to garage.")
-  updatedAt         DateTime @updatedAt
+  id                    String    @id @default("singleton")
+  logoRidez             String    @default("/logo-ridez.png")
+  logoFull              String    @default("/logo-full.png")
+  favicon               String    @default("/favicon.ico")
+  copyrightText         String    @default("© GoRidez. All rights reserved.")
+  razorpayKeyId         String    @default("rzp_test_mockkey123")
+  razorpayKeySecret     String    @default("mocksecret123")
+  taxiExclusions        String    @default("Toll Tax and Parking charges are not included in the above fare.\nState Tax (if applicable crossing borders) is extra.\nAny extra km or hours driven beyond the package limit will be charged additionally.")
+  taxiTerms             String    @default("A/C will be switched off in hilly areas.\nNight allowance applies if the driver drives between 10 PM and 6 AM.\nKilometers are calculated from garage to garage.")
+  googlePlaceId         String    @default("")
+  lastReviewSync        DateTime?
+  reviewSyncMonthKey    String    @default("")   // e.g. "2026-7"
+  reviewSyncMonthCount  Int       @default(0)    // calls used this month
+  googleAverageRating   Float     @default(0)    // overall business rating
+  googleTotalReviews    Int       @default(0)    // total review count on Google
+  updatedAt             DateTime  @updatedAt
+}
+
+model GoogleReview {
+  id              String   @id // Google review ID
+  authorName      String
+  authorPhoto     String   @default("")
+  rating          Int
+  text            String
+  relativeTime    String
+  publishedAt     DateTime
+  syncedAt        DateTime @default(now())
 }

@@ -2,13 +2,44 @@
 
 import { useState } from 'react';
 import { updateHomePage } from '@/app/admin/actions';
-import { Globe, Save, X } from 'lucide-react';
+import { Globe, Save, X, RefreshCw, CheckCircle } from 'lucide-react';
 import ImageUpload from './ImageUpload';
 
 export default function HomePageManager({ initialData }: { initialData: any }) {
   const [loading, setLoading] = useState(false);
   const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-  
+
+  // Google Reviews sync state (no Place ID needed — searchId baked into env)
+  const [syncLoading, setSyncLoading] = useState(false);
+  const [syncResult, setSyncResult] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [lastSync, setLastSync] = useState<string | null>(
+    initialData?.siteSettings?.lastReviewSync
+      ? new Date(initialData.siteSettings.lastReviewSync).toLocaleString('en-IN')
+      : null
+  );
+  const [callsUsed, setCallsUsed] = useState<number>(initialData?.siteSettings?.reviewSyncMonthCount || 0);
+  const MONTHLY_LIMIT = 24;
+
+  const handleSyncReviews = async () => {
+    setSyncLoading(true);
+    setSyncResult(null);
+    try {
+      const res = await fetch('/api/admin/sync-reviews', { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok) {
+        setSyncResult({ type: 'error', text: data.error || 'Sync failed.' });
+      } else {
+        setSyncResult({ type: 'success', text: data.message || `Synced ${data.synced} reviews.` });
+        setLastSync(new Date().toLocaleString('en-IN'));
+        if (data.callsUsedThisMonth !== undefined) setCallsUsed(data.callsUsedThisMonth);
+      }
+    } catch (e: any) {
+      setSyncResult({ type: 'error', text: e.message || 'Network error.' });
+    } finally {
+      setSyncLoading(false);
+    }
+  };
+
   const [formData, setFormData] = useState({
     heroBadge: initialData?.heroBadge || '✦ PREMIUM TRANSPORTATION',
     heroTitleLine1: initialData?.heroTitleLine1 || 'EXPLORE RAJASTHAN',
@@ -302,6 +333,63 @@ export default function HomePageManager({ initialData }: { initialData: any }) {
             </div>
           </div>
 
+        </div>
+
+        {/* ── Google Reviews Integration ── */}
+        <div className="mt-10 bg-blue-50 border border-blue-200 rounded-2xl p-6">
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <h2 className="text-sm font-black uppercase tracking-widest text-blue-700 mb-1">Google Reviews Auto-Sync</h2>
+              <p className="text-xs text-blue-500">Powered by RapidAPI scraper · Reviews update on the homepage after each sync.</p>
+            </div>
+            {/* Usage meter */}
+            <div className="text-right shrink-0 ml-4">
+              <div className="text-[10px] font-bold text-blue-700 uppercase tracking-widest mb-1">This Month</div>
+              <div className={`text-lg font-black ${callsUsed >= MONTHLY_LIMIT ? 'text-red-600' : callsUsed >= 20 ? 'text-amber-600' : 'text-blue-700'}`}>
+                {callsUsed} <span className="text-xs font-mono text-blue-400">/ {MONTHLY_LIMIT}</span>
+              </div>
+              <div className="text-[9px] text-blue-400 font-mono">API calls used</div>
+              {/* Usage bar */}
+              <div className="w-24 h-1.5 bg-blue-100 rounded-full mt-1 overflow-hidden">
+                <div
+                  className={`h-full rounded-full transition-all ${callsUsed >= MONTHLY_LIMIT ? 'bg-red-500' : callsUsed >= 20 ? 'bg-amber-500' : 'bg-blue-500'}`}
+                  style={{ width: `${Math.min(100, (callsUsed / MONTHLY_LIMIT) * 100)}%` }}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-4 flex-wrap">
+              <button
+                type="button"
+                onClick={handleSyncReviews}
+                disabled={syncLoading || callsUsed >= MONTHLY_LIMIT}
+                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-black uppercase tracking-widest px-5 py-3 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <RefreshCw size={13} className={syncLoading ? 'animate-spin' : ''} />
+                {syncLoading ? 'Syncing...' : callsUsed >= MONTHLY_LIMIT ? 'Limit Reached' : 'Sync Google Reviews Now'}
+              </button>
+              {lastSync && (
+                <span className="text-[10px] text-blue-400 font-mono">Last synced: {lastSync}</span>
+              )}
+            </div>
+
+            {syncResult && (
+              <div className={`text-xs font-mono px-4 py-3 rounded-xl flex items-center gap-2 ${
+                syncResult.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'
+              }`}>
+                <CheckCircle size={13} />
+                {syncResult.text}
+              </div>
+            )}
+
+            {callsUsed >= 20 && callsUsed < MONTHLY_LIMIT && (
+              <div className="text-[10px] text-amber-600 font-mono bg-amber-50 border border-amber-200 rounded-xl px-4 py-2">
+                ⚠ {MONTHLY_LIMIT - callsUsed} calls remaining this month. Use sparingly.
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Submit */}

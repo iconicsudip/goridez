@@ -8,12 +8,13 @@ import HeroVideo from "@/components/HeroVideo";
 import BrowseCars from "@/components/BrowseCars";
 import VideoGallery from "@/components/VideoGallery";
 import VehicleCollections from "@/components/VehicleCollections";
+import GoogleReviewsSection from "@/components/GoogleReviewsSection";
 import { Star, Shield, Clock, Map, ChevronRight, Key, Calendar, BookOpen, Plane, UserCheck, Coins, ArrowRight } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
-  const [cars, cities, blogs, faqs, homePageData, selfDriveCount, chauffeurCount, reels] = await Promise.all([
+  const [cars, cities, blogs, faqs, homePageData, selfDriveCount, chauffeurCount, reels, googleReviews, siteSettings] = await Promise.all([
     prisma.car.findMany({ include: { packages: true }, orderBy: { createdAt: 'desc' } }),
     prisma.city.findMany({ orderBy: { name: 'asc' } }),
     prisma.blog.findMany({ where: { isDraft: false }, take: 3, orderBy: { createdAt: 'desc' } }),
@@ -21,7 +22,9 @@ export default async function Home() {
     prisma.homePage.findUnique({ where: { id: 'singleton' } }),
     prisma.car.count({ where: { serviceTypes: { has: 'SELF_DRIVE' } } }),
     prisma.car.count({ where: { serviceTypes: { has: 'WITH_DRIVER' } } }),
-    prisma.instagramReel.findMany({ where: { isActive: true }, orderBy: { order: 'asc' } })
+    prisma.instagramReel.findMany({ where: { isActive: true }, orderBy: { order: 'asc' } }),
+    prisma.googleReview.findMany({ orderBy: { publishedAt: 'desc' } }),
+    prisma.siteSettings.findUnique({ where: { id: 'singleton' } }),
   ]);
 
   // Airport Transfers currently operate out of Udaipur only (same scope as /taxi).
@@ -309,6 +312,15 @@ export default async function Home() {
       {/* SECTION 8: VIDEO GALLERY */}
       <VideoGallery reels={reels} />
 
+      {/* SECTION: GOOGLE REVIEWS */}
+      <GoogleReviewsSection
+        reviews={googleReviews}
+        placeId={(siteSettings as any)?.googlePlaceId || ''}
+        averageRating={(siteSettings as any)?.googleAverageRating || 0}
+        totalReviews={(siteSettings as any)?.googleTotalReviews || 0}
+      />
+
+
       {/* SECTION 6: FEATURED BLOGS / JOURNAL */}
       {blogs.length > 0 && (
         <section className="py-24 bg-gray-50 border-t border-brand-border relative overflow-hidden">
@@ -382,8 +394,6 @@ export default async function Home() {
           </div>
         </section>
       )}
-
-
       {/* SECTION 7: INTERACTIVE FAQS */}
       <FaqAccordion faqs={faqs} />
     </div>
