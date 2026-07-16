@@ -24,7 +24,7 @@ export default function FaqAccordion({ faqs }: { faqs: FaqItem[] }) {
       <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-96 h-96 bg-brand-gold/5 blur-3xl rounded-full pointer-events-none" />
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-brand-gold/5 blur-3xl rounded-full pointer-events-none" />
 
-      <div className="container mx-auto px-4 relative z-10 max-w-4xl">
+      <div className="container mx-auto px-4 relative z-10 max-w-6xl">
         <div className="text-center mb-16">
           <div className="flex items-center justify-center gap-3 mb-4">
             <span className="h-[2px] w-8 bg-brand-gold rounded-full"></span>
