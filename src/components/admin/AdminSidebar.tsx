@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 import {
   LayoutDashboard, Car, Layers, Globe, Map, MapPin, Building, FileText,
-  Search, Activity, Users, Percent, LogOut, UserCircle, ListOrdered, HelpCircle, Info, Settings, ShieldCheck, Camera, MapPinned
+  Search, Activity, Users, Percent, LogOut, UserCircle, ListOrdered, HelpCircle, Info, Settings, ShieldCheck, Camera, MapPinned, Navigation
 } from 'lucide-react';
 
 const ADMIN_LINKS = [
@@ -16,6 +16,7 @@ const ADMIN_LINKS = [
   { href: '/admin/delivery-charges', label: 'Delivery Charges', icon: Map },
   { href: '/admin/transfers', label: 'Chauffeur Rates & Settings', icon: MapPin },
   { href: '/admin/airport-zones', label: 'Airport Transfer Zones', icon: MapPinned },
+  { href: '/admin/self-drive-locations', label: 'Self Drive Locations', icon: Navigation },
   { href: '/admin/cities', label: 'City Management', icon: Globe },
   { href: '/admin/blogs', label: 'Blog CMS Controls', icon: FileText },
   { href: '/admin/faqs', label: 'FAQ CMS Controls', icon: HelpCircle },

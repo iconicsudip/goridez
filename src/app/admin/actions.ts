@@ -22,7 +22,7 @@ export async function deleteCity(id: string) {
       data: { cityId: null }
     });
 
-    // Cascade delete DeliveryCharge and AirportZone records linked to this city
+    // Cascade delete DeliveryCharge, AirportZone, and SelfDriveLocation records linked to this city
     await prisma.deliveryCharge.deleteMany({
       where: { cityId: id }
     });
@@ -31,12 +31,17 @@ export async function deleteCity(id: string) {
       where: { cityId: id }
     });
 
+    await prisma.selfDriveLocation.deleteMany({
+      where: { cityId: id }
+    });
+
     // Finally delete the city
     await prisma.city.delete({ where: { id } });
-    
+
     revalidatePath('/admin/cities');
     revalidatePath('/admin/delivery-charges');
     revalidatePath('/admin/airport-zones');
+    revalidatePath('/admin/self-drive-locations');
     revalidatePath('/');
     return { success: true };
   } catch (error: any) {
@@ -873,6 +878,42 @@ export async function deleteAirportZoneFare(id: string) {
     await prisma.airportZoneFare.delete({ where: { id } });
     revalidatePath('/admin/airport-zones');
     revalidatePath('/taxi');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+// --- SELF DRIVE LOCATIONS ---
+export async function upsertSelfDriveLocation(formData: FormData) {
+  try {
+    const id = formData.get('id') as string;
+    const cityId = formData.get('cityId') as string;
+    const name = formData.get('name') as string;
+    const price = parseFloat(formData.get('price') as string) || 0;
+    const order = parseInt(formData.get('order') as string) || 0;
+
+    if (!cityId || !name) return { success: false, error: 'City and Location Name are required' };
+
+    if (id) {
+      await prisma.selfDriveLocation.update({ where: { id }, data: { cityId, name, price, order } });
+    } else {
+      await prisma.selfDriveLocation.create({ data: { cityId, name, price, order } });
+    }
+
+    revalidatePath('/admin/self-drive-locations');
+    revalidatePath('/self-drive');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+export async function deleteSelfDriveLocation(id: string) {
+  try {
+    await prisma.selfDriveLocation.delete({ where: { id } });
+    revalidatePath('/admin/self-drive-locations');
+    revalidatePath('/self-drive');
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };

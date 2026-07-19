@@ -6,9 +6,9 @@ import { ShieldCheck, MapPin, Navigation, Compass, ChevronDown, Search, X, Loade
 import { DatePicker, ConfigProvider } from 'antd';
 import dayjs from 'dayjs';
 import { useBookingStore } from '@/store/useBookingStore';
-import LocationAutocomplete from '@/components/LocationAutocomplete';
 import LocationField from '@/components/LocationField';
 import AirportLocalitySearch, { AIRPORT_ZONE_ID } from '@/components/AirportLocalitySearch';
+import SelfDriveLocationSearch from '@/components/SelfDriveLocationSearch';
 import { calculatePackagePricing, getPackageDurationHours } from '@/lib/utils';
 import { calculateRoute, OSMLocation } from '@/lib/osm';
 
@@ -36,13 +36,13 @@ function isNightTime(date: Date) {
   return h >= NIGHT_START_HOUR || h < NIGHT_END_HOUR;
 }
 
-export default function UnifiedCarBookingSidebar({ 
-  car, 
-  packages = [], 
-  cities = [], 
-  taxiSettings = [], 
-  airportZones = [], 
-  airportName = 'the Airport' 
+export default function UnifiedCarBookingSidebar({
+  car,
+  packages = [],
+  taxiSettings = [],
+  airportZones = [],
+  selfDriveLocations = [],
+  airportName = 'the Airport'
 }: any) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -64,9 +64,10 @@ export default function UnifiedCarBookingSidebar({
   });
 
   // --- Self-Drive States ---
-  const [sdPickup, setSdPickup] = useState('');
-  const [sdDrop, setSdDrop] = useState('');
-  const [sdSelectedCity, setSdSelectedCity] = useState('');
+  // Pickup/drop are picked from the admin-curated SelfDriveLocation list for this car's city, not free text.
+  const [sdPickup, setSdPickup] = useState({ name: '', locationId: '', price: 0 });
+  const [sdDrop, setSdDrop] = useState({ name: '', locationId: '', price: 0 });
+  const sdLocations = selfDriveLocations.filter((l: any) => l.cityId === car.cityId);
 
   // --- Round Trip States ---
   const [destLocations, setDestLocations] = useState<{name: string, data?: OSMLocation}[]>([{ name: '' }]);
@@ -99,17 +100,19 @@ export default function UnifiedCarBookingSidebar({
       else setBookingMode('SELF_DRIVE');
     }
 
-    // SD Locations
-    const qCity = searchParams.get('city') || searchParams.get('cities')?.split(',')[0];
-    const initialCity = cities.find((c: any) => c.id === qCity);
-    if (initialCity) setSdSelectedCity(initialCity.id);
-    
+    // SD Pickup/Drop — try to match an incoming city/location param to one of
+    // this car's admin-defined self-drive locations by name.
     const qPickupCity = searchParams.get('pickupLocation') || searchParams.get('pickupCity');
-    if (qPickupCity) setSdPickup(qPickupCity);
-    else if (initialCity) setSdPickup(initialCity.name);
+    if (qPickupCity) {
+      const match = sdLocations.find((l: any) => l.name.toLowerCase() === qPickupCity.toLowerCase());
+      if (match) setSdPickup({ name: match.name, locationId: match.id, price: match.price });
+    }
 
     const qDropCity = searchParams.get('dropLocation') || searchParams.get('dropCity');
-    if (qDropCity) setSdDrop(qDropCity);
+    if (qDropCity) {
+      const match = sdLocations.find((l: any) => l.name.toLowerCase() === qDropCity.toLowerCase());
+      if (match) setSdDrop({ name: match.name, locationId: match.id, price: match.price });
+    }
 
     // RT Destinations
     if (qMode === 'ROUND_TRIP' && qDropCity) {
@@ -183,8 +186,9 @@ export default function UnifiedCarBookingSidebar({
     const ms = returnDate.getTime() - pickupDate.getTime();
     const hours = ms / (1000 * 60 * 60);
     const result = calculatePackagePricing(packages, hours);
-    return { ...result, hours, days: Math.ceil(hours / 24) };
-  }, [pickupDate, returnDate, packages]);
+    const locationSurcharge = (sdPickup.price || 0) + (sdDrop.price || 0);
+    return { ...result, hours, days: Math.ceil(hours / 24), locationSurcharge };
+  }, [pickupDate, returnDate, packages, sdPickup, sdDrop]);
 
   // Round Trip
   const rtPriceInfo = useMemo(() => {
@@ -232,14 +236,19 @@ export default function UnifiedCarBookingSidebar({
     if (bookingMode === 'SELF_DRIVE') {
       const currentPackage = sdPriceInfo?.selectedPkg || packages[0];
       if (!currentPackage) { alert('Please select a valid package.'); return; }
-      
+      if (sdLocations.length > 0 && (!sdPickup.locationId || !sdDrop.locationId)) {
+        alert('Please select a pickup and drop location.'); return;
+      }
+
+      const totalPrice = sdPriceInfo!.basePrice + sdPriceInfo!.locationSurcharge;
+
       updateSession({
         bookingMode,
         pickupDate: pickupDate.toISOString(),
         returnDate: returnDate?.toISOString(),
-        pickupCity: cities.find((c: any) => c.id === sdSelectedCity)?.name || sdPickup,
-        pickupStation: sdPickup,
-        dropStation: sdDrop
+        pickupCity: car.city?.name || '',
+        pickupStation: sdPickup.name,
+        dropStation: sdDrop.name
       });
       addToCart({
         serviceType: 'selfDrive',
@@ -247,11 +256,14 @@ export default function UnifiedCarBookingSidebar({
         packageId: currentPackage.id,
         title: `${car.make} ${car.model}`,
         image: car.image || '',
-        price: sdPriceInfo!.basePrice,
+        price: totalPrice,
         deposit: currentPackage.deposit || 0,
         extraInfo: sdPriceInfo!.extraInfo,
-        pickupStation: sdPickup,
-        dropStation: sdDrop
+        pickupStation: sdPickup.name,
+        dropStation: sdDrop.name,
+        cityId: car.cityId || undefined,
+        pickupPrice: sdPickup.price,
+        dropPrice: sdDrop.price
       });
     } else if (bookingMode === 'ROUND_TRIP') {
       if (!rtPriceInfo) return;
@@ -369,24 +381,21 @@ export default function UnifiedCarBookingSidebar({
         {bookingMode === 'SELF_DRIVE' && (
           <>
             <div>
-              <LocationAutocomplete
+              <SelfDriveLocationSearch
                 label="Pickup Location"
-                value={sdPickup}
-                onChange={(name, loc) => {
-                  setSdPickup(name);
-                  const match = cities.find((c: any) => c.name.toLowerCase() === name.toLowerCase() || (loc && c.name.toLowerCase().includes(loc.display_name.split(',')[0].toLowerCase())));
-                  if (match) setSdSelectedCity(match.id);
-                }}
-                placeholder="Search pickup area..."
+                locations={sdLocations}
+                value={sdPickup.name}
+                onChange={(name, locationId, price) => setSdPickup({ name, locationId, price })}
+                placeholder="Select pickup location..."
               />
             </div>
             <div>
-              <LocationAutocomplete
+              <SelfDriveLocationSearch
                 label="Drop Location"
-                value={sdDrop}
-                onChange={(name) => setSdDrop(name)}
-                placeholder="Search drop area..."
-                searchAnywhere={true}
+                locations={sdLocations}
+                value={sdDrop.name}
+                onChange={(name, locationId, price) => setSdDrop({ name, locationId, price })}
+                placeholder="Select drop location..."
               />
             </div>
           </>
@@ -516,16 +525,22 @@ export default function UnifiedCarBookingSidebar({
                 <span>RENTAL RATE ({sdPriceInfo.extraInfo})</span>
                 <span>₹{sdPriceInfo.basePrice.toLocaleString()}</span>
               </div>
+              {sdPriceInfo.locationSurcharge > 0 && (
+                <div className="flex justify-between text-gray-400">
+                  <span>PICKUP/DROP CHARGE</span>
+                  <span>₹{sdPriceInfo.locationSurcharge.toLocaleString()}</span>
+                </div>
+              )}
               <div className="flex justify-between text-gray-400">
                 <span>REFUNDABLE DEPOSIT</span>
                 <span>₹{(sdPriceInfo.selectedPkg?.deposit || 0).toLocaleString()}</span>
               </div>
             </div>
-            
+
             <div className="border-t border-gray-800 my-5"></div>
             <div className="flex justify-between items-end mb-8">
               <div className="text-[10px] text-gray-400 tracking-widest font-black uppercase">Gross Total</div>
-              <div className="text-2xl font-black text-green-400">₹{(sdPriceInfo.basePrice + (sdPriceInfo.selectedPkg?.deposit || 0)).toLocaleString()}</div>
+              <div className="text-2xl font-black text-green-400">₹{(sdPriceInfo.basePrice + sdPriceInfo.locationSurcharge + (sdPriceInfo.selectedPkg?.deposit || 0)).toLocaleString()}</div>
             </div>
 
             <button onClick={handleBooking} className="w-full bg-green-600 hover:bg-green-500 text-white font-sans font-black uppercase tracking-widest text-[11px] py-4 rounded-xl transition-all active:scale-[0.98]">

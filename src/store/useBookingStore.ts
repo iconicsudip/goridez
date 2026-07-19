@@ -16,6 +16,9 @@ export type CartItem = {
   pickupStation?: string; // 'CITY_CENTER' | 'AIRPORT' | 'RAILWAY'
   dropStation?: string;   // 'CITY_CENTER' | 'AIRPORT' | 'RAILWAY'
   deliveryFee?: number;
+  cityId?: string;        // Car's city — scopes the self-drive location dropdown in cart
+  pickupPrice?: number;   // Surcharge for pickupStation, already folded into `price`
+  dropPrice?: number;     // Surcharge for dropStation, already folded into `price`
 };
 
 type BookingStore = {

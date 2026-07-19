@@ -45,6 +45,20 @@ model City {
   villas          Villa[]
   deliveryCharges DeliveryCharge[]
   airportZones    AirportZone[]
+  selfDriveLocations SelfDriveLocation[]
+}
+
+model SelfDriveLocation {
+  id        String   @id @default(cuid())
+  cityId    String
+  name      String
+  price     Float    @default(0)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  city      City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
+
+  @@unique([cityId, name])
 }
 
 model AirportZone {

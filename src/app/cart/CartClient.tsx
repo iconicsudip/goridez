@@ -6,10 +6,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import LocationAutocomplete from '@/components/LocationAutocomplete';
+import SelfDriveLocationSearch from '@/components/SelfDriveLocationSearch';
 
 const LOCATION_EDITABLE_SERVICE_TYPES = ['selfDrive', 'roundTripTaxi'];
 
-export default function CartClient() {
+export default function CartClient({ selfDriveLocations = [], cars = [] }: { selfDriveLocations?: any[]; cars?: any[] }) {
   const { cartItems, removeFromCart, updateCartItem } = useBookingStore();
   const [mounted, setMounted] = useState(false);
 
@@ -116,7 +117,32 @@ export default function CartClient() {
                   </div>
 
                   {/* Pickup / Drop Location Selection */}
-                  {LOCATION_EDITABLE_SERVICE_TYPES.includes(item.serviceType) && (
+                  {item.serviceType === 'selfDrive' ? (
+                    <div className="mt-6 pt-6 border-t border-gray-200/60 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <SelfDriveLocationSearch
+                        label="Pickup Location"
+                        locations={selfDriveLocations.filter((l) => l.cityId === (cars.find((c) => c.id === item.referenceId)?.cityId || item.cityId))}
+                        value={item.pickupStation || ''}
+                        onChange={(name, _locationId, price) => updateCartItem(item.id, {
+                          pickupStation: name,
+                          pickupPrice: price,
+                          price: item.price - (item.pickupPrice || 0) + price,
+                        })}
+                        placeholder="Select pickup location..."
+                      />
+                      <SelfDriveLocationSearch
+                        label="Drop Location"
+                        locations={selfDriveLocations.filter((l) => l.cityId === (cars.find((c) => c.id === item.referenceId)?.cityId || item.cityId))}
+                        value={item.dropStation || ''}
+                        onChange={(name, _locationId, price) => updateCartItem(item.id, {
+                          dropStation: name,
+                          dropPrice: price,
+                          price: item.price - (item.dropPrice || 0) + price,
+                        })}
+                        placeholder="Select drop location..."
+                      />
+                    </div>
+                  ) : LOCATION_EDITABLE_SERVICE_TYPES.includes(item.serviceType) && (
                     <div className="mt-6 pt-6 border-t border-gray-200/60 grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-[9px] text-gray-400 uppercase tracking-widest mb-2 font-bold font-mono">

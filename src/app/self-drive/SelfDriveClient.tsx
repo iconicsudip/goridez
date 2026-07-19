@@ -26,9 +26,8 @@ export default function SelfDriveClient({ initialCars, initialCities }: { initia
   });
   const [returnDate, setReturnDate] = useState<Date | null>(() => {
     const d = new Date();
-    d.setDate(d.getDate() + 4);
-    d.setHours(10, 0, 0, 0);
-    return d;
+    d.setHours(d.getHours() + 1, 0, 0, 0);
+    return new Date(d.getTime() + 12 * 60 * 60 * 1000);
   });
   const [isMounted, setIsMounted] = useState(false);
 
@@ -54,7 +53,7 @@ export default function SelfDriveClient({ initialCars, initialCities }: { initia
       loadedPickup = new Date(now.getTime() + 60 * 60 * 1000); // 1 hour from now
     }
     if (loadedReturn && loadedPickup && loadedReturn.getTime() <= loadedPickup.getTime()) {
-      loadedReturn = new Date(loadedPickup.getTime() + 24 * 60 * 60 * 1000);
+      loadedReturn = new Date(loadedPickup.getTime() + 12 * 60 * 60 * 1000);
     }
 
     if (loadedPickup) setPickupDate(loadedPickup);
@@ -209,15 +208,15 @@ export default function SelfDriveClient({ initialCars, initialCities }: { initia
                       onChange={(dates) => {
                         if (dates && dates[0]) {
                           const start = dates[0].toDate();
-                          let end = dates[1] ? dates[1].toDate() : null;
-                          if (end && (end.getTime() - start.getTime()) < 12 * 60 * 60 * 1000) {
+                          let end = dates[1] ? dates[1].toDate() : new Date(start.getTime() + 12 * 60 * 60 * 1000);
+                          if ((end.getTime() - start.getTime()) < 12 * 60 * 60 * 1000) {
                             end = new Date(start.getTime() + 12 * 60 * 60 * 1000);
                           }
                           setPickupDate(start);
                           setReturnDate(end);
                           updateSession({
                             pickupDate: start.toISOString(),
-                            returnDate: end ? end.toISOString() : null
+                            returnDate: end.toISOString()
                           });
                         } else {
                           setReturnDate(null);

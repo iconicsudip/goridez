@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import path from 'path';
+import { compressImage } from '@/lib/compressImage';
 
 export async function POST(request: Request) {
   try {
@@ -12,11 +13,13 @@ export async function POST(request: Request) {
     }
 
     const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    const { buffer, contentType } = await compressImage(Buffer.from(bytes), file.type);
 
     // Create unique filename
     const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    const originalExt = path.extname(file.name);
+    const originalExt = contentType === 'image/jpeg' && file.type !== 'image/jpeg'
+      ? '.jpg'
+      : path.extname(file.name);
     const filename = `uploads/${uniqueSuffix}${originalExt}`;
 
     // Initialize S3 Client
@@ -36,7 +39,7 @@ export async function POST(request: Request) {
         Bucket: bucketName,
         Key: filename,
         Body: buffer,
-        ContentType: file.type,
+        ContentType: contentType,
       })
     );
 

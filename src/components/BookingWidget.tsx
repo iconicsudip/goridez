@@ -35,10 +35,10 @@ export default function BookingWidget({
   const { session, updateSession } = useBookingStore();
 
   const makeTomorrow = () => { const d = new Date(); d.setDate(d.getDate() + 1); d.setHours(10, 0, 0, 0); return d; };
-  const makePlus4 = () => { const d = new Date(); d.setDate(d.getDate() + 4); d.setHours(10, 0, 0, 0); return d; };
+  const makePickupPlus12h = (pickup: Date) => new Date(pickup.getTime() + 12 * 60 * 60 * 1000);
 
   const [pickupDate, setPickupDate] = useState<Date | null>(makeTomorrow);
-  const [returnDate, setReturnDate] = useState<Date | null>(makePlus4);
+  const [returnDate, setReturnDate] = useState<Date | null>(() => makePickupPlus12h(makeTomorrow()));
   const [isMounted, setIsMounted] = useState(false);
 
   // Location state — stores both display name and OSM data
@@ -96,7 +96,7 @@ export default function BookingWidget({
       loadedPickup = new Date(now.getTime() + 60 * 60 * 1000); // 1 hour from now
     }
     if (loadedReturn && loadedPickup && loadedReturn.getTime() <= loadedPickup.getTime()) {
-      loadedReturn = new Date(loadedPickup.getTime() + 4 * 24 * 60 * 60 * 1000);
+      loadedReturn = makePickupPlus12h(loadedPickup);
     }
 
     if (loadedPickup) setPickupDate(loadedPickup);
@@ -140,7 +140,7 @@ export default function BookingWidget({
     updateSession({
       serviceType: stype,
       pickupDate: (pickupDate ?? makeTomorrow()).toISOString(),
-      returnDate: isAirportTransfer ? null : (returnDate ?? makePlus4()).toISOString(),
+      returnDate: isAirportTransfer ? null : (returnDate ?? makePickupPlus12h(pickupDate ?? makeTomorrow())).toISOString(),
       driverOption: mainTab === 'TAXI',
       pickupCity: pickupCityVal,
       dropCity: finalDropCity,
@@ -401,8 +401,8 @@ export default function BookingWidget({
                     onChange={(dates) => {
                       if (dates && dates[0]) {
                         const start = dates[0].toDate();
-                        let end = dates[1] ? dates[1].toDate() : null;
-                        if (end && (end.getTime() - start.getTime()) < 12 * 60 * 60 * 1000) {
+                        let end = dates[1] ? dates[1].toDate() : new Date(start.getTime() + 12 * 60 * 60 * 1000);
+                        if ((end.getTime() - start.getTime()) < 12 * 60 * 60 * 1000) {
                           end = new Date(start.getTime() + 12 * 60 * 60 * 1000);
                         }
                         handlePickupDateChange(start);

@@ -8,6 +8,8 @@ import CarDetailsGallery from '@/components/CarDetailsGallery';
 import VehicleCollections from '@/components/VehicleCollections';
 import { getCarSlug } from '@/lib/utils';
 
+export const dynamic = 'force-dynamic';
+
 export default async function CarDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
@@ -35,10 +37,11 @@ export default async function CarDetailsPage({ params }: { params: Promise<{ id:
     car = allCars.find(c => getCarSlug(c) === id) || null;
   }
 
-  const [cities, taxiSettings, airportZones] = await Promise.all([
+  const [cities, taxiSettings, airportZones, selfDriveLocations] = await Promise.all([
     prisma.city.findMany({ orderBy: { name: 'asc' } }),
     prisma.taxiFareSetting.findMany(),
-    prisma.airportZone.findMany({ include: { fares: true } })
+    prisma.airportZone.findMany({ include: { fares: true } }),
+    prisma.selfDriveLocation.findMany({ orderBy: { order: 'asc' } })
   ]);
 
   if (!car) {
@@ -195,12 +198,12 @@ export default async function CarDetailsPage({ params }: { params: Promise<{ id:
 
           {/* Right Sidebar - Booking Form */}
           <div className="lg:col-span-1">
-            <UnifiedCarBookingSidebar 
-              car={car} 
-              packages={car.packages} 
-              cities={cities} 
+            <UnifiedCarBookingSidebar
+              car={car}
+              packages={car.packages}
               taxiSettings={taxiSettings}
               airportZones={airportZones}
+              selfDriveLocations={selfDriveLocations}
               airportName={cities.find(c => c.name === 'Udaipur')?.airportName || 'the Airport'}
             />
           </div>
