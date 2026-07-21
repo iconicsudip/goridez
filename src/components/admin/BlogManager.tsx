@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { createBlog, updateBlog, deleteBlog } from '@/app/admin/actions';
 import { Edit2, Trash2, X } from 'lucide-react';
+import ImageUpload from '@/components/admin/ImageUpload';
 
 export default function BlogManager({ blogs }: { blogs: any[] }) {
   const [mounted, setMounted] = useState(false);
@@ -14,6 +15,8 @@ export default function BlogManager({ blogs }: { blogs: any[] }) {
     title: '',
     category: 'Travel Guide',
     content: '',
+    image: '',
+    author: '',
     isDraft: true
   });
 
@@ -52,6 +55,8 @@ export default function BlogManager({ blogs }: { blogs: any[] }) {
         slug,
         category: formData.category,
         content: formData.content,
+        image: formData.image || null,
+        author: formData.author || null,
         isDraft: formData.isDraft
       });
     } else {
@@ -60,11 +65,13 @@ export default function BlogManager({ blogs }: { blogs: any[] }) {
       data.append('slug', slug);
       data.append('category', formData.category);
       data.append('content', formData.content);
+      data.append('image', formData.image);
+      data.append('author', formData.author);
       data.append('isDraft', String(formData.isDraft));
       await createBlog(data);
     }
 
-    setFormData({ id: '', title: '', category: 'Travel Guide', content: '', isDraft: true });
+    setFormData({ id: '', title: '', category: 'Travel Guide', content: '', image: '', author: '', isDraft: true });
     setIsEditing(false);
     setIsDrawerOpen(false);
     setLoading(false);
@@ -76,6 +83,8 @@ export default function BlogManager({ blogs }: { blogs: any[] }) {
       title: blog.title,
       category: blog.category,
       content: blog.content,
+      image: blog.image || '',
+      author: blog.author || '',
       isDraft: blog.isDraft
     });
     setIsEditing(true);
@@ -88,6 +97,8 @@ export default function BlogManager({ blogs }: { blogs: any[] }) {
       title: '',
       category: 'Travel Guide',
       content: '',
+      image: '',
+      author: '',
       isDraft: true
     });
     setIsEditing(false);
@@ -209,6 +220,26 @@ export default function BlogManager({ blogs }: { blogs: any[] }) {
                       value={formData.title}
                       onChange={e => setFormData({ ...formData, title: e.target.value })}
                       placeholder="e.g. Navigating Kumbalgarh Fort via Scenic Mountain Passes in Brezza"
+                      className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors placeholder:text-gray-400"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold">
+                      Featured Image
+                    </label>
+                    <ImageUpload value={formData.image} onChange={(v) => setFormData({ ...formData, image: v })} />
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold">
+                      Author Name
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.author}
+                      onChange={e => setFormData({ ...formData, author: e.target.value })}
+                      placeholder="e.g. Emily Harper"
                       className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors placeholder:text-gray-400"
                     />
                   </div>

@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 import {
   LayoutDashboard, Car, Layers, Globe, Map, MapPin, Building, FileText,
-  Search, Activity, Users, Percent, LogOut, UserCircle, ListOrdered, HelpCircle, Info, Settings, ShieldCheck, Camera, MapPinned, Navigation
+  Search, Activity, Users, Percent, LogOut, UserCircle, ListOrdered, HelpCircle, Info, Settings, ShieldCheck, Camera, MapPinned, Navigation, Heart
 } from 'lucide-react';
 
 const ADMIN_LINKS = [
@@ -21,6 +21,7 @@ const ADMIN_LINKS = [
   { href: '/admin/blogs', label: 'Blog CMS Controls', icon: FileText },
   { href: '/admin/faqs', label: 'FAQ CMS Controls', icon: HelpCircle },
   { href: '/admin/about', label: 'About Page Editor', icon: Info },
+  { href: '/admin/happy-family', label: 'Happy Family Photos', icon: Heart },
   { href: '/admin/home-page', label: 'Home Page Editor', icon: Globe },
   { href: '/admin/legal', label: 'Legal Pages & Contact', icon: ShieldCheck },
   { href: '/admin/reels', label: 'Instagram Reels', icon: Camera },

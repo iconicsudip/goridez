@@ -5,7 +5,7 @@ export default function Footer({ siteSettings }: { siteSettings?: any }) {
   const logoSrc = siteSettings?.logoRidez || '/logo-ridez.png';
 
   return (
-    <footer className="bg-[#0A0A0A] border-t border-zinc-900 py-12 text-gray-300">
+    <footer className="bg-gray-900 border-t border-gray-800 py-12 text-gray-300">
       <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
         <div className="col-span-1 md:col-span-2">
           <Link href="/" className="mb-4 inline-block">
@@ -48,7 +48,7 @@ export default function Footer({ siteSettings }: { siteSettings?: any }) {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 mt-12 pt-8 border-t border-zinc-900 text-center text-gray-500 text-sm">
+      <div className="container mx-auto px-4 mt-12 pt-8 border-t border-gray-800 text-center text-gray-500 text-sm">
         {siteSettings?.copyrightText || `© ${new Date().getFullYear()} GoRidez. All rights reserved.`}
       </div>
     </footer>

@@ -53,7 +53,7 @@ export default function ChauffeurBookingModal({ isOpen, onClose, car, defaultPic
   if (car.nightCharge && car.nightChargeStart && car.nightChargeEnd) {
     const [startH] = car.nightChargeStart.split(':').map(Number);
     const [endH] = car.nightChargeEnd.split(':').map(Number);
-    
+
     let nightStart = startH;
     let nightEnd = endH < startH ? endH + 24 : endH;
 
@@ -103,7 +103,7 @@ export default function ChauffeurBookingModal({ isOpen, onClose, car, defaultPic
     <>
       <div className="fixed inset-0 bg-white/60 backdrop-blur-sm z-[100]" onClick={onClose} />
       <div className="fixed inset-x-4 md:inset-x-auto md:left-1/2 md:-translate-x-1/2 top-[5%] md:top-[10%] bottom-[5%] md:bottom-auto md:h-[80vh] w-auto md:w-[800px] bg-white border border-gray-300 rounded-3xl z-[101] shadow-2xl overflow-hidden flex flex-col custom-scrollbar">
-        
+
         {/* Header */}
         <div className="flex justify-between items-center p-6 border-b border-gray-200 bg-gray-100 shrink-0">
           <h2 className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
@@ -115,13 +115,13 @@ export default function ChauffeurBookingModal({ isOpen, onClose, car, defaultPic
         </div>
 
         <div className="flex-1 overflow-y-auto p-6 md:p-8 flex flex-col md:flex-row gap-8">
-          
+
           {/* Left Column - Car & Package */}
           <div className="flex-1 space-y-8">
             {/* Car Info */}
             <div className="flex gap-4 items-center">
               <div className="relative w-24 h-16 rounded-xl overflow-hidden bg-white shrink-0 border border-gray-200">
-                <Image src={car.image} alt={car.model} fill className="object-contain p-1" unoptimized />
+                <Image src={car.image} alt={car.model} fill className="object-cover p-1" unoptimized />
               </div>
               <div>
                 <h3 className="font-black text-xl">{car.make} {car.model}</h3>
@@ -151,26 +151,26 @@ export default function ChauffeurBookingModal({ isOpen, onClose, car, defaultPic
                     },
                   }}
                 >
-                  <DatePicker.RangePicker 
+                  <DatePicker.RangePicker
                     showTime={{ format: 'h:mm a', use12Hours: true, minuteStep: 30 }}
                     format="DD/MM/YYYY - h:mm a"
                     value={[pickupDate ? dayjs(pickupDate) : null, returnDate ? dayjs(returnDate) : null]}
-                      onChange={(dates) => {
-                        if (dates && dates[0]) {
-                          const start = dates[0].toDate();
-                          let end = dates[1] ? dates[1].toDate() : null;
-                          if (end) {
-                            const ms = end.getTime() - start.getTime();
-                            const rawHours = ms / (1000 * 60 * 60);
-                            const snappedHours = rawHours < 18 ? 12 : 24;
-                            end = new Date(start.getTime() + snappedHours * 60 * 60 * 1000);
-                          } else {
-                            end = new Date(start.getTime() + 24 * 60 * 60 * 1000);
-                          }
-                          setPickupDate(start);
-                          setReturnDate(end);
+                    onChange={(dates) => {
+                      if (dates && dates[0]) {
+                        const start = dates[0].toDate();
+                        let end = dates[1] ? dates[1].toDate() : null;
+                        if (end) {
+                          const ms = end.getTime() - start.getTime();
+                          const rawHours = ms / (1000 * 60 * 60);
+                          const snappedHours = rawHours < 18 ? 12 : 24;
+                          end = new Date(start.getTime() + snappedHours * 60 * 60 * 1000);
+                        } else {
+                          end = new Date(start.getTime() + 24 * 60 * 60 * 1000);
                         }
-                      }}
+                        setPickupDate(start);
+                        setReturnDate(end);
+                      }
+                    }}
                     placeholder={['Pickup Date & Time', 'Return Date & Time']}
                     variant="borderless"
                     className="w-full text-xs font-semibold cursor-pointer text-gray-900 !p-0"
@@ -217,12 +217,12 @@ export default function ChauffeurBookingModal({ isOpen, onClose, car, defaultPic
                 <div className="space-y-3 pointer-events-none">
                   {car.packages?.filter((pkg: any) => pkg.name === '12 Hours' || pkg.name === '24 Hours').map((pkg: any) => {
                     const isSelected = selectedPackageId === pkg.id;
-                    
+
                     // Calculate dynamic price based on total hours
                     const ms = returnDate.getTime() - pickupDate.getTime();
                     const hours = ms / (1000 * 60 * 60);
                     const pkgDailyPrice = pkg.basePrice;
-                    
+
                     let pkgPrice = 0;
                     if (hours < 24) {
                       const dMatch = pkg.name.match(/^(\d+)/);
@@ -235,19 +235,18 @@ export default function ChauffeurBookingModal({ isOpen, onClose, car, defaultPic
                     }
 
                     return (
-                      <div 
-                        key={pkg.id} 
-                        className={`p-4 rounded-xl border transition-all ${
-                          isSelected 
-                            ? 'bg-green-600/5 border-green-600 shadow-sm' 
+                      <div
+                        key={pkg.id}
+                        className={`p-4 rounded-xl border transition-all ${isSelected
+                            ? 'bg-green-600/5 border-green-600 shadow-sm'
                             : 'bg-gray-50 border-gray-200 opacity-60'
-                        }`}
+                          }`}
                       >
                         <div className="flex justify-between items-center">
                           <div className="flex items-center gap-3">
-                            <input 
-                              type="radio" 
-                              name="chauffeurPackage" 
+                            <input
+                              type="radio"
+                              name="chauffeurPackage"
                               checked={isSelected}
                               readOnly
                               className="accent-green-700 w-4 h-4"
@@ -288,17 +287,17 @@ export default function ChauffeurBookingModal({ isOpen, onClose, car, defaultPic
                 <div className="space-y-4 mb-6 text-sm">
                   <div className="flex justify-between text-gray-650 font-medium">
                     <span>
-                      {Math.floor(priceInfo.hours / durationHours) > 1 
-                        ? `${Math.floor(priceInfo.hours / durationHours)}x ${selectedPackage.name}` 
+                      {Math.floor(priceInfo.hours / durationHours) > 1
+                        ? `${Math.floor(priceInfo.hours / durationHours)}x ${selectedPackage.name}`
                         : selectedPackage.name} Package
                     </span>
                     <span className="font-mono text-gray-900 font-bold">₹{basePrice.toLocaleString()}</span>
                   </div>
-                  
+
                   {hasNightCharge && (
                     <div className="flex justify-between text-yellow-400">
                       <span className="flex items-center gap-1.5">
-                        Night Charge 
+                        Night Charge
                         <span className="text-[9px] px-1.5 py-0.5 rounded border border-yellow-400/30">
                           {car.nightChargeStart} - {car.nightChargeEnd}
                         </span>
@@ -319,7 +318,7 @@ export default function ChauffeurBookingModal({ isOpen, onClose, car, defaultPic
                   <div className="flex gap-2"><ShieldCheck size={14} className="text-green-700 shrink-0" /> 100% Insured Journey</div>
                 </div>
 
-                <button 
+                <button
                   onClick={handleBook}
                   className="w-full py-4 bg-green-600 text-white font-black uppercase tracking-widest text-xs rounded-xl shadow-[0_0_20px_rgba(196,240,0,0.2)] hover:shadow-[0_0_30px_rgba(196,240,0,0.4)] transition-all"
                 >

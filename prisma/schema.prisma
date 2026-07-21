@@ -259,6 +259,8 @@ model Blog {
   slug      String   @unique
   category  String
   content   String
+  image     String?
+  author    String?
   isDraft   Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -306,6 +308,16 @@ model InstagramReel {
   url       String
   caption   String?
   category  String   @default("Customer Reels")
+  isActive  Boolean  @default(true)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model HappyCustomer {
+  id        String   @id @default(cuid())
+  imageUrl  String
+  name      String?
+  location  String?
   isActive  Boolean  @default(true)
   order     Int      @default(0)
   createdAt DateTime @default(now())

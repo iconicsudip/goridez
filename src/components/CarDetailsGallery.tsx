@@ -41,7 +41,7 @@ export default function CarDetailsGallery({ mainImage, galleryJson, alt }: CarDe
           src={images[activeIndex] || '/placeholder-car.png'}
           alt={`${alt} - View ${activeIndex + 1}`}
           fill
-          className="object-contain p-2 group-hover:scale-102 transition-transform duration-700 z-10"
+          className="object-cover p-2 group-hover:scale-102 transition-transform duration-700 z-10"
           unoptimized
         />
 
@@ -74,8 +74,8 @@ export default function CarDetailsGallery({ mainImage, galleryJson, alt }: CarDe
               type="button"
               onClick={() => setActiveIndex(idx)}
               className={`relative w-24 h-16 rounded-xl overflow-hidden shrink-0 border-2 transition-all cursor-pointer ${idx === activeIndex
-                  ? 'border-green-600 ring-2 ring-green-600/20 scale-95 shadow-md'
-                  : 'border-gray-250 hover:border-gray-400 opacity-70 hover:opacity-100'
+                ? 'border-green-600 ring-2 ring-green-600/20 scale-95 shadow-md'
+                : 'border-gray-250 hover:border-gray-400 opacity-70 hover:opacity-100'
                 }`}
             >
               <Image

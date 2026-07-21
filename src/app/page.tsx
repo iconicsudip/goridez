@@ -9,7 +9,9 @@ import BrowseCars from "@/components/BrowseCars";
 import VideoGallery from "@/components/VideoGallery";
 import VehicleCollections from "@/components/VehicleCollections";
 import GoogleReviewsSection from "@/components/GoogleReviewsSection";
-import { Star, Shield, Clock, Map, ChevronRight, Key, Calendar, BookOpen, Plane, UserCheck, Coins, ArrowRight } from 'lucide-react';
+import { Star, Shield, Clock, Map, ChevronRight, Key, Plane, UserCheck, Coins, ArrowRight, ArrowUpRight } from 'lucide-react';
+
+const BLOG_FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=1600&q=80';
 
 export const dynamic = 'force-dynamic';
 
@@ -109,8 +111,15 @@ export default async function Home() {
             </Link>
           </div>
 
+
+
+          {/* Floating Booking Widget */}
+          <div id="booking-widget" className="w-full max-w-5xl relative z-20">
+            <BookingWidget cars={cars} cities={cities} airportZones={airportZones} airportName={udaipurForZones?.airportName || 'the Airport'} counts={{ selfDrive: selfDriveCount, chauffeur: chauffeurCount, taxi: 0, tours: 0, villas: 0 }} />
+          </div>
+
           {/* Value Props */}
-          <div className="flex flex-wrap justify-center gap-4 md:gap-8 pt-8 border-t border-white/10 w-full max-w-3xl mb-12 md:mb-16">
+          <div className="flex flex-wrap justify-center gap-4 md:gap-8 pt-8 border-t border-white/10 w-full max-w-3xl mb-12 md:mb-16 mt-10">
             <div className="text-center px-2">
               <div className="font-bold text-white text-base md:text-lg mb-1 drop-shadow">100% VETTED</div>
               <div className="text-gray-400 text-[10px] md:text-xs font-medium">Verified Fleet</div>
@@ -125,11 +134,6 @@ export default async function Home() {
               <div className="font-bold text-white text-base md:text-lg mb-1 drop-shadow">24x7 DESK</div>
               <div className="text-gray-400 text-[10px] md:text-xs font-medium">On-road Dispatch</div>
             </div>
-          </div>
-
-          {/* Floating Booking Widget */}
-          <div id="booking-widget" className="w-full max-w-5xl relative z-20">
-            <BookingWidget cars={cars} cities={cities} airportZones={airportZones} airportName={udaipurForZones?.airportName || 'the Airport'} counts={{ selfDrive: selfDriveCount, chauffeur: chauffeurCount, taxi: 0, tours: 0, villas: 0 }} />
           </div>
 
         </div>
@@ -349,44 +353,38 @@ export default async function Home() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {blogs.map((blog) => (
-                <Link
-                  href={`/blogs/${blog.slug}`}
-                  key={blog.id}
-                  className="bg-white border border-brand-border hover:border-brand-gold rounded-3xl overflow-hidden group transition-all duration-300 flex flex-col h-full shadow-lg"
-                >
-                  <div className="h-2 w-full bg-gradient-to-r from-brand-gold to-[#8dbb00] opacity-20 group-hover:opacity-100 transition-opacity" />
-                  <div className="p-8 flex flex-col flex-1">
-                    <div className="flex justify-between items-center mb-6">
-                      <span className="text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded border border-brand-gold text-brand-gold">
-                        {blog.category}
-                      </span>
-                      <div className="flex items-center gap-1.5 text-[10px] text-gray-600 font-mono">
-                        <Calendar size={12} />
-                        {new Date(blog.createdAt).toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric'
-                        })}
-                      </div>
+                <Link href={`/blogs/${blog.slug}`} key={blog.id} className="group flex flex-col">
+                  <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden mb-5">
+                    <Image
+                      src={blog.image || BLOG_FALLBACK_IMAGE}
+                      alt={blog.title}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      unoptimized
+                    />
+                    <span className="absolute top-4 left-4 text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full bg-white/90 backdrop-blur-md text-gray-900">
+                      {blog.category}
+                    </span>
+                  </div>
+
+                  <h3 className="flex items-start justify-between gap-2 text-lg font-black text-gray-900 leading-snug mb-2 group-hover:text-green-700 transition-colors">
+                    <span className="line-clamp-2">{blog.title}</span>
+                    <ArrowUpRight size={18} className="shrink-0 mt-1 text-gray-400 group-hover:text-green-700 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                  </h3>
+
+                  <p className="text-gray-500 text-sm leading-relaxed mb-5 line-clamp-2">
+                    {getExcerpt(blog.content)}
+                  </p>
+
+                  <div className="flex items-center gap-2.5 mt-auto">
+                    <div className="w-7 h-7 rounded-full bg-green-600/10 text-green-700 flex items-center justify-center text-[11px] font-black uppercase shrink-0">
+                      {(blog.author || 'G').charAt(0)}
                     </div>
-
-                    <h3 className="text-lg font-black uppercase tracking-tight mb-4 text-gray-900 group-hover:text-brand-gold transition-colors leading-tight line-clamp-2">
-                      {blog.title}
-                    </h3>
-
-                    <p className="text-gray-600 text-xs leading-relaxed mb-6 line-clamp-3">
-                      {getExcerpt(blog.content)}
-                    </p>
-
-                    <div className="flex justify-between items-center mt-auto pt-6 border-t border-brand-border">
-                      <span className="flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-brand-gold group-hover:translate-x-1 transition-transform">
-                        Read Story <ChevronRight size={12} />
-                      </span>
-                      <div className="flex items-center gap-1 text-[10px] text-gray-500 font-mono">
-                        <Clock size={12} />
-                        <span>{getReadingTime(blog.content)}</span>
-                      </div>
-                    </div>
+                    <span className="text-xs font-bold text-gray-700">{blog.author || 'GoRidez Team'}</span>
+                    <span className="text-gray-300">•</span>
+                    <span className="text-xs text-gray-400">
+                      {new Date(blog.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                    </span>
                   </div>
                 </Link>
               ))}
@@ -405,11 +403,4 @@ const getExcerpt = (htmlContent: string) => {
   const plainText = htmlContent.replace(/<[^>]*>/g, ' ');
   if (plainText.length <= 120) return plainText;
   return plainText.substring(0, 120).trim() + '...';
-};
-
-const getReadingTime = (htmlContent: string) => {
-  const plainText = htmlContent.replace(/<[^>]*>/g, ' ');
-  const words = plainText.trim().split(/\s+/).length;
-  const minutes = Math.max(1, Math.ceil(words / 225));
-  return `${minutes} min read`;
 };

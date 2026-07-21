@@ -567,6 +567,8 @@ export async function createBlog(formData: FormData) {
     const slug = formData.get('slug') as string;
     const category = formData.get('category') as string;
     const content = formData.get('content') as string;
+    const image = (formData.get('image') as string) || null;
+    const author = (formData.get('author') as string) || null;
     const isDraft = formData.get('isDraft') === 'true';
 
     if (!title || !slug || !category) {
@@ -574,9 +576,10 @@ export async function createBlog(formData: FormData) {
     }
 
     await prisma.blog.create({
-      data: { title, slug, category, content: content || '', isDraft }
+      data: { title, slug, category, content: content || '', image, author, isDraft }
     });
     revalidatePath('/admin/blogs');
+    revalidatePath('/blogs');
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };
@@ -587,6 +590,7 @@ export async function updateBlog(id: string, data: any) {
   try {
     await prisma.blog.update({ where: { id }, data });
     revalidatePath('/admin/blogs');
+    revalidatePath('/blogs');
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };
@@ -597,6 +601,7 @@ export async function deleteBlog(id: string) {
   try {
     await prisma.blog.delete({ where: { id } });
     revalidatePath('/admin/blogs');
+    revalidatePath('/blogs');
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };
@@ -1077,6 +1082,76 @@ export async function deleteInstagramReel(id: string) {
     await prisma.instagramReel.delete({ where: { id } });
     revalidatePath('/admin/reels');
     revalidatePath('/');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+// --- HAPPY FAMILY (CUSTOMER PHOTOS) ---
+export async function createHappyCustomer(formData: FormData) {
+  try {
+    const imageUrl = formData.get('imageUrl') as string;
+    const name = (formData.get('name') as string) || null;
+    const location = (formData.get('location') as string) || null;
+
+    if (!imageUrl) {
+      return { success: false, error: 'A photo is required.' };
+    }
+
+    const maxOrder = await prisma.happyCustomer.aggregate({ _max: { order: true } });
+
+    await prisma.happyCustomer.create({
+      data: { imageUrl, name, location, order: (maxOrder._max.order ?? -1) + 1 }
+    });
+
+    revalidatePath('/admin/happy-family');
+    revalidatePath('/about');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+export async function updateHappyCustomer(id: string, data: { name?: string | null; location?: string | null; isActive?: boolean }) {
+  try {
+    await prisma.happyCustomer.update({ where: { id }, data });
+    revalidatePath('/admin/happy-family');
+    revalidatePath('/about');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+export async function reorderHappyCustomer(id: string, direction: 'up' | 'down') {
+  try {
+    const customers = await prisma.happyCustomer.findMany({ orderBy: { order: 'asc' } });
+    const idx = customers.findIndex(c => c.id === id);
+    if (idx === -1) return { success: false, error: 'Photo not found' };
+    const swapIdx = direction === 'up' ? idx - 1 : idx + 1;
+    if (swapIdx < 0 || swapIdx >= customers.length) return { success: true };
+
+    const a = customers[idx];
+    const b = customers[swapIdx];
+    await prisma.$transaction([
+      prisma.happyCustomer.update({ where: { id: a.id }, data: { order: b.order } }),
+      prisma.happyCustomer.update({ where: { id: b.id }, data: { order: a.order } }),
+    ]);
+
+    revalidatePath('/admin/happy-family');
+    revalidatePath('/about');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+export async function deleteHappyCustomer(id: string) {
+  try {
+    await prisma.happyCustomer.delete({ where: { id } });
+    revalidatePath('/admin/happy-family');
+    revalidatePath('/about');
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };

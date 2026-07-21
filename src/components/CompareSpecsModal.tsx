@@ -166,14 +166,14 @@ export default function CompareSpecsModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white/80 backdrop-blur-md animate-fade-in">
       <div className="bg-gray-100 border border-gray-300 rounded-3xl w-full max-w-4xl overflow-hidden shadow-2xl relative flex flex-col max-h-[90vh]">
-        
+
         {/* Header */}
         <div className="p-6 md:p-8 border-b border-gray-200 flex justify-between items-center bg-[#0C0C0C]">
           <div>
             <span className="text-[10px] text-green-700 font-black tracking-widest uppercase mb-1 block">Fidelity Fleet Intelligence</span>
             <h2 className="text-xl md:text-2xl font-black uppercase tracking-tight text-gray-900">Compare Vehicle Specifications</h2>
           </div>
-          <button 
+          <button
             onClick={onClose}
             className="w-10 h-10 rounded-full border border-gray-300 bg-white/5 flex items-center justify-center text-gray-500 hover:text-gray-900 hover:bg-white/10 transition-colors"
           >
@@ -184,7 +184,7 @@ export default function CompareSpecsModal({
         {/* Modal Content Scroll Area */}
         <div className="flex-1 overflow-y-auto custom-scrollbar p-6 md:p-8 space-y-6">
           <div className="grid grid-cols-3 gap-4 items-stretch">
-            
+
             {/* Column 1: Labels placeholder */}
             <div className="flex flex-col justify-end pb-4 font-mono text-[9px] text-gray-500 uppercase tracking-wider font-bold">
               SPECIFICATION METRIC
@@ -196,7 +196,7 @@ export default function CompareSpecsModal({
                 SELECTED
               </div>
               <div className="relative w-full h-[90px] mb-3">
-                <Image src={selectedCar.image} alt={selectedCar.model} fill className="object-contain" unoptimized />
+                <Image src={selectedCar.image} alt={selectedCar.model} fill className="object-cover" unoptimized />
               </div>
               <h3 className="font-black text-sm uppercase text-gray-900 truncate max-w-full">
                 {selectedCar.make} {selectedCar.model}
@@ -224,7 +224,7 @@ export default function CompareSpecsModal({
               </div>
               <div className="relative w-full h-[90px] mt-6 mb-3">
                 {activeCompareCar ? (
-                  <Image src={activeCompareCar.image} alt={activeCompareCar.model} fill className="object-contain" unoptimized />
+                  <Image src={activeCompareCar.image} alt={activeCompareCar.model} fill className="object-cover" unoptimized />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs font-mono">
                     No image available
@@ -260,8 +260,8 @@ export default function CompareSpecsModal({
               { label: 'Refundable Security Hold', valA: carAPackage ? `₹${carAPackage.deposit.toLocaleString()}` : 'Contact Support', valB: carBPackage ? `₹${carBPackage.deposit.toLocaleString()}` : 'Contact Support' },
               { label: 'Excess Distance Premium', valA: carAPackage?.extraChargePerUnit ? `₹${carAPackage.extraChargePerUnit}/KM` : 'Included', valB: carBPackage?.extraChargePerUnit ? `₹${carBPackage.extraChargePerUnit}/KM` : 'Included' },
             ].map((row, i) => (
-              <div 
-                key={i} 
+              <div
+                key={i}
                 className={`grid grid-cols-3 gap-4 p-4 border-b border-gray-200 last:border-0 ${i % 2 === 0 ? 'bg-[#151515]' : 'bg-[#0E0E0E]'}`}
               >
                 <div className="text-gray-500 font-bold uppercase tracking-wider text-[10px]">{row.label}</div>
@@ -287,15 +287,15 @@ export default function CompareSpecsModal({
 
         {/* Footer Actions */}
         <div className="p-6 border-t border-gray-200 flex justify-end gap-4 bg-[#0C0C0C]">
-          <button 
+          <button
             onClick={onClose}
             className="px-6 py-3 border border-gray-300 rounded-xl text-[10px] font-bold uppercase tracking-widest text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
           >
             Close Comparison
           </button>
-          
+
           <div className="flex gap-4">
-            <button 
+            <button
               onClick={() => {
                 if (!isCarABooked) {
                   onSelectCar(selectedCar.id);
@@ -303,17 +303,16 @@ export default function CompareSpecsModal({
                 }
               }}
               disabled={isCarABooked}
-              className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                isCarABooked 
-                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-200' 
+              className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${isCarABooked
+                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-200'
                   : 'bg-green-600 text-white hover:bg-brand-hover shadow-[0_0_15px_rgba(196,240,0,0.2)]'
-              }`}
+                }`}
             >
               {isCarABooked ? 'Selected Booked' : `Choose ${selectedCar.model}`}
             </button>
 
             {activeCompareCar && (
-              <button 
+              <button
                 onClick={() => {
                   if (!isCarBBooked) {
                     onSelectCar(activeCompareCar.id);
@@ -321,11 +320,10 @@ export default function CompareSpecsModal({
                   }
                 }}
                 disabled={isCarBBooked}
-                className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                  isCarBBooked 
-                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-200' 
+                className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${isCarBBooked
+                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-200'
                     : 'bg-white text-black hover:bg-zinc-200 shadow-[0_0_15px_rgba(255,255,255,0.1)]'
-                }`}
+                  }`}
               >
                 {isCarBBooked ? 'Compare Booked' : `Choose ${activeCompareCar.model}`}
               </button>

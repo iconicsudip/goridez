@@ -30,7 +30,7 @@ export default function SelfDriveList({ initialCars, pickupDate, returnDate }: {
     const car = initialCars.find(c => c.id === carId);
     if (!car) return;
 
-    const durationHours = pickupDate && returnDate 
+    const durationHours = pickupDate && returnDate
       ? Math.max(1, (returnDate.getTime() - pickupDate.getTime()) / (1000 * 60 * 60))
       : 24;
 
@@ -55,7 +55,7 @@ export default function SelfDriveList({ initialCars, pickupDate, returnDate }: {
     <div className="flex flex-col w-full">
       <div className="flex flex-col gap-5">
         {paginatedCars.map((car) => {
-          const durationHours = pickupDate && returnDate 
+          const durationHours = pickupDate && returnDate
             ? Math.max(1, (returnDate.getTime() - pickupDate.getTime()) / (1000 * 60 * 60))
             : 24;
 
@@ -63,7 +63,7 @@ export default function SelfDriveList({ initialCars, pickupDate, returnDate }: {
           const finalPrice = priceInfo.basePrice;
           const usedPackageIds = priceInfo.usedPkgIds;
           const activePackage = priceInfo.selectedPkg || car.packages?.[0];
-          
+
           const isAlreadyBooked = car.bookings && car.bookings.length > 0 && car.bookings.some((booking: any) => {
             if (booking.status === 'CANCELLED') return false;
             const bStart = new Date(booking.startDate);
@@ -93,7 +93,7 @@ export default function SelfDriveList({ initialCars, pickupDate, returnDate }: {
                         mainImage={car.image}
                         galleryJson={car.gallery}
                         alt={`${car.make} ${car.model}`}
-                        imageClassName="object-contain group-hover:scale-105 transition-transform duration-500 w-full h-full"
+                        imageClassName="object-cover group-hover:scale-105 transition-transform duration-500 w-full h-full"
                       />
                     </Link>
                   </div>
@@ -124,10 +124,10 @@ export default function SelfDriveList({ initialCars, pickupDate, returnDate }: {
                     {/* Trust badges */}
                     <div className="flex flex-wrap gap-2 mb-4">
                       <span className="flex items-center gap-1 bg-green-50 text-green-700 border border-green-100 px-2.5 py-1 rounded-lg text-[9px] font-bold uppercase tracking-widest">
-                        <ShieldCheck size={10}/> Insured
+                        <ShieldCheck size={10} /> Insured
                       </span>
                       <span className="flex items-center gap-1 bg-blue-50 text-blue-700 border border-blue-100 px-2.5 py-1 rounded-lg text-[9px] font-bold uppercase tracking-widest">
-                        <CheckCircle size={10}/> GPS Tracked
+                        <CheckCircle size={10} /> GPS Tracked
                       </span>
                     </div>
                     {/* Features pills */}
@@ -148,11 +148,10 @@ export default function SelfDriveList({ initialCars, pickupDate, returnDate }: {
                           return (
                             <div
                               key={pkg.id}
-                              className={`px-3 py-2 text-[9px] font-bold rounded-xl text-center border transition-all ${
-                                isSelected
+                              className={`px-3 py-2 text-[9px] font-bold rounded-xl text-center border transition-all ${isSelected
                                   ? 'bg-green-600 border-green-600 text-white'
                                   : 'bg-gray-50 border-gray-200 text-gray-400 opacity-50'
-                              }`}
+                                }`}
                             >
                               {pkg.name} ({pkg.limitValue} {pkg.type === 'KM' ? 'KM' : 'Hrs'})
                             </div>
@@ -165,11 +164,11 @@ export default function SelfDriveList({ initialCars, pickupDate, returnDate }: {
                   {/* Bottom: Inclusions strip */}
                   <div className="px-5 py-3 flex flex-wrap items-center gap-4 bg-gray-50">
                     <span className="flex items-center gap-1.5 text-[10px] font-semibold text-gray-600">
-                      <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/></svg>
+                      <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
                       Insured vehicle
                     </span>
                     <span className="flex items-center gap-1.5 text-[10px] font-semibold text-gray-600">
-                      <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/></svg>
+                      <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
                       GPS Tracked
                     </span>
                     {deposit > 0 && (
@@ -216,11 +215,10 @@ export default function SelfDriveList({ initialCars, pickupDate, returnDate }: {
                     <button
                       onClick={() => !isAlreadyBooked && handleBook(car.id)}
                       disabled={isAlreadyBooked}
-                      className={`w-full font-black text-[10px] tracking-widest uppercase py-3.5 px-4 rounded-xl transition-all ${
-                        isAlreadyBooked
+                      className={`w-full font-black text-[10px] tracking-widest uppercase py-3.5 px-4 rounded-xl transition-all ${isAlreadyBooked
                           ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                           : 'bg-green-500 text-white hover:bg-green-600 shadow-md shadow-green-500/30'
-                      }`}
+                        }`}
                     >
                       {isAlreadyBooked ? 'Already Booked' : 'Book Now'}
                     </button>
@@ -252,7 +250,7 @@ export default function SelfDriveList({ initialCars, pickupDate, returnDate }: {
           >
             &larr;
           </button>
-          
+
           {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
             <button
               key={page}
@@ -260,11 +258,10 @@ export default function SelfDriveList({ initialCars, pickupDate, returnDate }: {
                 setCurrentPage(page);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className={`w-10 h-10 rounded-xl border text-sm font-bold transition-all cursor-pointer ${
-                currentPage === page
+              className={`w-10 h-10 rounded-xl border text-sm font-bold transition-all cursor-pointer ${currentPage === page
                   ? 'bg-green-600 border-green-600 text-white shadow-md'
                   : 'border-gray-200 bg-white text-gray-700 hover:border-green-600 hover:text-green-700'
-              }`}
+                }`}
             >
               {page}
             </button>

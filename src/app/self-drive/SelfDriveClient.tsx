@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Sparkles, Calendar } from 'lucide-react';
+import { Sparkles, Calendar, ChevronDown } from 'lucide-react';
 import SelfDriveList from '@/components/SelfDriveList';
 import { DatePicker, ConfigProvider } from 'antd';
 import dayjs from 'dayjs';
@@ -18,7 +18,8 @@ export default function SelfDriveClient({ initialCars, initialCities }: { initia
   const [transmission, setTransmission] = useState('Any Transmission');
   const [fuelType, setFuelType] = useState('Any Fuel Type');
   const [maxPrice, setMaxPrice] = useState(40000);
-  
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+
   const [pickupDate, setPickupDate] = useState<Date>(() => {
     const d = new Date();
     d.setHours(d.getHours() + 1, 0, 0, 0);
@@ -164,9 +165,16 @@ export default function SelfDriveClient({ initialCars, initialCities }: { initia
         
         {/* Sidebar */}
         <aside className="w-full lg:w-[320px] shrink-0 bg-gray-100 border border-gray-200 rounded-3xl p-8 h-fit lg:sticky lg:top-28">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="font-black text-lg">Filters & Options</h2>
-            <button 
+          <div className="flex justify-between items-center mb-8 lg:mb-8">
+            <button
+              type="button"
+              onClick={() => setIsFiltersOpen((o) => !o)}
+              className="flex items-center gap-2 lg:pointer-events-none"
+            >
+              <h2 className="font-black text-lg">Filters & Options</h2>
+              <ChevronDown size={18} className={`text-gray-500 transition-transform lg:hidden ${isFiltersOpen ? 'rotate-180' : ''}`} />
+            </button>
+            <button
               onClick={() => {
                 setSearch(''); setSelectedCityIds([]); setCategory('All'); setTransmission('Any Transmission'); setFuelType('Any Fuel Type'); setMaxPrice(40000);
               }}
@@ -176,7 +184,7 @@ export default function SelfDriveClient({ initialCars, initialCities }: { initia
             </button>
           </div>
 
-          <div className="space-y-6">
+          <div className={`${isFiltersOpen ? 'block' : 'hidden'} lg:block space-y-6`}>
             
             {/* Date Selection */}
             <div className="space-y-4 font-sans">

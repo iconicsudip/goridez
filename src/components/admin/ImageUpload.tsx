@@ -85,15 +85,15 @@ export default function ImageUpload({ value, onChange, placeholder = 'https://im
       {value && (
         <div className="mt-3 relative w-full h-32 rounded-xl overflow-hidden bg-gray-50 border border-gray-300 group">
           {value.match(/\.(mp4|webm)$/i) ? (
-            <video 
+            <video
               src={value}
               className="w-full h-full object-cover opacity-80 group-hover:opacity-60 transition-opacity"
               autoPlay muted loop playsInline
             />
           ) : (
-            <img 
-              src={value} 
-              alt="Upload preview" 
+            <img
+              src={value}
+              alt="Upload preview"
               className="w-full h-full object-cover opacity-80 group-hover:opacity-60 transition-opacity"
               onError={(e) => {
                 (e.target as HTMLImageElement).src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="%23333" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>';
@@ -118,7 +118,7 @@ export default function ImageUpload({ value, onChange, placeholder = 'https://im
       {/* Full Size Preview Modal */}
       {isPreviewOpen && value && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-white/90 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <button 
+          <button
             type="button"
             onClick={() => setIsPreviewOpen(false)}
             className="absolute top-6 right-6 p-3 bg-white/50 hover:bg-white/10 rounded-full text-gray-500 hover:text-gray-900 transition-all backdrop-blur-md"
@@ -126,16 +126,16 @@ export default function ImageUpload({ value, onChange, placeholder = 'https://im
             <X size={24} />
           </button>
           {value.match(/\.(mp4|webm)$/i) ? (
-            <video 
-              src={value} 
+            <video
+              src={value}
               className="max-w-full max-h-full rounded-lg shadow-2xl"
               controls autoPlay
             />
           ) : (
-            <img 
-              src={value} 
-              alt="Full size preview" 
-              className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+            <img
+              src={value}
+              alt="Full size preview"
+              className="max-w-full max-h-full object-cover rounded-lg shadow-2xl"
             />
           )}
         </div>

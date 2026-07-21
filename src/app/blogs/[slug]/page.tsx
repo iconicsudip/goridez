@@ -1,9 +1,12 @@
 import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Calendar, Clock, ArrowLeft, BookOpen, ChevronRight, Car, Building, Sparkles } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
+
+const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=1600&q=80';
 
 // Helper to estimate reading time
 const getReadingTime = (htmlContent: string) => {
@@ -15,7 +18,7 @@ const getReadingTime = (htmlContent: string) => {
 
 export default async function BlogDetails({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
-  
+
   const blog = await prisma.blog.findUnique({
     where: { slug: resolvedParams.slug }
   });
@@ -26,61 +29,81 @@ export default async function BlogDetails({ params }: { params: Promise<{ slug: 
   }
 
   const readingTime = getReadingTime(blog.content);
+  const publishedOn = new Date(blog.createdAt).toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric'
+  });
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 font-body pt-32 pb-24">
-      <div className="container mx-auto px-4 max-w-4xl">
-        
-        {/* Back navigation */}
-        <Link 
-          href="/blogs"
-          className="inline-flex items-center gap-2 text-gray-500 hover:text-green-700 transition-colors text-xs font-black uppercase tracking-widest mb-10"
-        >
-          <ArrowLeft size={14} /> Back to Journal
-        </Link>
+    <div className="min-h-screen bg-gray-50 text-gray-900 font-body pb-24">
 
-        {/* Hero Header */}
-        <div className="border-b border-gray-300 pb-10 mb-10">
-          <div className="flex flex-wrap items-center gap-3 mb-6">
-            <span className="text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded border border-[#C4F000]/30 text-green-700">
-              {blog.category}
-            </span>
-            <div className="flex items-center gap-1.5 text-[10px] text-gray-500 font-mono">
-              <Calendar size={12} />
-              {new Date(blog.createdAt).toLocaleDateString('en-US', {
-                month: 'long',
-                day: 'numeric',
-                year: 'numeric'
-              })}
-            </div>
-            <div className="flex items-center gap-1.5 text-[10px] text-gray-500 font-mono">
-              <Clock size={12} />
-              <span>{readingTime}</span>
-            </div>
-          </div>
+      {/* Hero Banner */}
+      <section className="relative h-[55vh] md:h-[65vh] w-full overflow-hidden bg-gray-900">
+        <Image
+          src={blog.image || FALLBACK_IMAGE}
+          alt={blog.title}
+          fill
+          className="object-cover opacity-80"
+          unoptimized
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10" />
 
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight leading-[1.1] text-gray-900 mb-6">
-            {blog.title}
-          </h1>
-
-          <div className="flex items-center gap-3 bg-gray-100 border border-gray-200 rounded-2xl p-4 w-fit">
-            <div className="w-8 h-8 rounded-full bg-green-600/10 border border-green-600/20 flex items-center justify-center">
-              <span className="text-green-700 text-xs font-black">GR</span>
-            </div>
-            <div>
-              <div className="text-[10px] text-gray-500 uppercase font-black tracking-widest">WRITTEN BY</div>
-              <div className="text-xs font-bold text-gray-900">GoRidez Editorial Team</div>
-            </div>
+        <div className="absolute top-28 left-0 right-0">
+          <div className="mx-auto px-4 max-w-[1500px]">
+            <Link
+              href="/blogs"
+              className="inline-flex items-center gap-2 text-white/80 hover:text-white transition-colors text-xs font-black uppercase tracking-widest"
+            >
+              <ArrowLeft size={14} /> Back to Journal
+            </Link>
           </div>
         </div>
 
-        {/* Article Body */}
-        <div className="blog-content mb-16" dangerouslySetInnerHTML={{ __html: blog.content }} />
+        <div className="absolute inset-x-0 bottom-0 pb-10 md:pb-14">
+          <div className="container mx-auto px-4 max-w-[1500px]">
+            <div className="flex flex-wrap items-center gap-3 mb-6">
+              <span className="text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full bg-white/15 backdrop-blur-md text-white border border-white/20">
+                {blog.category}
+              </span>
+              <div className="flex items-center gap-1.5 text-[10px] text-white/70 font-mono">
+                <Calendar size={12} /> {publishedOn}
+              </div>
+              <div className="flex items-center gap-1.5 text-[10px] text-white/70 font-mono">
+                <Clock size={12} />
+                <span>{readingTime}</span>
+              </div>
+            </div>
+
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight leading-[1.05] text-white max-w-4xl drop-shadow-lg">
+              {blog.title}
+            </h1>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 max-w-[1500px]">
+
+        <div className="max-w-5xl mx-auto">
+          <div className="flex items-center gap-3 bg-gray-100 border border-gray-200 rounded-2xl p-4 w-fit -mt-8 md:-mt-9 relative z-10 mb-10 shadow-sm">
+            <div className="w-8 h-8 rounded-full bg-green-600/10 border border-green-600/20 flex items-center justify-center">
+              <span className="text-green-700 text-xs font-black">{(blog.author || 'GoRidez').charAt(0)}</span>
+            </div>
+            <div>
+              <div className="text-[10px] text-gray-500 uppercase font-black tracking-widest">WRITTEN BY</div>
+              <div className="text-xs font-bold text-gray-900">{blog.author || 'GoRidez Editorial Team'}</div>
+            </div>
+          </div>
+
+          {/* Article Body */}
+          <div className="blog-content mb-16" dangerouslySetInnerHTML={{ __html: blog.content }} />
+        </div>
 
         {/* CTA Section (Premium integration) */}
         <div className="bg-gradient-to-br from-[#111] to-[#0A0A0A] border border-gray-800 rounded-3xl p-8 md:p-12 text-center md:text-left flex flex-col md:flex-row justify-between items-center gap-8 shadow-2xl relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-green-600/5 rounded-full blur-3xl pointer-events-none" />
-          
+
           <div className="flex-1">
             <div className="text-green-500 text-[10px] font-black uppercase tracking-widest mb-3 flex items-center gap-1.5 justify-center md:justify-start">
               <Sparkles size={12} /> Mewar Heritage Awaits
@@ -94,13 +117,13 @@ export default async function BlogDetails({ params }: { params: Promise<{ slug: 
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 shrink-0 w-full md:w-auto">
-            <Link 
+            <Link
               href="/self-drive"
               className="bg-green-600 hover:bg-brand-hover text-black font-black uppercase text-[10px] tracking-widest px-8 py-4 rounded-xl text-center transition-all shadow-md flex items-center justify-center gap-2"
             >
               <Car size={14} /> Cars Collection
             </Link>
-            <Link 
+            <Link
               href="/villas"
               className="bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-900 font-black uppercase text-[10px] tracking-widest px-8 py-4 rounded-xl text-center transition-colors flex items-center justify-center gap-2"
             >

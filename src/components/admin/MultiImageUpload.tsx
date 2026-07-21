@@ -139,17 +139,17 @@ export default function MultiImageUpload({ value, onChange }: MultiImageUploadPr
       {/* Full Size Preview Modal */}
       {previewImage && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-white/90 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <button 
+          <button
             type="button"
             onClick={() => setPreviewImage(null)}
             className="absolute top-6 right-6 p-3 bg-white/50 hover:bg-white/10 rounded-full text-gray-500 hover:text-gray-900 transition-all backdrop-blur-md"
           >
             <X size={24} />
           </button>
-          <img 
-            src={previewImage} 
-            alt="Full size preview" 
-            className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+          <img
+            src={previewImage}
+            alt="Full size preview"
+            className="max-w-full max-h-full object-cover rounded-lg shadow-2xl"
           />
         </div>
       )}

@@ -185,10 +185,10 @@ export default function BookingWidget({
   const dateSpansTwo = locationFieldCount === 1;
 
   return (
-    <div className="w-full max-w-5xl mx-auto font-body mt-8 z-10 relative text-left">
+    <div className="w-full max-w-5xl mx-auto font-body z-10 relative text-left">
 
       {/* ── Main Tabs ─────────────────────────────────────────────────────── */}
-      <div className="flex w-full sm:w-max max-w-full overflow-x-auto hide-scrollbar bg-brand-panel/95 backdrop-blur-xl rounded-t-3xl shadow-lg border border-brand-border border-b-0">
+      <div className="flex justify-center sm:justify-start w-full sm:w-max max-w-full mx-auto overflow-x-auto hide-scrollbar bg-brand-panel/95 backdrop-blur-xl rounded-t-3xl shadow-lg border border-brand-border border-b-0">
         {(['SELF DRIVE', 'TAXI'] as MainTab[]).map((tab) => {
           if (counts) {
             if (tab === 'SELF DRIVE' && counts.selfDrive === 0) return null;
@@ -215,11 +215,11 @@ export default function BookingWidget({
       </div>
 
       {/* ── Main Card ─────────────────────────────────────────────────────── */}
-      <div className="bg-white/95 backdrop-blur-xl border border-brand-border rounded-3xl md:rounded-tl-none p-6 md:p-10 shadow-2xl relative text-gray-900">
+      <div className="bg-white/95 backdrop-blur-xl border border-brand-border sm:rounded-3xl sm:rounded-tl-3xl sm:rounded-tr-3xl rounded-bl-3xl rounded-br-3xl p-6 md:p-10 shadow-2xl relative text-gray-900">
 
         {/* Sub Tabs */}
         {mainTab === 'TAXI' && (
-          <div className="flex flex-wrap items-center gap-3 mb-8">
+          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mb-8">
             {(['ROUND TRIP', 'AIRPORT TRANSFER'] as SubTab[]).map((sub) => (
               <button
                 key={sub}

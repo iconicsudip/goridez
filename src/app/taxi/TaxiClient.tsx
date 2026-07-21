@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useBookingStore } from '@/store/useBookingStore';
-import { ArrowDownUp, MapPin, Calendar, Briefcase, Loader2, Map as MapIcon } from 'lucide-react';
+import { ArrowDownUp, MapPin, Calendar, Briefcase, Loader2, Map as MapIcon, ChevronDown } from 'lucide-react';
 import dynamic from 'next/dynamic';
 
 const RouteMap = dynamic(() => import('@/components/RouteMap'), { ssr: false, loading: () => <div className="w-full h-64 bg-gray-100 rounded-2xl animate-pulse flex items-center justify-center text-gray-400 font-mono text-[10px] uppercase tracking-widest">Loading Map...</div> });
@@ -53,7 +53,8 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
   const searchParams = useSearchParams();
   const { session, updateSession, addToCart } = useBookingStore();
 
-  const [bookingMode, setBookingMode] = useState<'ROUND_TRIP'|'AIRPORT_TRANSFER'>('ROUND_TRIP');
+  const [bookingMode, setBookingMode] = useState<'ROUND_TRIP' | 'AIRPORT_TRANSFER'>('ROUND_TRIP');
+  const [isRouteConfigOpen, setIsRouteConfigOpen] = useState(false);
 
   const exclusionsList = useMemo(() => {
     if (siteSettings?.taxiExclusions) {
@@ -78,12 +79,12 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
   }, [siteSettings]);
 
   // Locations
-  const [pickupLocation, setPickupLocation] = useState<{name: string, data?: OSMLocation}>({ name: 'Udaipur, Rajasthan', data: UDAIPUR_CITY });
-  const [dropoffLocation, setDropoffLocation] = useState<{name: string, data?: OSMLocation}>({ name: '' });
-  const [destLocations, setDestLocations] = useState<{name: string, data?: OSMLocation}[]>([{ name: '' }]);
+  const [pickupLocation, setPickupLocation] = useState<{ name: string, data?: OSMLocation }>({ name: 'Udaipur, Rajasthan', data: UDAIPUR_CITY });
+  const [dropoffLocation, setDropoffLocation] = useState<{ name: string, data?: OSMLocation }>({ name: '' });
+  const [destLocations, setDestLocations] = useState<{ name: string, data?: OSMLocation }[]>([{ name: '' }]);
 
-  const [atPickup, setAtPickup] = useState<{name: string, zoneId: string}>({ name: '', zoneId: '' });
-  const [atDrop, setAtDrop] = useState<{name: string, zoneId: string}>({ name: '', zoneId: '' });
+  const [atPickup, setAtPickup] = useState<{ name: string, zoneId: string }>({ name: '', zoneId: '' });
+  const [atDrop, setAtDrop] = useState<{ name: string, zoneId: string }>({ name: '', zoneId: '' });
 
   const atPickupIsAirport = atPickup.zoneId === AIRPORT_ZONE_ID;
   const atDropIsAirport = atDrop.zoneId === AIRPORT_ZONE_ID;
@@ -129,7 +130,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
         let currentLoc = UDAIPUR_CITY;
         let validDests = destLocations.filter(d => d.data);
         let allCoordinates: [number, number][] = [];
-        
+
         for (const dest of validDests) {
           const route = await calculateRoute(currentLoc.lon, currentLoc.lat, dest.data!.lon, dest.data!.lat);
           if (route) {
@@ -141,7 +142,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
           }
           currentLoc = dest.data!;
         }
-        
+
         // Return trip to Udaipur
         if (validDests.length > 0) {
           const returnRoute = await calculateRoute(currentLoc.lon, currentLoc.lat, UDAIPUR_CITY.lon, UDAIPUR_CITY.lat);
@@ -153,7 +154,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
             }
           }
         }
-        
+
         if (active) {
           setCalculatedDistance(Math.ceil(totalKm / 2)); // Return OW distance for base calculations if needed
           setCalculatedDuration(totalDur);
@@ -174,7 +175,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
         setRouteGeometry(null);
       }
     };
-    
+
     fetchRoute();
     return () => { active = false; };
   }, [pickupLocation.data, destLocations, bookingMode]);
@@ -228,8 +229,8 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
     if (qAtDropName && qAtDropZoneId) setAtDrop({ name: qAtDropName, zoneId: qAtDropZoneId });
     const resolvedMode =
       qMode && qMode !== 'ONE_WAY' && qMode !== 'LOCAL' ? qMode :
-      session?.bookingMode && session.bookingMode !== 'ONE_WAY' && session.bookingMode !== 'LOCAL' ? session.bookingMode :
-      'ROUND_TRIP';
+        session?.bookingMode && session.bookingMode !== 'ONE_WAY' && session.bookingMode !== 'LOCAL' ? session.bookingMode :
+          'ROUND_TRIP';
     setBookingMode(resolvedMode as any);
 
     if (resolvedMode === 'ROUND_TRIP' && qDropCity) {
@@ -388,7 +389,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 font-body pt-24 pb-20">
       <div className="container mx-auto px-4 mt-8">
-        
+
         {/* Header Section */}
         <div className="bg-white border border-gray-200 rounded-3xl p-10 mb-10 bg-gradient-to-br from-white to-green-50">
           <div className="text-green-700 text-[10px] font-black tracking-widest uppercase mb-4">
@@ -404,19 +405,17 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
 
         {/* Booking Mode Tabs */}
         <div className="flex overflow-x-auto lg:flex-wrap gap-4 mb-8 bg-gray-100 p-2 rounded-2xl w-full lg:w-fit">
-          <button 
+          <button
             onClick={() => setBookingMode('ROUND_TRIP')}
-            className={`px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
-              bookingMode === 'ROUND_TRIP' ? 'bg-green-500 text-white shadow-lg shadow-green-500/20' : 'text-gray-500 hover:text-gray-900'
-            }`}
+            className={`px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${bookingMode === 'ROUND_TRIP' ? 'bg-green-500 text-white shadow-lg shadow-green-500/20' : 'text-gray-500 hover:text-gray-900'
+              }`}
           >
             Round Trip Packages
           </button>
           <button
             onClick={() => setBookingMode('AIRPORT_TRANSFER')}
-            className={`px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
-              bookingMode === 'AIRPORT_TRANSFER' ? 'bg-green-500 text-white shadow-lg shadow-green-500/20' : 'text-gray-500 hover:text-gray-900'
-            }`}
+            className={`px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${bookingMode === 'AIRPORT_TRANSFER' ? 'bg-green-500 text-white shadow-lg shadow-green-500/20' : 'text-gray-500 hover:text-gray-900'
+              }`}
           >
             Airport Transfers
           </button>
@@ -424,31 +423,38 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
 
         {/* Main Split Layout */}
         <div className="flex flex-col lg:flex-row items-start gap-8">
-          
+
           {/* Sidebar */}
           <aside className="w-full lg:w-[380px] shrink-0 space-y-6 lg:sticky lg:top-32 h-fit z-10">
-            
+
             {/* Route Configurator */}
             <div className="bg-gray-100 border border-gray-200 rounded-3xl p-8">
-              <h2 className="font-black text-sm uppercase tracking-widest mb-8">Route Configurator</h2>
-              
-              <div className="space-y-4 relative">
-                
+              <button
+                type="button"
+                onClick={() => setIsRouteConfigOpen((o) => !o)}
+                className="flex items-center justify-between w-full mb-8 lg:pointer-events-none"
+              >
+                <h2 className="font-black text-sm uppercase tracking-widest">Route Configurator</h2>
+                <ChevronDown size={18} className={`text-gray-500 transition-transform lg:hidden ${isRouteConfigOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              <div className={`${isRouteConfigOpen ? 'block' : 'hidden'} lg:block space-y-4 relative`}>
+
                 {bookingMode === 'ROUND_TRIP' ? (
                   <>
                     <div>
                       <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest mb-2">Pick-Up Location</label>
                       <div className="relative">
                         <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-green-700" size={16} />
-                        <input 
-                          type="text" 
-                          readOnly 
-                          value="Udaipur, Rajasthan" 
-                          className="w-full bg-gray-200 border border-gray-200 rounded-xl pl-12 pr-4 py-4 text-sm outline-none font-medium text-gray-600 cursor-not-allowed" 
+                        <input
+                          type="text"
+                          readOnly
+                          value="Udaipur, Rajasthan"
+                          className="w-full bg-gray-200 border border-gray-200 rounded-xl pl-12 pr-4 py-4 text-sm outline-none font-medium text-gray-600 cursor-not-allowed"
                         />
                       </div>
                     </div>
-                    
+
                     <div className="mt-4">
                       <div className="flex items-center justify-between mb-2">
                         <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest">Destinations</label>
@@ -458,7 +464,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                           </button>
                         )}
                       </div>
-                      
+
                       <div className="space-y-3">
                         {destLocations.map((dest, idx) => (
                           <div key={idx} className="relative flex items-center gap-2">
@@ -580,61 +586,61 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                             }}
                           />
                         ) : (
-                        <DatePicker.RangePicker
-                          showTime={{ format: 'h:mm a', use12Hours: true, minuteStep: 30 }}
-                          format="DD/MM/YYYY - h:mm a"
-                          value={[pickupDate ? dayjs(pickupDate) : null, returnDate ? dayjs(returnDate) : null]}
-                          onChange={(dates) => {
-                             if (dates && dates[0]) {
-                               const start = dates[0].toDate();
-                               let end = dates[1] ? dates[1].toDate() : null;
-                               if (end && (end.getTime() - start.getTime()) < 12 * 60 * 60 * 1000) {
-                                 end = new Date(start.getTime() + 12 * 60 * 60 * 1000);
-                               }
-                               setPickupDate(start);
-                               setReturnDate(end);
-                               updateSession({
-                                 pickupDate: start.toISOString(),
-                                 returnDate: end ? end.toISOString() : null
-                               });
-                             } else {
-                               setReturnDate(null);
-                               updateSession({ returnDate: null });
-                             }
-                           }}
-                          className="w-full bg-white border border-gray-200 rounded-xl pl-10 pr-4 py-5 text-[11px] outline-none cursor-pointer font-medium"
-                          disabledDate={(current) => current && current < dayjs().startOf('day')}
-                          disabledTime={(current, type) => {
-                            if (type === 'start') {
-                              if (current && current.isSame(dayjs(), 'day')) {
-                                const now = dayjs();
-                                return {
-                                  disabledHours: () => Array.from({ length: now.hour() }, (_, i) => i),
-                                  disabledMinutes: (selectedHour) => {
-                                    if (selectedHour === now.hour()) {
-                                      return Array.from({ length: now.minute() }, (_, i) => i);
-                                    }
-                                    return [];
-                                  }
-                                };
+                          <DatePicker.RangePicker
+                            showTime={{ format: 'h:mm a', use12Hours: true, minuteStep: 30 }}
+                            format="DD/MM/YYYY - h:mm a"
+                            value={[pickupDate ? dayjs(pickupDate) : null, returnDate ? dayjs(returnDate) : null]}
+                            onChange={(dates) => {
+                              if (dates && dates[0]) {
+                                const start = dates[0].toDate();
+                                let end = dates[1] ? dates[1].toDate() : null;
+                                if (end && (end.getTime() - start.getTime()) < 12 * 60 * 60 * 1000) {
+                                  end = new Date(start.getTime() + 12 * 60 * 60 * 1000);
+                                }
+                                setPickupDate(start);
+                                setReturnDate(end);
+                                updateSession({
+                                  pickupDate: start.toISOString(),
+                                  returnDate: end ? end.toISOString() : null
+                                });
+                              } else {
+                                setReturnDate(null);
+                                updateSession({ returnDate: null });
                               }
-                            } else if (type === 'end') {
-                              if (current && pickupDate && current.isSame(dayjs(pickupDate), 'day')) {
-                                const p = dayjs(pickupDate);
-                                return {
-                                  disabledHours: () => Array.from({ length: p.hour() }, (_, i) => i),
-                                  disabledMinutes: (selectedHour) => {
-                                    if (selectedHour === p.hour()) {
-                                      return Array.from({ length: p.minute() }, (_, i) => i);
+                            }}
+                            className="w-full bg-white border border-gray-200 rounded-xl pl-10 pr-4 py-5 text-[11px] outline-none cursor-pointer font-medium"
+                            disabledDate={(current) => current && current < dayjs().startOf('day')}
+                            disabledTime={(current, type) => {
+                              if (type === 'start') {
+                                if (current && current.isSame(dayjs(), 'day')) {
+                                  const now = dayjs();
+                                  return {
+                                    disabledHours: () => Array.from({ length: now.hour() }, (_, i) => i),
+                                    disabledMinutes: (selectedHour) => {
+                                      if (selectedHour === now.hour()) {
+                                        return Array.from({ length: now.minute() }, (_, i) => i);
+                                      }
+                                      return [];
                                     }
-                                    return [];
-                                  }
-                                };
+                                  };
+                                }
+                              } else if (type === 'end') {
+                                if (current && pickupDate && current.isSame(dayjs(pickupDate), 'day')) {
+                                  const p = dayjs(pickupDate);
+                                  return {
+                                    disabledHours: () => Array.from({ length: p.hour() }, (_, i) => i),
+                                    disabledMinutes: (selectedHour) => {
+                                      if (selectedHour === p.hour()) {
+                                        return Array.from({ length: p.minute() }, (_, i) => i);
+                                      }
+                                      return [];
+                                    }
+                                  };
+                                }
                               }
-                            }
-                            return {};
-                          }}
-                        />
+                              return {};
+                            }}
+                          />
                         )}
                       </ConfigProvider>
                     </div>
@@ -644,30 +650,30 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
 
               {calculatedDistance > 0 && (
                 <>
-                <div className="bg-gray-50 border border-[#2A2A0A] rounded-xl p-5 mt-6 space-y-3 font-mono text-[10px]">
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-500 font-bold tracking-widest">EST. ROUTE DISTANCE</span>
-                    <span className="text-green-700 font-bold text-sm">{isCalculating ? <Loader2 size={12} className="animate-spin" /> : `${bookingMode === 'ROUND_TRIP' ? calculatedDistance * 2 : calculatedDistance} KM`}</span>
+                  <div className="bg-gray-50 border border-[#2A2A0A] rounded-xl p-5 mt-6 space-y-3 font-mono text-[10px]">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-500 font-bold tracking-widest">EST. ROUTE DISTANCE</span>
+                      <span className="text-green-700 font-bold text-sm">{isCalculating ? <Loader2 size={12} className="animate-spin" /> : `${bookingMode === 'ROUND_TRIP' ? calculatedDistance * 2 : calculatedDistance} KM`}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-500 font-bold tracking-widest">EST. TRAVEL DURATION</span>
+                      <span className="text-gray-900 font-bold text-sm">{isCalculating ? <Loader2 size={12} className="animate-spin" /> : displayDuration}</span>
+                    </div>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-500 font-bold tracking-widest">EST. TRAVEL DURATION</span>
-                    <span className="text-gray-900 font-bold text-sm">{isCalculating ? <Loader2 size={12} className="animate-spin" /> : displayDuration}</span>
-                  </div>
-                </div>
-                
-                {!isCalculating && (
-                  <div className="mt-6 h-[300px] rounded-2xl overflow-hidden shadow-lg border border-gray-200">
-                    <RouteMap
-                      sourceLocation={mapToRouteLocation(
-                        bookingMode === 'ROUND_TRIP' ? UDAIPUR_CITY : pickupLocation.data || UDAIPUR_CITY
-                      )}
-                      destLocation={mapToRouteLocation(
-                        bookingMode === 'ROUND_TRIP' ? (destLocations[0]?.data || UDAIPUR_CITY) : dropoffLocation.data || UDAIPUR_CITY
-                      )}
-                      routeGeometry={routeGeometry}
-                    />
-                  </div>
-                )}
+
+                  {!isCalculating && (
+                    <div className="mt-6 h-[300px] rounded-2xl overflow-hidden shadow-lg border border-gray-200">
+                      <RouteMap
+                        sourceLocation={mapToRouteLocation(
+                          bookingMode === 'ROUND_TRIP' ? UDAIPUR_CITY : pickupLocation.data || UDAIPUR_CITY
+                        )}
+                        destLocation={mapToRouteLocation(
+                          bookingMode === 'ROUND_TRIP' ? (destLocations[0]?.data || UDAIPUR_CITY) : dropoffLocation.data || UDAIPUR_CITY
+                        )}
+                        routeGeometry={routeGeometry}
+                      />
+                    </div>
+                  )}
                 </>
               )}
 
@@ -690,11 +696,11 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
           {/* Main Classes List */}
           <div className="flex-1">
             <h2 className="font-black text-xl uppercase tracking-tight mb-6">Choose Private Cab Class</h2>
-            
+
             <div className="space-y-6">
-              
+
               {paginatedCars.map((car) => {
-                const durationDays = returnDate 
+                const durationDays = returnDate
                   ? Math.max(1, Math.ceil((returnDate.getTime() - pickupDate.getTime()) / (1000 * 60 * 60 * 24)))
                   : 1;
 
@@ -714,11 +720,11 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                   const billableKm = Math.max(runningDistance, minKmPerDay * durationDays);
                   const ratePerKm = setting.roundTripRatePerKm;
                   const driverAllowancePerDay = setting.driverAllowancePerDay;
-                  
+
                   const basicFare = Math.round(billableKm * ratePerKm);
                   const driverAllowance = driverAllowancePerDay * durationDays;
                   const gstAmount = Math.round(basicFare * 0.18); // 18% GST
-                  
+
                   flatFare = basicFare + driverAllowance + gstAmount;
 
                   car._breakdown = {
@@ -731,7 +737,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                     chargedDistance: billableKm,
                     days: durationDays
                   };
-                  
+
                   const destStr = destLocations.map(d => d.name).filter(Boolean).join(' -> ');
                   extraText = `Round Trip: Udaipur -> ${destStr} (${durationDays} Days)`;
                 } else if (bookingMode === 'AIRPORT_TRANSFER') {
@@ -766,7 +772,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                   const isTabActive = (tab: string) => activeTab === `${car.id}-${tab}`;
                   const toggleTab = (tab: string) => setActiveTab(prev => prev === `${car.id}-${tab}` ? null : `${car.id}-${tab}`);
                   const destStr = destLocations.map(d => d.name).filter(Boolean).join(' -> ');
-                  
+
                   return (
                     <div key={car.id} className="bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md hover:border-green-200 transition-all mb-5 overflow-hidden font-sans">
                       <div className="flex flex-col md:flex-row">
@@ -776,7 +782,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                           {/* Image container with its own overflow-hidden so badges aren't clipped */}
                           <div className="absolute inset-0 overflow-hidden">
                             <Link href={`/cars/${getCarSlug(car)}`} className="block w-full h-full">
-                              <CarImageSlider mainImage={car.image} galleryJson={car.gallery} alt={`${car.make} ${car.model}`} imageClassName="object-contain hover:scale-105 transition-transform duration-500 w-full h-full" />
+                              <CarImageSlider mainImage={car.image} galleryJson={car.gallery} alt={`${car.make} ${car.model}`} imageClassName="object-cover hover:scale-105 transition-transform duration-500 w-full h-full" />
                             </Link>
                           </div>
                           {/* Category badge – top left */}
@@ -839,7 +845,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                           {/* Inclusions strip */}
                           <div className="px-5 py-3 flex flex-wrap items-center gap-4 bg-gray-50">
                             <span className="flex items-center gap-1.5 text-[10px] font-semibold text-gray-600">
-                              <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/></svg>
+                              <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
                               Inc. GST &amp; Driver Allowance
                             </span>
                             <span className="flex items-center gap-1.5 text-[10px] font-semibold text-gray-400">
@@ -864,11 +870,10 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                           <button
                             onClick={() => !isAlreadyBooked && handleBook(car, flatFare, extraText)}
                             disabled={isAlreadyBooked || !returnDate || calculatedDistance === 0}
-                            className={`w-full mt-4 font-black text-[10px] tracking-widest uppercase py-3.5 px-4 rounded-xl transition-all ${
-                              isAlreadyBooked || !returnDate || calculatedDistance === 0
+                            className={`w-full mt-4 font-black text-[10px] tracking-widest uppercase py-3.5 px-4 rounded-xl transition-all ${isAlreadyBooked || !returnDate || calculatedDistance === 0
                                 ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                                 : 'bg-green-500 text-white hover:bg-green-600 shadow-md shadow-green-500/30'
-                            }`}
+                              }`}
                           >
                             {isAlreadyBooked ? 'Already Booked' : !returnDate ? 'Select Dates First' : calculatedDistance === 0 ? 'Select Valid Route' : 'Book Now'}
                           </button>
@@ -937,7 +942,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                         {/* Image with its own overflow-hidden so badges aren't clipped */}
                         <div className="absolute inset-0 overflow-hidden">
                           <Link href={`/cars/${getCarSlug(car)}`} className="block w-full h-full">
-                            <CarImageSlider mainImage={car.image || '/placeholder-car.png'} galleryJson={car.gallery} alt={`${car.make} ${car.model}`} imageClassName="object-contain hover:scale-105 transition-transform duration-500 w-full h-full" />
+                            <CarImageSlider mainImage={car.image || '/placeholder-car.png'} galleryJson={car.gallery} alt={`${car.make} ${car.model}`} imageClassName="object-cover hover:scale-105 transition-transform duration-500 w-full h-full" />
                           </Link>
                         </div>
                         {/* Category badge – top left */}
@@ -963,7 +968,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                           </h3>
                           {/* Specs subtitle */}
                           <p className="text-[11px] text-gray-400 font-mono mb-3">
-                            {car.seatingCapacity} Seats &nbsp;•&nbsp; {car.transmission.replace(' Gearbox','')} &nbsp;•&nbsp; {car.fuelType}
+                            {car.seatingCapacity} Seats &nbsp;•&nbsp; {car.transmission.replace(' Gearbox', '')} &nbsp;•&nbsp; {car.fuelType}
                           </p>
                           {/* Feature pills */}
                           {car.features && car.features.length > 0 && (
@@ -986,18 +991,18 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                         {/* Bottom: Inclusions strip */}
                         <div className="px-5 py-3 flex flex-wrap items-center gap-4 bg-gray-50">
                           <span className="flex items-center gap-1.5 text-[10px] font-semibold text-gray-600">
-                            <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/></svg>
+                            <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
                             30 min free wait
                           </span>
                           {car._airportBreakdown?.meetAndGreet && (
                             <span className="flex items-center gap-1.5 text-[10px] font-semibold text-gray-600">
-                              <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/></svg>
+                              <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
                               Meet &amp; Greet
                             </span>
                           )}
                           {car._airportBreakdown?.nightFee > 0 && (
                             <span className="flex items-center gap-1.5 text-[10px] font-semibold text-gray-600">
-                              <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/></svg>
+                              <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
                               Night charge: ₹{car._airportBreakdown.nightFee.toLocaleString()}
                             </span>
                           )}
@@ -1038,16 +1043,15 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                         <button
                           onClick={() => !isAlreadyBooked && handleBook(car, flatFare, extraText)}
                           disabled={isAlreadyBooked || !atZoneId || !car._airportBreakdown?.hasFare}
-                          className={`w-full mt-4 font-black text-[10px] tracking-widest uppercase py-3.5 px-4 rounded-xl transition-all ${
-                            isAlreadyBooked || !atZoneId || !car._airportBreakdown?.hasFare
+                          className={`w-full mt-4 font-black text-[10px] tracking-widest uppercase py-3.5 px-4 rounded-xl transition-all ${isAlreadyBooked || !atZoneId || !car._airportBreakdown?.hasFare
                               ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                               : 'bg-green-500 text-white hover:bg-green-600 shadow-md shadow-green-500/30'
-                          }`}
+                            }`}
                         >
                           {isAlreadyBooked ? 'Already Booked'
                             : !atZoneId ? 'Select Area First'
-                            : !car._airportBreakdown?.hasFare ? 'Not Available'
-                            : 'Book Transfer'}
+                              : !car._airportBreakdown?.hasFare ? 'Not Available'
+                                : 'Book Transfer'}
                         </button>
                       </div>
 
@@ -1071,7 +1075,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                   >
                     &larr;
                   </button>
-                  
+
                   {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
                     <button
                       key={page}
@@ -1079,11 +1083,10 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                         setCurrentPage(page);
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                       }}
-                      className={`w-10 h-10 rounded-xl border text-sm font-bold transition-all cursor-pointer ${
-                        currentPage === page
+                      className={`w-10 h-10 rounded-xl border text-sm font-bold transition-all cursor-pointer ${currentPage === page
                           ? 'bg-green-600 border-green-600 text-white shadow-md'
                           : 'border-gray-200 bg-white text-gray-700 hover:border-green-600 hover:text-green-700'
-                      }`}
+                        }`}
                     >
                       {page}
                     </button>
