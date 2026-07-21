@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useBookingStore } from '@/store/useBookingStore';
-import { ArrowDownUp, MapPin, Calendar, Briefcase, Loader2, Map as MapIcon, ChevronDown } from 'lucide-react';
+import { ArrowDownUp, MapPin, Calendar, Briefcase, Loader2, Map as MapIcon, SlidersHorizontal, X } from 'lucide-react';
 import dynamic from 'next/dynamic';
 
 const RouteMap = dynamic(() => import('@/components/RouteMap'), { ssr: false, loading: () => <div className="w-full h-64 bg-gray-100 rounded-2xl animate-pulse flex items-center justify-center text-gray-400 font-mono text-[10px] uppercase tracking-widest">Loading Map...</div> });
@@ -55,6 +55,12 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
 
   const [bookingMode, setBookingMode] = useState<'ROUND_TRIP' | 'AIRPORT_TRANSFER'>('ROUND_TRIP');
   const [isRouteConfigOpen, setIsRouteConfigOpen] = useState(false);
+
+  // Prevent background scrolling while the mobile route configurator drawer is open
+  useEffect(() => {
+    document.body.style.overflow = isRouteConfigOpen ? 'hidden' : 'unset';
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [isRouteConfigOpen]);
 
   const exclusionsList = useMemo(() => {
     if (siteSettings?.taxiExclusions) {
@@ -386,6 +392,261 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
 
   const displayDuration = `${Math.floor(calculatedDuration / 3600)}h ${Math.floor((calculatedDuration % 3600) / 60)}m`;
 
+  const routeConfiguratorBody = (
+    <>
+      <div className="space-y-4 relative">
+
+        {bookingMode === 'ROUND_TRIP' ? (
+          <>
+            <div>
+              <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest mb-2">Pick-Up Location</label>
+              <div className="relative">
+                <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-green-700" size={16} />
+                <input
+                  type="text"
+                  readOnly
+                  value="Udaipur, Rajasthan"
+                  className="w-full bg-gray-200 border border-gray-200 rounded-xl pl-12 pr-4 py-4 text-sm outline-none font-medium text-gray-600 cursor-not-allowed"
+                />
+              </div>
+            </div>
+
+            <div className="mt-4">
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest">Destinations</label>
+                {destLocations.length < 3 && (
+                  <button type="button" onClick={addDestination} className="text-green-700 hover:text-gray-900 transition-colors flex items-center gap-1 bg-green-500/10 px-2 py-0.5 rounded text-[9px]">
+                    <span className="text-[14px] leading-none">+</span> ADD
+                  </button>
+                )}
+              </div>
+
+              <div className="space-y-3">
+                {destLocations.map((dest, idx) => (
+                  <div key={idx} className="relative flex items-center gap-2">
+                    <div className="relative flex-1">
+                      <LocationAutocomplete
+                        value={dest.name}
+                        onChange={(val, loc) => updateDestination(idx, val, loc)}
+                        placeholder={`Destination ${idx + 1}...`}
+                        searchAnywhere={true}
+                      />
+                    </div>
+                    {destLocations.length > 1 && (
+                      <button type="button" onClick={() => removeDestination(idx)} className="text-red-400 hover:text-red-300 w-8 flex justify-center">
+                        ✕
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="space-y-4">
+            <div>
+              <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest mb-2">Pickup Location</label>
+              <AirportLocalitySearch
+                zones={airportZones}
+                value={atPickup.name}
+                airportLabel={airportName}
+                mode={atDropIsAirport ? 'LOCALITY_ONLY' : atDrop.zoneId ? 'AIRPORT_ONLY' : 'ANY'}
+                onChange={(locality, zoneId) => {
+                  setAtPickup({ name: locality, zoneId });
+                  const pickupIsAirport = zoneId === AIRPORT_ZONE_ID;
+                  if (atDrop.zoneId && (atDrop.zoneId === AIRPORT_ZONE_ID) === pickupIsAirport) {
+                    setAtDrop({ name: '', zoneId: '' });
+                  }
+                }}
+                placeholder={`Search ${airportName} or your area...`}
+              />
+            </div>
+
+            <div>
+              <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest mb-2">Drop Location</label>
+              <AirportLocalitySearch
+                zones={airportZones}
+                value={atDrop.name}
+                airportLabel={airportName}
+                mode={atPickupIsAirport ? 'LOCALITY_ONLY' : atPickup.zoneId ? 'AIRPORT_ONLY' : 'ANY'}
+                onChange={(locality, zoneId) => {
+                  setAtDrop({ name: locality, zoneId });
+                  const dropIsAirport = zoneId === AIRPORT_ZONE_ID;
+                  if (atPickup.zoneId && (atPickup.zoneId === AIRPORT_ZONE_ID) === dropIsAirport) {
+                    setAtPickup({ name: '', zoneId: '' });
+                  }
+                }}
+                placeholder={`Search ${airportName} or your area...`}
+              />
+            </div>
+
+            <p className="text-[9px] text-gray-400 font-mono">
+              One side must be {airportName}; the other, your locality within the zones we cover.
+            </p>
+          </div>
+        )}
+
+        <div className="space-y-4 pt-2">
+          <div>
+            <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest mb-2">
+              {bookingMode === 'ROUND_TRIP' ? 'Travel Date Range (Required)' : bookingMode === 'AIRPORT_TRANSFER' ? 'Transfer Date' : 'Travel Date Range'}
+            </label>
+            <div className="relative w-full">
+              <ConfigProvider
+                theme={{
+                  token: {
+                    colorPrimary: '#15803d',
+                    borderRadius: 12,
+                    fontSize: 11,
+                    controlHeight: 52,
+                  },
+                  components: {
+                    DatePicker: {
+                      cellWidth: 28,
+                      cellHeight: 20,
+                      timeColumnWidth: 48,
+                      timeCellHeight: 22,
+                    },
+                  },
+                }}
+              >
+                {bookingMode === 'AIRPORT_TRANSFER' ? (
+                  <DatePicker
+                    showTime={{ format: 'h:mm a', use12Hours: true, minuteStep: 30 }}
+                    format="DD/MM/YYYY - h:mm a"
+                    value={pickupDate ? dayjs(pickupDate) : null}
+                    onChange={(date) => {
+                      if (date) {
+                        const start = date.toDate();
+                        setPickupDate(start);
+                        setReturnDate(null);
+                        updateSession({ pickupDate: start.toISOString(), returnDate: null });
+                      }
+                    }}
+                    className="w-full bg-white border border-gray-200 rounded-xl pl-10 pr-4 py-5 text-[11px] outline-none cursor-pointer font-medium"
+                    disabledDate={(current) => current && current < dayjs().startOf('day')}
+                    disabledTime={(current) => {
+                      if (current && current.isSame(dayjs(), 'day')) {
+                        const now = dayjs();
+                        return {
+                          disabledHours: () => Array.from({ length: now.hour() }, (_, i) => i),
+                          disabledMinutes: (selectedHour) => {
+                            if (selectedHour === now.hour()) {
+                              return Array.from({ length: now.minute() }, (_, i) => i);
+                            }
+                            return [];
+                          }
+                        };
+                      }
+                      return {};
+                    }}
+                  />
+                ) : (
+                  <DatePicker.RangePicker
+                    showTime={{ format: 'h:mm a', use12Hours: true, minuteStep: 30 }}
+                    format="DD/MM/YYYY - h:mm a"
+                    value={[pickupDate ? dayjs(pickupDate) : null, returnDate ? dayjs(returnDate) : null]}
+                    onChange={(dates) => {
+                      if (dates && dates[0]) {
+                        const start = dates[0].toDate();
+                        let end = dates[1] ? dates[1].toDate() : null;
+                        if (end && (end.getTime() - start.getTime()) < 12 * 60 * 60 * 1000) {
+                          end = new Date(start.getTime() + 12 * 60 * 60 * 1000);
+                        }
+                        setPickupDate(start);
+                        setReturnDate(end);
+                        updateSession({
+                          pickupDate: start.toISOString(),
+                          returnDate: end ? end.toISOString() : null
+                        });
+                      } else {
+                        setReturnDate(null);
+                        updateSession({ returnDate: null });
+                      }
+                    }}
+                    className="w-full bg-white border border-gray-200 rounded-xl pl-10 pr-4 py-5 text-[11px] outline-none cursor-pointer font-medium"
+                    disabledDate={(current) => current && current < dayjs().startOf('day')}
+                    disabledTime={(current, type) => {
+                      if (type === 'start') {
+                        if (current && current.isSame(dayjs(), 'day')) {
+                          const now = dayjs();
+                          return {
+                            disabledHours: () => Array.from({ length: now.hour() }, (_, i) => i),
+                            disabledMinutes: (selectedHour) => {
+                              if (selectedHour === now.hour()) {
+                                return Array.from({ length: now.minute() }, (_, i) => i);
+                              }
+                              return [];
+                            }
+                          };
+                        }
+                      } else if (type === 'end') {
+                        if (current && pickupDate && current.isSame(dayjs(pickupDate), 'day')) {
+                          const p = dayjs(pickupDate);
+                          return {
+                            disabledHours: () => Array.from({ length: p.hour() }, (_, i) => i),
+                            disabledMinutes: (selectedHour) => {
+                              if (selectedHour === p.hour()) {
+                                return Array.from({ length: p.minute() }, (_, i) => i);
+                              }
+                              return [];
+                            }
+                          };
+                        }
+                      }
+                      return {};
+                    }}
+                  />
+                )}
+              </ConfigProvider>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {calculatedDistance > 0 && (
+        <>
+          <div className="bg-gray-50 border border-[#2A2A0A] rounded-xl p-5 mt-6 space-y-3 font-mono text-[10px]">
+            <div className="flex justify-between items-center">
+              <span className="text-gray-500 font-bold tracking-widest">EST. ROUTE DISTANCE</span>
+              <span className="text-green-700 font-bold text-sm">{isCalculating ? <Loader2 size={12} className="animate-spin" /> : `${bookingMode === 'ROUND_TRIP' ? calculatedDistance * 2 : calculatedDistance} KM`}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-500 font-bold tracking-widest">EST. TRAVEL DURATION</span>
+              <span className="text-gray-900 font-bold text-sm">{isCalculating ? <Loader2 size={12} className="animate-spin" /> : displayDuration}</span>
+            </div>
+          </div>
+
+          {!isCalculating && (
+            <div className="mt-6 h-[300px] rounded-2xl overflow-hidden shadow-lg border border-gray-200">
+              <RouteMap
+                sourceLocation={mapToRouteLocation(
+                  bookingMode === 'ROUND_TRIP' ? UDAIPUR_CITY : pickupLocation.data || UDAIPUR_CITY
+                )}
+                destLocation={mapToRouteLocation(
+                  bookingMode === 'ROUND_TRIP' ? (destLocations[0]?.data || UDAIPUR_CITY) : dropoffLocation.data || UDAIPUR_CITY
+                )}
+                routeGeometry={routeGeometry}
+              />
+            </div>
+          )}
+        </>
+      )}
+
+      {bookingMode === 'AIRPORT_TRANSFER' && atZone && (
+        <div className="bg-green-600/5 border border-green-600/20 rounded-xl p-5 mt-6 font-mono text-[10px] space-y-2">
+          <div className="flex justify-between items-center">
+            <span className="text-gray-500 font-bold tracking-widest">SERVICE ZONE</span>
+            <span className="text-green-700 font-bold text-sm">{atZone.name}</span>
+          </div>
+          <p className="text-gray-500 leading-relaxed normal-case font-sans text-[11px]">
+            Fares below already reflect your selected direction and area. Wait time, night hours, and meet &amp; greet charges (if any) are shown per vehicle.
+          </p>
+        </div>
+      )}
+    </>
+  );
+
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 font-body pt-24 pb-20">
       <div className="container mx-auto px-4 mt-8">
@@ -424,278 +685,26 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
         {/* Main Split Layout */}
         <div className="flex flex-col lg:flex-row items-start gap-8">
 
-          {/* Sidebar */}
-          <aside className="w-full lg:w-[380px] shrink-0 space-y-6 lg:sticky lg:top-32 h-fit z-10">
-
-            {/* Route Configurator */}
+          {/* Sidebar — desktop only, mobile uses the drawer below */}
+          <aside className="hidden lg:block lg:w-[380px] shrink-0 space-y-6 lg:sticky lg:top-32 h-fit z-10">
             <div className="bg-gray-100 border border-gray-200 rounded-3xl p-8">
-              <button
-                type="button"
-                onClick={() => setIsRouteConfigOpen((o) => !o)}
-                className="flex items-center justify-between w-full mb-8 lg:pointer-events-none"
-              >
-                <h2 className="font-black text-sm uppercase tracking-widest">Route Configurator</h2>
-                <ChevronDown size={18} className={`text-gray-500 transition-transform lg:hidden ${isRouteConfigOpen ? 'rotate-180' : ''}`} />
-              </button>
-
-              <div className={`${isRouteConfigOpen ? 'block' : 'hidden'} lg:block space-y-4 relative`}>
-
-                {bookingMode === 'ROUND_TRIP' ? (
-                  <>
-                    <div>
-                      <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest mb-2">Pick-Up Location</label>
-                      <div className="relative">
-                        <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-green-700" size={16} />
-                        <input
-                          type="text"
-                          readOnly
-                          value="Udaipur, Rajasthan"
-                          className="w-full bg-gray-200 border border-gray-200 rounded-xl pl-12 pr-4 py-4 text-sm outline-none font-medium text-gray-600 cursor-not-allowed"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="mt-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest">Destinations</label>
-                        {destLocations.length < 3 && (
-                          <button type="button" onClick={addDestination} className="text-green-700 hover:text-gray-900 transition-colors flex items-center gap-1 bg-green-500/10 px-2 py-0.5 rounded text-[9px]">
-                            <span className="text-[14px] leading-none">+</span> ADD
-                          </button>
-                        )}
-                      </div>
-
-                      <div className="space-y-3">
-                        {destLocations.map((dest, idx) => (
-                          <div key={idx} className="relative flex items-center gap-2">
-                            <div className="relative flex-1">
-                              <LocationAutocomplete
-                                value={dest.name}
-                                onChange={(val, loc) => updateDestination(idx, val, loc)}
-                                placeholder={`Destination ${idx + 1}...`}
-                                searchAnywhere={true}
-                              />
-                            </div>
-                            {destLocations.length > 1 && (
-                              <button type="button" onClick={() => removeDestination(idx)} className="text-red-400 hover:text-red-300 w-8 flex justify-center">
-                                ✕
-                              </button>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest mb-2">Pickup Location</label>
-                      <AirportLocalitySearch
-                        zones={airportZones}
-                        value={atPickup.name}
-                        airportLabel={airportName}
-                        mode={atDropIsAirport ? 'LOCALITY_ONLY' : atDrop.zoneId ? 'AIRPORT_ONLY' : 'ANY'}
-                        onChange={(locality, zoneId) => {
-                          setAtPickup({ name: locality, zoneId });
-                          const pickupIsAirport = zoneId === AIRPORT_ZONE_ID;
-                          if (atDrop.zoneId && (atDrop.zoneId === AIRPORT_ZONE_ID) === pickupIsAirport) {
-                            setAtDrop({ name: '', zoneId: '' });
-                          }
-                        }}
-                        placeholder={`Search ${airportName} or your area...`}
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest mb-2">Drop Location</label>
-                      <AirportLocalitySearch
-                        zones={airportZones}
-                        value={atDrop.name}
-                        airportLabel={airportName}
-                        mode={atPickupIsAirport ? 'LOCALITY_ONLY' : atPickup.zoneId ? 'AIRPORT_ONLY' : 'ANY'}
-                        onChange={(locality, zoneId) => {
-                          setAtDrop({ name: locality, zoneId });
-                          const dropIsAirport = zoneId === AIRPORT_ZONE_ID;
-                          if (atPickup.zoneId && (atPickup.zoneId === AIRPORT_ZONE_ID) === dropIsAirport) {
-                            setAtPickup({ name: '', zoneId: '' });
-                          }
-                        }}
-                        placeholder={`Search ${airportName} or your area...`}
-                      />
-                    </div>
-
-                    <p className="text-[9px] text-gray-400 font-mono">
-                      One side must be {airportName}; the other, your locality within the zones we cover.
-                    </p>
-                  </div>
-                )}
-
-                <div className="space-y-4 pt-2">
-                  <div>
-                    <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest mb-2">
-                      {bookingMode === 'ROUND_TRIP' ? 'Travel Date Range (Required)' : bookingMode === 'AIRPORT_TRANSFER' ? 'Transfer Date' : 'Travel Date Range'}
-                    </label>
-                    <div className="relative w-full">
-                      <ConfigProvider
-                        theme={{
-                          token: {
-                            colorPrimary: '#15803d',
-                            borderRadius: 12,
-                            fontSize: 11,
-                            controlHeight: 52,
-                          },
-                          components: {
-                            DatePicker: {
-                              cellWidth: 28,
-                              cellHeight: 20,
-                              timeColumnWidth: 48,
-                              timeCellHeight: 22,
-                            },
-                          },
-                        }}
-                      >
-                        {bookingMode === 'AIRPORT_TRANSFER' ? (
-                          <DatePicker
-                            showTime={{ format: 'h:mm a', use12Hours: true, minuteStep: 30 }}
-                            format="DD/MM/YYYY - h:mm a"
-                            value={pickupDate ? dayjs(pickupDate) : null}
-                            onChange={(date) => {
-                              if (date) {
-                                const start = date.toDate();
-                                setPickupDate(start);
-                                setReturnDate(null);
-                                updateSession({ pickupDate: start.toISOString(), returnDate: null });
-                              }
-                            }}
-                            className="w-full bg-white border border-gray-200 rounded-xl pl-10 pr-4 py-5 text-[11px] outline-none cursor-pointer font-medium"
-                            disabledDate={(current) => current && current < dayjs().startOf('day')}
-                            disabledTime={(current) => {
-                              if (current && current.isSame(dayjs(), 'day')) {
-                                const now = dayjs();
-                                return {
-                                  disabledHours: () => Array.from({ length: now.hour() }, (_, i) => i),
-                                  disabledMinutes: (selectedHour) => {
-                                    if (selectedHour === now.hour()) {
-                                      return Array.from({ length: now.minute() }, (_, i) => i);
-                                    }
-                                    return [];
-                                  }
-                                };
-                              }
-                              return {};
-                            }}
-                          />
-                        ) : (
-                          <DatePicker.RangePicker
-                            showTime={{ format: 'h:mm a', use12Hours: true, minuteStep: 30 }}
-                            format="DD/MM/YYYY - h:mm a"
-                            value={[pickupDate ? dayjs(pickupDate) : null, returnDate ? dayjs(returnDate) : null]}
-                            onChange={(dates) => {
-                              if (dates && dates[0]) {
-                                const start = dates[0].toDate();
-                                let end = dates[1] ? dates[1].toDate() : null;
-                                if (end && (end.getTime() - start.getTime()) < 12 * 60 * 60 * 1000) {
-                                  end = new Date(start.getTime() + 12 * 60 * 60 * 1000);
-                                }
-                                setPickupDate(start);
-                                setReturnDate(end);
-                                updateSession({
-                                  pickupDate: start.toISOString(),
-                                  returnDate: end ? end.toISOString() : null
-                                });
-                              } else {
-                                setReturnDate(null);
-                                updateSession({ returnDate: null });
-                              }
-                            }}
-                            className="w-full bg-white border border-gray-200 rounded-xl pl-10 pr-4 py-5 text-[11px] outline-none cursor-pointer font-medium"
-                            disabledDate={(current) => current && current < dayjs().startOf('day')}
-                            disabledTime={(current, type) => {
-                              if (type === 'start') {
-                                if (current && current.isSame(dayjs(), 'day')) {
-                                  const now = dayjs();
-                                  return {
-                                    disabledHours: () => Array.from({ length: now.hour() }, (_, i) => i),
-                                    disabledMinutes: (selectedHour) => {
-                                      if (selectedHour === now.hour()) {
-                                        return Array.from({ length: now.minute() }, (_, i) => i);
-                                      }
-                                      return [];
-                                    }
-                                  };
-                                }
-                              } else if (type === 'end') {
-                                if (current && pickupDate && current.isSame(dayjs(pickupDate), 'day')) {
-                                  const p = dayjs(pickupDate);
-                                  return {
-                                    disabledHours: () => Array.from({ length: p.hour() }, (_, i) => i),
-                                    disabledMinutes: (selectedHour) => {
-                                      if (selectedHour === p.hour()) {
-                                        return Array.from({ length: p.minute() }, (_, i) => i);
-                                      }
-                                      return [];
-                                    }
-                                  };
-                                }
-                              }
-                              return {};
-                            }}
-                          />
-                        )}
-                      </ConfigProvider>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {calculatedDistance > 0 && (
-                <>
-                  <div className="bg-gray-50 border border-[#2A2A0A] rounded-xl p-5 mt-6 space-y-3 font-mono text-[10px]">
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-500 font-bold tracking-widest">EST. ROUTE DISTANCE</span>
-                      <span className="text-green-700 font-bold text-sm">{isCalculating ? <Loader2 size={12} className="animate-spin" /> : `${bookingMode === 'ROUND_TRIP' ? calculatedDistance * 2 : calculatedDistance} KM`}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-500 font-bold tracking-widest">EST. TRAVEL DURATION</span>
-                      <span className="text-gray-900 font-bold text-sm">{isCalculating ? <Loader2 size={12} className="animate-spin" /> : displayDuration}</span>
-                    </div>
-                  </div>
-
-                  {!isCalculating && (
-                    <div className="mt-6 h-[300px] rounded-2xl overflow-hidden shadow-lg border border-gray-200">
-                      <RouteMap
-                        sourceLocation={mapToRouteLocation(
-                          bookingMode === 'ROUND_TRIP' ? UDAIPUR_CITY : pickupLocation.data || UDAIPUR_CITY
-                        )}
-                        destLocation={mapToRouteLocation(
-                          bookingMode === 'ROUND_TRIP' ? (destLocations[0]?.data || UDAIPUR_CITY) : dropoffLocation.data || UDAIPUR_CITY
-                        )}
-                        routeGeometry={routeGeometry}
-                      />
-                    </div>
-                  )}
-                </>
-              )}
-
-              {bookingMode === 'AIRPORT_TRANSFER' && atZone && (
-                <div className="bg-green-600/5 border border-green-600/20 rounded-xl p-5 mt-6 font-mono text-[10px] space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-500 font-bold tracking-widest">SERVICE ZONE</span>
-                    <span className="text-green-700 font-bold text-sm">{atZone.name}</span>
-                  </div>
-                  <p className="text-gray-500 leading-relaxed normal-case font-sans text-[11px]">
-                    Fares below already reflect your selected direction and area. Wait time, night hours, and meet &amp; greet charges (if any) are shown per vehicle.
-                  </p>
-                </div>
-              )}
-
+              <h2 className="font-black text-sm uppercase tracking-widest mb-8">Route Configurator</h2>
+              {routeConfiguratorBody}
             </div>
-
           </aside>
 
           {/* Main Classes List */}
           <div className="flex-1">
-            <h2 className="font-black text-xl uppercase tracking-tight mb-6">Choose Private Cab Class</h2>
+            <div className="flex items-center justify-between gap-4 mb-6">
+              <h2 className="font-black text-xl uppercase tracking-tight">Choose Private Cab Class</h2>
+              <button
+                type="button"
+                onClick={() => setIsRouteConfigOpen(true)}
+                className="lg:hidden shrink-0 flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-gray-700"
+              >
+                <SlidersHorizontal size={14} /> Route
+              </button>
+            </div>
 
             <div className="space-y-6">
 
@@ -1109,6 +1118,38 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
           </div>
 
         </div>
+
+        {/* Mobile Route Configurator Drawer */}
+        {isRouteConfigOpen && (
+          <>
+            <div
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] lg:hidden"
+              onClick={() => setIsRouteConfigOpen(false)}
+            />
+            <div className="fixed top-0 left-0 h-full w-full max-w-sm bg-gray-50 border-r border-gray-200 shadow-2xl z-[101] flex flex-col lg:hidden">
+              <div className="flex items-center justify-between p-6 border-b border-gray-200 shrink-0">
+                <h2 className="font-black text-sm uppercase tracking-widest">Route Configurator</h2>
+                <button
+                  onClick={() => setIsRouteConfigOpen(false)}
+                  className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:text-gray-900 transition-colors"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+              <div className="flex-1 overflow-y-auto p-6">
+                {routeConfiguratorBody}
+              </div>
+              <div className="p-6 border-t border-gray-200 shrink-0">
+                <button
+                  onClick={() => setIsRouteConfigOpen(false)}
+                  className="w-full bg-green-600 text-white px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-brand-hover transition-colors"
+                >
+                  Done
+                </button>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
