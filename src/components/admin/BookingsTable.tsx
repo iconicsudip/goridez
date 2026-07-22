@@ -83,7 +83,7 @@ export default function BookingsTable({ initialBookings }: BookingsTableProps) {
         </div>
 
         <div className="flex gap-2 w-full md:w-auto">
-          {['ALL', 'CONFIRMED', 'PENDING', 'CANCELLED', 'REJECTED'].map((status) => (
+          {['ALL', 'CONFIRMED', 'CANCELLED', 'REJECTED'].map((status) => (
             <button
               key={status}
               onClick={() => setStatusFilter(status)}

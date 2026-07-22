@@ -14,7 +14,10 @@ export default async function DashboardPage() {
   const dbUser = await prisma.user.findUnique({
     where: { email: session.user.email },
     include: {
+      // Bookings only reach PENDING before the 30% advance is paid — hide
+      // abandoned/failed checkouts rather than showing them as reservations.
       bookings: {
+        where: { status: { not: 'PENDING' } },
         include: { car: true, tour: true, villa: true },
         orderBy: { createdAt: 'desc' }
       },

@@ -7,6 +7,9 @@ export const metadata = {
 
 export default async function AdminBookingsPage() {
   const bookings = await prisma.booking.findMany({
+    // Bookings only reach PENDING before the 30% advance is paid — an abandoned
+    // or failed checkout should never surface in the reservation ledger.
+    where: { status: { not: 'PENDING' } },
     include: {
       user: true,
       car: true,
