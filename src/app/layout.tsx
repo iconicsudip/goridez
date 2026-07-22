@@ -59,7 +59,9 @@ export default async function RootLayout({
   return (
     <html lang="en" className={`${cinzel.variable} ${outfit.variable} ${inter.variable}`} suppressHydrationWarning>
       <head>
-        <link rel="icon" href={siteSettings.favicon} />
+        <link rel="icon" href={siteSettings.favicon || '/favicon.ico'} />
+        <link rel="shortcut icon" href={siteSettings.favicon || '/favicon.ico'} />
+        <link rel="apple-touch-icon" href={siteSettings.favicon || '/favicon.ico'} />
       </head>
       <body suppressHydrationWarning>
         <AntdRegistry>

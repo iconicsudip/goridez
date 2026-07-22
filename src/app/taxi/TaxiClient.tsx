@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useBookingStore } from '@/store/useBookingStore';
-import { ArrowDownUp, MapPin, Calendar, Briefcase, Loader2, Map as MapIcon, SlidersHorizontal, X } from 'lucide-react';
+import { ArrowDownUp, MapPin, Calendar, Briefcase, Loader2, Map as MapIcon, SlidersHorizontal, X, Navigation } from 'lucide-react';
 import dynamic from 'next/dynamic';
 
 const RouteMap = dynamic(() => import('@/components/RouteMap'), { ssr: false, loading: () => <div className="w-full h-64 bg-gray-100 rounded-2xl animate-pulse flex items-center justify-center text-gray-400 font-mono text-[10px] uppercase tracking-widest">Loading Map...</div> });
@@ -14,7 +14,7 @@ import Link from 'next/link';
 import LocationAutocomplete from '@/components/LocationAutocomplete';
 import CarImageSlider from '@/components/CarImageSlider';
 import AirportLocalitySearch, { AIRPORT_ZONE_ID } from '@/components/AirportLocalitySearch';
-import { calculateRoute, OSMLocation } from '@/lib/osm';
+import { calculateRoute, resolveLocationData, getFallbackDistanceKm, OSMLocation } from '@/lib/osm';
 import { getCarSlug } from '@/lib/utils';
 
 function normalizeVehicleCategory(raw: string): string {
@@ -129,41 +129,53 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
     let active = true;
     const fetchRoute = async () => {
       if (bookingMode === 'ROUND_TRIP') {
-        // Source is always Udaipur
         setIsCalculating(true);
         let totalKm = 0;
         let totalDur = 0;
         let currentLoc = UDAIPUR_CITY;
-        let validDests = destLocations.filter(d => d.data);
         let allCoordinates: [number, number][] = [];
+
+        // Auto-resolve missing coordinates for destination names
+        const resolvedDests = await Promise.all(
+          destLocations.map(async (dest) => {
+            if (dest.data) return dest;
+            if (!dest.name.trim()) return dest;
+            const resolvedData = await resolveLocationData(dest.name);
+            return { ...dest, data: resolvedData || undefined };
+          })
+        );
+
+        const validDests = resolvedDests.filter(d => d.name.trim() && d.data);
+
+        let oneWayDur = 0;
 
         for (const dest of validDests) {
           const route = await calculateRoute(currentLoc.lon, currentLoc.lat, dest.data!.lon, dest.data!.lat);
-          if (route) {
-            totalKm += Math.ceil(route.distance / 1000);
-            totalDur += route.duration;
-            if (route.geometry?.coordinates) {
-              allCoordinates = [...allCoordinates, ...route.geometry.coordinates];
-            }
+          const distanceKm = route ? Math.ceil(route.distance / 1000) : getFallbackDistanceKm(currentLoc, dest.data!);
+          const durationSec = route ? route.duration : Math.round((distanceKm / 45) * 3600);
+
+          totalKm += distanceKm;
+          oneWayDur += durationSec;
+          if (route?.geometry?.coordinates) {
+            allCoordinates = [...allCoordinates, ...route.geometry.coordinates];
           }
           currentLoc = dest.data!;
         }
 
-        // Return trip to Udaipur
+        // Return trip back to Udaipur
         if (validDests.length > 0) {
           const returnRoute = await calculateRoute(currentLoc.lon, currentLoc.lat, UDAIPUR_CITY.lon, UDAIPUR_CITY.lat);
-          if (returnRoute) {
-            totalKm += Math.ceil(returnRoute.distance / 1000);
-            totalDur += returnRoute.duration;
-            if (returnRoute.geometry?.coordinates) {
-              allCoordinates = [...allCoordinates, ...returnRoute.geometry.coordinates];
-            }
+          const returnKm = returnRoute ? Math.ceil(returnRoute.distance / 1000) : getFallbackDistanceKm(currentLoc, UDAIPUR_CITY);
+
+          totalKm += returnKm;
+          if (returnRoute?.geometry?.coordinates) {
+            allCoordinates = [...allCoordinates, ...returnRoute.geometry.coordinates];
           }
         }
 
         if (active) {
-          setCalculatedDistance(Math.ceil(totalKm / 2)); // Return OW distance for base calculations if needed
-          setCalculatedDuration(totalDur);
+          setCalculatedDistance(Math.ceil(totalKm / 2)); // Return one-way base KM
+          setCalculatedDuration(oneWayDur); // One-way drive time
           if (allCoordinates.length > 0) {
             setRouteGeometry({
               type: 'LineString',
@@ -240,7 +252,9 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
     setBookingMode(resolvedMode as any);
 
     if (resolvedMode === 'ROUND_TRIP' && qDropCity) {
-      const parts = qDropCity.split(',').map(d => d.trim()).filter(Boolean);
+      const parts = qDropCity.includes('|')
+        ? qDropCity.split('|').map(d => d.trim()).filter(Boolean)
+        : [qDropCity.trim()];
       if (parts.length > 0) {
         setDestLocations(parts.map(p => ({ name: p })));
       }
@@ -606,14 +620,48 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
 
       {calculatedDistance > 0 && (
         <>
-          <div className="bg-gray-50 border border-[#2A2A0A] rounded-xl p-5 mt-6 space-y-3 font-mono text-[10px]">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-500 font-bold tracking-widest">EST. ROUTE DISTANCE</span>
-              <span className="text-green-700 font-bold text-sm">{isCalculating ? <Loader2 size={12} className="animate-spin" /> : `${bookingMode === 'ROUND_TRIP' ? calculatedDistance * 2 : calculatedDistance} KM`}</span>
+          <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black text-white border border-brand-gold/30 rounded-2xl p-5 mt-6 shadow-xl relative overflow-hidden">
+            <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-3">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-brand-gold/20 flex items-center justify-center text-brand-gold">
+                  <Navigation size={14} />
+                </div>
+                <span className="text-xs font-bold uppercase tracking-wider text-gray-200">Route Summary</span>
+              </div>
+              {isCalculating && <Loader2 size={14} className="animate-spin text-brand-gold" />}
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-500 font-bold tracking-widest">EST. TRAVEL DURATION</span>
-              <span className="text-gray-900 font-bold text-sm">{isCalculating ? <Loader2 size={12} className="animate-spin" /> : displayDuration}</span>
+
+            <div className="grid grid-cols-2 gap-3 pt-1">
+              {/* Distance Card */}
+              <div className="bg-white/5 backdrop-blur-sm rounded-xl p-3 border border-white/10">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-gray-400 block mb-1">
+                  {bookingMode === 'ROUND_TRIP' ? 'Round Trip Distance' : 'One-Way Distance'}
+                </span>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-xl font-black text-brand-gold">
+                    {bookingMode === 'ROUND_TRIP' ? calculatedDistance * 2 : calculatedDistance}
+                  </span>
+                  <span className="text-xs font-bold text-gray-300">KM</span>
+                </div>
+                {bookingMode === 'ROUND_TRIP' && (
+                  <span className="text-[10px] font-mono text-gray-400 block mt-1">
+                    ({calculatedDistance} KM one-way)
+                  </span>
+                )}
+              </div>
+
+              {/* Duration Card */}
+              <div className="bg-white/5 backdrop-blur-sm rounded-xl p-3 border border-white/10">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-gray-400 block mb-1">
+                  Est. Drive Time
+                </span>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-xl font-black text-white">{displayDuration}</span>
+                </div>
+                <span className="text-[10px] font-mono text-gray-400 block mt-1">
+                  via shortest route
+                </span>
+              </div>
             </div>
           </div>
 
@@ -880,8 +928,8 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                             onClick={() => !isAlreadyBooked && handleBook(car, flatFare, extraText)}
                             disabled={isAlreadyBooked || !returnDate || calculatedDistance === 0}
                             className={`w-full mt-4 font-black text-[10px] tracking-widest uppercase py-3.5 px-4 rounded-xl transition-all ${isAlreadyBooked || !returnDate || calculatedDistance === 0
-                                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                                : 'bg-green-500 text-white hover:bg-green-600 shadow-md shadow-green-500/30'
+                              ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                              : 'bg-green-500 text-white hover:bg-green-600 shadow-md shadow-green-500/30'
                               }`}
                           >
                             {isAlreadyBooked ? 'Already Booked' : !returnDate ? 'Select Dates First' : calculatedDistance === 0 ? 'Select Valid Route' : 'Book Now'}
@@ -1053,8 +1101,8 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                           onClick={() => !isAlreadyBooked && handleBook(car, flatFare, extraText)}
                           disabled={isAlreadyBooked || !atZoneId || !car._airportBreakdown?.hasFare}
                           className={`w-full mt-4 font-black text-[10px] tracking-widest uppercase py-3.5 px-4 rounded-xl transition-all ${isAlreadyBooked || !atZoneId || !car._airportBreakdown?.hasFare
-                              ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                              : 'bg-green-500 text-white hover:bg-green-600 shadow-md shadow-green-500/30'
+                            ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                            : 'bg-green-500 text-white hover:bg-green-600 shadow-md shadow-green-500/30'
                             }`}
                         >
                           {isAlreadyBooked ? 'Already Booked'
@@ -1093,8 +1141,8 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                       }}
                       className={`w-10 h-10 rounded-xl border text-sm font-bold transition-all cursor-pointer ${currentPage === page
-                          ? 'bg-green-600 border-green-600 text-white shadow-md'
-                          : 'border-gray-200 bg-white text-gray-700 hover:border-green-600 hover:text-green-700'
+                        ? 'bg-green-600 border-green-600 text-white shadow-md'
+                        : 'border-gray-200 bg-white text-gray-700 hover:border-green-600 hover:text-green-700'
                         }`}
                     >
                       {page}

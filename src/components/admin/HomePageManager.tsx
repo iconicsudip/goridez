@@ -55,6 +55,10 @@ export default function HomePageManager({ initialData }: { initialData: any }) {
     selfDriveImage: initialData?.selfDriveImage || 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=1000&q=80',
     chauffeurImage: initialData?.chauffeurImage || 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=1000&q=80',
     airportTransferImage: initialData?.airportTransferImage || 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+    trustBadge: initialData?.trustBadge || '✦ PROMISE OF EXCELLENCE',
+    trustTitle: initialData?.trustTitle || 'EVERY JOURNEY BEGINS WITH TRUST. EVERY TRUST BEGINS WITH GORIDEZ.',
+    trustDescription: initialData?.trustDescription || 'We combine 100% vetted luxury vehicles, professional chauffeurs, transparent pricing, and 24/7 concierge support to make your Rajasthan travel completely seamless.',
+    trustImage: initialData?.trustImage || 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=1200&q=80',
     
     vehiclesBadge: initialData?.vehiclesBadge || 'Real Automotive Collection',
     vehiclesTitle: initialData?.vehiclesTitle || 'VEHICLE',
@@ -242,7 +246,7 @@ export default function HomePageManager({ initialData }: { initialData: any }) {
             </div>
             <div>
               <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">
-                Airport Transfer Card Image
+                Airport Transfer Banner &amp; Background Image
               </label>
               <ImageUpload
                 value={formData.airportTransferImage}
@@ -251,7 +255,31 @@ export default function HomePageManager({ initialData }: { initialData: any }) {
             </div>
           </div>
 
-          {/* VEHICLES SECTION */}
+          {/* BRAND TRUST BANNER SECTION */}
+          {renderSectionHeader('Brand Trust Banner Section (Image Left, Text Right)')}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div>
+              <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">Section Badge</label>
+              <input type="text" name="trustBadge" value={formData.trustBadge} onChange={handleChange} className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors" />
+            </div>
+            <div>
+              <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">Banner Title</label>
+              <input type="text" name="trustTitle" value={formData.trustTitle} onChange={handleChange} className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors" />
+            </div>
+          </div>
+          <div className="mb-6">
+            <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">Description</label>
+            <textarea name="trustDescription" value={formData.trustDescription} onChange={handleChange} className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors h-20" />
+          </div>
+          <div className="mb-6">
+            <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">
+              Trust Banner Left Image
+            </label>
+            <ImageUpload
+              value={formData.trustImage}
+              onChange={(val) => setFormData({ ...formData, trustImage: val })}
+            />
+          </div>
           {renderSectionHeader('Vehicles Section')}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>

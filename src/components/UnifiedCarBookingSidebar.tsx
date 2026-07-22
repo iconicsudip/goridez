@@ -10,7 +10,7 @@ import LocationField from '@/components/LocationField';
 import AirportLocalitySearch, { AIRPORT_ZONE_ID } from '@/components/AirportLocalitySearch';
 import SelfDriveLocationSearch from '@/components/SelfDriveLocationSearch';
 import { calculatePackagePricing, getPackageDurationHours } from '@/lib/utils';
-import { calculateRoute, OSMLocation } from '@/lib/osm';
+import { calculateRoute, resolveLocationData, getFallbackDistanceKm, OSMLocation } from '@/lib/osm';
 
 const UDAIPUR_CITY: OSMLocation = {
   place_id: -2,
@@ -116,7 +116,9 @@ export default function UnifiedCarBookingSidebar({
 
     // RT Destinations
     if (qMode === 'ROUND_TRIP' && qDropCity) {
-      const parts = qDropCity.split(',').map((d: string) => d.trim()).filter(Boolean);
+      const parts = qDropCity.includes('|')
+        ? qDropCity.split('|').map((d: string) => d.trim()).filter(Boolean)
+        : [qDropCity.trim()];
       if (parts.length > 0) setDestLocations(parts.map((p: string) => ({ name: p })));
     }
 
@@ -147,28 +149,40 @@ export default function UnifiedCarBookingSidebar({
       let totalKm = 0;
       let totalDur = 0;
       let currentLoc = UDAIPUR_CITY;
-      let validDests = destLocations.filter(d => d.data);
+
+      const resolvedDests = await Promise.all(
+        destLocations.map(async (dest) => {
+          if (dest.data) return dest;
+          if (!dest.name.trim()) return dest;
+          const resolvedData = await resolveLocationData(dest.name);
+          return { ...dest, data: resolvedData || undefined };
+        })
+      );
+
+      const validDests = resolvedDests.filter(d => d.name.trim() && d.data);
+      
+      let oneWayDur = 0;
       
       for (const dest of validDests) {
         const route = await calculateRoute(currentLoc.lon, currentLoc.lat, dest.data!.lon, dest.data!.lat);
-        if (route) {
-          totalKm += Math.ceil(route.distance / 1000);
-          totalDur += route.duration;
-        }
+        const distanceKm = route ? Math.ceil(route.distance / 1000) : getFallbackDistanceKm(currentLoc, dest.data!);
+        const durationSec = route ? route.duration : Math.round((distanceKm / 45) * 3600);
+
+        totalKm += distanceKm;
+        oneWayDur += durationSec;
         currentLoc = dest.data!;
       }
       
       if (validDests.length > 0) {
         const returnRoute = await calculateRoute(currentLoc.lon, currentLoc.lat, UDAIPUR_CITY.lon, UDAIPUR_CITY.lat);
-        if (returnRoute) {
-          totalKm += Math.ceil(returnRoute.distance / 1000);
-          totalDur += returnRoute.duration;
-        }
+        const returnKm = returnRoute ? Math.ceil(returnRoute.distance / 1000) : getFallbackDistanceKm(currentLoc, UDAIPUR_CITY);
+
+        totalKm += returnKm;
       }
       
       if (active) {
         setRtDistance(Math.ceil(totalKm / 2));
-        setRtDuration(totalDur);
+        setRtDuration(oneWayDur);
         setIsCalculatingRt(false);
       }
     };
@@ -270,7 +284,7 @@ export default function UnifiedCarBookingSidebar({
       const validDests = destLocations.filter(d => d.name.trim());
       if (validDests.length === 0) { alert('Please specify a destination.'); return; }
 
-      const destStr = validDests.map(d => d.name).join(',');
+      const destStr = validDests.map(d => d.name).join('|');
       
       updateSession({
         bookingMode,

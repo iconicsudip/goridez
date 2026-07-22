@@ -9,14 +9,21 @@ import BrowseCars from "@/components/BrowseCars";
 import VideoGallery from "@/components/VideoGallery";
 import VehicleCollections from "@/components/VehicleCollections";
 import GoogleReviewsSection from "@/components/GoogleReviewsSection";
+import BookingProcessSection from "@/components/BookingProcessSection";
 import { Star, Shield, Clock, Map, ChevronRight, Key, Plane, UserCheck, Coins, ArrowRight, ArrowUpRight } from 'lucide-react';
+
+import { generatePageMetadata, getSeoForPath } from "@/lib/seo";
 
 const BLOG_FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=1600&q=80';
 
 export const dynamic = 'force-dynamic';
 
+export async function generateMetadata() {
+  return generatePageMetadata('/');
+}
+
 export default async function Home() {
-  const [cars, cities, blogs, faqs, homePageData, selfDriveCount, chauffeurCount, reels, googleReviews, siteSettings] = await Promise.all([
+  const [cars, cities, blogs, faqs, homePageData, selfDriveCount, chauffeurCount, reels, googleReviews, siteSettings, seoSetting] = await Promise.all([
     prisma.car.findMany({ include: { packages: true }, orderBy: { createdAt: 'desc' } }),
     prisma.city.findMany({ orderBy: { name: 'asc' } }),
     prisma.blog.findMany({ where: { isDraft: false }, take: 3, orderBy: { createdAt: 'desc' } }),
@@ -25,8 +32,9 @@ export default async function Home() {
     prisma.car.count({ where: { serviceTypes: { has: 'SELF_DRIVE' } } }),
     prisma.car.count({ where: { serviceTypes: { has: 'WITH_DRIVER' } } }),
     prisma.instagramReel.findMany({ where: { isActive: true }, orderBy: { order: 'asc' } }),
-    prisma.googleReview.findMany({ orderBy: { publishedAt: 'desc' } }),
+    prisma.googleReview.findMany({ orderBy: { createdAt: 'desc' } }),
     prisma.siteSettings.findUnique({ where: { id: 'singleton' } }),
+    getSeoForPath('/'),
   ]);
 
   // Airport Transfers currently operate out of Udaipur only (same scope as /taxi).
@@ -75,6 +83,12 @@ export default async function Home() {
 
   return (
     <div className="flex flex-col bg-brand-bg text-gray-100 overflow-hidden font-body">
+      {seoSetting?.structuredData && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: seoSetting.structuredData }}
+        />
+      )}
       {/* SECTION 1: HERO */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
@@ -219,7 +233,8 @@ export default async function Home() {
       </section>
 
 
-      {/* SECTION 3: VEHICLE COLLECTION */}
+      {/* BOOKING PROCESS SECTION */}
+      <BookingProcessSection />
       {cars.length > 0 && (
         <VehicleCollections cars={cars} />
       )}
@@ -229,17 +244,17 @@ export default async function Home() {
         {/* Background Image with Dark Overlay */}
         <div className="absolute inset-0 z-0">
           <Image
-            src="https://images.unsplash.com/photo-1542282088-fe8426682b8f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80"
+            src={(hp as any).airportTransferImage || "https://images.unsplash.com/photo-1542282088-fe8426682b8f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80"}
             alt="Airport Transfer Background"
             fill
-            className="object-cover opacity-35"
+            className="object-cover opacity-40"
             unoptimized
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black via-black/85 to-transparent" />
         </div>
 
         <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-3xl flex flex-col items-start text-left">
+          <div className="max-w-5xl flex flex-col items-start text-left">
             {/* Tagline */}
             <div className="flex items-center gap-3 mb-4">
               <span className="h-[2px] w-8 bg-brand-gold rounded-full"></span>
@@ -256,45 +271,45 @@ export default async function Home() {
               Safe, Reliable & On-Time Airport Transfers Across Rajasthan. Experience ultimate travel comfort with our dedicated professional chauffeurs.
             </p>
 
-            {/* Features Grid */}
-            <div className="grid grid-cols-2 gap-x-8 gap-y-6 mb-12 w-full max-w-xl">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-brand-gold/10 border border-brand-gold/25 flex items-center justify-center text-brand-gold flex-shrink-0">
-                  <Plane size={18} />
+            {/* Features Grid — 4 Columns on Desktop */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12 w-full">
+              <div className="flex items-center gap-3.5 bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-sm">
+                <div className="w-11 h-11 rounded-xl bg-brand-gold/15 border border-brand-gold/30 flex items-center justify-center text-brand-gold flex-shrink-0">
+                  <Plane size={20} />
                 </div>
                 <div>
-                  <h4 className="text-white text-sm font-bold">Flight Tracking</h4>
-                  <p className="text-gray-400 text-xs">Adjusted for delays</p>
+                  <h4 className="text-white text-sm font-bold uppercase tracking-tight">Flight Tracking</h4>
+                  <p className="text-gray-400 text-xs mt-0.5">Adjusted for delays</p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-brand-gold/10 border border-brand-gold/25 flex items-center justify-center text-brand-gold flex-shrink-0">
-                  <UserCheck size={18} />
+              <div className="flex items-center gap-3.5 bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-sm">
+                <div className="w-11 h-11 rounded-xl bg-brand-gold/15 border border-brand-gold/30 flex items-center justify-center text-brand-gold flex-shrink-0">
+                  <UserCheck size={20} />
                 </div>
                 <div>
-                  <h4 className="text-white text-sm font-bold">Meet & Greet</h4>
-                  <p className="text-gray-400 text-xs">Terminal pickup assistance</p>
+                  <h4 className="text-white text-sm font-bold uppercase tracking-tight">Meet & Greet</h4>
+                  <p className="text-gray-400 text-xs mt-0.5">Terminal assistance</p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-brand-gold/10 border border-brand-gold/25 flex items-center justify-center text-brand-gold flex-shrink-0">
-                  <Coins size={18} />
+              <div className="flex items-center gap-3.5 bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-sm">
+                <div className="w-11 h-11 rounded-xl bg-brand-gold/15 border border-brand-gold/30 flex items-center justify-center text-brand-gold flex-shrink-0">
+                  <Coins size={20} />
                 </div>
                 <div>
-                  <h4 className="text-white text-sm font-bold">Fixed Fare</h4>
-                  <p className="text-gray-400 text-xs">No hidden or toll charges</p>
+                  <h4 className="text-white text-sm font-bold uppercase tracking-tight">Fixed Fare</h4>
+                  <p className="text-gray-400 text-xs mt-0.5">No hidden or toll fees</p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-brand-gold/10 border border-brand-gold/25 flex items-center justify-center text-brand-gold flex-shrink-0">
-                  <Clock size={18} />
+              <div className="flex items-center gap-3.5 bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-sm">
+                <div className="w-11 h-11 rounded-xl bg-brand-gold/15 border border-brand-gold/30 flex items-center justify-center text-brand-gold flex-shrink-0">
+                  <Clock size={20} />
                 </div>
                 <div>
-                  <h4 className="text-white text-sm font-bold">24×7 Availability</h4>
-                  <p className="text-gray-400 text-xs">All day & night assistance</p>
+                  <h4 className="text-white text-sm font-bold uppercase tracking-tight">24×7 Availability</h4>
+                  <p className="text-gray-400 text-xs mt-0.5">All day & night support</p>
                 </div>
               </div>
             </div>
@@ -310,8 +325,10 @@ export default async function Home() {
         </div>
       </section>
 
+
+
       {/* SECTION 7: BROWSE CARS (Category & Brand) */}
-      <BrowseCars />
+      <BrowseCars cars={cars} />
 
       {/* SECTION 8: VIDEO GALLERY */}
       <VideoGallery reels={reels} />

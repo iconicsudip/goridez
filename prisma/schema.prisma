@@ -388,6 +388,10 @@ model HomePage {
   selfDriveImage         String   @default("https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=1000&q=80")
   chauffeurImage         String   @default("https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=1000&q=80")
   airportTransferImage   String   @default("https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1000&q=80")
+  trustBadge             String   @default("✦ PROMISE OF EXCELLENCE")
+  trustTitle             String   @default("EVERY JOURNEY BEGINS WITH TRUST. EVERY TRUST BEGINS WITH GORIDEZ.")
+  trustDescription       String   @default("We combine 100% vetted luxury vehicles, professional chauffeurs, transparent pricing, and 24/7 concierge support to make your Rajasthan travel completely seamless.")
+  trustImage             String   @default("https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=1200&q=80")
   updatedAt              DateTime @updatedAt
 }
 
@@ -418,6 +422,27 @@ model GoogleReview {
   rating          Int
   text            String
   relativeTime    String
-  publishedAt     DateTime
-  syncedAt        DateTime @default(now())
+  time            Int      @default(0)
+  publishedAt     DateTime @default(now())
+  reviewUrl       String   @default("")
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @default(now()) @updatedAt
+}
+
+model SeoSetting {
+  id               String   @id @default(cuid())
+  pagePath         String   @unique // e.g. "/", "/about", "/self-drive", "/taxi", "/cities", "/blogs"
+  pageName         String   // e.g. "Home Page", "About Us", "Self-Drive Fleet"
+  metaTitle        String?
+  metaDescription  String?
+  metaKeywords     String?  // comma-separated keywords
+  canonicalUrl     String?  // e.g. "https://goridez.com/about"
+  ogTitle          String?
+  ogDescription    String?
+  ogImage          String?  // Social share image URL
+  structuredData   String?  // Custom JSON-LD schema JSON
+  noIndex          Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }

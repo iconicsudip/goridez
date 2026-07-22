@@ -1,9 +1,15 @@
 import { prisma } from '@/lib/prisma';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ChevronRight, Shield, Award, Sparkles, Star, MapPin, Car, CalendarCheck, Rocket } from 'lucide-react';
+import { ChevronRight, Shield, Award, Sparkles, Star, MapPin, Car, CalendarCheck, Rocket, Clock } from 'lucide-react';
+
+import { generatePageMetadata, getSeoForPath } from '@/lib/seo';
 
 export const dynamic = 'force-dynamic';
+
+export async function generateMetadata() {
+  return generatePageMetadata('/about');
+}
 
 const CITY_FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=1200&q=80';
 
@@ -31,12 +37,14 @@ const BOOKING_PROCESS = [
 ];
 
 export default async function AboutPage() {
-  const [data, siteSettings, carCount, cities, happyCustomers] = await Promise.all([
+  const [data, siteSettings, carCount, cities, happyCustomers, hp, seoSetting] = await Promise.all([
     prisma.aboutPage.findUnique({ where: { id: 'singleton' } }),
     prisma.siteSettings.findUnique({ where: { id: 'singleton' } }),
     prisma.car.count(),
     prisma.city.findMany({ orderBy: { name: 'asc' } }),
     prisma.happyCustomer.findMany({ where: { isActive: true }, orderBy: { order: 'asc' } }),
+    prisma.homePage.findUnique({ where: { id: 'singleton' } }),
+    getSeoForPath('/about'),
   ]);
 
   const cityCount = cities.length;
@@ -70,6 +78,12 @@ export default async function AboutPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 font-body pb-24">
+      {seoSetting?.structuredData && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: seoSetting.structuredData }}
+        />
+      )}
       {/* Hero Banner */}
       <section className="relative h-[60vh] flex items-center justify-center overflow-hidden bg-white">
         <div className="absolute inset-0 z-0">
@@ -99,33 +113,65 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      {/* Stats Strip */}
-      <section className="container mx-auto px-4 -mt-10 relative z-10 mb-12">
-        <div className="bg-white border border-gray-200 rounded-3xl shadow-xl px-6 py-8 md:px-12 md:py-10 grid grid-cols-1 sm:grid-cols-3 gap-8 md:gap-6 text-center">
-          <div>
-            <div className="text-3xl md:text-4xl font-black text-gray-900">{carCount}+</div>
-            <div className="text-[11px] md:text-xs text-gray-500 font-bold uppercase tracking-widest mt-1.5">Premium Vehicles</div>
-          </div>
-          <div className="sm:border-x border-gray-200">
-            <div className="text-3xl md:text-4xl font-black text-gray-900">{cityCount}</div>
-            <div className="text-[11px] md:text-xs text-gray-500 font-bold uppercase tracking-widest mt-1.5">Cities Covered</div>
-          </div>
-          <div>
-            {hasReviews ? (
-              <>
-                <div className="text-3xl md:text-4xl font-black text-gray-900 flex items-center justify-center gap-1.5">
-                  {siteSettings!.googleAverageRating.toFixed(1)} <Star className="text-brand-gold fill-brand-gold" size={22} />
-                </div>
-                <div className="text-[11px] md:text-xs text-gray-500 font-bold uppercase tracking-widest mt-1.5">
-                  {siteSettings!.googleTotalReviews.toLocaleString()} Google Reviews
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="text-3xl md:text-4xl font-black text-gray-900">24×7</div>
-                <div className="text-[11px] md:text-xs text-gray-500 font-bold uppercase tracking-widest mt-1.5">Concierge Desk</div>
-              </>
-            )}
+      {/* Stats Strip - Premium Light Theme */}
+      <section className="container mx-auto px-4 -mt-12 relative z-20 mb-16 font-body">
+        <div className="bg-white border border-gray-200/80 rounded-3xl shadow-xl shadow-green-950/5 p-6 sm:p-8 md:p-10 relative overflow-hidden">
+          {/* Subtle Accent Glow */}
+          <div className="absolute top-0 right-1/4 w-[300px] h-[300px] bg-green-500/[0.04] blur-[80px] rounded-full pointer-events-none" />
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-4 divide-y sm:divide-y-0 sm:divide-x divide-gray-150 relative z-10">
+            {/* Stat 1: Vehicles */}
+            <div className="flex flex-col items-center justify-center text-center pt-4 sm:pt-0">
+              <div className="w-12 h-12 rounded-2xl bg-green-50 border border-green-200/60 flex items-center justify-center text-green-700 mb-3 shadow-sm">
+                <Car size={22} />
+              </div>
+              <div className="text-3xl md:text-5xl font-black text-gray-900 tracking-tight font-serif">
+                {carCount}<span className="text-green-600 font-sans font-black">+</span>
+              </div>
+              <div className="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-[0.2em] mt-2 font-mono">
+                Premium Vehicles
+              </div>
+            </div>
+
+            {/* Stat 2: Cities */}
+            <div className="flex flex-col items-center justify-center text-center pt-8 sm:pt-0">
+              <div className="w-12 h-12 rounded-2xl bg-green-50 border border-green-200/60 flex items-center justify-center text-green-700 mb-3 shadow-sm">
+                <MapPin size={22} />
+              </div>
+              <div className="text-3xl md:text-5xl font-black text-gray-900 tracking-tight font-serif">
+                {cityCount}
+              </div>
+              <div className="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-[0.2em] mt-2 font-mono">
+                Cities Covered
+              </div>
+            </div>
+
+            {/* Stat 3: Reviews */}
+            <div className="flex flex-col items-center justify-center text-center pt-8 sm:pt-0">
+              <div className="w-12 h-12 rounded-2xl bg-green-50 border border-green-200/60 flex items-center justify-center text-green-700 mb-3 shadow-sm">
+                <Star size={22} className="fill-green-600 text-green-600" />
+              </div>
+              {hasReviews ? (
+                <>
+                  <div className="text-3xl md:text-5xl font-black text-gray-900 tracking-tight flex items-center justify-center gap-1.5 font-serif">
+                    {siteSettings!.googleAverageRating.toFixed(1)}
+                    <span className="text-green-600 text-2xl font-sans font-black">★</span>
+                  </div>
+                  <div className="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-[0.2em] mt-2 font-mono">
+                    {siteSettings!.googleTotalReviews.toLocaleString()} Google Reviews
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="text-3xl md:text-5xl font-black text-gray-900 tracking-tight font-serif">
+                    24<span className="text-green-600 font-sans font-black">×</span>7
+                  </div>
+                  <div className="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-[0.2em] mt-2 font-mono">
+                    Concierge Desk
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </section>
@@ -280,15 +326,73 @@ export default async function AboutPage() {
         </section>
       )}
 
-      {/* Brand Statement Band */}
-      <section className="relative bg-gray-900 py-20 md:py-28 mt-20 overflow-hidden">
-        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-green-600/10 blur-[120px] rounded-full pointer-events-none" />
-        <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-emerald-500/10 blur-[120px] rounded-full pointer-events-none" />
-        <div className="container mx-auto px-4 max-w-4xl relative z-10 text-center">
-          <Sparkles className="mx-auto text-green-500 mb-6" size={28} />
-          <p className="text-2xl md:text-4xl lg:text-5xl font-black uppercase tracking-tight text-white leading-tight">
-            Every Journey Begins With <span className="text-green-500">Trust</span>. Every Trust Begins With <span className="text-green-500">GoRidez</span>.
-          </p>
+      {/* BRAND TRUST BANNER SECTION (Image Left, Text Right) */}
+      <section className="py-24 bg-zinc-950 text-white relative overflow-hidden mt-20 font-body border-y border-brand-border">
+        {/* Background Subtle Accent Glows */}
+        <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-brand-gold/[0.03] blur-[120px] rounded-full pointer-events-none -z-10" />
+        <div className="absolute bottom-0 right-0 w-[450px] h-[450px] bg-[#8dbb00]/[0.02] blur-[120px] rounded-full pointer-events-none -z-10" />
+
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+            {/* Left Image Column */}
+            <div className="lg:col-span-5 relative">
+              <div className="relative aspect-[4/3] md:aspect-[5/4] rounded-3xl overflow-hidden border border-white/10 shadow-2xl group">
+                <Image
+                  src={(hp as any)?.trustImage || "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=1200&q=80"}
+                  alt="GoRidez Trust Statement"
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                  unoptimized
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                <div className="absolute bottom-6 left-6 right-6 p-4 rounded-2xl bg-black/60 backdrop-blur-md border border-white/10">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-brand-gold/20 text-brand-gold flex items-center justify-center font-bold">
+                      ✦
+                    </div>
+                    <div>
+                      <div className="text-white text-xs font-bold uppercase tracking-wider">100% Vetted Fleet</div>
+                      <div className="text-gray-400 text-[10px]">Clean, Insured &amp; Verified Cars</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Text Column */}
+            <div className="lg:col-span-7 flex flex-col justify-center">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="h-[2px] w-8 bg-brand-gold rounded-full"></span>
+                <span className="text-brand-gold text-xs font-bold tracking-[0.2em] uppercase">
+                  {(hp as any)?.trustBadge || "✦ PROMISE OF EXCELLENCE"}
+                </span>
+              </div>
+
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight text-white mb-6 leading-tight font-serif">
+                {(hp as any)?.trustTitle || "EVERY JOURNEY BEGINS WITH TRUST. EVERY TRUST BEGINS WITH GORIDEZ."}
+              </h2>
+
+              <p className="text-gray-300 text-base sm:text-lg mb-8 leading-relaxed font-light">
+                {(hp as any)?.trustDescription || "We combine 100% vetted luxury vehicles, professional chauffeurs, transparent pricing, and 24/7 concierge support to make your Rajasthan travel completely seamless."}
+              </p>
+
+              {/* Trust Badges Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 border-t border-white/10 pt-8">
+                <div className="flex items-center gap-3">
+                  <Shield className="text-brand-gold shrink-0" size={20} />
+                  <span className="text-xs font-bold uppercase tracking-wider text-gray-200">Zero Hidden Fees</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Star className="text-brand-gold shrink-0" size={20} />
+                  <span className="text-xs font-bold uppercase tracking-wider text-gray-200">5-Star Customer Rating</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Clock className="text-brand-gold shrink-0" size={20} />
+                  <span className="text-xs font-bold uppercase tracking-wider text-gray-200">24×7 Concierge Support</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 

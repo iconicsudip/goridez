@@ -663,13 +663,40 @@ export async function updateAboutPage(formData: FormData) {
     const content = formData.get('content') as string;
     const imageUrl = formData.get('imageUrl') as string;
 
+    const trustBadge = formData.get('trustBadge') as string;
+    const trustTitle = formData.get('trustTitle') as string;
+    const trustDescription = formData.get('trustDescription') as string;
+    const trustImage = formData.get('trustImage') as string;
+
     await prisma.aboutPage.upsert({
       where: { id: 'singleton' },
       update: { title, subtitle, content, imageUrl },
       create: { id: 'singleton', title, subtitle, content, imageUrl }
     });
+
+    if (trustBadge || trustTitle || trustDescription || trustImage) {
+      await prisma.homePage.upsert({
+        where: { id: 'singleton' },
+        update: {
+          ...(trustBadge && { trustBadge }),
+          ...(trustTitle && { trustTitle }),
+          ...(trustDescription && { trustDescription }),
+          ...(trustImage && { trustImage }),
+        },
+        create: {
+          id: 'singleton',
+          trustBadge: trustBadge || "✦ PROMISE OF EXCELLENCE",
+          trustTitle: trustTitle || "EVERY JOURNEY BEGINS WITH TRUST. EVERY TRUST BEGINS WITH GORIDEZ.",
+          trustDescription: trustDescription || "We combine 100% vetted luxury vehicles, professional chauffeurs, transparent pricing, and 24/7 concierge support to make your Rajasthan travel completely seamless.",
+          trustImage: trustImage || "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=1200&q=80"
+        }
+      });
+    }
+
     revalidatePath('/about');
+    revalidatePath('/');
     revalidatePath('/admin/about');
+    revalidatePath('/admin/home-page');
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };
@@ -707,6 +734,10 @@ export async function updateHomePage(formData: FormData) {
       selfDriveImage: formData.get('selfDriveImage') as string,
       chauffeurImage: formData.get('chauffeurImage') as string,
       airportTransferImage: formData.get('airportTransferImage') as string,
+      trustBadge: formData.get('trustBadge') as string,
+      trustTitle: formData.get('trustTitle') as string,
+      trustDescription: formData.get('trustDescription') as string,
+      trustImage: formData.get('trustImage') as string,
     };
 
     await prisma.homePage.upsert({
@@ -716,6 +747,79 @@ export async function updateHomePage(formData: FormData) {
     });
     revalidatePath('/');
     revalidatePath('/admin/home-page');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+// --- SEO MANAGEMENT ---
+export async function getSeoSettingsAction() {
+  try {
+    const settings = await prisma.seoSetting.findMany({
+      orderBy: { pageName: 'asc' }
+    });
+    return { success: true, data: settings };
+  } catch (error: any) {
+    return { success: false, error: error.message, data: [] };
+  }
+}
+
+export async function upsertSeoSettingAction(formData: FormData) {
+  try {
+    const id = formData.get('id') as string | null;
+    const pagePath = (formData.get('pagePath') as string || '/').trim();
+    const pageName = (formData.get('pageName') as string || 'Page').trim();
+    const metaTitle = (formData.get('metaTitle') as string || '').trim();
+    const metaDescription = (formData.get('metaDescription') as string || '').trim();
+    const metaKeywords = (formData.get('metaKeywords') as string || '').trim();
+    const canonicalUrl = (formData.get('canonicalUrl') as string || '').trim();
+    const ogTitle = (formData.get('ogTitle') as string || '').trim();
+    const ogDescription = (formData.get('ogDescription') as string || '').trim();
+    const ogImage = (formData.get('ogImage') as string || '').trim();
+    const structuredData = (formData.get('structuredData') as string || '').trim();
+    const noIndex = formData.get('noIndex') === 'true';
+
+    const data = {
+      pagePath,
+      pageName,
+      metaTitle: metaTitle || null,
+      metaDescription: metaDescription || null,
+      metaKeywords: metaKeywords || null,
+      canonicalUrl: canonicalUrl || null,
+      ogTitle: ogTitle || null,
+      ogDescription: ogDescription || null,
+      ogImage: ogImage || null,
+      structuredData: structuredData || null,
+      noIndex,
+    };
+
+    if (id) {
+      await prisma.seoSetting.update({
+        where: { id },
+        data,
+      });
+    } else {
+      await prisma.seoSetting.upsert({
+        where: { pagePath },
+        update: data,
+        create: data,
+      });
+    }
+
+    revalidatePath(pagePath);
+    revalidatePath('/admin/seo');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+export async function deleteSeoSettingAction(id: string) {
+  try {
+    const setting = await prisma.seoSetting.delete({ where: { id } });
+    if (setting?.pagePath) revalidatePath(setting.pagePath);
+    revalidatePath('/admin/seo');
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };

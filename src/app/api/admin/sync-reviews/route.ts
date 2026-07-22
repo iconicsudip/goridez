@@ -102,7 +102,6 @@ export async function POST() {
           text,
           relativeTime: r.date          || 'recently',
           publishedAt:  r.dateExact ? new Date(r.dateExact) : now,
-          syncedAt:     now,
         },
       });
       synced++;

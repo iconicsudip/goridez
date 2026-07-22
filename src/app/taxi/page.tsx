@@ -1,9 +1,16 @@
 import { Suspense } from 'react';
 import { prisma } from '@/lib/prisma';
 import TaxiClient from './TaxiClient';
+import { generatePageMetadata, getSeoForPath } from '@/lib/seo';
+
+export const dynamic = 'force-dynamic';
+
+export async function generateMetadata() {
+  return generatePageMetadata('/taxi');
+}
 
 export default async function TaxiPage() {
-  const [cars, cities, taxiSettings, siteSettings] = await Promise.all([
+  const [cars, cities, taxiSettings, siteSettings, seoSetting] = await Promise.all([
     prisma.car.findMany({
       where: { serviceTypes: { hasSome: ['TAXI', 'AIRPORT_TRANSFER'] } },
       include: { packages: true, city: true, bookings: true },
@@ -11,7 +18,8 @@ export default async function TaxiPage() {
     }),
     prisma.city.findMany({ orderBy: { name: 'asc' } }),
     prisma.taxiFareSetting.findMany({ orderBy: { vehicleCategory: 'asc' } }),
-    prisma.siteSettings.findUnique({ where: { id: 'singleton' } })
+    prisma.siteSettings.findUnique({ where: { id: 'singleton' } }),
+    getSeoForPath('/taxi'),
   ]);
 
   // Airport Transfers currently operate out of Udaipur only (matches the hardcoded

@@ -4,7 +4,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Calendar, Clock, ArrowLeft, BookOpen, ChevronRight, Car, Building, Sparkles } from 'lucide-react';
 
+import { generateBlogMetadata, buildBlogJsonLd } from '@/lib/seo';
+
 export const dynamic = 'force-dynamic';
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  return generateBlogMetadata(slug);
+}
 
 const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=1600&q=80';
 
@@ -35,8 +42,16 @@ export default async function BlogDetails({ params }: { params: Promise<{ slug: 
     year: 'numeric'
   });
 
+  const blogJsonLd = buildBlogJsonLd(blog);
+
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 font-body pb-24">
+      {blogJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: blogJsonLd }}
+        />
+      )}
 
       {/* Hero Banner */}
       <section className="relative h-[55vh] md:h-[65vh] w-full overflow-hidden bg-gray-900">

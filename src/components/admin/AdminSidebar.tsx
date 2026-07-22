@@ -27,8 +27,7 @@ const ADMIN_LINKS = [
   { href: '/admin/reels', label: 'Instagram Reels', icon: Camera },
   { href: '/admin/settings', label: 'Branding Settings', icon: Settings },
   { href: '/admin/bookings', label: 'Reservation Ledger', icon: ListOrdered },
-  { href: '#', label: 'Search Optimization (SEO)', icon: Search },
-  { href: '#', label: 'UTM & Analytics Logs', icon: Activity },
+  { href: '/admin/seo', label: 'Search Optimization (SEO)', icon: Search },
   { href: '/admin/coupons', label: 'Coupons & Alerts', icon: Percent },
 ];
 
@@ -46,12 +45,12 @@ export default function AdminSidebar({ adminName, adminEmail }: { adminName: str
         {/* Logo & Brand */}
         <div className="flex items-center gap-3 mb-8 shrink-0">
           <div className="relative h-9 w-28">
-            <Image 
-              src="/logo-ridez.png" 
-              alt="GoRidez Logo" 
-              fill 
+            <Image
+              src="/logo-ridez.png"
+              alt="GoRidez Logo"
+              fill
               className="object-cover object-left"
-              unoptimized 
+              unoptimized
             />
           </div>
         </div>
@@ -75,19 +74,19 @@ export default function AdminSidebar({ adminName, adminEmail }: { adminName: str
         <div className="text-[10px] text-gray-500 font-bold tracking-[0.2em] uppercase mb-4 shrink-0">
           ERP Control Modules
         </div>
-        
+
         <nav className="flex flex-col gap-2 overflow-y-auto pr-2 pb-4 flex-1 custom-scrollbar">
           {ADMIN_LINKS.map((link) => {
             const Icon = link.icon;
-            const isActive = link.href === '/admin' 
-              ? pathname === '/admin' 
+            const isActive = link.href === '/admin'
+              ? pathname === '/admin'
               : link.href !== '#' && pathname?.startsWith(link.href);
 
             if (isActive) {
               return (
-                <Link 
-                  key={link.label} 
-                  href={link.href} 
+                <Link
+                  key={link.label}
+                  href={link.href}
                   className="flex items-center gap-4 px-5 py-3.5 rounded-xl bg-green-600 text-white font-black uppercase text-[10px] tracking-widest shadow-md transition-all"
                 >
                   <Icon size={16} strokeWidth={2.5} /> {link.label}
@@ -96,9 +95,9 @@ export default function AdminSidebar({ adminName, adminEmail }: { adminName: str
             }
 
             return (
-              <Link 
-                key={link.label} 
-                href={link.href} 
+              <Link
+                key={link.label}
+                href={link.href}
                 className="flex items-center gap-4 px-5 py-3.5 rounded-xl text-gray-500 hover:text-gray-900 hover:bg-gray-100 bg-transparent transition-colors font-bold uppercase text-[10px] tracking-widest"
               >
                 <Icon size={16} /> {link.label}

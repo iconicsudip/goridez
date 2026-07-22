@@ -13,14 +13,32 @@ interface AboutPageData {
   imageUrl: string | null;
 }
 
-export default function AboutManager({ initialData }: { initialData: AboutPageData | null }) {
+interface TrustBannerData {
+  trustBadge?: string;
+  trustTitle?: string;
+  trustDescription?: string;
+  trustImage?: string;
+}
+
+export default function AboutManager({
+  initialData,
+  trustData,
+}: {
+  initialData: AboutPageData | null;
+  trustData?: TrustBannerData;
+}) {
   const [loading, setLoading] = useState(false);
   const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
   const [formData, setFormData] = useState({
     title: initialData?.title || 'About GoRidez',
     subtitle: initialData?.subtitle || 'Premium Car Rentals & Excursions in Rajasthan',
     imageUrl: initialData?.imageUrl || '',
-    content: initialData?.content || ''
+    content: initialData?.content || '',
+    trustBadge: trustData?.trustBadge || '✦ PROMISE OF EXCELLENCE',
+    trustTitle: trustData?.trustTitle || 'EVERY JOURNEY BEGINS WITH TRUST. EVERY TRUST BEGINS WITH GORIDEZ.',
+    trustDescription: trustData?.trustDescription || 'We combine 100% vetted luxury vehicles, professional chauffeurs, transparent pricing, and 24/7 concierge support to make your Rajasthan travel completely seamless.',
+    trustImage: trustData?.trustImage || 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=1200&q=80',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -33,12 +51,16 @@ export default function AboutManager({ initialData }: { initialData: AboutPageDa
     data.append('subtitle', formData.subtitle);
     data.append('imageUrl', formData.imageUrl);
     data.append('content', formData.content);
+    data.append('trustBadge', formData.trustBadge);
+    data.append('trustTitle', formData.trustTitle);
+    data.append('trustDescription', formData.trustDescription);
+    data.append('trustImage', formData.trustImage);
 
     const res = await updateAboutPage(data);
     setLoading(false);
 
     if (res.success) {
-      setStatusMsg({ type: 'success', text: 'About Page content updated successfully!' });
+      setStatusMsg({ type: 'success', text: 'About Page content and Brand Trust section updated successfully!' });
     } else {
       setStatusMsg({ type: 'error', text: res.error || 'Failed to save changes.' });
     }
@@ -53,7 +75,7 @@ export default function AboutManager({ initialData }: { initialData: AboutPageDa
             <Info className="text-green-700" size={32} /> About Page Editor
           </h1>
           <p className="text-gray-500 text-[13px]">
-            Manage the content, banner images, brand vision, and storytelling blocks of the customer-facing About Page.
+            Manage the content, banner images, brand trust section, and storytelling blocks of the customer-facing About Page.
           </p>
         </div>
       </div>
@@ -62,12 +84,12 @@ export default function AboutManager({ initialData }: { initialData: AboutPageDa
         <div
           className={`p-4 rounded-2xl mb-6 text-xs font-mono border flex justify-between items-center ${
             statusMsg.type === 'success'
-              ? 'bg-[#00FF66]/5 border-[#00FF66]/20 text-[#00FF66]'
-              : 'bg-red-500/5 border-red-500/20 text-red-400'
+              ? 'bg-[#00FF66]/5 border-[#00FF66]/20 text-green-700 font-bold'
+              : 'bg-red-500/5 border-red-500/20 text-red-500'
           }`}
         >
           <span>{statusMsg.text}</span>
-          <button onClick={() => setStatusMsg(null)} className="opacity-50 hover:opacity-100">
+          <button onClick={() => setStatusMsg(null)} className="opacity-50 hover:opacity-100" type="button">
             <X size={14} />
           </button>
         </div>
@@ -75,6 +97,7 @@ export default function AboutManager({ initialData }: { initialData: AboutPageDa
 
       {/* Editor Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Header Configuration */}
         <div className="bg-gray-100 border border-gray-200 rounded-3xl p-8 space-y-6">
           <h2 className="text-sm font-black uppercase tracking-widest text-gray-500 border-b border-gray-200 pb-4 mb-4">
             Header Configuration
@@ -121,6 +144,64 @@ export default function AboutManager({ initialData }: { initialData: AboutPageDa
           </div>
         </div>
 
+        {/* BRAND TRUST BANNER SECTION (IMAGE LEFT, TEXT RIGHT) */}
+        <div className="bg-gray-100 border border-gray-200 rounded-3xl p-8 space-y-6">
+          <h2 className="text-sm font-black uppercase tracking-widest text-gray-500 border-b border-gray-200 pb-4 mb-4">
+            BRAND TRUST BANNER SECTION (IMAGE LEFT, TEXT RIGHT)
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">
+                SECTION BADGE
+              </label>
+              <input
+                type="text"
+                value={formData.trustBadge}
+                onChange={e => setFormData({ ...formData, trustBadge: e.target.value })}
+                placeholder="✦ PROMISE OF EXCELLENCE"
+                className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 font-medium transition-colors"
+              />
+            </div>
+
+            <div>
+              <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">
+                BANNER TITLE
+              </label>
+              <input
+                type="text"
+                value={formData.trustTitle}
+                onChange={e => setFormData({ ...formData, trustTitle: e.target.value })}
+                placeholder="EVERY JOURNEY BEGINS WITH TRUST. EVERY TRUST BEGINS WITH GORIDEZ."
+                className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 font-medium transition-colors"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">
+              DESCRIPTION
+            </label>
+            <textarea
+              rows={3}
+              value={formData.trustDescription}
+              onChange={e => setFormData({ ...formData, trustDescription: e.target.value })}
+              placeholder="We combine 100% vetted luxury vehicles, professional chauffeurs, transparent pricing, and 24/7 concierge support to make your Rajasthan travel completely seamless."
+              className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors leading-relaxed"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">
+              TRUST BANNER LEFT IMAGE
+            </label>
+            <ImageUpload
+              value={formData.trustImage}
+              onChange={(value) => setFormData({ ...formData, trustImage: value })}
+            />
+          </div>
+        </div>
+
         {/* Content Editor */}
         <div className="bg-gray-100 border border-gray-200 rounded-3xl p-8 space-y-6">
           <h2 className="text-sm font-black uppercase tracking-widest text-gray-500 border-b border-gray-200 pb-4 mb-4">
@@ -139,12 +220,12 @@ export default function AboutManager({ initialData }: { initialData: AboutPageDa
           </div>
         </div>
 
-        {/* Submit */}
+        {/* Submit Button */}
         <div className="flex justify-end">
           <button
             type="submit"
             disabled={loading}
-            className="bg-green-600 hover:bg-brand-hover text-black px-8 py-4 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all shadow-md flex items-center gap-2 disabled:opacity-50"
+            className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all shadow-md flex items-center gap-2 cursor-pointer disabled:opacity-50"
           >
             <Save size={14} />
             {loading ? 'Saving Changes...' : 'Save Settings'}

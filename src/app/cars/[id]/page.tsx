@@ -6,9 +6,15 @@ import { ArrowLeft, CheckCircle2, ChevronRight, Settings2, Fuel, MapPin, Users, 
 import UnifiedCarBookingSidebar from '@/components/UnifiedCarBookingSidebar';
 import CarDetailsGallery from '@/components/CarDetailsGallery';
 import VehicleCollections from '@/components/VehicleCollections';
+import { generateCarMetadata, buildCarJsonLd, getSeoForPath } from '@/lib/seo';
 import { getCarSlug } from '@/lib/utils';
 
 export const dynamic = 'force-dynamic';
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  return generateCarMetadata(id);
+}
 
 export default async function CarDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -62,8 +68,16 @@ export default async function CarDetailsPage({ params }: { params: Promise<{ id:
     },
   });
 
+  const carJsonLd = buildCarJsonLd(car);
+
   return (
     <div className="bg-white min-h-screen text-gray-900 font-sans pt-32 pb-24">
+      {carJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: carJsonLd }}
+        />
+      )}
       {/* Container */}
       <div className="container mx-auto px-4 max-w-[1500px] md:px-10 lg:px-16">
 

@@ -132,7 +132,7 @@ export default function BookingWidget({
     const isRoundTrip = mainTab === 'TAXI' && subTab === 'ROUND TRIP';
     const pickupCityVal = isRoundTrip ? 'Udaipur' : sourceCity;
     const finalDropCity = isRoundTrip
-      ? destinations.filter(d => d.trim()).join(',')
+      ? destinations.filter(d => d.trim()).join('|')
       : (mainTab === 'SELF DRIVE' && isDifferentDropCity)
         ? destCity
         : sourceCity;
