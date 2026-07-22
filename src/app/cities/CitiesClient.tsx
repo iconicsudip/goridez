@@ -29,10 +29,10 @@ export default function CitiesClient({ initialCities, initialCars, initialVillas
   const taxiCapableCars = cityCars.filter((c: any) => c.serviceTypes?.includes('TAXI'));
   const cityHasAirportZone = initialAirportZones.some((z: any) => z.cityId === activeCityId);
 
-  const segments: { id: Segment; icon: any }[] = [
-    { id: 'Self Drive', icon: CarIcon },
-    { id: 'Round Trip', icon: RefreshCw },
-    { id: 'Airport Transfer', icon: Plane },
+  const segments: { id: Segment; icon: any; shortLabel: string }[] = [
+    { id: 'Self Drive', icon: CarIcon, shortLabel: 'Self Drive' },
+    { id: 'Round Trip', icon: RefreshCw, shortLabel: 'Round Trip' },
+    { id: 'Airport Transfer', icon: Plane, shortLabel: 'Airport' },
   ];
 
   const handleBookCar = (car: any) => {
@@ -150,12 +150,14 @@ export default function CitiesClient({ initialCities, initialCars, initialVillas
               <button
                 key={seg.id}
                 onClick={() => setActiveSegment(seg.id)}
-                className={`flex items-center justify-center gap-2 flex-1 lg:flex-none px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${isActive
+                className={`flex items-center justify-center gap-1 sm:gap-2 flex-1 lg:flex-none px-2.5 sm:px-6 py-2.5 sm:py-3 rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-wide sm:tracking-widest transition-all whitespace-nowrap ${isActive
                   ? 'bg-white text-green-700 shadow-sm'
                   : 'text-gray-500 hover:text-gray-700'
                   }`}
               >
-                <Icon size={14} /> {seg.id}
+                <Icon size={13} className="shrink-0" />
+                <span className="sm:hidden">{seg.shortLabel}</span>
+                <span className="hidden sm:inline">{seg.id}</span>
               </button>
             );
           })}

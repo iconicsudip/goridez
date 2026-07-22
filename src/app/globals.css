@@ -217,6 +217,44 @@
   border-top: 1px solid var(--color-brand-border) !important;
 }
 
+/* Ant Design DatePicker/RangePicker — mobile fixes.
+   Two problems on phone-width viewports: (1) a date+time panel lays its calendar
+   and time columns out side-by-side (~380px combined), wider than the screen, and
+   (2) antd positions the dropdown with an inline `left` computed for that original
+   width, so even after shrinking it the box still sits partly off-screen. Fix both:
+   stack date/time (and any side-by-side month panels) vertically, and pin the
+   dropdown's position so it can't be pushed past the viewport edge. */
+@media (max-width: 640px) {
+  .ant-picker-dropdown {
+    left: 8px !important;
+    max-width: calc(100vw - 16px) !important;
+  }
+  .ant-picker-dropdown .ant-picker-panel-container {
+    max-width: 100%;
+    overflow: hidden;
+  }
+  .ant-picker-dropdown .ant-picker-panel-layout {
+    max-width: 100%;
+  }
+  .ant-picker-panels {
+    flex-direction: column !important;
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+  .ant-picker-panels > .ant-picker-panel {
+    width: 100%;
+  }
+  .ant-picker-datetime-panel {
+    flex-direction: column !important;
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+  .ant-picker-panel .ant-picker-date-panel,
+  .ant-picker-panel .ant-picker-time-panel {
+    width: 100%;
+  }
+}
+
 .no-scrollbar {
   scrollbar-width: none;
   -ms-overflow-style: none;
