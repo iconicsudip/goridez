@@ -4,7 +4,7 @@ import CitiesClient from './CitiesClient';
 export const dynamic = 'force-dynamic';
 
 export default async function CitiesPage() {
-  const [cities, cars, villas, tours, airportZones] = await Promise.all([
+  const [cities, cars, villas, tours, airportZones, siteSettings] = await Promise.all([
     prisma.city.findMany({ orderBy: { name: 'asc' } }),
     prisma.car.findMany({
       include: { packages: true, city: true },
@@ -13,7 +13,8 @@ export default async function CitiesPage() {
     prisma.villa.findMany({ include: { city: true } }),
     prisma.tour.findMany({ include: { city: true } }),
     prisma.airportZone.findMany(),
+    prisma.siteSettings.findUnique({ where: { id: 'singleton' } }),
   ]);
 
-  return <CitiesClient initialCities={cities} initialCars={cars} initialVillas={villas} initialTours={tours} initialAirportZones={airportZones} />;
+  return <CitiesClient initialCities={cities} initialCars={cars} initialVillas={villas} initialTours={tours} initialAirportZones={airportZones} siteSettings={siteSettings} />;
 }

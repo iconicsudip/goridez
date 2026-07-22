@@ -54,11 +54,12 @@ export async function createCity(formData: FormData) {
   try {
     const name = formData.get('name') as string;
     const slug = formData.get('slug') as string;
+    const banner = (formData.get('banner') as string) || null;
     const faqQuestion = formData.get('faqQuestion') as string;
     const faqAnswer = formData.get('faqAnswer') as string;
     const airportName = (formData.get('airportName') as string) || null;
     if (!name) return { success: false, error: 'Name required' };
-    await prisma.city.create({ data: { name, slug, faqQuestion, faqAnswer, airportName } });
+    await prisma.city.create({ data: { name, slug, banner, faqQuestion, faqAnswer, airportName } });
     revalidatePath('/admin/cities');
     return { success: true };
   } catch (error: any) {
@@ -70,13 +71,15 @@ export async function updateCity(id: string, formData: FormData) {
   try {
     const name = formData.get('name') as string;
     const slug = formData.get('slug') as string;
+    const banner = (formData.get('banner') as string) || null;
     const faqQuestion = formData.get('faqQuestion') as string;
     const faqAnswer = formData.get('faqAnswer') as string;
     const airportName = (formData.get('airportName') as string) || null;
     if (!name) return { success: false, error: 'Name required' };
-    await prisma.city.update({ where: { id }, data: { name, slug, faqQuestion, faqAnswer, airportName } });
+    await prisma.city.update({ where: { id }, data: { name, slug, banner, faqQuestion, faqAnswer, airportName } });
     revalidatePath('/admin/cities');
     revalidatePath('/taxi');
+    revalidatePath('/cities');
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };
@@ -933,6 +936,7 @@ export async function updateSiteSettings(formData: FormData) {
       logoFull: formData.get('logoFull') as string || "/logo-full.png",
       favicon: formData.get('favicon') as string || "/favicon.ico",
       copyrightText: formData.get('copyrightText') as string || "© GoRidez. All rights reserved.",
+      citiesPageBanner: formData.get('citiesPageBanner') as string || "https://images.unsplash.com/photo-1477587458883-47145ed94245?auto=format&fit=crop&w=1800&q=80",
       razorpayKeyId: formData.get('razorpayKeyId') as string || "rzp_test_mockkey123",
       razorpayKeySecret: formData.get('razorpayKeySecret') as string || "mocksecret123",
       taxiExclusions: formData.get('taxiExclusions') as string || "",
@@ -946,6 +950,23 @@ export async function updateSiteSettings(formData: FormData) {
     });
 
     revalidatePath('/');
+    revalidatePath('/cities');
+    revalidatePath('/admin/cities');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+export async function updateCitiesPageBanner(bannerUrl: string) {
+  try {
+    await prisma.siteSettings.upsert({
+      where: { id: 'singleton' },
+      update: { citiesPageBanner: bannerUrl },
+      create: { id: 'singleton', citiesPageBanner: bannerUrl }
+    });
+    revalidatePath('/cities');
+    revalidatePath('/admin/cities');
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };

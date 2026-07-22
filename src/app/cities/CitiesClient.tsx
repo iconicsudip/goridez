@@ -12,7 +12,7 @@ const CITY_FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1477587458883-471
 
 type Segment = 'Self Drive' | 'Round Trip' | 'Airport Transfer';
 
-export default function CitiesClient({ initialCities, initialCars, initialVillas, initialTours, initialAirportZones = [] }: any) {
+export default function CitiesClient({ initialCities, initialCars, initialVillas, initialTours, initialAirportZones = [], siteSettings }: any) {
   const router = useRouter();
   const updateSession = useBookingStore(state => state.updateSession);
 
@@ -100,7 +100,7 @@ export default function CitiesClient({ initialCities, initialCars, initialVillas
       {/* Hero Banner */}
       <section className="relative h-[45vh] md:h-[55vh] flex items-end overflow-hidden bg-gray-900">
         <Image
-          src={activeCity?.banner || CITY_FALLBACK_IMAGE}
+          src={activeCity?.banner || siteSettings?.citiesPageBanner || CITY_FALLBACK_IMAGE}
           alt={activeCity?.name || 'City banner'}
           fill
           className="object-cover opacity-70 transition-opacity duration-500"

@@ -3,9 +3,11 @@
 import { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { createCity } from '@/app/admin/actions';
+import ImageUpload from '@/components/admin/ImageUpload';
 
 export default function CityForm() {
   const [loading, setLoading] = useState(false);
+  const [banner, setBanner] = useState('');
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -16,6 +18,7 @@ export default function CityForm() {
     
     if (res?.success) {
       (e.target as HTMLFormElement).reset();
+      setBanner('');
     } else if (res?.error) {
       alert("Error: " + res.error);
     }
@@ -26,6 +29,8 @@ export default function CityForm() {
       <h2 className="text-sm font-black uppercase tracking-widest mb-8">PROVISION NEW CITY HUB</h2>
       
       <form className="space-y-6" onSubmit={handleSubmit}>
+        <input type="hidden" name="banner" value={banner} />
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <label className="text-[9px] text-gray-500 font-mono uppercase tracking-widest block">CITY NAME</label>
@@ -35,6 +40,15 @@ export default function CityForm() {
             <label className="text-[9px] text-gray-500 font-mono uppercase tracking-widest block">TARGET URL SLUG (FOR LANDING PAGES)</label>
             <input name="slug" required type="text" placeholder="/self-drive-cars-in-jodhpur" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-xs text-gray-900 outline-none font-mono focus:border-green-600 focus:bg-white transition-all" />
           </div>
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-[9px] text-gray-500 font-mono uppercase tracking-widest block">HERO IMAGE / BANNER URL</label>
+          <ImageUpload
+            value={banner}
+            onChange={setBanner}
+            placeholder="Upload or paste Hero Banner image URL"
+          />
         </div>
 
         <div className="space-y-2">

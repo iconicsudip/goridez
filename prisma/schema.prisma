@@ -397,6 +397,7 @@ model SiteSettings {
   logoFull              String    @default("/logo-full.png")
   favicon               String    @default("/favicon.ico")
   copyrightText         String    @default("© GoRidez. All rights reserved.")
+  citiesPageBanner      String    @default("https://images.unsplash.com/photo-1477587458883-47145ed94245?auto=format&fit=crop&w=1800&q=80")
   razorpayKeyId         String    @default("rzp_test_mockkey123")
   razorpayKeySecret     String    @default("mocksecret123")
   taxiExclusions        String    @default("Toll Tax and Parking charges are not included in the above fare.\nState Tax (if applicable crossing borders) is extra.\nAny extra km or hours driven beyond the package limit will be charged additionally.")
