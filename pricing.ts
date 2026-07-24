@@ -79,18 +79,34 @@ export function calculateSelfDriveFare(vehicle: Vehicle, params: BookingParams):
   };
 }
 
-export function calculateRoundTripFare(vehicle: Vehicle, km: number, days: number, params: BookingParams = {}): FareResult | null {
+export function calculateRoundTripFare(vehicle: Vehicle, km: number, days: number, params: BookingParams & { minKmPerDay?: number; discountPercent?: number; isUnlimited?: boolean } = {}): FareResult | null {
   const pricing = vehicle.pricing["with-driver-roundtrip"];
   if (!pricing) return null;
 
-  const billableKm = Math.max(km, pricing.minKmPerDay * days);
-  const lines: FareLine[] = [
-    {
-      label: `${billableKm} km \u00d7 \u20b9${pricing.ratePerKm}/km (min ${pricing.minKmPerDay} km/day)`,
-      amount: Math.round(billableKm * pricing.ratePerKm),
-    },
-    { label: `Driver allowance \u00d7 ${days} day${days > 1 ? "s" : ""}`, amount: pricing.driverAllowancePerDay * days },
-  ];
+  const minKm = params.minKmPerDay ?? pricing.minKmPerDay;
+  let ratePerKm = pricing.ratePerKm;
+  if (params.discountPercent && params.discountPercent > 0) {
+    ratePerKm = Math.round(pricing.ratePerKm * (1 - params.discountPercent / 100) * 100) / 100;
+  }
+
+  const lines: FareLine[] = [];
+  let billableKm: number;
+
+  if (params.isUnlimited) {
+    billableKm = Math.max(km, 400 * days);
+    lines.push({
+      label: `Unlimited KM Package (${days} day${days > 1 ? "s" : ""})`,
+      amount: Math.round(400 * ratePerKm * days),
+    });
+  } else {
+    billableKm = Math.max(km, minKm * days);
+    lines.push({
+      label: `${billableKm} km \u00d7 \u20b9${ratePerKm}/km (min ${minKm} km/day)`,
+      amount: Math.round(billableKm * ratePerKm),
+    });
+  }
+
+  lines.push({ label: `Driver allowance \u00d7 ${days} day${days > 1 ? "s" : ""}`, amount: pricing.driverAllowancePerDay * days });
   lines.push(...addOnLines(vehicle, params));
 
   const total = lines.reduce((sum, l) => sum + l.amount, 0);

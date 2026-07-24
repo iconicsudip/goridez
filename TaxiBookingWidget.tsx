@@ -43,7 +43,7 @@ import {
   CheckCircle2,
   XCircle,
 } from "lucide-react";
-import { CITIES, HOME_CITY, LOCAL_PACKAGES, INCLUSIONS, EXCLUSIONS } from "./taxiData";
+import { CITIES, HOME_CITY, LOCAL_PACKAGES, ROUNDTRIP_PACKAGES, INCLUSIONS, EXCLUSIONS } from "./taxiData";
 
 type TripType = "local" | "oneway" | "roundtrip";
 
@@ -72,6 +72,7 @@ export default function TaxiBookingWidget({
   const [to, setTo] = useState("");
   const [extraStop, setExtraStop] = useState(""); // round trip only, max 1
   const [pkg, setPkg] = useState(LOCAL_PACKAGES[0].value);
+  const [rtPkg, setRtPkg] = useState(ROUNDTRIP_PACKAGES[0].value);
   const [pickup, setPickup] = useState("");
   const [returnDate, setReturnDate] = useState("");
   const [agreedToTerms, setAgreedToTerms] = useState(false);
@@ -102,6 +103,7 @@ export default function TaxiBookingWidget({
     } else {
       params.to = to;
       if (tab === "roundtrip") {
+        params.package = rtPkg;
         if (extraStop) params.stop = extraStop;
         params.return = returnDate;
       }
@@ -267,6 +269,16 @@ export default function TaxiBookingWidget({
                     className={`${selectClass} pl-9`}
                   />
                 </div>
+              </Field>
+
+              <Field span="sm:col-span-6" label="Price Package">
+                <select value={rtPkg} onChange={(e) => setRtPkg(e.target.value)} className={selectClass}>
+                  {ROUNDTRIP_PACKAGES.map((p) => (
+                    <option key={p.value} value={p.value}>
+                      {p.label}
+                    </option>
+                  ))}
+                </select>
               </Field>
             </>
           )}

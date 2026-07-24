@@ -3,7 +3,7 @@
 // Turns (trip type + distance + dates + car) into a priced breakdown.
 // All rates pulled from CAR_FLEET in taxiData.ts — edit there, not here.
 
-import { FleetCar, LOCAL_PACKAGES } from "./taxiData";
+import { FleetCar, LOCAL_PACKAGES, ROUNDTRIP_PACKAGES } from "./taxiData";
 
 export interface FareLine {
   label: string;
@@ -55,18 +55,42 @@ export function calculateRoundTripFare(
   car: FleetCar,
   km: number,
   pickupISO: string,
-  returnISO: string
+  returnISO: string,
+  packageValue: string = "250-km"
 ): FareResult {
   const days = daysBetween(pickupISO, returnISO);
-  const billableKm = Math.max(km, MIN_KM_PER_DAY_ROUND_TRIP * days);
-  const base = Math.round(billableKm * car.ratePerKm);
-  const lines: FareLine[] = [
-    {
-      label: `${billableKm} km \u00d7 \u20b9${car.ratePerKm}/km (min ${MIN_KM_PER_DAY_ROUND_TRIP} km/day)`,
+  const pkg = ROUNDTRIP_PACKAGES.find((p) => p.value === packageValue) ?? ROUNDTRIP_PACKAGES[0];
+  
+  let ratePerKm = car.ratePerKm;
+  if (pkg.discountPercent > 0) {
+    ratePerKm = Math.round(car.ratePerKm * (1 - pkg.discountPercent / 100) * 100) / 100;
+  }
+
+  let billableKm: number;
+  let base: number;
+  const lines: FareLine[] = [];
+
+  if (pkg.isUnlimited) {
+    billableKm = Math.max(km, 400 * days);
+    base = Math.round(400 * ratePerKm * days);
+    lines.push({
+      label: `${pkg.label} (${days} day${days > 1 ? "s" : ""})`,
       amount: base,
-    },
-    { label: `Driver allowance \u00d7 ${days} day${days > 1 ? "s" : ""}`, amount: car.driverAllowancePerDay * days },
-  ];
+    });
+  } else {
+    billableKm = Math.max(km, pkg.minKmPerDay * days);
+    base = Math.round(billableKm * ratePerKm);
+    lines.push({
+      label: `${billableKm} km \u00d7 \u20b9${ratePerKm}/km (${pkg.label})`,
+      amount: base,
+    });
+  }
+
+  lines.push({
+    label: `Driver allowance \u00d7 ${days} day${days > 1 ? "s" : ""}`,
+    amount: car.driverAllowancePerDay * days,
+  });
+
   const total = lines.reduce((sum, l) => sum + l.amount, 0);
   return { total, lines, km: billableKm, days };
 }

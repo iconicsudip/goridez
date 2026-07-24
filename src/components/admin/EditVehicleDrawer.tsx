@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
-import { X, ArrowRight, Plus, Trash2, Check, Tag } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { X, ArrowRight, Plus, Trash2, Check, Tag, Info } from 'lucide-react';
+import Link from 'next/link';
 import { updateVehicle } from '@/app/admin/actions';
 import MultiImageUpload from './MultiImageUpload';
-import { useEffect } from 'react';
 import RichTextEditor from './RichTextEditor';
 
 interface EditVehicleDrawerProps {
@@ -106,6 +106,10 @@ export default function EditVehicleDrawer({ isOpen, onClose, car, cities, tiers 
 
   function addBlankPackage() {
     setPackages(prev => [...prev, { id: crypto.randomUUID(), name: '', type: 'KM', basePrice: '', limitValue: '', extraChargePerUnit: '', deposit: '' }]);
+  }
+
+  function addPresetPackage(name: string, type: string, basePrice: string, limitValue: string, extraChargePerUnit: string) {
+    setPackages(prev => [...prev, { id: crypto.randomUUID(), name, type, basePrice, limitValue, extraChargePerUnit, deposit: '0' }]);
   }
 
   function addFromTier(tier: any) {
@@ -261,8 +265,7 @@ export default function EditVehicleDrawer({ isOpen, onClose, car, cities, tiers 
               <div className="flex flex-wrap gap-3">
                 {[
                   { id: 'SELF_DRIVE', label: 'Self Drive' },
-                  { id: 'WITH_DRIVER', label: 'With Driver' },
-                  { id: 'TAXI', label: 'One Way / Round Trip' },
+                  { id: 'TAXI', label: 'Round Trip' },
                   { id: 'AIRPORT_TRANSFER', label: 'Airport Transfer' },
                   { id: 'VILLA', label: 'Villa + Car' },
                   { id: 'TOUR', label: 'Tour Packages' }
@@ -304,22 +307,29 @@ export default function EditVehicleDrawer({ isOpen, onClose, car, cities, tiers 
 
             {/* Packages */}
             <div className="border-t border-gray-200 pt-8">
-              <div className="flex justify-between items-center mb-4">
+              <div className="flex justify-between items-center mb-3">
                 <p className="text-[9px] text-yellow-400 font-mono uppercase tracking-widest">— Pricing Packages</p>
                 <button type="button" onClick={addBlankPackage} className="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest text-gray-500 hover:text-yellow-400 border border-gray-300 hover:border-yellow-400/40 px-3 py-1.5 rounded-lg transition-all">
                   <Plus size={11} /> Add
                 </button>
               </div>
-              {tiers.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {tiers.map(tier => (
-                    <button key={tier.id} type="button" onClick={() => addFromTier(tier)}
-                      className="text-[9px] font-mono px-3 py-1.5 rounded-xl border border-gray-300 text-gray-500 hover:text-yellow-400 hover:border-yellow-400/40 transition-all">
-                      + {tier.name}
-                    </button>
-                  ))}
+
+              {/* Informative Note Banner */}
+              <div className="mb-4 bg-amber-50 border border-amber-200 rounded-xl p-3 text-[10px] text-amber-800 flex items-start gap-2 font-mono">
+                <Info size={14} className="shrink-0 text-amber-600 mt-0.5" />
+                <div>
+                  <span className="font-bold uppercase tracking-wide">Notice:</span> This section is for Self Drive &amp; distance-based packages only. Airport Transfers are NOT added here. To configure Airport Transfer pricing, please go to <Link href="/admin/airport-zones" className="underline font-bold text-amber-900 hover:text-green-700">Airport Transfer Zones</Link> in admin navigation.
                 </div>
-              )}
+              </div>
+
+              <div className="flex flex-wrap gap-2 mb-5">
+                <button type="button" onClick={() => addPresetPackage('12 Hours Limit Package', 'HOUR', '1800', '150', '13')} className="flex items-center gap-1 text-[9px] font-mono px-3 py-1.5 rounded-xl border border-gray-300 hover:border-green-600/40 text-gray-700 bg-white shadow-sm transition-all">+ 12 Hours Limit Package</button>
+                <button type="button" onClick={() => addPresetPackage('24 Hours Limit Package', 'HOUR', '3000', '300', '13')} className="flex items-center gap-1 text-[9px] font-mono px-3 py-1.5 rounded-xl border border-gray-300 hover:border-green-600/40 text-gray-700 bg-white shadow-sm transition-all">+ 24 Hours Limit Package</button>
+                <button type="button" onClick={() => addPresetPackage('120 KM Distance Tier', 'KM', '17500', '120', '70')} className="flex items-center gap-1 text-[9px] font-mono px-3 py-1.5 rounded-xl border border-gray-300 hover:border-green-600/40 text-gray-700 bg-white shadow-sm transition-all">+ 120 KM Distance Tier</button>
+                <button type="button" onClick={() => addPresetPackage('250 KM Distance Tier', 'KM', '3250', '250', '13')} className="flex items-center gap-1 text-[9px] font-mono px-3 py-1.5 rounded-xl border border-gray-300 hover:border-green-600/40 text-gray-700 bg-white shadow-sm transition-all">+ 250 KM Distance Tier</button>
+                <button type="button" onClick={() => addPresetPackage('350 KM Distance Tier', 'KM', '4550', '350', '13')} className="flex items-center gap-1 text-[9px] font-mono px-3 py-1.5 rounded-xl border border-gray-300 hover:border-green-600/40 text-gray-700 bg-white shadow-sm transition-all">+ 350 KM Distance Tier</button>
+                <button type="button" onClick={addBlankPackage} className="flex items-center gap-1 text-[9px] font-mono px-3 py-1.5 rounded-xl border border-gray-300 hover:border-green-600/40 text-gray-700 bg-white shadow-sm transition-all">+ Custom Package</button>
+              </div>
               <div className="space-y-4">
                 {packages.map((pkg, idx) => (
                   <div key={pkg.id} className="bg-gray-100 border border-gray-200 rounded-2xl p-5 space-y-4 relative group hover:border-gray-300 transition-colors">

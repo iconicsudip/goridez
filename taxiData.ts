@@ -39,6 +39,22 @@ export const LOCAL_PACKAGES: LocalPackage[] = [
   { value: "full-day", label: "Full Day (24 Hrs)", hint: "Round-the-clock" },
 ];
 
+export interface RoundTripPackage {
+  value: string;
+  label: string;
+  minKmPerDay: number;
+  discountPercent: number; // e.g. 0% for standard 250km, 5% off rate for 300km, 10% off for 350km
+  isUnlimited?: boolean;
+  hint: string;
+}
+
+export const ROUNDTRIP_PACKAGES: RoundTripPackage[] = [
+  { value: "250-km", label: "250 KM / Day (Standard)", minKmPerDay: 250, discountPercent: 0, hint: "Standard 250 Km daily limit" },
+  { value: "300-km", label: "300 KM / Day (Executive)", minKmPerDay: 300, discountPercent: 5, hint: "300 Km limit, 5% off rate/km" },
+  { value: "350-km", label: "350 KM / Day (Deluxe)", minKmPerDay: 350, discountPercent: 10, hint: "350 Km limit, 10% off rate/km" },
+  { value: "unlimited", label: "Unlimited KM (Freedom)", minKmPerDay: 400, discountPercent: 0, isUnlimited: true, hint: "Flat daily rate, zero extra km fee" },
+];
+
 // Placeholder fare policy copy — edit to match your actual terms.
 export const INCLUSIONS = [
   "Base fare for package KM / Hrs",

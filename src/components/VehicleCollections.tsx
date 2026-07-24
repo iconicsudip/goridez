@@ -32,7 +32,7 @@ export default function VehicleCollections({
       case 'self-drive':
         return cars.filter(c => c.serviceTypes?.includes('SELF_DRIVE'));
       case 'roundtrip-taxi':
-        return cars.filter(c => c.serviceTypes?.includes('TAXI') || c.serviceTypes?.includes('WITH_DRIVER'));
+        return cars.filter(c => c.serviceTypes?.includes('TAXI'));
       case 'airport-transfers':
         return cars.filter(c => c.serviceTypes?.includes('AIRPORT_TRANSFER'));
       default:

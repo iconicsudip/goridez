@@ -68,11 +68,9 @@ export default function BookingWidget({
     setPickupDate(adjusted);
     updateSession({ pickupDate: adjusted.toISOString() });
 
-    if (returnDate && returnDate.getTime() <= adjusted.getTime()) {
-      const newReturn = new Date(adjusted.getTime() + 2 * 60 * 60 * 1000); // 2 hours later
-      setReturnDate(newReturn);
-      updateSession({ returnDate: newReturn.toISOString() });
-    }
+    const newReturn = new Date(adjusted.getTime() + 12 * 60 * 60 * 1000); // 12 hours range in IST
+    setReturnDate(newReturn);
+    updateSession({ returnDate: newReturn.toISOString() });
   };
 
   const handleReturnDateChange = (d: Date | null) => {

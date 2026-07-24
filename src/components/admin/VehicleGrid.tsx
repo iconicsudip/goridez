@@ -10,12 +10,12 @@ interface VehicleGridProps {
   cars: any[];
   cities: any[];
   tiers: any[];
+  taxiSettings?: any[];
 }
 
 const SERVICE_TYPE_OPTIONS = [
   { id: 'SELF_DRIVE', label: 'Self Drive' },
-  { id: 'WITH_DRIVER', label: 'With Driver' },
-  { id: 'TAXI', label: 'One Way / Round Trip' },
+  { id: 'TAXI', label: 'Round Trip' },
   { id: 'AIRPORT_TRANSFER', label: 'Airport Transfer' },
   { id: 'VILLA', label: 'Villa + Car' },
   { id: 'TOUR', label: 'Tour Packages' },
@@ -23,7 +23,7 @@ const SERVICE_TYPE_OPTIONS = [
 
 const CATEGORY_OPTIONS = ['Hatchback', 'Sedan', 'SUV', 'MUV', 'Luxury', 'Tempo Traveller', 'Bus'];
 
-export default function VehicleGrid({ cars, cities, tiers }: VehicleGridProps) {
+export default function VehicleGrid({ cars, cities, tiers, taxiSettings = [] }: VehicleGridProps) {
   const [search, setSearch] = useState('');
   const [serviceTypeFilter, setServiceTypeFilter] = useState('ALL');
   const [editingCar, setEditingCar] = useState<any>(null);
@@ -141,6 +141,22 @@ export default function VehicleGrid({ cars, cities, tiers }: VehicleGridProps) {
 
   const cityMap = Object.fromEntries(cities.map(c => [c.id, c.name]));
 
+  const visibleFilters = useMemo(() => {
+    const ALL_FILTERS = [
+      { id: 'ALL', label: 'All Vehicles', defaultShow: true },
+      { id: 'SELF_DRIVE', label: 'Self Drive', defaultShow: true },
+      { id: 'TAXI', label: 'Round Trip', defaultShow: true },
+      { id: 'AIRPORT_TRANSFER', label: 'Airport Transfer', defaultShow: true },
+      { id: 'VILLA', label: 'Villa + Car', defaultShow: false },
+      { id: 'TOUR', label: 'Tour Packages', defaultShow: false }
+    ];
+
+    return ALL_FILTERS.filter(filter => {
+      if (filter.defaultShow) return true;
+      return cars.some(c => c.serviceTypes?.includes(filter.id));
+    });
+  }, [cars]);
+
   return (
     <>
       {/* Search Bar */}
@@ -162,15 +178,7 @@ export default function VehicleGrid({ cars, cities, tiers }: VehicleGridProps) {
 
       {/* Filter Bar */}
       <div className="flex gap-2 mb-6 overflow-x-auto pb-2 scrollbar-hide">
-        {[
-          { id: 'ALL', label: 'All Vehicles' },
-          { id: 'SELF_DRIVE', label: 'Self Drive' },
-          { id: 'WITH_DRIVER', label: 'With Driver' },
-          { id: 'TAXI', label: 'One Way / Round Trip' },
-          { id: 'AIRPORT_TRANSFER', label: 'Airport Transfer' },
-          { id: 'VILLA', label: 'Villa + Car' },
-          { id: 'TOUR', label: 'Tour Packages' }
-        ].map(filter => (
+        {visibleFilters.map(filter => (
           <button
             key={filter.id}
             onClick={() => setServiceTypeFilter(filter.id)}
@@ -366,22 +374,66 @@ export default function VehicleGrid({ cars, cities, tiers }: VehicleGridProps) {
 
                 {/* Service type pills */}
                 <div className="flex flex-wrap gap-1 mb-3">
-                  {(car.serviceTypes || []).map((st: string) => (
+                  {(car.serviceTypes || []).filter((st: string) => st !== 'WITH_DRIVER').map((st: string) => (
                     <span key={st} className="text-[7px] font-black uppercase tracking-widest bg-green-600/10 text-green-700 border border-green-300/50 px-1.5 py-0.5 rounded">
-                      {SERVICE_TYPE_OPTIONS.find(o => o.id === st)?.label || st}
+                      {SERVICE_TYPE_OPTIONS.find(o => o.id === st)?.label || (st === 'TAXI' ? 'Round Trip' : st)}
                     </span>
                   ))}
                 </div>
 
-                {/* Packages pills */}
+                {/* Packages / Category Pricing pills */}
                 <div className="flex flex-wrap gap-1.5 mb-4">
-                  {car.packages.slice(0, 4).map((pkg: any) => (
-                    <span key={pkg.id} className="text-[8px] font-mono text-gray-500 bg-white/5 border border-gray-200 px-2 py-1 rounded-lg">
-                      {pkg.name} — ₹{pkg.basePrice.toLocaleString()}
-                    </span>
-                  ))}
-                  {car.packages.length > 4 && (
-                    <span className="text-[8px] font-mono text-gray-400 px-2 py-1">+{car.packages.length - 4} more</span>
+                  {serviceTypeFilter === 'TAXI' ? (
+                    (() => {
+                      const setting = taxiSettings.find((s: any) => s.vehicleCategory.toLowerCase() === car.category.toLowerCase());
+                      const rate = setting?.roundTripRatePerKm || car.packages?.[0]?.extraChargePerUnit || 13;
+                      const minKm = setting?.roundTripMinKmPerDay || 250;
+                      const allowance = setting?.driverAllowancePerDay || car.driverAllowanceOut || 350;
+                      return (
+                        <>
+                          <span className="text-[8px] font-mono font-bold text-green-700 bg-green-50 border border-green-200 px-2 py-1 rounded-lg">
+                            Rate: ₹{rate}/KM
+                          </span>
+                          <span className="text-[8px] font-mono text-gray-700 bg-gray-50 border border-gray-200 px-2 py-1 rounded-lg">
+                            Min: {minKm} KM/Day
+                          </span>
+                          <span className="text-[8px] font-mono text-gray-700 bg-gray-50 border border-gray-200 px-2 py-1 rounded-lg">
+                            Allowance: ₹{allowance}/Day
+                          </span>
+                        </>
+                      );
+                    })()
+                  ) : serviceTypeFilter === 'AIRPORT_TRANSFER' ? (
+                    (() => {
+                      const setting = taxiSettings.find((s: any) => s.vehicleCategory.toLowerCase() === car.category.toLowerCase());
+                      const base = setting?.airportBaseFare || 0;
+                      const rate = setting?.airportRatePerKm || 15;
+                      const minFare = setting?.airportMinFare || 300;
+                      return (
+                        <>
+                          <span className="text-[8px] font-mono font-bold text-green-700 bg-green-50 border border-green-200 px-2 py-1 rounded-lg">
+                            Base: ₹{base}
+                          </span>
+                          <span className="text-[8px] font-mono text-gray-700 bg-gray-50 border border-gray-200 px-2 py-1 rounded-lg">
+                            Rate: ₹{rate}/KM
+                          </span>
+                          <span className="text-[8px] font-mono text-gray-700 bg-gray-50 border border-gray-200 px-2 py-1 rounded-lg">
+                            Min Fare: ₹{minFare}
+                          </span>
+                        </>
+                      );
+                    })()
+                  ) : (
+                    <>
+                      {car.packages.slice(0, 4).map((pkg: any) => (
+                        <span key={pkg.id} className="text-[8px] font-mono text-gray-700 bg-gray-50 border border-gray-200 px-2 py-1 rounded-lg">
+                          {pkg.name} — ₹{pkg.basePrice?.toLocaleString()}
+                        </span>
+                      ))}
+                      {car.packages.length > 4 && (
+                        <span className="text-[8px] font-mono text-gray-400 px-2 py-1">+{car.packages.length - 4} more</span>
+                      )}
+                    </>
                   )}
                 </div>
 

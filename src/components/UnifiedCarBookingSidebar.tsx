@@ -11,6 +11,7 @@ import AirportLocalitySearch, { AIRPORT_ZONE_ID } from '@/components/AirportLoca
 import SelfDriveLocationSearch from '@/components/SelfDriveLocationSearch';
 import { calculatePackagePricing, getPackageDurationHours } from '@/lib/utils';
 import { calculateRoute, resolveLocationData, getFallbackDistanceKm, OSMLocation } from '@/lib/osm';
+import { ROUNDTRIP_PACKAGES } from '../../taxiData';
 
 const UDAIPUR_CITY: OSMLocation = {
   place_id: -2,
@@ -50,6 +51,7 @@ export default function UnifiedCarBookingSidebar({
   // --- Shared State ---
   const [isMounted, setIsMounted] = useState(false);
   const [bookingMode, setBookingMode] = useState<'SELF_DRIVE' | 'ROUND_TRIP' | 'AIRPORT_TRANSFER'>('SELF_DRIVE');
+  const [selectedRtPackage, setSelectedRtPackage] = useState<string>('250-km');
 
   // --- Date States ---
   const [pickupDate, setPickupDate] = useState<Date>(() => {
@@ -216,15 +218,31 @@ export default function UnifiedCarBookingSidebar({
       driverAllowancePerDay: car.driverAllowanceOut || 350
     };
 
+    const rtPkgObj = ROUNDTRIP_PACKAGES.find(p => p.value === selectedRtPackage) || ROUNDTRIP_PACKAGES[0];
     const runningDistance = rtDistance * 2;
-    const billableKm = Math.max(runningDistance, setting.roundTripMinKmPerDay * durationDays);
-    const basicFare = Math.round(billableKm * setting.roundTripRatePerKm);
+
+    let ratePerKm = setting.roundTripRatePerKm;
+    if (rtPkgObj.discountPercent > 0) {
+      ratePerKm = Math.round(setting.roundTripRatePerKm * (1 - rtPkgObj.discountPercent / 100) * 100) / 100;
+    }
+
+    let billableKm: number;
+    let basicFare: number;
+
+    if (rtPkgObj.isUnlimited) {
+      billableKm = Math.max(runningDistance, 400 * durationDays);
+      basicFare = Math.round(400 * ratePerKm * durationDays);
+    } else {
+      billableKm = Math.max(runningDistance, rtPkgObj.minKmPerDay * durationDays);
+      basicFare = Math.round(billableKm * ratePerKm);
+    }
+
     const driverAllowance = setting.driverAllowancePerDay * durationDays;
     const gstAmount = Math.round(basicFare * 0.18);
     const flatFare = basicFare + driverAllowance + gstAmount;
 
-    return { flatFare, basicFare, driverAllowance, gstAmount, days: durationDays, billableKm };
-  }, [pickupDate, returnDate, rtDistance, car, taxiSettings]);
+    return { flatFare, basicFare, driverAllowance, gstAmount, days: durationDays, billableKm, pkgLabel: rtPkgObj.label };
+  }, [pickupDate, returnDate, rtDistance, car, taxiSettings, packages, selectedRtPackage]);
 
   // Airport Transfer
   const atPriceInfo = useMemo(() => {
@@ -300,7 +318,7 @@ export default function UnifiedCarBookingSidebar({
         image: car.image || '',
         price: rtPriceInfo.flatFare,
         deposit: Math.round(rtPriceInfo.flatFare * 0.3), // 30% advance
-        extraInfo: `Round Trip: Udaipur -> ${validDests.map(d => d.name).join(' -> ')} (${rtPriceInfo.days} Days)`,
+        extraInfo: `Round Trip: Udaipur -> ${validDests.map(d => d.name).join(' -> ')} (${rtPriceInfo.days} Days) • ${rtPriceInfo.pkgLabel}`,
         pickupStation: 'Udaipur',
         dropStation: validDests[validDests.length-1].name
       });
@@ -347,7 +365,7 @@ export default function UnifiedCarBookingSidebar({
   if (!isMounted) return <div className="bg-gray-100 rounded-3xl p-8 h-96 animate-pulse"></div>;
 
   const hasSelfDrive = car.serviceTypes?.includes('SELF_DRIVE');
-  const hasTaxi = car.serviceTypes?.includes('TAXI') || car.serviceTypes?.includes('WITH_DRIVER');
+  const hasTaxi = car.serviceTypes?.includes('TAXI');
 
   return (
     <div className="bg-gray-100 border border-gray-200 rounded-3xl p-6 md:p-8 lg:sticky lg:top-28">
@@ -448,6 +466,28 @@ export default function UnifiedCarBookingSidebar({
                       searchAnywhere={true}
                       rightElement={rightBtn}
                     />
+                  );
+                })}
+              </div>
+            </div>
+            <div>
+              <label className="text-[10px] font-black tracking-widest uppercase text-gray-500 block mb-2">Round Trip Price Package</label>
+              <div className="grid grid-cols-2 gap-1.5">
+                {ROUNDTRIP_PACKAGES.map((pkg) => {
+                  const isSelected = selectedRtPackage === pkg.value;
+                  return (
+                    <button
+                      key={pkg.value}
+                      type="button"
+                      onClick={() => setSelectedRtPackage(pkg.value)}
+                      className={`text-[9px] font-black uppercase tracking-wider p-2 rounded-xl border text-center transition-all ${
+                        isSelected
+                          ? 'bg-green-600 border-green-600 text-white shadow-xs'
+                          : 'bg-white border-gray-200 text-gray-700 hover:border-green-400 hover:text-green-700'
+                      }`}
+                    >
+                      {pkg.minKmPerDay > 0 ? `${pkg.minKmPerDay} KM / Day` : 'Unlimited KM'}
+                    </button>
                   );
                 })}
               </div>

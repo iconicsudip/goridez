@@ -16,6 +16,7 @@ import CarImageSlider from '@/components/CarImageSlider';
 import AirportLocalitySearch, { AIRPORT_ZONE_ID } from '@/components/AirportLocalitySearch';
 import { calculateRoute, resolveLocationData, getFallbackDistanceKm, OSMLocation } from '@/lib/osm';
 import { getCarSlug } from '@/lib/utils';
+import { ROUNDTRIP_PACKAGES } from '../../../taxiData';
 
 function normalizeVehicleCategory(raw: string): string {
   const c = (raw || '').trim().toLowerCase();
@@ -54,6 +55,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
   const { session, updateSession, addToCart } = useBookingStore();
 
   const [bookingMode, setBookingMode] = useState<'ROUND_TRIP' | 'AIRPORT_TRANSFER'>('ROUND_TRIP');
+  const [selectedRtPackage, setSelectedRtPackage] = useState<string>('250-km');
   const [isRouteConfigOpen, setIsRouteConfigOpen] = useState(false);
 
   // Prevent background scrolling while the mobile route configurator drawer is open
@@ -113,6 +115,8 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
 
   const totalPages = Math.ceil(modeFilteredCars.length / CARS_PER_PAGE);
   const paginatedCars = modeFilteredCars.slice((currentPage - 1) * CARS_PER_PAGE, currentPage * CARS_PER_PAGE);
+
+  const [carPackages, setCarPackages] = useState<Record<string, string>>({});
 
   // Reset to page 1 whenever booking mode or filtered cars list changes
   useEffect(() => {
@@ -220,6 +224,10 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
     const qAtPickupZoneId = searchParams.get('atPickupZoneId');
     const qAtDropName = searchParams.get('atDropName');
     const qAtDropZoneId = searchParams.get('atDropZoneId');
+    const qPkg = searchParams.get('package');
+    if (qPkg && ROUNDTRIP_PACKAGES.some(p => p.value === qPkg)) {
+      setSelectedRtPackage(qPkg);
+    }
 
     let loadedPickup = null;
     if (qPickupDate) loadedPickup = new Date(qPickupDate);
@@ -287,10 +295,17 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
       }
     }
 
+    if (bookingMode === 'ROUND_TRIP' && selectedRtPackage) {
+      if (params.get('package') !== selectedRtPackage) {
+        params.set('package', selectedRtPackage);
+        changed = true;
+      }
+    }
+
     if (changed) {
       router.replace(`?${params.toString()}`, { scroll: false });
     }
-  }, [bookingMode, pickupDate, returnDate, isMounted, router, searchParams]);
+  }, [bookingMode, selectedRtPackage, pickupDate, returnDate, isMounted, router, searchParams]);
 
   const handleDateRangeChange = (update: [Date | null, Date | null]) => {
     const [start, end] = update;
@@ -754,6 +769,32 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
               </button>
             </div>
 
+            {bookingMode === 'ROUND_TRIP' && (
+              <div className="mb-6 bg-white border border-green-200 shadow-sm rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-green-700 block">Round Trip Price Package</span>
+                  <span className="text-xs text-gray-500 font-medium">Select your desired daily limit & rate package</span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {ROUNDTRIP_PACKAGES.map((pkg) => (
+                    <button
+                      key={pkg.value}
+                      type="button"
+                      onClick={() => setSelectedRtPackage(pkg.value)}
+                      className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all ${
+                        selectedRtPackage === pkg.value
+                          ? 'bg-green-600 text-white shadow-md'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200'
+                      }`}
+                      title={pkg.hint}
+                    >
+                      {pkg.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="space-y-6">
 
               {paginatedCars.map((car) => {
@@ -772,13 +813,28 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                     driverAllowancePerDay: car.driverAllowanceOut || 350
                   };
 
-                  const minKmPerDay = setting.roundTripMinKmPerDay;
+                  const currentPkgVal = carPackages[car.id] || selectedRtPackage || '250-km';
+                  const rtPkgObj = ROUNDTRIP_PACKAGES.find(p => p.value === currentPkgVal) || ROUNDTRIP_PACKAGES[0];
+                  const minKmPerDay = rtPkgObj.minKmPerDay;
                   const runningDistance = calculatedDistance * 2;
-                  const billableKm = Math.max(runningDistance, minKmPerDay * durationDays);
-                  const ratePerKm = setting.roundTripRatePerKm;
-                  const driverAllowancePerDay = setting.driverAllowancePerDay;
 
-                  const basicFare = Math.round(billableKm * ratePerKm);
+                  let ratePerKm = setting.roundTripRatePerKm;
+                  if (rtPkgObj.discountPercent > 0) {
+                    ratePerKm = Math.round(setting.roundTripRatePerKm * (1 - rtPkgObj.discountPercent / 100) * 100) / 100;
+                  }
+
+                  let billableKm: number;
+                  let basicFare: number;
+
+                  if (rtPkgObj.isUnlimited) {
+                    billableKm = Math.max(runningDistance, 400 * durationDays);
+                    basicFare = Math.round(400 * ratePerKm * durationDays);
+                  } else {
+                    billableKm = Math.max(runningDistance, minKmPerDay * durationDays);
+                    basicFare = Math.round(billableKm * ratePerKm);
+                  }
+
+                  const driverAllowancePerDay = setting.driverAllowancePerDay;
                   const driverAllowance = driverAllowancePerDay * durationDays;
                   const gstAmount = Math.round(basicFare * 0.18); // 18% GST
 
@@ -792,11 +848,14 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                     minKmPerDay,
                     runningDistance,
                     chargedDistance: billableKm,
-                    days: durationDays
+                    days: durationDays,
+                    packageName: rtPkgObj.label,
+                    packageValue: rtPkgObj.value,
+                    isUnlimited: rtPkgObj.isUnlimited
                   };
 
                   const destStr = destLocations.map(d => d.name).filter(Boolean).join(' -> ');
-                  extraText = `Round Trip: Udaipur -> ${destStr} (${durationDays} Days)`;
+                  extraText = `Round Trip: Udaipur -> ${destStr} (${durationDays} Days) • ${rtPkgObj.label}`;
                 } else if (bookingMode === 'AIRPORT_TRANSFER') {
                   // AIRPORT TRANSFER logic:
                   // Zone-based flat fare — looked up by service zone + vehicle category + direction.
@@ -876,11 +935,38 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                                 ))}
                               </div>
                             )}
+                            {/* Per-Car Dynamic Round Trip Package Selector */}
+                            <div className="mb-4 bg-green-50/60 border border-green-200/80 p-3 rounded-2xl">
+                              <div className="text-[9px] font-black uppercase tracking-widest text-green-800 mb-2 flex items-center justify-between">
+                                <span>Round Trip Price Package</span>
+                                <span className="font-mono text-green-700 bg-green-100 px-2 py-0.5 rounded text-[8px] font-bold">{bd.packageName}</span>
+                              </div>
+                              <div className="flex flex-wrap gap-1.5">
+                                {ROUNDTRIP_PACKAGES.map(pkg => {
+                                  const isSelected = (carPackages[car.id] || selectedRtPackage || '250-km') === pkg.value;
+                                  return (
+                                    <button
+                                      key={pkg.value}
+                                      type="button"
+                                      onClick={() => setCarPackages(prev => ({ ...prev, [car.id]: pkg.value }))}
+                                      className={`text-[8.5px] font-black uppercase tracking-wider px-2.5 py-1 rounded-xl border transition-all ${
+                                        isSelected
+                                          ? 'bg-green-600 border-green-600 text-white shadow-xs scale-[1.02]'
+                                          : 'bg-white border-gray-200 text-gray-700 hover:border-green-400 hover:text-green-700'
+                                      }`}
+                                    >
+                                      {pkg.minKmPerDay > 0 ? `${pkg.minKmPerDay} KM / Day (${pkg.label.split('(')[1] || ''}`.replace(')', '') : 'Unlimited KM'}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            </div>
+
                             {/* Package details table */}
                             <div className="w-full text-xs font-mono text-gray-700 space-y-2">
                               <div className="flex justify-between border-b border-gray-100 pb-2">
                                 <span className="text-gray-400">Package</span>
-                                <span className="font-medium">Outstation (Round Trip)</span>
+                                <span className="font-medium text-green-700 font-bold">{bd.packageName || 'Outstation (Round Trip)'}</span>
                               </div>
                               {destStr && (
                                 <div className="flex justify-between border-b border-gray-100 pb-2">

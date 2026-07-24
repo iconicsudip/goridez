@@ -65,7 +65,7 @@ export const useBookingStore = create<BookingStore>()(
         serviceType: 'selfDrive', 
         driverOption: false,
         pickupDate: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 1, 10, 0, 0).toISOString(),
-        returnDate: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 3, 10, 0, 0).toISOString(),
+        returnDate: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 1, 22, 0, 0).toISOString(),
       },
       updateSession: (updates) => set((state) => ({ session: { ...state.session, ...updates } })),
       clearSession: () => set({ 
@@ -73,7 +73,7 @@ export const useBookingStore = create<BookingStore>()(
           serviceType: 'selfDrive', 
           driverOption: false,
           pickupDate: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 1, 10, 0, 0).toISOString(),
-          returnDate: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 3, 10, 0, 0).toISOString(),
+          returnDate: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 1, 22, 0, 0).toISOString(),
         } 
       }),
     }),
