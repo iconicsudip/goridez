@@ -41,6 +41,11 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Limit build concurrency to prevent database connection limits/timeouts during static pre-rendering
+  experimental: {
+    workerThreads: false,
+    cpus: 1,
+  },
 };
 
 export default nextConfig;

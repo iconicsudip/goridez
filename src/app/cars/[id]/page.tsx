@@ -11,6 +11,20 @@ import { getCarSlug } from '@/lib/utils';
 
 export const revalidate = 300;
 
+export async function generateStaticParams() {
+  const cars = await prisma.car.findMany({
+    select: { id: true, make: true, model: true }
+  });
+  
+  const params: { id: string }[] = [];
+  cars.forEach(car => {
+    params.push({ id: car.id });
+    params.push({ id: getCarSlug(car) });
+  });
+  
+  return params;
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   return generateCarMetadata(id);
@@ -32,15 +46,21 @@ export default async function CarDetailsPage({ params }: { params: Promise<{ id:
 
   // If not found by CUID, try matching the slugified make + model
   if (!car) {
-    const allCars = await prisma.car.findMany({
-      include: {
-        city: true,
-        packages: {
-          orderBy: { basePrice: 'asc' }
-        }
-      }
+    const carsList = await prisma.car.findMany({
+      select: { id: true, make: true, model: true }
     });
-    car = allCars.find(c => getCarSlug(c) === id) || null;
+    const matchedCar = carsList.find(c => getCarSlug(c) === id);
+    if (matchedCar) {
+      car = await prisma.car.findUnique({
+        where: { id: matchedCar.id },
+        include: {
+          city: true,
+          packages: {
+            orderBy: { basePrice: 'asc' }
+          }
+        }
+      });
+    }
   }
 
   const [cities, taxiSettings, airportZones, selfDriveLocations] = await Promise.all([

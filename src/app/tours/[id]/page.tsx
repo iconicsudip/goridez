@@ -3,6 +3,17 @@ import { notFound } from "next/navigation";
 import { prisma } from '@/lib/prisma';
 import { createBooking } from "@/actions/booking";
 
+export const revalidate = 300;
+
+export async function generateStaticParams() {
+  const tours = await prisma.tour.findMany({
+    select: { id: true }
+  });
+  return tours.map(tour => ({
+    id: tour.id
+  }));
+}
+
 export default async function TourDetails({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
   const tour = await prisma.tour.findUnique({
@@ -44,18 +55,7 @@ export default async function TourDetails({ params }: { params: Promise<{ id: st
               <input type="date" id="startDate" name="startDate" required style={{ padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--glass-border)', background: 'var(--bg-secondary)', color: 'var(--text-primary)' }} />
             </div>
             
-            {/* For a tour, end date might be derived, but we'll collect it or just pass same date for now */}
-            <input type="hidden" name="endDate" value="" id="endDateHidden" />
-
-            <button type="submit" className="btn-primary" style={{ marginTop: '1rem' }} onClick={(e) => {
-              const start = (document.getElementById('startDate') as HTMLInputElement).value;
-              const endInput = document.getElementById('endDateHidden') as HTMLInputElement;
-              if (start) {
-                const endDate = new Date(start);
-                endDate.setDate(endDate.getDate() + tour.duration);
-                endInput.value = endDate.toISOString().split('T')[0];
-              }
-            }}>
+            <button type="submit" className="btn-primary" style={{ marginTop: '1rem' }}>
               Book Tour
             </button>
           </form>

@@ -8,6 +8,16 @@ import { generateBlogMetadata, buildBlogJsonLd } from '@/lib/seo';
 
 export const revalidate = 300;
 
+export async function generateStaticParams() {
+  const blogs = await prisma.blog.findMany({
+    where: { isDraft: false },
+    select: { slug: true }
+  });
+  return blogs.map(blog => ({
+    slug: blog.slug
+  }));
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   return generateBlogMetadata(slug);

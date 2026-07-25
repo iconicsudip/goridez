@@ -10,7 +10,15 @@ export async function createBooking(formData: FormData) {
   const type = formData.get('type') as string;
   const itemId = formData.get('itemId') as string;
   const startDate = new Date(formData.get('startDate') as string);
-  const endDate = new Date(formData.get('endDate') as string);
+  let endDate: Date;
+  
+  if (type === 'TOUR') {
+    const tour = await prisma.tour.findUnique({ where: { id: itemId }});
+    endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + (tour?.duration || 1));
+  } else {
+    endDate = new Date(formData.get('endDate') as string);
+  }
   
   let totalAmount = 0;
   
