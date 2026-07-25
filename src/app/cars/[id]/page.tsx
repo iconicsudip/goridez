@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
 import { ArrowLeft, CheckCircle2, ChevronRight, Settings2, Fuel, MapPin, Users, ShieldCheck, Cog, Calendar } from 'lucide-react';
 import UnifiedCarBookingSidebar from '@/components/UnifiedCarBookingSidebar';
 import CarDetailsGallery from '@/components/CarDetailsGallery';
@@ -232,14 +233,16 @@ export default async function CarDetailsPage({ params }: { params: Promise<{ id:
 
           {/* Right Sidebar - Booking Form */}
           <div className="lg:col-span-1">
-            <UnifiedCarBookingSidebar
-              car={car}
-              packages={car.packages}
-              taxiSettings={taxiSettings}
-              airportZones={airportZones}
-              selfDriveLocations={selfDriveLocations}
-              airportName={cities.find(c => c.name === 'Udaipur')?.airportName || 'the Airport'}
-            />
+            <Suspense fallback={<div className="p-8 bg-gray-50 border border-gray-200 rounded-3xl animate-pulse text-xs font-mono text-gray-500 uppercase tracking-widest text-center">Loading booking parameters...</div>}>
+              <UnifiedCarBookingSidebar
+                car={car}
+                packages={car.packages}
+                taxiSettings={taxiSettings}
+                airportZones={airportZones}
+                selfDriveLocations={selfDriveLocations}
+                airportName={cities.find(c => c.name === 'Udaipur')?.airportName || 'the Airport'}
+              />
+            </Suspense>
           </div>
         </div>
 
