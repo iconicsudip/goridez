@@ -215,7 +215,11 @@ export default function ChauffeurBookingModal({ isOpen, onClose, car, defaultPic
               <div>
                 <p className="text-[10px] text-green-700 font-bold uppercase tracking-widest mb-3">2. Active Rental Package</p>
                 <div className="space-y-3 pointer-events-none">
-                  {car.packages?.filter((pkg: any) => pkg.name === '12 Hours' || pkg.name === '24 Hours').map((pkg: any) => {
+                  {car.packages?.filter((pkg: any) => {
+                    if (!pkg?.name) return false;
+                    const lowerName = pkg.name.toLowerCase();
+                    return lowerName.includes('12 hour') || lowerName.includes('24 hour') || lowerName.includes('12hour') || lowerName.includes('24hour');
+                  }).map((pkg: any) => {
                     const isSelected = selectedPackageId === pkg.id;
 
                     // Calculate dynamic price based on total hours

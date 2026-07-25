@@ -5,7 +5,7 @@ import { ChevronRight, Shield, Award, Sparkles, Star, MapPin, Car, CalendarCheck
 
 import { generatePageMetadata, getSeoForPath } from '@/lib/seo';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 
 export async function generateMetadata() {
   return generatePageMetadata('/about');

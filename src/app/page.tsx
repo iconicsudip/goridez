@@ -16,7 +16,7 @@ import { generatePageMetadata, getSeoForPath } from "@/lib/seo";
 
 const BLOG_FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=1600&q=80';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 
 export async function generateMetadata() {
   return generatePageMetadata('/');

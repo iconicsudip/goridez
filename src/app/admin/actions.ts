@@ -2,6 +2,19 @@
 
 import { prisma } from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
+import { getCarSlug } from '@/lib/utils';
+
+function revalidateCarPaths(carSlug?: string) {
+  revalidatePath('/');
+  revalidatePath('/self-drive');
+  revalidatePath('/taxi');
+  revalidatePath('/cities');
+  revalidatePath('/cart');
+  if (carSlug) {
+    revalidatePath(`/cars/${carSlug}`);
+  }
+}
+
 
 // --- CITIES ---
 export async function deleteCity(id: string) {
@@ -88,9 +101,12 @@ export async function updateCity(id: string, formData: FormData) {
 
 // --- VEHICLES ---
 export async function deleteCar(id: string) {
+  const car = await prisma.car.findUnique({ where: { id }, select: { make: true, model: true } });
+  const carSlug = car ? getCarSlug(car) : undefined;
   await prisma.carPackage.deleteMany({ where: { carId: id } });
   await prisma.car.delete({ where: { id } });
   revalidatePath('/admin/vehicles');
+  revalidateCarPaths(carSlug);
 }
 
 export async function bulkUpdateVehicles(ids: string[], patch: {
@@ -128,6 +144,11 @@ export async function bulkUpdateVehicles(ids: string[], patch: {
     }
 
     revalidatePath('/admin/vehicles');
+    revalidateCarPaths();
+    const updatedCars = await prisma.car.findMany({ where: { id: { in: ids } }, select: { make: true, model: true } });
+    for (const car of updatedCars) {
+      revalidatePath(`/cars/${getCarSlug(car)}`);
+    }
     return { success: true };
   } catch (error: any) {
     console.error('Bulk update failed:', error);
@@ -138,9 +159,14 @@ export async function bulkUpdateVehicles(ids: string[], patch: {
 export async function bulkDeleteVehicles(ids: string[]) {
   try {
     if (ids.length === 0) return { success: false, error: 'No vehicles selected' };
+    const carsToDelete = await prisma.car.findMany({ where: { id: { in: ids } }, select: { make: true, model: true } });
     await prisma.carPackage.deleteMany({ where: { carId: { in: ids } } });
     await prisma.car.deleteMany({ where: { id: { in: ids } } });
     revalidatePath('/admin/vehicles');
+    revalidateCarPaths();
+    for (const car of carsToDelete) {
+      revalidatePath(`/cars/${getCarSlug(car)}`);
+    }
     return { success: true };
   } catch (error: any) {
     console.error('Bulk delete failed:', error);

@@ -9,7 +9,7 @@ import VehicleCollections from '@/components/VehicleCollections';
 import { generateCarMetadata, buildCarJsonLd, getSeoForPath } from '@/lib/seo';
 import { getCarSlug } from '@/lib/utils';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

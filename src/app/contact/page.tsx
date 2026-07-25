@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import ContactForm from '@/components/ContactForm';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 
 export default async function ContactPage() {
   const data = await prisma.legalPage.findUnique({ where: { id: 'contact' } });

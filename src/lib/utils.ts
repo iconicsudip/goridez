@@ -22,21 +22,24 @@ export interface PackageDecompositionResult {
 
 export const getPackageDurationHours = (pkg: any): number => {
   if (!pkg) return 24;
+
+  // Try to parse duration from name first, as it's more specific for packages like "12 Hours Limit Package"
+  const lowerName = pkg.name.toLowerCase();
+  const dayMatch = lowerName.match(/(\d+(\.\d+)?)\s*(day|days|d)\b/);
+  if (dayMatch) {
+    return parseFloat(dayMatch[1]) * 24;
+  }
+  const hourMatch = lowerName.match(/(\d+(\.\d+)?)\s*(hour|hours|hr|hrs|h)\b/);
+  if (hourMatch) {
+    return parseFloat(hourMatch[1]);
+  }
+
+  // Fallback to type check if name doesn't specify duration
   if (pkg.type === 'HOUR' && pkg.limitValue) {
     const val = parseFloat(pkg.limitValue);
     if (!isNaN(val) && val > 0) return val;
   }
-  const lowerName = pkg.name.toLowerCase();
-  const numMatch = lowerName.match(/(\d+(\.\d+)?)/);
-  if (numMatch) {
-    const num = parseFloat(numMatch[0]);
-    if (lowerName.includes('day')) {
-      return num * 24;
-    }
-    if (lowerName.includes('hour') || lowerName.includes('hr')) {
-      return num;
-    }
-  }
+
   return 24;
 };
 
@@ -44,9 +47,11 @@ export const calculatePackagePricing = (
   packages: any[],
   hours: number
 ): PackageDecompositionResult => {
-  const allowedPkgs = (packages || []).filter(
-    pkg => pkg.name === '12 Hours' || pkg.name === '24 Hours'
-  );
+  const allowedPkgs = (packages || []).filter(pkg => {
+    if (!pkg?.name) return false;
+    const lowerName = pkg.name.toLowerCase();
+    return lowerName.includes('12 hour') || lowerName.includes('24 hour') || lowerName.includes('12hour') || lowerName.includes('24hour');
+  });
 
   if (allowedPkgs.length === 0) {
     return {

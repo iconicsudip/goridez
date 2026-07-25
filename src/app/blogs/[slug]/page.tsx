@@ -6,7 +6,7 @@ import { Calendar, Clock, ArrowLeft, BookOpen, ChevronRight, Car, Building, Spar
 
 import { generateBlogMetadata, buildBlogJsonLd } from '@/lib/seo';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;

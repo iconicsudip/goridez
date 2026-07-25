@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import LegalPageLayout from '@/components/LegalPageLayout';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 
 export async function generateMetadata() {
   const data = await prisma.legalPage.findUnique({ where: { id: 'shipping-policy' } });

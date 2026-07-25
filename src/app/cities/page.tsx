@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import CitiesClient from './CitiesClient';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 
 export default async function CitiesPage() {
   const [cities, cars, villas, tours, airportZones, siteSettings] = await Promise.all([

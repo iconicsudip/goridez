@@ -77,9 +77,11 @@ export default function SelfDriveList({ initialCars, pickupDate, returnDate }: {
           const deposit = activePackage?.deposit || 0;
           const unitType = activePackage?.type === 'KM' ? 'KM' : 'Hour';
 
-          const allowedPackages = (car.packages || []).filter(
-            (p: any) => p.name === '12 Hours' || p.name === '24 Hours'
-          );
+          const allowedPackages = (car.packages || []).filter((p: any) => {
+            if (!p?.name) return false;
+            const lowerName = p.name.toLowerCase();
+            return lowerName.includes('12 hour') || lowerName.includes('24 hour') || lowerName.includes('12hour') || lowerName.includes('24hour');
+          });
 
           return (
             <div key={car.id} className="bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md hover:border-green-200 transition-all overflow-hidden group">

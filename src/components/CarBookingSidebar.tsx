@@ -254,7 +254,11 @@ export default function CarBookingSidebar({ car, packages, cities }: CarBookingS
         </div>
 
         {/* Packages Selection */}
-        {isMultipleOf12 && packages && packages.filter(pkg => pkg.name === '12 Hours' || pkg.name === '24 Hours').length > 0 && (
+        {isMultipleOf12 && packages && packages.filter(pkg => {
+          if (!pkg?.name) return false;
+          const lowerName = pkg.name.toLowerCase();
+          return lowerName.includes('12 hour') || lowerName.includes('24 hour') || lowerName.includes('12hour') || lowerName.includes('24hour');
+        }).length > 0 && (
           <div>
             <label className="text-[10px] font-black tracking-widest uppercase text-gray-500 block mb-2 flex justify-between">
               <span>Active Rental Package</span>
@@ -264,7 +268,11 @@ export default function CarBookingSidebar({ car, packages, cities }: CarBookingS
             </label>
             <div className="space-y-3 pointer-events-none">
               {packages
-                .filter(pkg => pkg.name === '12 Hours' || pkg.name === '24 Hours')
+                .filter(pkg => {
+                  if (!pkg?.name) return false;
+                  const lowerName = pkg.name.toLowerCase();
+                  return lowerName.includes('12 hour') || lowerName.includes('24 hour') || lowerName.includes('12hour') || lowerName.includes('24hour');
+                })
                 .map(pkg => {
                   const isSelected = usedPackageIds.has(pkg.id);
                 const part = priceInfo.breakdownParts.find(p => p.pkgName === pkg.name);

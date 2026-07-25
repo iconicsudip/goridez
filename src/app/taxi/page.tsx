@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma';
 import TaxiClient from './TaxiClient';
 import { generatePageMetadata, getSeoForPath } from '@/lib/seo';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 
 export async function generateMetadata() {
   return generatePageMetadata('/taxi');

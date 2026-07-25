@@ -6,7 +6,7 @@ export const metadata = {
   description: 'View your luxury fleet reservations and manage your cart.',
 };
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 
 export default async function CartPage() {
   const [selfDriveLocations, cars] = await Promise.all([
