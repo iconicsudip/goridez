@@ -224,50 +224,6 @@ export default async function AboutPage() {
         </div>
       </section>
 
-
-
-      {/* Cities We Serve */}
-      {cities.length > 0 && (
-        <section className="container mx-auto px-4 relative z-10 mt-20">
-          <div className="text-center mb-12 mx-auto">
-            <div className="inline-flex items-center gap-2 border border-green-300 rounded-full px-4 py-1.5 mb-4 bg-green-50">
-              <span className="text-green-700 text-[10px] font-black tracking-widest uppercase">
-                ✦ Where We Operate
-              </span>
-            </div>
-            <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tight text-gray-900 mb-3">
-              Cities We <span className="text-green-600">Serve</span>
-            </h2>
-            <p className="text-gray-500 text-sm md:text-base font-medium leading-relaxed">
-              Our fleet and concierge desk are on the ground across Rajasthan.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 mx-auto">
-            {cities.map((city) => (
-              <Link
-                key={city.id}
-                href={`/self-drive?city=${city.id}`}
-                className="group relative aspect-[4/5] rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"
-              >
-                <Image
-                  src={city.banner || CITY_FALLBACK_IMAGE}
-                  alt={city.name}
-                  fill
-                  className="object-cover group-hover:scale-110 transition-transform duration-500"
-                  unoptimized
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
-                <div className="absolute inset-x-0 bottom-0 p-4 flex items-center justify-between">
-                  <span className="text-white font-black uppercase tracking-tight text-sm">{city.name}</span>
-                  <ChevronRight size={16} className="text-white/70 group-hover:text-white group-hover:translate-x-1 transition-all" />
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
-
       {/* BRAND TRUST BANNER SECTION (Image Left, Text Right) */}
       <section className="py-24 bg-zinc-950 text-white relative overflow-hidden mt-20 font-body border-y border-brand-border">
         {/* Background Subtle Accent Glows */}
@@ -337,6 +293,50 @@ export default async function AboutPage() {
           </div>
         </div>
       </section>
+
+      {/* Cities We Serve */}
+      {cities.length > 0 && (
+        <section className="container mx-auto px-4 relative z-10 mt-20">
+          <div className="text-center mb-12 mx-auto">
+            <div className="inline-flex items-center gap-2 border border-green-300 rounded-full px-4 py-1.5 mb-4 bg-green-50">
+              <span className="text-green-700 text-[10px] font-black tracking-widest uppercase">
+                ✦ Where We Operate
+              </span>
+            </div>
+            <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tight text-gray-900 mb-3">
+              Cities We <span className="text-green-600">Serve</span>
+            </h2>
+            <p className="text-gray-500 text-sm md:text-base font-medium leading-relaxed">
+              Our fleet and concierge desk are on the ground across Rajasthan.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 mx-auto">
+            {cities.map((city) => (
+              <Link
+                key={city.id}
+                href={`/self-drive?city=${city.id}`}
+                className="group relative aspect-[4/5] rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"
+              >
+                <Image
+                  src={city.banner || CITY_FALLBACK_IMAGE}
+                  alt={city.name}
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-500"
+                  unoptimized
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 p-4 flex items-center justify-between">
+                  <span className="text-white font-black uppercase tracking-tight text-sm">{city.name}</span>
+                  <ChevronRight size={16} className="text-white/70 group-hover:text-white group-hover:translate-x-1 transition-all" />
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+
 
       {/* GoRidez Happy Family — Photo Gallery */}
       {happyCustomers.length > 0 && (
