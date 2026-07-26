@@ -9,13 +9,14 @@ import { unstable_cache } from 'next/cache';
 
 const getCachedLayoutData = unstable_cache(
   async () => {
-    const [selfDriveCount, chauffeurCount, taxiCount, tourCount, villaCount, siteSettingsData] = await Promise.all([
+    const [selfDriveCount, chauffeurCount, taxiCount, tourCount, villaCount, siteSettingsData, cities] = await Promise.all([
       prisma.car.count({ where: { serviceTypes: { has: 'SELF_DRIVE' } } }),
       prisma.car.count({ where: { serviceTypes: { has: 'WITH_DRIVER' } } }),
       prisma.car.count({ where: { serviceTypes: { has: 'TAXI' } } }),
       prisma.tour.count(),
       prisma.villa.count(),
-      prisma.siteSettings.findUnique({ where: { id: 'singleton' } })
+      prisma.siteSettings.findUnique({ where: { id: 'singleton' } }),
+      prisma.city.findMany({ select: { id: true, name: true }, orderBy: { name: 'asc' } })
     ]);
     return {
       selfDriveCount,
@@ -23,7 +24,8 @@ const getCachedLayoutData = unstable_cache(
       taxiCount,
       tourCount,
       villaCount,
-      siteSettingsData
+      siteSettingsData,
+      cities
     };
   },
   ['root-layout-data'],
@@ -56,7 +58,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { selfDriveCount, chauffeurCount, taxiCount, tourCount, villaCount, siteSettingsData } = await getCachedLayoutData();
+  const { selfDriveCount, chauffeurCount, taxiCount, tourCount, villaCount, siteSettingsData, cities } = await getCachedLayoutData();
 
   const navVisibility = {
     showSelfDrive: selfDriveCount > 0,
@@ -83,7 +85,7 @@ export default async function RootLayout({
       <body suppressHydrationWarning>
         <AntdRegistry>
           <Providers>
-            <ClientLayout navVisibility={navVisibility} siteSettings={siteSettings}>
+            <ClientLayout navVisibility={navVisibility} siteSettings={siteSettings} cities={cities}>
               <main>{children}</main>
             </ClientLayout>
           </Providers>

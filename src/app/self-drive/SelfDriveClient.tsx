@@ -393,14 +393,14 @@ export default function SelfDriveClient({ initialCars, initialCities }: { initia
 
         {/* Cars List */}
         <div className="flex-1">
-          <div className="flex items-center justify-between gap-4 mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
             <div className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em]">
               SHOWING {filteredCars.length} WHEELS AVAILABLE
             </div>
             <button
               type="button"
               onClick={() => setIsFiltersOpen(true)}
-              className="lg:hidden shrink-0 flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-gray-700"
+              className="lg:hidden w-full sm:w-auto flex items-center justify-center gap-2 bg-white border border-gray-200 rounded-xl px-4 py-3 text-[10px] font-black uppercase tracking-widest text-gray-700 shadow-xs transition-colors active:bg-gray-50 cursor-pointer"
             >
               <SlidersHorizontal size={14} /> Filters
             </button>

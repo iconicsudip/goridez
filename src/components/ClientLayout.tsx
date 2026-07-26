@@ -5,7 +5,7 @@ import Navbar from './Navbar';
 import Footer from './Footer';
 import FloatingCart from './FloatingCart';
 
-export default function ClientLayout({ children, navVisibility, siteSettings }: { children: React.ReactNode, navVisibility?: any, siteSettings?: any }) {
+export default function ClientLayout({ children, navVisibility, siteSettings, cities }: { children: React.ReactNode, navVisibility?: any, siteSettings?: any, cities?: any[] }) {
   const pathname = usePathname();
   const isAdmin = pathname?.startsWith('/admin');
 
@@ -14,7 +14,7 @@ export default function ClientLayout({ children, navVisibility, siteSettings }: 
       {!isAdmin && <Navbar navVisibility={navVisibility} siteSettings={siteSettings} />}
       {children}
       {!isAdmin && <FloatingCart />}
-      {!isAdmin && <Footer siteSettings={siteSettings} />}
+      {!isAdmin && <Footer siteSettings={siteSettings} cities={cities} />}
     </>
   );
 }

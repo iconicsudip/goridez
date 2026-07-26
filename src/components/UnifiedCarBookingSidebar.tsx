@@ -51,7 +51,7 @@ export default function UnifiedCarBookingSidebar({
   // --- Shared State ---
   const [isMounted, setIsMounted] = useState(false);
   const [bookingMode, setBookingMode] = useState<'SELF_DRIVE' | 'ROUND_TRIP' | 'AIRPORT_TRANSFER'>('SELF_DRIVE');
-  const [selectedRtPackage, setSelectedRtPackage] = useState<string>('250-km');
+  const [selectedRtPackage, setSelectedRtPackage] = useState<string>('300-km');
 
   // --- Date States ---
   const [pickupDate, setPickupDate] = useState<Date>(() => {
@@ -470,28 +470,30 @@ export default function UnifiedCarBookingSidebar({
                 })}
               </div>
             </div>
-            <div>
-              <label className="text-[10px] font-black tracking-widest uppercase text-gray-500 block mb-2">Round Trip Price Package</label>
-              <div className="grid grid-cols-2 gap-1.5">
-                {ROUNDTRIP_PACKAGES.map((pkg) => {
-                  const isSelected = selectedRtPackage === pkg.value;
-                  return (
-                    <button
-                      key={pkg.value}
-                      type="button"
-                      onClick={() => setSelectedRtPackage(pkg.value)}
-                      className={`text-[9px] font-black uppercase tracking-wider p-2 rounded-xl border text-center transition-all ${
-                        isSelected
-                          ? 'bg-green-600 border-green-600 text-white shadow-xs'
-                          : 'bg-white border-gray-200 text-gray-700 hover:border-green-400 hover:text-green-700'
-                      }`}
-                    >
-                      {pkg.minKmPerDay > 0 ? `${pkg.minKmPerDay} KM / Day` : 'Unlimited KM'}
-                    </button>
-                  );
-                })}
+            {ROUNDTRIP_PACKAGES.length > 1 && (
+              <div>
+                <label className="text-[10px] font-black tracking-widest uppercase text-gray-500 block mb-2">Round Trip Price Package</label>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {ROUNDTRIP_PACKAGES.map((pkg) => {
+                    const isSelected = selectedRtPackage === pkg.value;
+                    return (
+                      <button
+                        key={pkg.value}
+                        type="button"
+                        onClick={() => setSelectedRtPackage(pkg.value)}
+                        className={`text-[9px] font-black uppercase tracking-wider p-2 rounded-xl border text-center transition-all ${
+                          isSelected
+                            ? 'bg-green-600 border-green-600 text-white shadow-xs'
+                            : 'bg-white border-gray-200 text-gray-700 hover:border-green-400 hover:text-green-700'
+                        }`}
+                      >
+                        {pkg.minKmPerDay > 0 ? `${pkg.minKmPerDay} KM / Day` : 'Unlimited KM'}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
+            )}
           </>
         )}
 

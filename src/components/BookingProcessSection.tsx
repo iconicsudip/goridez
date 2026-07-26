@@ -27,18 +27,18 @@ const BOOKING_PROCESS = [
 
 export default function BookingProcessSection({ className = '' }: { className?: string }) {
   return (
-    <section className={`py-24 bg-white border-t border-brand-border relative overflow-hidden font-body ${className}`}>
+    <section className={`py-24 bg-gradient-to-br from-green-700 via-green-800 to-green-900 border-t border-white/10 relative overflow-hidden font-body text-white ${className}`}>
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-16 max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-2 border border-[#8dbb00]/30 rounded-full px-4 py-1.5 mb-4 bg-green-50/60">
-            <span className="text-[#8dbb00] text-[10px] font-black tracking-widest uppercase">
+          <div className="inline-flex items-center gap-2 border border-white/20 rounded-full px-4 py-1.5 mb-4 bg-white/10">
+            <span className="text-white text-[10px] font-black tracking-widest uppercase">
               ✦ How Does It Work
             </span>
           </div>
-          <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tight text-gray-900 mb-3 font-serif">
-            OUR BOOKING <span className="text-[#8dbb00] font-sans font-black">PROCESS</span>
+          <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tight text-white mb-3 font-serif">
+            OUR BOOKING <span className="text-green-300 font-sans font-black">PROCESS</span>
           </h2>
-          <p className="text-gray-500 text-sm md:text-base font-medium leading-relaxed">
+          <p className="text-white/80 text-sm md:text-base font-medium leading-relaxed">
             Four steps between you and the open road.
           </p>
         </div>
@@ -47,18 +47,18 @@ export default function BookingProcessSection({ className = '' }: { className?: 
           {BOOKING_PROCESS.map((step, idx) => (
             <div key={step.title} className="relative flex flex-col items-center text-center px-2">
               {idx < BOOKING_PROCESS.length - 1 && (
-                <div className="hidden lg:block absolute top-7 left-1/2 w-[calc(100%+1.5rem)] h-px bg-gradient-to-r from-green-300 to-green-100" />
+                <div className="hidden lg:block absolute top-7 left-1/2 w-[calc(100%+1.5rem)] h-px bg-white/20" />
               )}
-              <div className="w-14 h-14 rounded-2xl bg-white border-2 border-green-600/20 shadow-sm flex items-center justify-center mb-5 relative z-10 group hover:border-[#8dbb00] hover:scale-105 transition-all">
-                <step.icon className="text-green-700" size={24} />
+              <div className="w-14 h-14 rounded-2xl bg-white border-2 border-white/20 shadow-md flex items-center justify-center mb-5 relative z-10 group hover:scale-105 transition-all">
+                <step.icon className="text-green-800" size={24} />
               </div>
-              <div className="text-[10px] font-black text-[#8dbb00] tracking-widest uppercase mb-2 font-mono">
+              <div className="text-[10px] font-black text-green-300 tracking-widest uppercase mb-2 font-mono">
                 Step 0{idx + 1}
               </div>
-              <h3 className="text-base font-black uppercase tracking-tight text-gray-900 mb-2 font-serif">
+              <h3 className="text-base font-black uppercase tracking-tight text-white mb-2 font-serif">
                 {step.title}
               </h3>
-              <p className="text-xs text-gray-500 leading-relaxed font-medium max-w-[220px]">
+              <p className="text-xs text-white/80 leading-relaxed font-medium max-w-[220px]">
                 {step.description}
               </p>
             </div>

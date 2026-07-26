@@ -55,7 +55,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
   const { session, updateSession, addToCart } = useBookingStore();
 
   const [bookingMode, setBookingMode] = useState<'ROUND_TRIP' | 'AIRPORT_TRANSFER'>('ROUND_TRIP');
-  const [selectedRtPackage, setSelectedRtPackage] = useState<string>('250-km');
+  const [selectedRtPackage, setSelectedRtPackage] = useState<string>('300-km');
   const [isRouteConfigOpen, setIsRouteConfigOpen] = useState(false);
 
   // Prevent background scrolling while the mobile route configurator drawer is open
@@ -758,18 +758,18 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
 
           {/* Main Classes List */}
           <div className="flex-1">
-            <div className="flex items-center justify-between gap-4 mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
               <h2 className="font-black text-xl uppercase tracking-tight">Choose Private Cab Class</h2>
               <button
                 type="button"
                 onClick={() => setIsRouteConfigOpen(true)}
-                className="lg:hidden shrink-0 flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-gray-700"
+                className="lg:hidden w-full sm:w-auto flex items-center justify-center gap-2 bg-white border border-gray-200 rounded-xl px-4 py-3 text-[10px] font-black uppercase tracking-widest text-gray-700 shadow-xs transition-colors active:bg-gray-50 cursor-pointer"
               >
                 <SlidersHorizontal size={14} /> Route
               </button>
             </div>
 
-            {bookingMode === 'ROUND_TRIP' && (
+            {bookingMode === 'ROUND_TRIP' && ROUNDTRIP_PACKAGES.length > 1 && (
               <div className="mb-6 bg-white border border-green-200 shadow-sm rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div>
                   <span className="text-[10px] font-black uppercase tracking-widest text-green-700 block">Round Trip Price Package</span>
@@ -813,7 +813,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                     driverAllowancePerDay: car.driverAllowanceOut || 350
                   };
 
-                  const currentPkgVal = carPackages[car.id] || selectedRtPackage || '250-km';
+                  const currentPkgVal = carPackages[car.id] || selectedRtPackage || '300-km';
                   const rtPkgObj = ROUNDTRIP_PACKAGES.find(p => p.value === currentPkgVal) || ROUNDTRIP_PACKAGES[0];
                   const minKmPerDay = rtPkgObj.minKmPerDay;
                   const runningDistance = calculatedDistance * 2;
@@ -936,31 +936,33 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                               </div>
                             )}
                             {/* Per-Car Dynamic Round Trip Package Selector */}
-                            <div className="mb-4 bg-green-50/60 border border-green-200/80 p-3 rounded-2xl">
-                              <div className="text-[9px] font-black uppercase tracking-widest text-green-800 mb-2 flex items-center justify-between">
-                                <span>Round Trip Price Package</span>
-                                <span className="font-mono text-green-700 bg-green-100 px-2 py-0.5 rounded text-[8px] font-bold">{bd.packageName}</span>
+                            {ROUNDTRIP_PACKAGES.length > 1 && (
+                              <div className="mb-4 bg-green-50/60 border border-green-200/80 p-3 rounded-2xl">
+                                <div className="text-[9px] font-black uppercase tracking-widest text-green-800 mb-2 flex items-center justify-between">
+                                  <span>Round Trip Price Package</span>
+                                  <span className="font-mono text-green-700 bg-green-100 px-2 py-0.5 rounded text-[8px] font-bold">{bd.packageName}</span>
+                                </div>
+                                <div className="flex flex-wrap gap-1.5">
+                                  {ROUNDTRIP_PACKAGES.map(pkg => {
+                                    const isSelected = (carPackages[car.id] || selectedRtPackage || '300-km') === pkg.value;
+                                    return (
+                                      <button
+                                        key={pkg.value}
+                                        type="button"
+                                        onClick={() => setCarPackages(prev => ({ ...prev, [car.id]: pkg.value }))}
+                                        className={`text-[8.5px] font-black uppercase tracking-wider px-2.5 py-1 rounded-xl border transition-all ${
+                                          isSelected
+                                            ? 'bg-green-600 border-green-600 text-white shadow-xs scale-[1.02]'
+                                            : 'bg-white border-gray-200 text-gray-700 hover:border-green-400 hover:text-green-700'
+                                        }`}
+                                      >
+                                        {pkg.minKmPerDay > 0 ? `${pkg.minKmPerDay} KM / Day (${pkg.label.split('(')[1] || ''}`.replace(')', '') : 'Unlimited KM'}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
                               </div>
-                              <div className="flex flex-wrap gap-1.5">
-                                {ROUNDTRIP_PACKAGES.map(pkg => {
-                                  const isSelected = (carPackages[car.id] || selectedRtPackage || '250-km') === pkg.value;
-                                  return (
-                                    <button
-                                      key={pkg.value}
-                                      type="button"
-                                      onClick={() => setCarPackages(prev => ({ ...prev, [car.id]: pkg.value }))}
-                                      className={`text-[8.5px] font-black uppercase tracking-wider px-2.5 py-1 rounded-xl border transition-all ${
-                                        isSelected
-                                          ? 'bg-green-600 border-green-600 text-white shadow-xs scale-[1.02]'
-                                          : 'bg-white border-gray-200 text-gray-700 hover:border-green-400 hover:text-green-700'
-                                      }`}
-                                    >
-                                      {pkg.minKmPerDay > 0 ? `${pkg.minKmPerDay} KM / Day (${pkg.label.split('(')[1] || ''}`.replace(')', '') : 'Unlimited KM'}
-                                    </button>
-                                  );
-                                })}
-                              </div>
-                            </div>
+                            )}
 
                             {/* Package details table */}
                             <div className="w-full text-xs font-mono text-gray-700 space-y-2">
