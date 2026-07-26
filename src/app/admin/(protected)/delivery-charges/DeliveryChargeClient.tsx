@@ -91,7 +91,7 @@ export default function DeliveryChargeClient({ initialCharges, cities }: { initi
         </div>
 
         {(isAdding || editingId) && (
-          <form onSubmit={handleSave} className="mb-8 bg-gray-100 border border-green-300 p-6 rounded-2xl shadow-[0_0_20px_rgba(196,240,0,0.04)]">
+          <form onSubmit={handleSave} className="mb-8 bg-gray-100 border border-green-300 p-6 rounded-2xl shadow-[0_0_20px_rgba(41,75,50,0.04)]">
             <div className="flex justify-between items-center mb-4">
                <p className="text-[9px] text-green-700 font-mono uppercase tracking-widest">
                   — {editingId ? 'Edit Configuration' : 'New Configuration'}
@@ -155,7 +155,7 @@ export default function DeliveryChargeClient({ initialCharges, cities }: { initi
             </div>
 
             <div className="flex justify-end gap-3">
-              <button disabled={saving} type="submit" className="bg-green-600 text-white px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest disabled:opacity-50 transition-all hover:shadow-[0_0_15px_rgba(196,240,0,0.2)]">
+              <button disabled={saving} type="submit" className="bg-green-600 text-white px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest disabled:opacity-50 transition-all hover:shadow-[0_0_15px_rgba(41,75,50,0.2)]">
                 {editingId ? 'Update Config' : 'Save Config'}
               </button>
             </div>

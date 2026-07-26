@@ -192,7 +192,7 @@ export default function CheckoutClient({ razorpayKeyId }: { razorpayKeyId?: stri
             email: form.email,
             contact: form.phone,
           },
-          theme: { color: '#C4F000' },
+          theme: { color: '#294B32' },
           modal: {
             ondismiss: function () {
               setIsProcessing(false);
@@ -220,7 +220,7 @@ export default function CheckoutClient({ razorpayKeyId }: { razorpayKeyId?: stri
   return (
     <div className="container mx-auto px-4">
       <div className="mb-12">
-        <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tight mb-2">
+        <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tight mb-2 text-brand-gold">
           SECURE <span className="text-outline-neon">CHECKOUT</span>
         </h1>
         <p className="text-gray-500 text-sm">Finalize your Sovereign Travel-Tech Reservation</p>
@@ -493,7 +493,7 @@ export default function CheckoutClient({ razorpayKeyId }: { razorpayKeyId?: stri
               </div>
             </div>
 
-            <div className="bg-green-600/10 border border-[#C4F000]/30 rounded-xl p-5 mb-8">
+            <div className="bg-green-600/10 border border-brand-gold/30 rounded-xl p-5 mb-8">
               <div className="flex justify-between items-center mb-2">
                 <span className="text-[10px] font-bold text-green-700 uppercase tracking-widest">Advance Hold Deposit:</span>
                 <span className="text-xl font-black text-green-700">₹{advanceHold.toLocaleString()}</span>
@@ -509,7 +509,7 @@ export default function CheckoutClient({ razorpayKeyId }: { razorpayKeyId?: stri
             <button 
               onClick={handlePayment}
               disabled={isProcessing}
-              className="w-full bg-green-600 text-white font-black uppercase tracking-widest py-5 rounded-xl shadow-[0_0_20px_rgba(196,240,0,0.2)] hover:shadow-[0_0_30px_rgba(196,240,0,0.4)] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full bg-green-600 text-white font-black uppercase tracking-widest py-5 rounded-xl shadow-[0_0_20px_rgba(41,75,50,0.2)] hover:shadow-[0_0_30px_rgba(41,75,50,0.4)] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {isProcessing ? (
                 <span className="animate-pulse">Processing...</span>

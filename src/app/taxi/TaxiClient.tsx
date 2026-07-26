@@ -638,12 +638,12 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
           <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black text-white border border-brand-gold/30 rounded-2xl p-5 mt-6 shadow-xl relative overflow-hidden">
             <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-3">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-brand-gold/20 flex items-center justify-center text-brand-gold">
+                <div className="w-7 h-7 rounded-lg bg-brand-gold/20 flex items-center justify-center text-green-300">
                   <Navigation size={14} />
                 </div>
                 <span className="text-xs font-bold uppercase tracking-wider text-gray-200">Route Summary</span>
               </div>
-              {isCalculating && <Loader2 size={14} className="animate-spin text-brand-gold" />}
+              {isCalculating && <Loader2 size={14} className="animate-spin text-green-300" />}
             </div>
 
             <div className="grid grid-cols-2 gap-3 pt-1">
@@ -653,7 +653,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                   {bookingMode === 'ROUND_TRIP' ? 'Round Trip Distance' : 'One-Way Distance'}
                 </span>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-xl font-black text-brand-gold">
+                  <span className="text-xl font-black text-green-300">
                     {bookingMode === 'ROUND_TRIP' ? calculatedDistance * 2 : calculatedDistance}
                   </span>
                   <span className="text-xs font-bold text-gray-300">KM</span>
@@ -719,7 +719,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
           <div className="text-green-700 text-[10px] font-black tracking-widest uppercase mb-4">
             Premium Driver Services
           </div>
-          <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tight mb-4">
+          <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tight mb-4 text-brand-gold">
             TAXI <span className="text-outline-neon">SERVICES & TRANSFERS</span>
           </h1>
           <p className="text-gray-600 max-w-2xl text-sm leading-relaxed">

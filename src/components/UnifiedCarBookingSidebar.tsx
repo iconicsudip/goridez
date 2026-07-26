@@ -446,7 +446,7 @@ export default function UnifiedCarBookingSidebar({
                   const rightBtn = (
                     <div className="flex items-center gap-1">
                       {idx === destLocations.length - 1 && destLocations.length < 3 ? (
-                        <button type="button" onClick={addDestination} className="text-brand-gold hover:text-[#8dbb00] p-1"><span className="text-lg leading-none">+</span></button>
+                        <button type="button" onClick={addDestination} className="text-brand-gold hover:text-brand-gold-hover p-1"><span className="text-lg leading-none">+</span></button>
                       ) : (idx > 0 || destLocations.length > 1) ? (
                         <button type="button" onClick={() => removeDestination(idx)} className="text-red-400 hover:text-red-600 p-1"><span className="text-lg leading-none">×</span></button>
                       ) : null}

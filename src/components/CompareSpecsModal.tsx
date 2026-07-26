@@ -305,7 +305,7 @@ export default function CompareSpecsModal({
               disabled={isCarABooked}
               className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${isCarABooked
                   ? 'bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-200'
-                  : 'bg-green-600 text-white hover:bg-brand-hover shadow-[0_0_15px_rgba(196,240,0,0.2)]'
+                  : 'bg-green-600 text-white hover:bg-brand-hover shadow-[0_0_15px_rgba(41,75,50,0.2)]'
                 }`}
             >
               {isCarABooked ? 'Selected Booked' : `Choose ${selectedCar.model}`}

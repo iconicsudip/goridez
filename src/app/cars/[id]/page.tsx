@@ -251,7 +251,7 @@ export default async function CarDetailsPage({ params }: { params: Promise<{ id:
           <div className="mt-24 pt-16 border-t border-gray-200">
             <VehicleCollections 
               cars={relatedCars} 
-              title={<>SIMILAR <span className="text-[#8dbb00] font-sans font-black">VEHICLES</span></>}
+              title={<>SIMILAR <span className="text-brand-gold-hover font-sans font-black">VEHICLES</span></>}
               subtitle="SAME CATEGORY"
               description="Explore other vehicles in the same category for your trip."
               hideTabs={true}

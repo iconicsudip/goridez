@@ -28,7 +28,7 @@ export default function FaqAccordion({ faqs }: { faqs: FaqItem[] }) {
         <div className="text-center mb-16">
           <div className="flex items-center justify-center gap-3 mb-4">
             <span className="h-[2px] w-8 bg-brand-gold rounded-full"></span>
-            <div className="text-brand-gold text-[10px] md:text-xs font-black tracking-widest uppercase">
+            <div className="text-green-300 text-[10px] md:text-xs font-black tracking-widest uppercase">
               Curated Help Desk
             </div>
             <span className="h-[2px] w-8 bg-brand-gold rounded-full"></span>
@@ -65,7 +65,7 @@ export default function FaqAccordion({ faqs }: { faqs: FaqItem[] }) {
                   <div
                     className={`w-8 h-8 rounded-full border flex items-center justify-center shrink-0 transition-all duration-300 ${
                       isOpen
-                        ? 'border-brand-gold text-brand-gold bg-brand-gold/5 rotate-180'
+                        ? 'border-brand-gold text-green-300 bg-brand-gold/5 rotate-180'
                         : 'border-zinc-750 text-gray-400 group-hover:border-zinc-550 group-hover:text-white'
                     }`}
                   >

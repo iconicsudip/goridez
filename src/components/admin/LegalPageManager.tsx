@@ -119,7 +119,7 @@ function PageEditor({ page }: { page: LegalPageData }) {
           <button
             type="submit"
             disabled={loading}
-            className="bg-green-600 hover:bg-brand-hover text-black px-8 py-4 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all shadow-md flex items-center gap-2 disabled:opacity-50"
+            className="bg-green-600 hover:bg-brand-hover text-white px-8 py-4 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all shadow-md flex items-center gap-2 disabled:opacity-50"
           >
             <Save size={14} />
             {loading ? 'Saving Changes...' : 'Save Page'}
@@ -239,7 +239,7 @@ export default function LegalPageManager({
             onClick={() => setActiveTab(tab.id)}
             className={`px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${
               activeTab === tab.id
-                ? 'bg-green-600 border-green-600 text-black shadow-md'
+                ? 'bg-green-600 border-green-600 text-white shadow-md'
                 : 'bg-transparent border-gray-300 text-gray-500 hover:border-gray-400 hover:text-gray-900'
             }`}
           >
@@ -250,7 +250,7 @@ export default function LegalPageManager({
           onClick={() => setActiveTab('submissions')}
           className={`px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border flex items-center gap-2 ${
             activeTab === 'submissions'
-              ? 'bg-green-600 border-green-600 text-black shadow-md'
+              ? 'bg-green-600 border-green-600 text-white shadow-md'
               : 'bg-transparent border-gray-300 text-gray-500 hover:border-gray-400 hover:text-gray-900'
           }`}
         >

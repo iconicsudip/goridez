@@ -324,7 +324,7 @@ export default function ChauffeurBookingModal({ isOpen, onClose, car, defaultPic
 
                 <button
                   onClick={handleBook}
-                  className="w-full py-4 bg-green-600 text-white font-black uppercase tracking-widest text-xs rounded-xl shadow-[0_0_20px_rgba(196,240,0,0.2)] hover:shadow-[0_0_30px_rgba(196,240,0,0.4)] transition-all"
+                  className="w-full py-4 bg-green-600 text-white font-black uppercase tracking-widest text-xs rounded-xl shadow-[0_0_20px_rgba(41,75,50,0.2)] hover:shadow-[0_0_30px_rgba(41,75,50,0.4)] transition-all"
                 >
                   Add to Booking
                 </button>

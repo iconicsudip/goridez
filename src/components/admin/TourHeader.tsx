@@ -25,7 +25,7 @@ export default function TourHeader({ cities }: { cities: any[] }) {
           </div>
           <button 
             onClick={() => setIsDrawerOpen(true)}
-            className="bg-green-600 hover:bg-brand-hover text-black px-6 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest flex items-center gap-2 transition-all shadow-[0_0_15px_rgba(196,240,0,0.15)]"
+            className="bg-green-600 hover:bg-brand-hover text-white px-6 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest flex items-center gap-2 transition-all shadow-[0_0_15px_rgba(41,75,50,0.15)]"
           >
             <Plus size={16} /> Curate New Tour
           </button>

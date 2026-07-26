@@ -50,7 +50,7 @@ export default function SiteSettingsManager({ initialData }: { initialData: any 
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10 border-b border-gray-200 pb-6">
         <div>
           <h1 className="text-4xl font-black uppercase tracking-tight mb-2 text-gray-900 flex items-center gap-3">
-            <Settings className="text-[#ADFF00]" size={32} /> Branding Settings
+            <Settings className="text-brand-gold" size={32} /> Branding Settings
           </h1>
           <p className="text-gray-500 text-[13px]">
             Manage header/footer logo assets, site icon (favicon), and copyright declarations.
@@ -202,7 +202,7 @@ export default function SiteSettingsManager({ initialData }: { initialData: any 
           <button
             type="submit"
             disabled={loading}
-            className="bg-[#ADFF00] hover:bg-[#C4FF4D] text-black px-8 py-4 rounded-full text-xs font-black uppercase tracking-widest transition-all shadow-md flex items-center gap-2 disabled:opacity-50 cursor-pointer"
+            className="bg-brand-gold hover:bg-brand-gold-hover text-white px-8 py-4 rounded-full text-xs font-black uppercase tracking-widest transition-all shadow-md flex items-center gap-2 disabled:opacity-50 cursor-pointer"
           >
             <Save size={16} /> {loading ? 'Saving Settings...' : 'Save Settings'}
           </button>

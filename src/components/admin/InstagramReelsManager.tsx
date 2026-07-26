@@ -141,7 +141,7 @@ export default function InstagramReelsManager({ reels }: { reels: Reel[] }) {
         <button
           type="submit"
           disabled={adding}
-          className="bg-green-600 hover:bg-brand-hover text-black px-6 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all shadow-md flex items-center gap-2 disabled:opacity-50 cursor-pointer"
+          className="bg-green-600 hover:bg-brand-hover text-white px-6 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all shadow-md flex items-center gap-2 disabled:opacity-50 cursor-pointer"
         >
           <Plus size={14} /> {adding ? 'Adding...' : 'Add Reel'}
         </button>

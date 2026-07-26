@@ -66,7 +66,7 @@ function VillaDrawer({ isOpen, onClose, villa, cities, mode }: any) {
   const accent = mode === 'edit' ? 'text-yellow-400' : 'text-green-700';
   const btnClass = mode === 'edit'
     ? 'bg-yellow-400 hover:bg-yellow-300 text-black'
-    : 'bg-green-600 hover:bg-brand-hover text-black';
+    : 'bg-green-600 hover:bg-brand-hover text-white';
 
   const filteredSuggestions = AMENITY_SUGGESTIONS.filter(s => s.toLowerCase().includes(amenityInput.toLowerCase()) && !amenities.includes(s));
 
@@ -230,7 +230,7 @@ export default function VillasClient({ villas, cities }: { villas: any[], cities
               className="w-full bg-gray-100 border border-gray-300 rounded-xl py-3 pl-11 pr-4 text-xs text-gray-900 focus:outline-none focus:border-green-600 transition-all font-mono" />
           </div>
           <button onClick={() => setShowAdd(true)}
-            className="bg-green-600 hover:bg-brand-hover text-black px-5 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest flex items-center gap-2 transition-all whitespace-nowrap">
+            className="bg-green-600 hover:bg-brand-hover text-white px-5 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest flex items-center gap-2 transition-all whitespace-nowrap">
             <Plus size={15} /> Add Villa
           </button>
         </div>

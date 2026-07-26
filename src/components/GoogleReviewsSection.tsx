@@ -119,7 +119,7 @@ export default function GoogleReviewsSection({ reviews, placeId, averageRating =
               <span className="h-[2px] w-8 bg-brand-gold rounded-full"></span>
               <div className="text-brand-gold text-xs font-bold tracking-[0.2em] uppercase">Verified Customer Reviews</div>
             </div>
-            <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-gray-900 leading-none mb-3">
+            <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-brand-gold leading-none mb-3">
               WHAT OUR <span className="text-outline-neon">GUESTS SAY</span>
             </h2>
             {/* Overall rating badge */}
@@ -143,7 +143,7 @@ export default function GoogleReviewsSection({ reviews, placeId, averageRating =
             href={mapsUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-brand-gold hover:text-[#8dbb00] transition-colors border-b border-brand-gold pb-1 whitespace-nowrap"
+            className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-brand-gold hover:text-brand-gold-hover transition-colors border-b border-brand-gold pb-1 whitespace-nowrap"
           >
             Write a Review ↗
           </Link>

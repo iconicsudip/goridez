@@ -62,7 +62,7 @@ export default function CityForm() {
         </div>
 
         <div className="pt-4">
-          <button disabled={loading} type="submit" className="bg-green-600 hover:bg-brand-hover text-black px-6 py-4 rounded-xl text-[11px] font-black uppercase tracking-widest flex items-center gap-2 transition-all shadow-md disabled:opacity-50">
+          <button disabled={loading} type="submit" className="bg-green-600 hover:bg-brand-hover text-white px-6 py-4 rounded-xl text-[11px] font-black uppercase tracking-widest flex items-center gap-2 transition-all shadow-md disabled:opacity-50">
             {loading ? 'PROVISIONING...' : 'PUBLISH LOCATION LANDING MODULE'} <ArrowRight size={16} strokeWidth={2.5} />
           </button>
         </div>

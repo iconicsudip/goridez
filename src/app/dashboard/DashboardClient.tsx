@@ -116,7 +116,7 @@ export default function DashboardClient({ user, bookings, aggregates, wishlist =
             email: user.email,
             contact: user.phone || ''
           },
-          theme: { color: '#C4F000' }
+          theme: { color: '#294B32' }
         };
         const rzp1 = new (window as any).Razorpay(options);
         rzp1.open();
@@ -258,7 +258,7 @@ export default function DashboardClient({ user, bookings, aggregates, wishlist =
                     onClick={() => setActiveTab(item.id as Tab)}
                     className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl font-bold text-[11px] uppercase tracking-widest transition-colors ${
                       activeTab === item.id 
-                        ? 'bg-green-600 text-white shadow-[0_0_15px_rgba(196,240,0,0.15)]' 
+                        ? 'bg-green-600 text-white shadow-[0_0_15px_rgba(41,75,50,0.15)]' 
                         : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                     }`}
                   >
@@ -297,7 +297,7 @@ export default function DashboardClient({ user, bookings, aggregates, wishlist =
                     <p className="text-[10px] text-gray-500 font-mono">Coordinated scheduled excursions & premium rentals</p>
                   </div>
                   <Link href="/self-drive">
-                    <button className="bg-green-600 hover:bg-brand-hover text-black font-black uppercase tracking-widest px-6 py-3 rounded-xl text-[10px] transition-all flex items-center gap-2">
+                    <button className="bg-green-600 hover:bg-brand-hover text-white font-black uppercase tracking-widest px-6 py-3 rounded-xl text-[10px] transition-all flex items-center gap-2">
                       Book New Service <ChevronRight size={14} strokeWidth={3} />
                     </button>
                   </Link>
@@ -365,7 +365,7 @@ export default function DashboardClient({ user, bookings, aggregates, wishlist =
                             Show Invoice
                           </button>
                           {isActive && booking.remainingAmount > 0 && (
-                            <button onClick={() => handleRazorpayPayment(booking.id, booking.remainingAmount, `Settle outstanding for ${booking.id}`)} className="text-[10px] font-black text-black bg-green-600 hover:bg-brand-hover px-6 py-2.5 rounded-lg transition-colors shadow-[0_0_15px_rgba(196,240,0,0.15)]">
+                            <button onClick={() => handleRazorpayPayment(booking.id, booking.remainingAmount, `Settle outstanding for ${booking.id}`)} className="text-[10px] font-black text-white bg-green-600 hover:bg-brand-hover px-6 py-2.5 rounded-lg transition-colors shadow-[0_0_15px_rgba(41,75,50,0.15)]">
                               SETTLE OUTSTANDING (70%)
                             </button>
                           )}
@@ -414,7 +414,7 @@ export default function DashboardClient({ user, bookings, aggregates, wishlist =
                 </div>
 
                 <div className="flex justify-end pt-6 border-t border-gray-200">
-                  <button className="bg-green-600 hover:bg-brand-hover text-black font-black px-8 py-3 rounded-xl text-[11px] uppercase tracking-widest transition-colors shadow-[0_0_15px_rgba(196,240,0,0.15)]">
+                  <button className="bg-green-600 hover:bg-brand-hover text-white font-black px-8 py-3 rounded-xl text-[11px] uppercase tracking-widest transition-colors shadow-[0_0_15px_rgba(41,75,50,0.15)]">
                     Save Changes
                   </button>
                 </div>
@@ -510,16 +510,16 @@ export default function DashboardClient({ user, bookings, aggregates, wishlist =
                 <h2 className="text-2xl font-black uppercase tracking-tight mb-2">SECURITY DEPOSIT ESCROW</h2>
                 <p className="text-[10px] text-gray-500 font-mono mb-8">Manage and request return flow on holds placed for self-drive safety covenants</p>
                 
-                <div className="bg-[#1a1a0a] border border-green-600/20 rounded-3xl p-8 flex items-center justify-between mb-8">
+                <div className="bg-green-950 border border-green-600/20 rounded-3xl p-8 flex items-center justify-between mb-8">
                   <div className="flex gap-4">
-                    <Banknote className="text-green-700 mt-1" size={24} />
+                    <Banknote className="text-green-300 mt-1" size={24} />
                     <div>
                       <h3 className="text-lg font-black uppercase tracking-tight mb-1">CONSOLIDATED DEPOSITS HELD</h3>
                       <p className="text-xs text-gray-600 max-w-md">Deposits protect against excess KM or structural dents. Released immediately upon vehicle clearance check.</p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-4xl font-black text-green-700 tracking-tight mb-1">₹{aggregates.activeDeposits.toLocaleString()}</div>
+                    <div className="text-4xl font-black text-green-300 tracking-tight mb-1">₹{aggregates.activeDeposits.toLocaleString()}</div>
                     <div className="text-[8px] text-gray-500 uppercase tracking-widest font-mono">PROCESSING REFUND (100% GUARANTEED)</div>
                   </div>
                 </div>
@@ -629,7 +629,7 @@ export default function DashboardClient({ user, bookings, aggregates, wishlist =
                 Close <X size={14}/>
               </button>
               
-              <div className="bg-[#1a1a0a] border border-green-600/20 text-green-700 text-[9px] font-black uppercase tracking-widest inline-block px-3 py-1.5 rounded mb-4">PREMIUM TRIP RECEIPT</div>
+              <div className="bg-green-950 border border-green-600/20 text-green-300 text-[9px] font-black uppercase tracking-widest inline-block px-3 py-1.5 rounded mb-4">PREMIUM TRIP RECEIPT</div>
               <h2 className="text-3xl font-black uppercase tracking-tighter mb-1">GORIDEZ</h2>
               <p className="text-[10px] text-gray-500 font-mono tracking-widest uppercase">UDAIPUR STATION FLEET HQ</p>
             </div>
@@ -682,7 +682,7 @@ export default function DashboardClient({ user, bookings, aggregates, wishlist =
                 <div>₹{(activeInvoice.totalAmount + activeInvoice.depositAmount).toLocaleString()}</div>
               </div>
 
-              <div className="bg-[#1a1a0a] border border-green-600/20 rounded-xl p-5 text-xs space-y-2">
+              <div className="bg-green-950 border border-green-600/20 rounded-xl p-5 text-xs space-y-2">
                 <div className="flex justify-between text-gray-900/80">
                   <div>Down Payment Settled</div>
                   <div className="font-bold text-gray-900">₹{activeInvoice.advancePaid.toLocaleString()}</div>
@@ -701,7 +701,7 @@ export default function DashboardClient({ user, bookings, aggregates, wishlist =
             <div className="p-8 pt-0 print:hidden">
               <button 
                 onClick={() => window.print()}
-                className="w-full bg-green-600 hover:bg-brand-hover text-black font-black text-sm uppercase tracking-widest py-4 rounded-xl flex justify-center items-center gap-2 transition-colors shadow-md cursor-pointer"
+                className="w-full bg-green-600 hover:bg-brand-hover text-white font-black text-sm uppercase tracking-widest py-4 rounded-xl flex justify-center items-center gap-2 transition-colors shadow-md cursor-pointer"
               >
                  Print / Save GST Invoice PDF
               </button>

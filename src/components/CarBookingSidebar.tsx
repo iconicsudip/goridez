@@ -354,7 +354,7 @@ export default function CarBookingSidebar({ car, packages, cities }: CarBookingS
           <div className="flex flex-col gap-3 pt-4">
             <button 
               onClick={handleBooking}
-              className="w-full bg-green-600 hover:bg-[#8dbb00] text-white font-black text-xs uppercase tracking-widest py-4 rounded-xl transition-all shadow-lg shadow-green-600/20 cursor-pointer"
+              className="w-full bg-green-600 hover:bg-brand-gold-hover text-white font-black text-xs uppercase tracking-widest py-4 rounded-xl transition-all shadow-lg shadow-green-600/20 cursor-pointer"
             >
               CONFIRM BOOKING
             </button>

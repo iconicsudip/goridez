@@ -204,7 +204,7 @@ export default function PricingClient({
 
         {/* ── Add Form ── */}
         {isAdding && (
-          <form onSubmit={handleAddTier} className="mb-6 bg-gray-100 border border-green-300 p-6 rounded-2xl space-y-4 shadow-[0_0_20px_rgba(196,240,0,0.04)]">
+          <form onSubmit={handleAddTier} className="mb-6 bg-gray-100 border border-green-300 p-6 rounded-2xl space-y-4 shadow-[0_0_20px_rgba(41,75,50,0.04)]">
             <p className="text-[9px] text-green-700 font-mono uppercase tracking-widest">— New Package Tier</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
@@ -242,7 +242,7 @@ export default function PricingClient({
                 Cancel
               </button>
               <button disabled={saving} type="submit"
-                className="bg-green-600 text-white px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest disabled:opacity-50 transition-all hover:shadow-[0_0_15px_rgba(196,240,0,0.2)]">
+                className="bg-green-600 text-white px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest disabled:opacity-50 transition-all hover:shadow-[0_0_15px_rgba(41,75,50,0.2)]">
                 Save Tier
               </button>
             </div>
@@ -257,7 +257,7 @@ export default function PricingClient({
 
             if (isEditing && editForm) {
               return (
-                <div key={tier.id} className="bg-gray-100 border border-green-300 p-5 rounded-2xl space-y-4 shadow-[0_0_15px_rgba(196,240,0,0.05)]">
+                <div key={tier.id} className="bg-gray-100 border border-green-300 p-5 rounded-2xl space-y-4 shadow-[0_0_15px_rgba(41,75,50,0.05)]">
                   <p className="text-[9px] text-green-700 font-mono uppercase tracking-widest">Editing Tier</p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
@@ -304,7 +304,7 @@ export default function PricingClient({
                   !tier.isActive && tier.isActive !== undefined
                     ? 'opacity-40 bg-gray-100 border border-gray-200 text-gray-500'
                     : custom
-                      ? 'bg-[#0A0A00] border border-green-600/20 text-green-700 font-bold shadow-[0_0_15px_rgba(196,240,0,0.05)]'
+                      ? 'bg-[#0A0A00] border border-green-600/20 text-green-700 font-bold shadow-[0_0_15px_rgba(41,75,50,0.05)]'
                       : 'bg-gray-100 border border-gray-200 text-gray-900/80 hover:border-gray-300 hover:bg-white/[0.02]'
                 }`}
               >

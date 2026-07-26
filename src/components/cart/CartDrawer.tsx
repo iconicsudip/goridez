@@ -121,7 +121,7 @@ export default function CartDrawer() {
             </div>
 
             <Link href="/checkout" onClick={closeCart} className="block w-full">
-              <button className="w-full bg-brand-gold hover:bg-[#8dbb00] text-white font-black uppercase tracking-widest py-4 rounded-xl shadow-md hover:shadow-lg transition-all cursor-pointer">
+              <button className="w-full bg-brand-gold hover:bg-brand-gold-hover text-white font-black uppercase tracking-widest py-4 rounded-xl shadow-md hover:shadow-lg transition-all cursor-pointer">
                 Proceed to Checkout
               </button>
             </Link>

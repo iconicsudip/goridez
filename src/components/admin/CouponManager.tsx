@@ -105,7 +105,7 @@ export default function CouponManager({ coupons }: { coupons: any[] }) {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-green-600 hover:bg-[#aacc00] text-black py-4 rounded-xl text-[11px] font-black tracking-widest uppercase transition-all shadow-md disabled:opacity-50 mt-4"
+              className="w-full bg-green-600 hover:bg-brand-gold-hover text-white py-4 rounded-xl text-[11px] font-black tracking-widest uppercase transition-all shadow-md disabled:opacity-50 mt-4"
             >
               {loading ? 'Publishing...' : 'Publish Coupon Rule →'}
             </button>

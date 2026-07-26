@@ -146,7 +146,7 @@ export default function RegisterPage() {
             <button 
               type="submit" 
               disabled={loading}
-              className="w-full bg-green-600 hover:bg-brand-hover text-black font-black uppercase tracking-widest py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_0_15px_rgba(196,240,0,0.15)] disabled:opacity-50 mt-4"
+              className="w-full bg-green-600 hover:bg-brand-hover text-white font-black uppercase tracking-widest py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_0_15px_rgba(41,75,50,0.15)] disabled:opacity-50 mt-4"
             >
               {loading ? 'Encrypting Identity...' : 'Create Secure Profile'} <ChevronRight size={16} strokeWidth={3} />
             </button>

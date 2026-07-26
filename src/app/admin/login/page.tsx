@@ -102,7 +102,7 @@ function AdminLoginForm() {
         type="submit"
         disabled={loading}
         id="admin-login-submit"
-        className="w-full bg-green-600 hover:bg-brand-hover text-black font-black uppercase tracking-widest py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_0_20px_rgba(196,240,0,0.2)] disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+        className="w-full bg-green-600 hover:bg-brand-hover text-white font-black uppercase tracking-widest py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_0_20px_rgba(41,75,50,0.2)] disabled:opacity-50 disabled:cursor-not-allowed mt-2"
       >
         {loading ? (
           <>
@@ -133,7 +133,7 @@ export default function AdminLoginPage() {
         {/* Brand */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-3 mb-6 group">
-            <div className="bg-green-600 text-white font-black text-xs w-10 h-10 rounded-xl flex items-center justify-center tracking-tighter shadow-[0_0_20px_rgba(196,240,0,0.3)]">
+            <div className="bg-green-600 text-white font-black text-xs w-10 h-10 rounded-xl flex items-center justify-center tracking-tighter shadow-[0_0_20px_rgba(41,75,50,0.3)]">
               GR
             </div>
             <div className="text-2xl font-black tracking-tight">

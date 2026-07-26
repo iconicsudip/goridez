@@ -103,8 +103,8 @@ export default function VideoGallery({ reels }: { reels: Reel[] }) {
                 <Video size={14} /> Video Gallery
               </div>
             </div>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tighter leading-none mb-4 text-gray-900 font-serif">
-              CUSTOMER <span className="text-[#8dbb00] font-sans font-black">STORIES</span>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tighter leading-none mb-4 text-brand-gold font-serif">
+              CUSTOMER <span className="text-brand-gold-hover font-sans font-black">STORIES</span>
             </h2>
             <p className="text-gray-600 text-sm md:text-base max-w-xl">
               Watch reels, reviews, walkarounds, and memories shared by our premium customers across Rajasthan.

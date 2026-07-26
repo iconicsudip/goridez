@@ -81,8 +81,8 @@ export function ModalProvider({ children }: { children: ReactNode }) {
     : isSuccess
     ? 'bg-[#00ffaa] hover:bg-[#00e699] text-black'
     : isConfirm
-    ? 'bg-green-600 hover:bg-brand-hover text-black'
-    : 'bg-green-600 hover:bg-brand-hover text-black';
+    ? 'bg-green-600 hover:bg-brand-hover text-white'
+    : 'bg-green-600 hover:bg-brand-hover text-white';
 
   return (
     <ModalContext.Provider value={{ confirm, alert, showSuccess, showError }}>

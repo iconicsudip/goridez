@@ -304,7 +304,7 @@ export default function BookingWidget({
                   const rightBtn = (
                     <div className="flex items-center gap-1">
                       {idx === destinations.length - 1 && destinations.length < 3 ? (
-                        <button type="button" onClick={addDestination} className="text-brand-gold hover:text-[#8dbb00] p-1 bg-white rounded-full transition-transform active:scale-95 shadow-[0_2px_8px_rgba(0,0,0,0.05)] border border-gray-100">
+                        <button type="button" onClick={addDestination} className="text-brand-gold hover:text-brand-gold-hover p-1 bg-white rounded-full transition-transform active:scale-95 shadow-[0_2px_8px_rgba(0,0,0,0.05)] border border-gray-100">
                           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                             <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
                           </svg>
@@ -456,7 +456,7 @@ export default function BookingWidget({
           <div className="w-full flex justify-center mt-8">
             <button
               type="submit"
-              className="w-full md:w-[320px] bg-brand-gold hover:bg-[#8dbb00] text-white font-bold tracking-widest uppercase text-base px-8 py-3.5 rounded-xl transition-all shadow-md shadow-brand-gold/30 border border-brand-gold cursor-pointer"
+              className="w-full md:w-[320px] bg-brand-gold hover:bg-brand-gold-hover text-white font-bold tracking-widest uppercase text-base px-8 py-3.5 rounded-xl transition-all shadow-md shadow-brand-gold/30 border border-brand-gold cursor-pointer"
             >
               Search Cars
             </button>
@@ -469,7 +469,7 @@ export default function BookingWidget({
             <button
               type="button"
               onClick={() => setIsDifferentDropCity(!isDifferentDropCity)}
-              className="text-sm font-semibold text-brand-gold hover:text-[#8dbb00] transition-colors cursor-pointer hover:underline underline-offset-2"
+              className="text-sm font-semibold text-brand-gold hover:text-brand-gold-hover transition-colors cursor-pointer hover:underline underline-offset-2"
             >
               {isDifferentDropCity ? 'Same drop-off city?' : 'Drop in a different city?'}
             </button>

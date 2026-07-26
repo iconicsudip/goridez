@@ -32,7 +32,7 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 flex flex-col items-center justify-center p-4 pt-28 pb-20">
-      <div className="bg-gray-100 border border-gray-200 p-8 md:p-12 rounded-3xl max-w-2xl w-full text-center shadow-[0_0_50px_rgba(196,240,0,0.05)]">
+      <div className="bg-gray-100 border border-gray-200 p-8 md:p-12 rounded-3xl max-w-2xl w-full text-center shadow-[0_0_50px_rgba(41,75,50,0.05)]">
         <CheckCircle2 size={72} className="text-green-700 mx-auto mb-6 animate-pulse" />
         
         <div className="text-[10px] font-black text-green-700 uppercase tracking-widest mb-2">Reservation Confirmed</div>

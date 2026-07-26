@@ -24,7 +24,7 @@ export default async function AdminBookingsPage() {
   return (
     <div className="max-w-7xl mx-auto space-y-6">
       <div>
-        <h1 className="text-3xl font-black uppercase tracking-tight text-gray-900 mb-2">
+        <h1 className="text-3xl font-black uppercase tracking-tight text-brand-gold mb-2">
           RESERVATION <span className="text-outline-neon">LEDGER</span>
         </h1>
         <p className="text-gray-500 text-xs font-mono uppercase tracking-widest">

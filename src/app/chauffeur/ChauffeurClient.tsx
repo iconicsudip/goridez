@@ -149,7 +149,7 @@ export default function ChauffeurClient({ initialCars, initialCities }: { initia
         <div className="text-green-700 text-[10px] font-black tracking-widest uppercase mb-4">
           Chauffeur Service
         </div>
-        <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tight mb-4">
+        <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tight mb-4 text-brand-gold">
           ELITE CHAUFFEUR-DRIVEN <span className="text-outline-neon">MOBILITY</span>
         </h1>
         <p className="text-gray-600 max-w-2xl text-sm leading-relaxed mb-8">

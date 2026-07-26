@@ -213,7 +213,7 @@ export default function CartClient({ selfDriveLocations = [], cars = [] }: { sel
                   </div>
                 ) : (
                   <Link href="/checkout" className="block w-full">
-                    <button className="w-full bg-green-600 hover:bg-[#8dbb00] text-white font-black uppercase tracking-widest text-xs py-4 rounded-xl shadow-md hover:shadow-lg transition-all cursor-pointer">
+                    <button className="w-full bg-green-600 hover:bg-brand-gold-hover text-white font-black uppercase tracking-widest text-xs py-4 rounded-xl shadow-md hover:shadow-lg transition-all cursor-pointer">
                       Proceed to Checkout
                     </button>
                   </Link>

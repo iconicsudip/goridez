@@ -425,7 +425,7 @@ export default function HomePageManager({ initialData }: { initialData: any }) {
           <button
             type="submit"
             disabled={loading}
-            className="bg-green-600 hover:bg-brand-hover text-black px-8 py-4 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(196,240,0,0.4)] flex items-center gap-2 disabled:opacity-50"
+            className="bg-green-600 hover:bg-brand-hover text-white px-8 py-4 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(41,75,50,0.4)] flex items-center gap-2 disabled:opacity-50"
           >
             <Save size={14} />
             {loading ? 'Saving Changes...' : 'Save Settings'}

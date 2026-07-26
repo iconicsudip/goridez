@@ -17,8 +17,8 @@ export default function GrowthChart() {
         <AreaChart data={data} margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>
           <defs>
             <linearGradient id="colorSelfDrive" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#C4F000" stopOpacity={0.3}/>
-              <stop offset="95%" stopColor="#C4F000" stopOpacity={0}/>
+              <stop offset="5%" stopColor="#294B32" stopOpacity={0.3}/>
+              <stop offset="95%" stopColor="#294B32" stopOpacity={0}/>
             </linearGradient>
             <linearGradient id="colorGuided" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="#4F46E5" stopOpacity={0.3}/>
@@ -37,7 +37,7 @@ export default function GrowthChart() {
             itemStyle={{ color: '#fff', fontSize: '12px' }}
             labelStyle={{ color: 'rgba(255,255,255,0.5)', fontSize: '10px', marginBottom: '4px' }}
           />
-          <Area type="monotone" dataKey="selfDrive" stroke="#C4F000" strokeWidth={3} fillOpacity={1} fill="url(#colorSelfDrive)" />
+          <Area type="monotone" dataKey="selfDrive" stroke="#294B32" strokeWidth={3} fillOpacity={1} fill="url(#colorSelfDrive)" />
           <Area type="monotone" dataKey="guided" stroke="#4F46E5" strokeWidth={2} strokeDasharray="5 5" fillOpacity={1} fill="url(#colorGuided)" />
         </AreaChart>
       </ResponsiveContainer>

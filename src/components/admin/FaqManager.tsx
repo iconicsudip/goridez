@@ -91,7 +91,7 @@ export default function FaqManager({ faqs }: { faqs: any[] }) {
         </div>
         <button
           onClick={handleNewFaq}
-          className="bg-green-600 hover:bg-brand-hover text-black px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-md flex items-center gap-2 shrink-0"
+          className="bg-green-600 hover:bg-brand-hover text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-md flex items-center gap-2 shrink-0"
         >
           <Plus size={14} strokeWidth={3} /> Create FAQ Entry
         </button>
@@ -232,7 +232,7 @@ export default function FaqManager({ faqs }: { faqs: any[] }) {
                     <button
                       type="submit"
                       disabled={loading}
-                      className="flex-1 bg-green-600 hover:bg-brand-hover text-black py-4 rounded-xl text-[11px] font-black tracking-widest uppercase transition-all shadow-md disabled:opacity-50"
+                      className="flex-1 bg-green-600 hover:bg-brand-hover text-white py-4 rounded-xl text-[11px] font-black tracking-widest uppercase transition-all shadow-md disabled:opacity-50"
                     >
                       {loading ? 'Saving...' : isEditing ? 'Update FAQ Entry →' : 'Publish FAQ Entry →'}
                     </button>

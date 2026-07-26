@@ -102,7 +102,7 @@ export default function ToursClientPage({ initialTours, cities }: { initialTours
           <div className="text-green-700 text-[10px] font-black tracking-widest uppercase mb-4">
             Luxury Tours
           </div>
-          <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tight mb-4">
+          <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tight mb-4 text-brand-gold">
             RAJASTHAN CURATED <span className="text-outline-neon">EXPERIENCES</span>
           </h1>
           <p className="text-gray-600 max-w-2xl text-sm leading-relaxed mb-10">
@@ -185,7 +185,7 @@ export default function ToursClientPage({ initialTours, cities }: { initialTours
                 <button
                   onClick={() => setSelectedCityIds([])}
                   className={`px-4 py-2 text-[10px] font-bold tracking-widest uppercase rounded-xl transition-all ${selectedCityIds.length === 0
-                    ? 'bg-green-600 text-white shadow-[0_0_15px_rgba(196,240,0,0.2)]'
+                    ? 'bg-green-600 text-white shadow-[0_0_15px_rgba(41,75,50,0.2)]'
                     : 'bg-gray-100 border border-gray-300 text-gray-500 hover:text-gray-900'
                     }`}
                 >
@@ -251,7 +251,7 @@ export default function ToursClientPage({ initialTours, cities }: { initialTours
               return (
                 <div
                   key={tour.id}
-                  className={`bg-gray-100 border rounded-3xl p-6 transition-all ${isSelected ? 'border-green-600/50 shadow-[0_0_30px_rgba(196,240,0,0.05)]' : 'border-gray-200 hover:border-gray-400'}`}
+                  className={`bg-gray-100 border rounded-3xl p-6 transition-all ${isSelected ? 'border-green-600/50 shadow-[0_0_30px_rgba(41,75,50,0.05)]' : 'border-gray-200 hover:border-gray-400'}`}
                 >
                   <div className="flex flex-col md:flex-row gap-6">
                     {/* Image */}
@@ -322,7 +322,7 @@ export default function ToursClientPage({ initialTours, cities }: { initialTours
                         disabled={isAlreadyBooked}
                         className={`w-full font-black uppercase tracking-widest py-5 px-6 rounded-xl transition-all ${isAlreadyBooked
                           ? 'bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-200'
-                          : 'bg-green-600 hover:bg-brand-hover text-black shadow-[0_0_20px_rgba(196,240,0,0.2)]'
+                          : 'bg-green-600 hover:bg-brand-hover text-white shadow-[0_0_20px_rgba(41,75,50,0.2)]'
                           }`}
                       >
                         {isAlreadyBooked ? 'Booked / Unavailable' : 'Book This Experience'}

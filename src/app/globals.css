@@ -2,39 +2,69 @@
 @plugin "@tailwindcss/typography";
 
 @theme {
-  --color-brand-neon: #77a700; /* Legacy name mapped to Brand Green */
-  --color-brand-gold: #77a700; /* Mapped to Brand Green for code consistency */
-  --color-brand-gold-hover: #8dbb00;
-  --color-brand-hover: #8dbb00; /* Legacy name mapped to Brand Green Hover */
+  /* Brand color system — sourced from the Goridez palette:
+     forest green (primary, also drives all CTAs via the legacy brand-gold/neon tokens),
+     burnt orange and brown kept available as secondary/tertiary accents. */
+
+  /* Primary — Forest Green (also mapped onto the green/emerald scales used site-wide) */
+  --color-green-50: #f8f9f8;
+  --color-green-100: #d1ded4;
+  --color-green-200: #9ebea7;
+  --color-green-300: #68a177;
+  --color-green-400: #437350;
+  --color-green-500: #294b32;
+  --color-green-600: #24432c;
+  --color-green-700: #1f3b27;
+  --color-green-800: #1a3321;
+  --color-green-900: #15291a;
+  --color-green-950: #0f1e13;
+
+  --color-emerald-50: #f8f9f8;
+  --color-emerald-100: #d1ded4;
+  --color-emerald-200: #9ebea7;
+  --color-emerald-300: #68a177;
+  --color-emerald-400: #437350;
+  --color-emerald-500: #294b32;
+  --color-emerald-600: #24432c;
+  --color-emerald-700: #1f3b27;
+  --color-emerald-800: #1a3321;
+  --color-emerald-900: #15291a;
+  --color-emerald-950: #0f1e13;
+
+  /* Secondary — Burnt Orange (available accent, namespaced to avoid touching Tailwind's default orange/amber used for ratings & warnings) */
+  --color-brand-orange-50: #fbf9f6;
+  --color-brand-orange-100: #f0ddcb;
+  --color-brand-orange-200: #e8b98e;
+  --color-brand-orange-300: #e99648;
+  --color-brand-orange-400: #e1730b;
+  --color-brand-orange-500: #b65800;
+  --color-brand-orange-600: #9d4c00;
+  --color-brand-orange-700: #844000;
+  --color-brand-orange-800: #6a3300;
+  --color-brand-orange-900: #4c2500;
+  --color-brand-orange-950: #2e1600;
+
+  /* Tertiary — Brown (supporting accent, badges, deep hover states) */
+  --color-brand-brown-50: #fbf9f7;
+  --color-brand-brown-100: #e9dacb;
+  --color-brand-brown-200: #d8b590;
+  --color-brand-brown-300: #ce8f4d;
+  --color-brand-brown-400: #ac6924;
+  --color-brand-brown-500: #7e4a14;
+  --color-brand-brown-600: #6f4110;
+  --color-brand-brown-700: #60370d;
+  --color-brand-brown-800: #502e0a;
+  --color-brand-brown-900: #3d2307;
+  --color-brand-brown-950: #2a1704;
+
+  /* Legacy single-value aliases used directly throughout components */
+  --color-brand-neon: #294b32; /* Legacy name mapped to Brand Green (primary) */
+  --color-brand-gold: #294b32; /* Mapped to Brand Green (primary) for code consistency */
+  --color-brand-gold-hover: #437350;
+  --color-brand-hover: #437350; /* Legacy name mapped to Brand Green Hover */
   --color-brand-bg: #FFFFFF;
   --color-brand-panel: #F9FAFB;
   --color-brand-border: #E5E7EB;
-  
-  --color-green-50: #f7faf0;
-  --color-green-100: #edf5de;
-  --color-green-200: #dbebbd;
-  --color-green-300: #c3de93;
-  --color-green-400: #a7ce64;
-  --color-green-500: #77a700;
-  --color-green-600: #77a700;
-  --color-green-700: #5f8500;
-  --color-green-805: #476300;
-  --color-green-800: #476300;
-  --color-green-900: #304200;
-  --color-green-950: #1e2900;
-
-  --color-emerald-50: #f7faf0;
-  --color-emerald-100: #edf5de;
-  --color-emerald-200: #dbebbd;
-  --color-emerald-300: #c3de93;
-  --color-emerald-400: #a7ce64;
-  --color-emerald-500: #77a700;
-  --color-emerald-600: #77a700;
-  --color-emerald-700: #5f8500;
-  --color-emerald-805: #476300;
-  --color-emerald-800: #476300;
-  --color-emerald-900: #304200;
-  --color-emerald-950: #1e2900;
 
   --font-heading: var(--font-cinzel), sans-serif;
   --font-body: var(--font-inter), sans-serif;
@@ -165,13 +195,13 @@
   color: #111827 !important;
 }
 .react-datepicker__day:hover {
-  background-color: rgba(173, 255, 0, 0.15) !important;
+  background-color: rgba(41, 75, 50, 0.15) !important;
   color: var(--color-brand-gold) !important;
   border-radius: 0.5rem !important;
 }
 .react-datepicker__day--selected, .react-datepicker__day--keyboard-selected {
   background-color: var(--color-brand-gold) !important;
-  color: #000000 !important;
+  color: #ffffff !important;
   border-radius: 0.5rem !important;
   font-weight: 900 !important;
 }
@@ -185,12 +215,12 @@
   color: #111827 !important;
 }
 .react-datepicker__time-list-item:hover {
-  background-color: rgba(173, 255, 0, 0.15) !important;
+  background-color: rgba(41, 75, 50, 0.15) !important;
   color: var(--color-brand-gold) !important;
 }
 .react-datepicker__time-list-item--selected {
   background-color: var(--color-brand-gold) !important;
-  color: #000000 !important;
+  color: #ffffff !important;
   font-weight: 900 !important;
 }
 

@@ -105,7 +105,7 @@ export default function Navbar({ navVisibility, siteSettings }: { navVisibility?
                 key={link.name}
                 href={link.href}
                 className={`text-sm transition-colors ${pathname?.startsWith(link.href)
-                  ? 'text-[#8dbb00] font-black'
+                  ? (isTransparent ? 'text-green-300 font-black' : 'text-brand-gold-hover font-black')
                   : (isTransparent ? 'text-gray-300 hover:text-white font-medium' : 'text-gray-650 hover:text-gray-900 font-medium')
                   }`}
               >
@@ -130,7 +130,7 @@ export default function Navbar({ navVisibility, siteSettings }: { navVisibility?
             </Link>
 
             {/* Book Now Button */}
-            <Link href="/self-drive" className="bg-brand-gold hover:bg-[#8dbb00] text-white px-6 py-2.5 rounded-full text-sm font-bold transition-all shadow-md cursor-pointer">
+            <Link href="/self-drive" className="bg-brand-gold hover:bg-brand-gold-hover text-white px-6 py-2.5 rounded-full text-sm font-bold transition-all shadow-md cursor-pointer">
               Book Now
             </Link>
 
@@ -233,7 +233,7 @@ export default function Navbar({ navVisibility, siteSettings }: { navVisibility?
                     : 'bg-gray-100 border-gray-200 hover:bg-gray-200 text-gray-800'
                 }`}
               >
-                <User size={15} className="text-brand-gold" />
+                <User size={15} className={isTransparent ? 'text-green-300' : 'text-brand-gold'} />
                 Sign In
               </Link>
             )}

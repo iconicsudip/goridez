@@ -144,7 +144,7 @@ export default async function BlogDetails({ params }: { params: Promise<{ slug: 
           <div className="flex flex-col sm:flex-row gap-4 shrink-0 w-full md:w-auto">
             <Link
               href="/self-drive"
-              className="bg-green-600 hover:bg-brand-hover text-black font-black uppercase text-[10px] tracking-widest px-8 py-4 rounded-xl text-center transition-all shadow-md flex items-center justify-center gap-2"
+              className="bg-green-600 hover:bg-brand-hover text-white font-black uppercase text-[10px] tracking-widest px-8 py-4 rounded-xl text-center transition-all shadow-md flex items-center justify-center gap-2"
             >
               <Car size={14} /> Cars Collection
             </Link>

@@ -156,7 +156,7 @@ export default function VillaComboPage({ initialVillas, cities, initialCars = []
           <div className="text-green-700 text-[10px] font-black tracking-widest uppercase mb-4">
             Sensational Combo Offers
           </div>
-          <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tight mb-4">
+          <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tight mb-4 text-brand-gold">
             VILLA + LUXURY CAR <span className="text-outline-neon">PACKAGES</span>
           </h1>
           <p className="text-gray-600 max-w-2xl text-sm leading-relaxed">
@@ -248,7 +248,7 @@ export default function VillaComboPage({ initialVillas, cities, initialCars = []
                         className={`p-4 rounded-2xl border cursor-pointer transition-colors flex gap-6 items-center ${
                           isVillaBooked
                             ? (isSelected ? 'border-red-500 bg-[#220B0B]' : 'border-red-500/20 bg-[#160B0B] hover:border-red-500/40')
-                            : (isSelected ? 'border-green-600 bg-[#16160A]' : 'border-gray-200 bg-white hover:border-gray-400')
+                            : (isSelected ? 'border-green-600 bg-green-950' : 'border-gray-200 bg-white hover:border-gray-400')
                         }`}
                       >
                         <div className="relative w-[140px] h-[90px] rounded-xl overflow-hidden shrink-0 border border-gray-300">
@@ -260,7 +260,7 @@ export default function VillaComboPage({ initialVillas, cities, initialCars = []
                             {isVillaBooked ? (
                               <div className="text-[9px] text-red-500 font-bold uppercase tracking-widest mb-1">UNAVAILABLE (BOOKED)</div>
                             ) : (
-                              <div className="text-[9px] text-green-700 font-bold uppercase tracking-widest mb-1">{villa.name.toLowerCase().includes('palace') ? 'LAKE VIEW STAY' : 'HERITAGE STAY'}</div>
+                              <div className={`text-[9px] font-bold uppercase tracking-widest mb-1 ${isSelected ? 'text-green-300' : 'text-green-700'}`}>{villa.name.toLowerCase().includes('palace') ? 'LAKE VIEW STAY' : 'HERITAGE STAY'}</div>
                             )}
                             <div className="text-[9px] text-gray-500 font-mono">Max: {villa.occupancy} Guests</div>
                           </div>
@@ -272,7 +272,7 @@ export default function VillaComboPage({ initialVillas, cities, initialCars = []
                         </div>
 
                         <div className="text-right shrink-0">
-                          <div className="text-green-700 font-bold text-sm">₹{villa.startingPrice.toLocaleString()}<span className="text-gray-500 text-[9px]">/night</span></div>
+                          <div className={`font-bold text-sm ${isSelected ? 'text-green-300' : 'text-green-700'}`}>₹{villa.startingPrice.toLocaleString()}<span className="text-gray-500 text-[9px]">/night</span></div>
                         </div>
                       </div>
                     );
@@ -312,7 +312,7 @@ export default function VillaComboPage({ initialVillas, cities, initialCars = []
                         className={`p-4 rounded-2xl border cursor-pointer transition-colors flex flex-col md:flex-row gap-6 items-center ${
                           isCarBooked
                             ? (isSelected ? 'border-red-500 bg-[#220B0B]' : 'border-red-500/20 bg-[#160B0B] hover:border-red-500/40')
-                            : (isSelected ? 'border-green-600 bg-[#16160A]' : 'border-gray-200 bg-white hover:border-gray-400')
+                            : (isSelected ? 'border-green-600 bg-green-950' : 'border-gray-200 bg-white hover:border-gray-400')
                         }`}
                       >
                         <div className="relative w-full md:w-[140px] h-[90px] rounded-xl overflow-hidden shrink-0 border border-gray-300 bg-white flex items-center justify-center">
@@ -324,12 +324,12 @@ export default function VillaComboPage({ initialVillas, cities, initialCars = []
                             {isCarBooked ? (
                               <div className="text-[9px] text-red-500 font-bold uppercase tracking-widest mb-1">UNAVAILABLE (BOOKED)</div>
                             ) : (
-                              <div className="text-[9px] text-green-700 font-bold uppercase tracking-widest mb-1">{car.category} CLASS</div>
+                              <div className={`text-[9px] font-bold uppercase tracking-widest mb-1 ${isSelected ? 'text-green-300' : 'text-green-700'}`}>{car.category} CLASS</div>
                             )}
                             <div className="text-[9px] text-gray-500 font-mono">{car.transmission} • {car.fuelType}</div>
                           </div>
                           <h3 className="font-black text-sm uppercase mb-1">{car.make} {car.model}</h3>
-                          <div className="text-[9px] text-green-700 font-mono mb-3">Fuel / Toll Surcharges prepaid</div>
+                          <div className={`text-[9px] font-mono mb-3 ${isSelected ? 'text-green-300' : 'text-green-700'}`}>Fuel / Toll Surcharges prepaid</div>
                         </div>
 
                         <div className="text-right shrink-0 w-full md:w-auto">
@@ -356,27 +356,27 @@ export default function VillaComboPage({ initialVillas, cities, initialCars = []
                   <div 
                     onClick={() => setDriverOption(false)}
                     className={`p-6 rounded-2xl border cursor-pointer transition-all flex flex-col ${
-                      !driverOption ? 'border-green-600 bg-[#16160A]' : 'border-gray-200 bg-gray-100 hover:border-gray-400'
+                      !driverOption ? 'border-green-600 bg-green-950' : 'border-gray-200 bg-gray-100 hover:border-gray-400'
                     }`}
                   >
                     <h3 className="font-black text-sm mb-3">Self-Drive Package</h3>
                     <p className="text-[10px] text-gray-500 leading-relaxed mb-6">
                       I prefer to drive myself. Requires submission of original driving license at entry and ₹5,000 to ₹10,000 security deposit.
                     </p>
-                    <div className="text-green-700 font-bold text-xs mt-auto">₹0 Driver Fee</div>
+                    <div className={`font-bold text-xs mt-auto ${!driverOption ? 'text-green-300' : 'text-green-700'}`}>₹0 Driver Fee</div>
                   </div>
 
                   <div 
                     onClick={() => setDriverOption(true)}
                     className={`p-6 rounded-2xl border cursor-pointer transition-all flex flex-col ${
-                      driverOption ? 'border-green-600 bg-[#16160A]' : 'border-gray-200 bg-gray-100 hover:border-gray-400'
+                      driverOption ? 'border-green-600 bg-green-950' : 'border-gray-200 bg-gray-100 hover:border-gray-400'
                     }`}
                   >
                     <h3 className="font-black text-sm mb-3">Dedicated Private Chauffeur</h3>
                     <p className="text-[10px] text-gray-500 leading-relaxed mb-6">
                       Accompanied by a vetted English speaking regional expert. Zero security deposit required, and zero self drive liabilities.
                     </p>
-                    <div className="text-green-700 font-bold text-xs mt-auto">₹2,000 / day fee</div>
+                    <div className={`font-bold text-xs mt-auto ${driverOption ? 'text-green-300' : 'text-green-700'}`}>₹2,000 / day fee</div>
                   </div>
                 </div>
               </>
@@ -402,11 +402,11 @@ export default function VillaComboPage({ initialVillas, cities, initialCars = []
                       key={i}
                       onClick={() => setPickupOption(opt.title)}
                       className={`p-5 rounded-2xl border cursor-pointer transition-all flex gap-4 items-center ${
-                        pickupOption === opt.title ? 'border-green-600 bg-[#16160A]' : 'border-gray-200 bg-gray-100 hover:border-gray-400'
+                        pickupOption === opt.title ? 'border-green-600 bg-green-950' : 'border-gray-200 bg-gray-100 hover:border-gray-400'
                       }`}
                     >
                       <div className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${pickupOption === opt.title ? 'border-green-600 bg-green-600' : 'border-gray-400'}`}>
-                        {pickupOption === opt.title && <Check size={10} className="text-black" />}
+                        {pickupOption === opt.title && <Check size={10} className="text-white" />}
                       </div>
                       <div>
                         <div className="font-bold text-sm mb-1">{opt.title}</div>
@@ -500,7 +500,7 @@ export default function VillaComboPage({ initialVillas, cities, initialCars = []
                   className={`px-6 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-colors ${
                     isStepDisabled
                       ? 'bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-200 shadow-none'
-                      : 'bg-green-600 hover:bg-brand-hover text-black shadow-[0_0_15px_rgba(196,240,0,0.15)]'
+                      : 'bg-green-600 hover:bg-brand-hover text-white shadow-[0_0_15px_rgba(41,75,50,0.15)]'
                   }`}
                 >
                   {forwardBtnText} <ChevronRight size={14} />
@@ -512,7 +512,7 @@ export default function VillaComboPage({ initialVillas, cities, initialCars = []
                   className={`px-6 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-colors ${
                     isComboBooked 
                       ? 'bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-200 shadow-none' 
-                      : 'bg-green-600 hover:bg-brand-hover text-black shadow-[0_0_20px_rgba(196,240,0,0.3)]'
+                      : 'bg-green-600 hover:bg-brand-hover text-white shadow-[0_0_20px_rgba(41,75,50,0.3)]'
                   }`}
                 >
                   {isComboBooked ? 'Combo Unavailable' : 'Finalize Combo & Book'}

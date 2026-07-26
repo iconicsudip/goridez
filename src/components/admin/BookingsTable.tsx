@@ -89,7 +89,7 @@ export default function BookingsTable({ initialBookings }: BookingsTableProps) {
               onClick={() => setStatusFilter(status)}
               className={`px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${
                 statusFilter === status
-                  ? 'bg-green-600 border-green-600 text-black shadow-[0_0_15px_rgba(196,240,0,0.15)]'
+                  ? 'bg-green-600 border-green-600 text-white shadow-[0_0_15px_rgba(41,75,50,0.15)]'
                   : 'bg-transparent border-gray-300 text-gray-500 hover:border-gray-400 hover:text-gray-900'
               }`}
             >
@@ -199,7 +199,7 @@ export default function BookingsTable({ initialBookings }: BookingsTableProps) {
                             <button
                               onClick={() => handleApprove(b.id)}
                               disabled={isPending}
-                              className="w-7 h-7 bg-green-600/10 border border-green-300 hover:bg-green-600 hover:text-black rounded-lg flex items-center justify-center text-green-700 transition-all"
+                              className="w-7 h-7 bg-green-600/10 border border-green-300 hover:bg-green-600 hover:text-white rounded-lg flex items-center justify-center text-green-700 transition-all"
                               title="Approve Booking"
                             >
                               <Check size={14} />

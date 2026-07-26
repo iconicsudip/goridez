@@ -102,14 +102,14 @@ export default async function Home() {
         <div className="container mx-auto px-4 relative z-10 flex flex-col items-center text-center pt-32 pb-16 lg:pb-32">
 
           <div className="inline-flex items-center gap-2 border border-white/20 rounded-full px-4 py-1.5 mb-8 bg-black/30 backdrop-blur-md">
-            <span className="text-brand-gold text-xs font-bold tracking-widest uppercase shadow-sm">
+            <span className="text-green-300 text-xs font-bold tracking-widest uppercase shadow-sm">
               {hp.heroBadge}
             </span>
           </div>
 
           <h1 className="text-4xl md:text-6xl lg:text-[72px] font-black leading-[1.05] tracking-tight mb-4 md:mb-6 uppercase text-white drop-shadow-xl">
             {hp.heroTitleLine1} <br />
-            <span className="text-brand-gold">{hp.heroTitleLine2}</span>
+            <span className="text-green-300">{hp.heroTitleLine2}</span>
           </h1>
 
           <p className="text-gray-300 text-base md:text-xl max-w-2xl mx-auto mb-8 md:mb-12 leading-relaxed font-medium drop-shadow-md">
@@ -117,7 +117,7 @@ export default async function Home() {
           </p>
 
           <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6 mb-12 md:mb-16">
-            <Link href="#booking-widget" className="w-full md:w-auto justify-center bg-brand-gold hover:bg-[#8dbb00] text-white shadow-lg shadow-brand-gold/30 font-bold px-8 py-4 rounded-xl transition-all tracking-wide flex items-center gap-2 border border-brand-gold cursor-pointer">
+            <Link href="#booking-widget" className="w-full md:w-auto justify-center bg-brand-gold hover:bg-brand-gold-hover text-white shadow-lg shadow-brand-gold/30 font-bold px-8 py-4 rounded-xl transition-all tracking-wide flex items-center gap-2 border border-brand-gold cursor-pointer">
               BOOK NOW <ChevronRight size={18} />
             </Link>
             <Link href="#collection" className="w-full md:w-auto justify-center bg-white/5 hover:bg-white/10 text-white font-bold px-8 py-4 rounded-xl transition-all tracking-wide flex items-center gap-2 border border-white/10 backdrop-blur-md cursor-pointer">
@@ -140,7 +140,7 @@ export default async function Home() {
             </div>
             <div className="hidden md:block w-px bg-white/10 h-10"></div>
             <div className="text-center px-2">
-              <div className="font-bold text-brand-gold text-base md:text-lg mb-1 drop-shadow">₹0 DEPOSIT</div>
+              <div className="font-bold text-green-300 text-base md:text-lg mb-1 drop-shadow">₹0 DEPOSIT</div>
               <div className="text-gray-400 text-[10px] md:text-xs font-medium">Driver Options</div>
             </div>
             <div className="hidden md:block w-px bg-white/10 h-10"></div>
@@ -165,7 +165,7 @@ export default async function Home() {
               <span className="h-[2px] w-8 bg-brand-gold rounded-full"></span>
               <div className="text-brand-gold text-xs font-bold tracking-[0.2em] uppercase">{hp.seamlessBadge}</div>
             </div>
-            <h2 className="text-4xl md:text-5xl lg:text-7xl font-black uppercase tracking-tighter leading-none mb-6 text-gray-900">
+            <h2 className="text-4xl md:text-5xl lg:text-7xl font-black uppercase tracking-tighter leading-none mb-6 text-brand-gold">
               {hp.seamlessTitle} <span className="text-outline-neon">{hp.seamlessTitleHighlight}</span>
             </h2>
             <p className="text-gray-600 text-lg max-w-xl">
@@ -180,7 +180,7 @@ export default async function Home() {
               <Image src={(hp as any).selfDriveImage || "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=1000&q=80"} alt="Self Drive Cars" fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw" className="object-cover group-hover:scale-105 transition-transform duration-700 z-0" unoptimized />
               <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/45 to-black/10 z-10" />
               <div className="relative p-8 z-20 w-full flex flex-col">
-                <div className="text-brand-gold text-[10px] font-bold tracking-widest uppercase mb-2">Drive Udaipur Your Way</div>
+                <div className="text-green-300 text-[10px] font-bold tracking-widest uppercase mb-2">Drive Udaipur Your Way</div>
                 <h3 className="text-2xl md:text-3xl font-black uppercase tracking-tight mb-2 text-white">Self Drive Cars</h3>
                 <p className="text-gray-300 text-xs mb-6 font-medium leading-relaxed">
                   Drive independently with our premium fleet. Zero security deposit options and vetting security.
@@ -198,7 +198,7 @@ export default async function Home() {
               <Image src={(hp as any).chauffeurImage || "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=1000&q=80"} alt="Taxi Service" fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw" className="object-cover group-hover:scale-105 transition-transform duration-700 z-0" unoptimized />
               <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/45 to-black/10 z-10" />
               <div className="relative p-8 z-20 w-full flex flex-col">
-                <div className="text-brand-gold text-[10px] font-bold tracking-widest uppercase mb-2">Professional Driver Guided</div>
+                <div className="text-green-300 text-[10px] font-bold tracking-widest uppercase mb-2">Professional Driver Guided</div>
                 <h3 className="text-2xl md:text-3xl font-black uppercase tracking-tight mb-2 text-white">Taxi Service</h3>
                 <p className="text-gray-300 text-xs mb-6 font-medium leading-relaxed">
                   Elite door-to-door local transfers, guided day-packages, and premium round-trips.
@@ -216,7 +216,7 @@ export default async function Home() {
               <Image src={(hp as any).airportTransferImage || "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"} alt="Airport Transfers" fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw" className="object-cover group-hover:scale-105 transition-transform duration-700 z-0" unoptimized />
               <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/45 to-black/10 z-10" />
               <div className="relative p-8 z-20 w-full flex flex-col">
-                <div className="text-brand-gold text-[10px] font-bold tracking-widest uppercase mb-2">Punctual & Door-To-Door</div>
+                <div className="text-green-300 text-[10px] font-bold tracking-widest uppercase mb-2">Punctual & Door-To-Door</div>
                 <h3 className="text-2xl md:text-3xl font-black uppercase tracking-tight mb-2 text-white">Airport Transfers</h3>
                 <p className="text-gray-300 text-xs mb-6 font-medium leading-relaxed">
                   Stress-free airport pickups and drops with flight tracking and meet & greet hospitality.
@@ -258,12 +258,12 @@ export default async function Home() {
             {/* Tagline */}
             <div className="flex items-center gap-3 mb-4">
               <span className="h-[2px] w-8 bg-brand-gold rounded-full"></span>
-              <span className="text-brand-gold text-xs font-bold tracking-[0.2em] uppercase">Premium Transfer Service</span>
+              <span className="text-green-300 text-xs font-bold tracking-[0.2em] uppercase">Premium Transfer Service</span>
             </div>
 
             {/* Title */}
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white uppercase tracking-tight mb-6 font-serif">
-              Airport <span className="text-[#8dbb00] font-sans font-black">Pickup & Drop</span>
+              Airport <span className="text-green-300 font-sans font-black">Pickup & Drop</span>
             </h2>
 
             {/* Description */}
@@ -274,7 +274,7 @@ export default async function Home() {
             {/* Features Grid — 4 Columns on Desktop */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12 w-full">
               <div className="flex items-center gap-3.5 bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-sm">
-                <div className="w-11 h-11 rounded-xl bg-brand-gold/15 border border-brand-gold/30 flex items-center justify-center text-brand-gold flex-shrink-0">
+                <div className="w-11 h-11 rounded-xl bg-brand-gold/15 border border-brand-gold/30 flex items-center justify-center text-green-300 flex-shrink-0">
                   <Plane size={20} />
                 </div>
                 <div>
@@ -284,7 +284,7 @@ export default async function Home() {
               </div>
 
               <div className="flex items-center gap-3.5 bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-sm">
-                <div className="w-11 h-11 rounded-xl bg-brand-gold/15 border border-brand-gold/30 flex items-center justify-center text-brand-gold flex-shrink-0">
+                <div className="w-11 h-11 rounded-xl bg-brand-gold/15 border border-brand-gold/30 flex items-center justify-center text-green-300 flex-shrink-0">
                   <UserCheck size={20} />
                 </div>
                 <div>
@@ -294,7 +294,7 @@ export default async function Home() {
               </div>
 
               <div className="flex items-center gap-3.5 bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-sm">
-                <div className="w-11 h-11 rounded-xl bg-brand-gold/15 border border-brand-gold/30 flex items-center justify-center text-brand-gold flex-shrink-0">
+                <div className="w-11 h-11 rounded-xl bg-brand-gold/15 border border-brand-gold/30 flex items-center justify-center text-green-300 flex-shrink-0">
                   <Coins size={20} />
                 </div>
                 <div>
@@ -304,7 +304,7 @@ export default async function Home() {
               </div>
 
               <div className="flex items-center gap-3.5 bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-sm">
-                <div className="w-11 h-11 rounded-xl bg-brand-gold/15 border border-brand-gold/30 flex items-center justify-center text-brand-gold flex-shrink-0">
+                <div className="w-11 h-11 rounded-xl bg-brand-gold/15 border border-brand-gold/30 flex items-center justify-center text-green-300 flex-shrink-0">
                   <Clock size={20} />
                 </div>
                 <div>
@@ -316,7 +316,7 @@ export default async function Home() {
 
             {/* CTA Button */}
             <Link href="/taxi?mode=AIRPORT_TRANSFER">
-              <button className="bg-brand-gold hover:bg-[#8dbb00] text-white font-bold tracking-widest uppercase text-xs px-8 py-4.5 rounded-xl transition-all shadow-lg shadow-brand-gold/20 flex items-center gap-2 cursor-pointer border border-brand-gold">
+              <button className="bg-brand-gold hover:bg-brand-gold-hover text-white font-bold tracking-widest uppercase text-xs px-8 py-4.5 rounded-xl transition-all shadow-lg shadow-brand-gold/20 flex items-center gap-2 cursor-pointer border border-brand-gold">
                 Book Airport Transfer <ArrowRight size={14} />
               </button>
             </Link>
@@ -358,12 +358,12 @@ export default async function Home() {
                     {hp.blogsBadge}
                   </div>
                 </div>
-                <h2 className="text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight text-gray-900">
+                <h2 className="text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight text-brand-gold">
                   {hp.blogsTitle} <span className="text-outline-neon">{hp.blogsTitleHighlight}</span>
                 </h2>
                 <div className="w-20 h-1 bg-brand-gold mt-6 rounded-full"></div>
               </div>
-              <Link href="/blogs" className="text-xs font-bold uppercase tracking-widest text-brand-gold hover:text-[#8dbb00] transition-colors flex items-center gap-1.5 border-b border-brand-gold pb-1">
+              <Link href="/blogs" className="text-xs font-bold uppercase tracking-widest text-brand-gold hover:text-brand-gold-hover transition-colors flex items-center gap-1.5 border-b border-brand-gold pb-1">
                 View All Journal Entries <ChevronRight size={14} />
               </Link>
             </div>

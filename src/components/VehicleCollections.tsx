@@ -18,7 +18,7 @@ interface VehicleCollectionsProps {
 
 export default function VehicleCollections({ 
   cars,
-  title = <>VEHICLE <span className="text-[#8dbb00] font-sans font-black">COLLECTION</span></>,
+  title = <>VEHICLE <span className="text-brand-gold-hover font-sans font-black">COLLECTION</span></>,
   subtitle = 'Premium Fleet',
   description = 'Explore our select range of high-end vehicles vetted for Udaipur and Rajasthan adventures.',
   hideTabs = false
@@ -118,7 +118,7 @@ export default function VehicleCollections({
               <span className="h-[2px] w-8 bg-brand-gold rounded-full"></span>
               <div className="text-brand-gold text-xs font-bold tracking-[0.2em] uppercase">{subtitle}</div>
             </div>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tighter leading-none mb-4 text-gray-900 font-serif">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tighter leading-none mb-4 text-brand-gold font-serif">
               {title}
             </h2>
             <p className="text-gray-600 text-sm md:text-base max-w-xl">
@@ -256,7 +256,7 @@ export default function VehicleCollections({
                                ? `/taxi?mode=AIRPORT_TRANSFER`
                                : `/taxi`
                            }>
-                             <button className="w-full bg-brand-gold group-hover:bg-[#8dbb00] text-white font-bold tracking-widest uppercase text-[10px] py-4.5 rounded-2xl transition-all shadow-md shadow-brand-gold/10 hover:shadow-lg cursor-pointer">
+                             <button className="w-full bg-brand-gold group-hover:bg-brand-gold-hover text-white font-bold tracking-widest uppercase text-[10px] py-4.5 rounded-2xl transition-all shadow-md shadow-brand-gold/10 hover:shadow-lg cursor-pointer">
                                Book Now
                              </button>
                            </Link>
@@ -292,19 +292,19 @@ export default function VehicleCollections({
          <div className="mt-12 flex justify-center">
            {activeTab === 'self-drive' ? (
              <Link href="/self-drive">
-               <button className="bg-brand-gold hover:bg-[#8dbb00] text-white font-bold tracking-widest uppercase text-[10px] px-8 py-4.5 rounded-xl transition-all shadow-lg shadow-brand-gold/20 flex items-center gap-2 cursor-pointer">
+               <button className="bg-brand-gold hover:bg-brand-gold-hover text-white font-bold tracking-widest uppercase text-[10px] px-8 py-4.5 rounded-xl transition-all shadow-lg shadow-brand-gold/20 flex items-center gap-2 cursor-pointer">
                  View All Self Drive Cars <ArrowRight size={14} />
                </button>
              </Link>
            ) : activeTab === 'airport-transfers' ? (
              <Link href="/taxi?mode=AIRPORT_TRANSFER">
-               <button className="bg-brand-gold hover:bg-[#8dbb00] text-white font-bold tracking-widest uppercase text-[10px] px-8 py-4.5 rounded-xl transition-all shadow-lg shadow-brand-gold/20 flex items-center gap-2 cursor-pointer">
+               <button className="bg-brand-gold hover:bg-brand-gold-hover text-white font-bold tracking-widest uppercase text-[10px] px-8 py-4.5 rounded-xl transition-all shadow-lg shadow-brand-gold/20 flex items-center gap-2 cursor-pointer">
                  View All Airport Transfers <ArrowRight size={14} />
                </button>
              </Link>
            ) : (
              <Link href="/taxi">
-               <button className="bg-brand-gold hover:bg-[#8dbb00] text-white font-bold tracking-widest uppercase text-[10px] px-8 py-4.5 rounded-xl transition-all shadow-lg shadow-brand-gold/20 flex items-center gap-2 cursor-pointer">
+               <button className="bg-brand-gold hover:bg-brand-gold-hover text-white font-bold tracking-widest uppercase text-[10px] px-8 py-4.5 rounded-xl transition-all shadow-lg shadow-brand-gold/20 flex items-center gap-2 cursor-pointer">
                  View All Taxi Services <ArrowRight size={14} />
                </button>
              </Link>

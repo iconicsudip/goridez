@@ -70,7 +70,7 @@ export default function InstagramReelsSection({ reels }: { reels: Reel[] }) {
                 <Camera size={14} /> Follow the Journey
               </div>
             </div>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight text-gray-900">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight text-brand-gold">
               Latest <span className="text-outline-neon">Reels</span>
             </h2>
             <div className="w-20 h-1 bg-brand-gold mt-6 rounded-full"></div>

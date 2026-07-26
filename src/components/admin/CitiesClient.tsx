@@ -112,7 +112,7 @@ function CityDrawer({ isOpen, onClose, city, mode }: { isOpen: boolean; onClose:
 
             <div className="pt-4">
               <button disabled={loading} type="submit"
-                className={`w-full ${btnClass} text-black px-6 py-4 rounded-xl text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all disabled:opacity-50 shadow-[0_0_15px_rgba(196,240,0,0.1)]`}>
+                className={`w-full ${btnClass} text-black px-6 py-4 rounded-xl text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all disabled:opacity-50 shadow-[0_0_15px_rgba(41,75,50,0.1)]`}>
                 {loading ? 'SAVING...' : isEdit ? 'SAVE CHANGES' : 'PUBLISH CITY HUB'} <ArrowRight size={14} />
               </button>
             </div>
@@ -177,7 +177,7 @@ export default function CitiesClient({ cities, initialSiteSettings }: { cities: 
               className="w-full bg-gray-100 border border-gray-300 rounded-xl py-3 pl-11 pr-4 text-xs text-gray-900 focus:outline-none focus:border-green-600 transition-all font-mono" />
           </div>
           <button onClick={() => setShowAdd(true)}
-            className="bg-green-600 hover:bg-brand-hover text-black px-5 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest flex items-center gap-2 transition-all whitespace-nowrap shadow-[0_0_15px_rgba(196,240,0,0.15)]">
+            className="bg-green-600 hover:bg-brand-hover text-white px-5 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest flex items-center gap-2 transition-all whitespace-nowrap shadow-[0_0_15px_rgba(41,75,50,0.15)]">
             <Plus size={15} /> Add City
           </button>
         </div>
@@ -197,7 +197,7 @@ export default function CitiesClient({ cities, initialSiteSettings }: { cities: 
           <button
             onClick={handleSavePageBanner}
             disabled={savingBanner}
-            className="bg-green-600 hover:bg-brand-hover text-black px-6 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest flex items-center gap-2 transition-all disabled:opacity-50 shrink-0"
+            className="bg-green-600 hover:bg-brand-hover text-white px-6 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest flex items-center gap-2 transition-all disabled:opacity-50 shrink-0"
           >
             <Save size={14} /> {savingBanner ? 'SAVING...' : 'SAVE HERO BANNER'}
           </button>

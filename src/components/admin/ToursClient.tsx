@@ -54,7 +54,7 @@ function TourDrawer({ isOpen, onClose, tour, cities, mode }: any) {
   if (!isOpen) return null;
   const isEdit = mode === 'edit';
   const accent = isEdit ? 'text-yellow-400' : 'text-green-700';
-  const btnClass = isEdit ? 'bg-yellow-400 hover:bg-yellow-300 text-black' : 'bg-green-600 hover:bg-brand-hover text-black';
+  const btnClass = isEdit ? 'bg-yellow-400 hover:bg-yellow-300 text-black' : 'bg-green-600 hover:bg-brand-hover text-white';
 
   return (
     <>
@@ -198,7 +198,7 @@ export default function ToursClient({ tours, cities }: { tours: any[], cities: a
               className="w-full bg-gray-100 border border-gray-300 rounded-xl py-3 pl-11 pr-4 text-xs text-gray-900 focus:outline-none focus:border-green-600 transition-all font-mono" />
           </div>
           <button onClick={() => setShowAdd(true)}
-            className="bg-green-600 hover:bg-brand-hover text-black px-5 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest flex items-center gap-2 transition-all whitespace-nowrap shadow-[0_0_15px_rgba(196,240,0,0.15)]">
+            className="bg-green-600 hover:bg-brand-hover text-white px-5 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest flex items-center gap-2 transition-all whitespace-nowrap shadow-[0_0_15px_rgba(41,75,50,0.15)]">
             <Plus size={15} /> Curate New Tour
           </button>
         </div>

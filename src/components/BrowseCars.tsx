@@ -113,7 +113,7 @@ export default function BrowseCars({ cars = [] }: BrowseCarsProps) {
     <section id="browse-cars" className="py-24 bg-brand-bg border-t border-brand-border relative overflow-hidden font-body">
       {/* Decorative Background Accents */}
       <div className="absolute top-1/4 right-0 w-[500px] h-[500px] bg-brand-gold/[0.015] blur-[110px] rounded-full pointer-events-none -z-10" />
-      <div className="absolute bottom-1/4 left-0 w-[500px] h-[500px] bg-[#8dbb00]/[0.01] blur-[110px] rounded-full pointer-events-none -z-10" />
+      <div className="absolute bottom-1/4 left-0 w-[500px] h-[500px] bg-brand-gold-hover/[0.01] blur-[110px] rounded-full pointer-events-none -z-10" />
 
       <div className="container mx-auto px-4 relative z-10">
         
@@ -124,8 +124,8 @@ export default function BrowseCars({ cars = [] }: BrowseCarsProps) {
               <span className="h-[2px] w-8 bg-brand-gold rounded-full"></span>
               <div className="text-brand-gold text-xs font-bold tracking-[0.2em] uppercase">Browse By Brand</div>
             </div>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tighter leading-none mb-4 text-gray-900 font-serif">
-              BROWSE <span className="text-[#8dbb00] font-sans font-black">CARS</span>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tighter leading-none mb-4 text-brand-gold font-serif">
+              BROWSE <span className="text-brand-gold-hover font-sans font-black">CARS</span>
             </h2>
             <p className="text-gray-600 text-sm md:text-base max-w-xl">
               Select your preferred brand to explore available luxury vehicles, specs, and instant pricing.
@@ -188,7 +188,7 @@ export default function BrowseCars({ cars = [] }: BrowseCarsProps) {
             </p>
             <button
               onClick={() => setActiveBrandTab('ALL')}
-              className="bg-brand-gold hover:bg-[#8dbb00] text-white text-xs font-bold uppercase tracking-wider px-6 py-3 rounded-xl transition-all"
+              className="bg-brand-gold hover:bg-brand-gold-hover text-white text-xs font-bold uppercase tracking-wider px-6 py-3 rounded-xl transition-all"
             >
               View All Vehicles
             </button>
@@ -261,7 +261,7 @@ export default function BrowseCars({ cars = [] }: BrowseCarsProps) {
                           </div>
 
                           <Link href={`/cars/${getCarSlug(car)}`} className="block">
-                            <button className="w-full bg-brand-gold group-hover:bg-[#8dbb00] text-white font-bold tracking-widest uppercase text-[10px] py-3.5 rounded-xl transition-all shadow-md shadow-brand-gold/10 hover:shadow-lg flex items-center justify-center gap-1.5 cursor-pointer">
+                            <button className="w-full bg-brand-gold group-hover:bg-brand-gold-hover text-white font-bold tracking-widest uppercase text-[10px] py-3.5 rounded-xl transition-all shadow-md shadow-brand-gold/10 hover:shadow-lg flex items-center justify-center gap-1.5 cursor-pointer">
                               Book Now <ArrowRight size={13} />
                             </button>
                           </Link>

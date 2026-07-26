@@ -228,7 +228,7 @@ export default async function AboutPage() {
       <section className="py-24 bg-zinc-950 text-white relative overflow-hidden mt-20 font-body border-y border-brand-border">
         {/* Background Subtle Accent Glows */}
         <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-brand-gold/[0.03] blur-[120px] rounded-full pointer-events-none -z-10" />
-        <div className="absolute bottom-0 right-0 w-[450px] h-[450px] bg-[#8dbb00]/[0.02] blur-[120px] rounded-full pointer-events-none -z-10" />
+        <div className="absolute bottom-0 right-0 w-[450px] h-[450px] bg-brand-gold-hover/[0.02] blur-[120px] rounded-full pointer-events-none -z-10" />
 
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
@@ -245,7 +245,7 @@ export default async function AboutPage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                 <div className="absolute bottom-6 left-6 right-6 p-4 rounded-2xl bg-black/60 backdrop-blur-md border border-white/10">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-brand-gold/20 text-brand-gold flex items-center justify-center font-bold">
+                    <div className="w-10 h-10 rounded-full bg-brand-gold/20 text-green-300 flex items-center justify-center font-bold">
                       ✦
                     </div>
                     <div>
@@ -261,7 +261,7 @@ export default async function AboutPage() {
             <div className="lg:col-span-7 flex flex-col justify-center">
               <div className="flex items-center gap-3 mb-4">
                 <span className="h-[2px] w-8 bg-brand-gold rounded-full"></span>
-                <span className="text-brand-gold text-xs font-bold tracking-[0.2em] uppercase">
+                <span className="text-green-300 text-xs font-bold tracking-[0.2em] uppercase">
                   {(hp as any)?.trustBadge || "✦ PROMISE OF EXCELLENCE"}
                 </span>
               </div>
@@ -277,15 +277,15 @@ export default async function AboutPage() {
               {/* Trust Badges Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 border-t border-white/10 pt-8">
                 <div className="flex items-center gap-3">
-                  <Shield className="text-brand-gold shrink-0" size={20} />
+                  <Shield className="text-green-300 shrink-0" size={20} />
                   <span className="text-xs font-bold uppercase tracking-wider text-gray-200">Zero Hidden Fees</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Star className="text-brand-gold shrink-0" size={20} />
+                  <Star className="text-green-300 shrink-0" size={20} />
                   <span className="text-xs font-bold uppercase tracking-wider text-gray-200">5-Star Customer Rating</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Clock className="text-brand-gold shrink-0" size={20} />
+                  <Clock className="text-green-300 shrink-0" size={20} />
                   <span className="text-xs font-bold uppercase tracking-wider text-gray-200">24×7 Concierge Support</span>
                 </div>
               </div>

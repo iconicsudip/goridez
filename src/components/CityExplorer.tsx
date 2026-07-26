@@ -79,7 +79,7 @@ export default function CityExplorer({
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-3 mb-4">
             <span className="h-[2px] w-8 bg-brand-gold rounded-full"></span>
-            <div className="text-brand-gold text-[10px] font-black uppercase tracking-widest">
+            <div className="text-green-300 text-[10px] font-black uppercase tracking-widest">
               Destinations
             </div>
             <span className="h-[2px] w-8 bg-brand-gold rounded-full"></span>
@@ -115,7 +115,7 @@ export default function CityExplorer({
               onClick={() => setActiveTab(tab)}
               className={`text-[11px] font-black tracking-widest uppercase flex items-center gap-2 transition-colors cursor-pointer ${
                 activeTab === tab
-                  ? 'text-brand-gold'
+                  ? 'text-green-300'
                   : 'text-gray-400 hover:text-white'
               }`}
             >
@@ -147,7 +147,7 @@ export default function CityExplorer({
                 </div>
                 
                 <div className="flex flex-col flex-grow">
-                  <div className="text-[10px] text-brand-gold font-bold tracking-[0.2em] uppercase mb-1">
+                  <div className="text-[10px] text-green-300 font-bold tracking-[0.2em] uppercase mb-1">
                     {item.category || 'Experience'}
                   </div>
                   <h3 className="text-2xl font-black uppercase tracking-tight mb-4 text-white">
