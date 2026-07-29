@@ -98,32 +98,40 @@ export default function ChauffeurClient({ initialCars, initialCities }: { initia
 
   useEffect(() => {
     if (!isMounted) return;
-    const params = new URLSearchParams(searchParams.toString());
-    let changed = false;
 
-    const setParam = (key: string, value: string, isDefault: boolean) => {
-      if (!isDefault && params.get(key) !== value) {
-        params.set(key, value);
-        changed = true;
-      } else if (isDefault && params.has(key)) {
-        params.delete(key);
-        changed = true;
+    // Debounced so rapid-fire changes (typing in the search box, quickly
+    // toggling filters) don't each trigger their own router.replace() call —
+    // only the final state after a short pause gets synced to the URL.
+    const timeout = setTimeout(() => {
+      const params = new URLSearchParams(searchParams.toString());
+      let changed = false;
+
+      const setParam = (key: string, value: string, isDefault: boolean) => {
+        if (!isDefault && params.get(key) !== value) {
+          params.set(key, value);
+          changed = true;
+        } else if (isDefault && params.has(key)) {
+          params.delete(key);
+          changed = true;
+        }
+      };
+
+      setParam('category', category, category === 'All');
+      setParam('transmission', transmission, transmission === 'Any Transmission');
+      setParam('fuelType', fuelType, fuelType === 'Any Fuel Type');
+      setParam('search', search, search === '');
+      setParam('cities', selectedCityIds.join(','), selectedCityIds.length === 0);
+      setParam('maxPrice', maxPrice.toString(), maxPrice === 40000);
+
+      if (pickupDate) setParam('pickupDate', pickupDate.toISOString(), false);
+      if (returnDate) setParam('returnDate', returnDate.toISOString(), false);
+
+      if (changed) {
+        router.replace(`?${params.toString()}`, { scroll: false });
       }
-    };
+    }, 400);
 
-    setParam('category', category, category === 'All');
-    setParam('transmission', transmission, transmission === 'Any Transmission');
-    setParam('fuelType', fuelType, fuelType === 'Any Fuel Type');
-    setParam('search', search, search === '');
-    setParam('cities', selectedCityIds.join(','), selectedCityIds.length === 0);
-    setParam('maxPrice', maxPrice.toString(), maxPrice === 40000);
-    
-    if (pickupDate) setParam('pickupDate', pickupDate.toISOString(), false);
-    if (returnDate) setParam('returnDate', returnDate.toISOString(), false);
-
-    if (changed) {
-      router.replace(`?${params.toString()}`, { scroll: false });
-    }
+    return () => clearTimeout(timeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [category, transmission, fuelType, search, selectedCityIds, maxPrice, pickupDate, returnDate, isMounted, router]);
 

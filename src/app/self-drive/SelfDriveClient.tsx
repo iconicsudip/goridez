@@ -33,7 +33,6 @@ export default function SelfDriveClient({ initialCars, initialCities }: { initia
   const [category, setCategory] = useState('All');
   const [transmission, setTransmission] = useState('Any Transmission');
   const [fuelType, setFuelType] = useState('Any Fuel Type');
-  const [maxPrice, setMaxPrice] = useState(40000);
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
   const [pickupDate, setPickupDate] = useState<Date>(() => {
@@ -108,40 +107,45 @@ export default function SelfDriveClient({ initialCars, initialCities }: { initia
     if (querySearch) setSearch(querySearch);
     const queryCities = searchParams.get('cities');
     if (queryCities) setSelectedCityIds(queryCities.split(','));
-    const queryMaxPrice = searchParams.get('maxPrice');
-    if (queryMaxPrice) setMaxPrice(Number(queryMaxPrice));
   }, []);
 
   useEffect(() => {
     if (!isMounted) return;
-    const params = new URLSearchParams(searchParams.toString());
-    let changed = false;
 
-    const setParam = (key: string, value: string, isDefault: boolean) => {
-      if (!isDefault && params.get(key) !== value) {
-        params.set(key, value);
-        changed = true;
-      } else if (isDefault && params.has(key)) {
-        params.delete(key);
-        changed = true;
+    // Debounced so rapid-fire changes (typing in the search box, quickly
+    // toggling filters) don't each trigger their own router.replace() call —
+    // only the final state after a short pause gets synced to the URL.
+    const timeout = setTimeout(() => {
+      const params = new URLSearchParams(searchParams.toString());
+      let changed = false;
+
+      const setParam = (key: string, value: string, isDefault: boolean) => {
+        if (!isDefault && params.get(key) !== value) {
+          params.set(key, value);
+          changed = true;
+        } else if (isDefault && params.has(key)) {
+          params.delete(key);
+          changed = true;
+        }
+      };
+
+      setParam('category', category, category === 'All');
+      setParam('transmission', transmission, transmission === 'Any Transmission');
+      setParam('fuelType', fuelType, fuelType === 'Any Fuel Type');
+      setParam('search', search, search === '');
+      setParam('cities', selectedCityIds.join(','), selectedCityIds.length === 0);
+
+      if (pickupDate) setParam('pickupDate', pickupDate.toISOString(), false);
+      if (returnDate) setParam('returnDate', returnDate.toISOString(), false);
+
+      if (changed) {
+        router.replace(`?${params.toString()}`, { scroll: false });
       }
-    };
+    }, 400);
 
-    setParam('category', category, category === 'All');
-    setParam('transmission', transmission, transmission === 'Any Transmission');
-    setParam('fuelType', fuelType, fuelType === 'Any Fuel Type');
-    setParam('search', search, search === '');
-    setParam('cities', selectedCityIds.join(','), selectedCityIds.length === 0);
-    setParam('maxPrice', maxPrice.toString(), maxPrice === 40000);
-
-    if (pickupDate) setParam('pickupDate', pickupDate.toISOString(), false);
-    if (returnDate) setParam('returnDate', returnDate.toISOString(), false);
-
-    if (changed) {
-      router.replace(`?${params.toString()}`, { scroll: false });
-    }
+    return () => clearTimeout(timeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [category, transmission, fuelType, search, selectedCityIds, maxPrice, pickupDate, returnDate, isMounted, router]);
+  }, [category, transmission, fuelType, search, selectedCityIds, pickupDate, returnDate, isMounted, router]);
 
   // Prevent background scrolling while the mobile filter drawer is open
   useEffect(() => {
@@ -154,7 +158,7 @@ export default function SelfDriveClient({ initialCars, initialCities }: { initia
   }
 
   function resetFilters() {
-    setSearch(''); setSelectedCityIds([]); setCategory('All'); setTransmission('Any Transmission'); setFuelType('Any Fuel Type'); setMaxPrice(40000);
+    setSearch(''); setSelectedCityIds([]); setCategory('All'); setTransmission('Any Transmission'); setFuelType('Any Fuel Type');
   }
 
   const filteredCars = useMemo(() => {
@@ -165,12 +169,9 @@ export default function SelfDriveClient({ initialCars, initialCities }: { initia
       const matchTransmission = transmission === 'Any Transmission' ? true : car.transmission.toLowerCase() === transmission.toLowerCase();
       const matchFuel = fuelType === 'Any Fuel Type' ? true : car.fuelType.toLowerCase() === fuelType.toLowerCase();
 
-      const basePrice = car.packages?.[0]?.basePrice || 12000;
-      const matchPrice = basePrice <= maxPrice;
-
-      return matchSearch && matchCity && matchCategory && matchTransmission && matchFuel && matchPrice;
+      return matchSearch && matchCity && matchCategory && matchTransmission && matchFuel;
     });
-  }, [initialCars, search, selectedCityIds, category, transmission, fuelType, maxPrice]);
+  }, [initialCars, search, selectedCityIds, category, transmission, fuelType]);
 
   const filterControls = (
     <div className="space-y-6">
@@ -331,22 +332,6 @@ export default function SelfDriveClient({ initialCars, initialCities }: { initia
             <option key={f} value={f}>{f}</option>
           ))}
         </select>
-      </div>
-
-      <div className="pt-4 border-t border-gray-200">
-        <div className="flex justify-between items-center mb-4">
-          <label className="block text-[10px] text-gray-500 font-bold uppercase tracking-widest">Max Rent (120K)</label>
-          <span className="text-green-700 text-[10px] font-bold">₹{maxPrice.toLocaleString()}/day</span>
-        </div>
-        <input
-          type="range"
-          min="2000"
-          max="80000"
-          step="1000"
-          value={maxPrice}
-          onChange={(e) => setMaxPrice(parseInt(e.target.value))}
-          className="w-full h-1.5 bg-gray-300 rounded-full appearance-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-green-600 [&::-webkit-slider-thumb]:rounded-full cursor-pointer"
-        />
       </div>
 
       <div className="pt-4 border-t border-gray-200">
