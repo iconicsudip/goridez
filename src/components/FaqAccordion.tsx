@@ -19,7 +19,7 @@ export default function FaqAccordion({ faqs }: { faqs: FaqItem[] }) {
   if (!faqs || faqs.length === 0) return null;
 
   return (
-    <section className="py-24 bg-[#0A0A0A] border-t border-zinc-900 relative overflow-hidden">
+    <section className="py-24 bg-green-950 border-t border-green-900 relative overflow-hidden">
       {/* Dynamic Background Glows */}
       <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-96 h-96 bg-brand-gold/5 blur-3xl rounded-full pointer-events-none" />
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-brand-gold/5 blur-3xl rounded-full pointer-events-none" />
@@ -42,7 +42,7 @@ export default function FaqAccordion({ faqs }: { faqs: FaqItem[] }) {
           <div className="w-20 h-1 bg-brand-gold mx-auto mt-6 rounded-full"></div>
         </div>
 
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[640px] overflow-y-auto pr-2 custom-scrollbar">
           {faqs.map((faq) => {
             const isOpen = openId === faq.id;
             return (
@@ -50,8 +50,8 @@ export default function FaqAccordion({ faqs }: { faqs: FaqItem[] }) {
                 key={faq.id}
                 className={`border rounded-3xl overflow-hidden transition-all duration-300 ${
                   isOpen
-                    ? 'bg-[#1F1F1F] border-brand-gold shadow-md shadow-brand-gold/10'
-                    : 'bg-[#1F1F1F]/40 border-zinc-800 hover:border-zinc-700 hover:bg-[#1F1F1F]/60'
+                    ? 'bg-green-900 border-brand-gold shadow-md shadow-brand-gold/10'
+                    : 'bg-green-900/40 border-green-800 hover:border-green-700 hover:bg-green-900/60'
                 }`}
               >
                 {/* Header / Question button */}
@@ -66,7 +66,7 @@ export default function FaqAccordion({ faqs }: { faqs: FaqItem[] }) {
                     className={`w-8 h-8 rounded-full border flex items-center justify-center shrink-0 transition-all duration-300 ${
                       isOpen
                         ? 'border-brand-gold text-green-300 bg-brand-gold/5 rotate-180'
-                        : 'border-zinc-750 text-gray-400 group-hover:border-zinc-550 group-hover:text-white'
+                        : 'border-green-800 text-gray-400 group-hover:border-green-600 group-hover:text-white'
                     }`}
                   >
                     <ChevronDown size={16} />
@@ -76,10 +76,10 @@ export default function FaqAccordion({ faqs }: { faqs: FaqItem[] }) {
                 {/* Answer container */}
                 <div
                   className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                    isOpen ? 'max-h-[500px] opacity-100 border-t border-zinc-800' : 'max-h-0 opacity-0'
+                    isOpen ? 'max-h-[500px] opacity-100 border-t border-green-800' : 'max-h-0 opacity-0'
                   }`}
                 >
-                  <div className="p-6 md:p-8 text-xs md:text-sm text-gray-300 leading-relaxed whitespace-pre-line bg-black/20">
+                  <div className="p-6 md:p-8 text-xs md:text-sm text-gray-300 leading-relaxed whitespace-pre-line bg-green-950/40">
                     {faq.answer}
                   </div>
                 </div>

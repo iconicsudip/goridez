@@ -28,29 +28,9 @@ export default async function AboutPage() {
 
   const cityCount = cities.length;
 
-  const defaultContent = `
-    <p class="text-gray-600 mb-6 leading-relaxed">
-      Welcome to GoRidez, the leading premium transportation and luxury experience partner in Rajasthan. Headquartered in Udaipur, we provide travel solutions built specifically for international travelers and local connoisseurs.
-    </p>
-    <p class="text-gray-600 mb-6 leading-relaxed">
-      Whether you are exploring the magnificent forts of Jaipur, traversing the blue streets of Jodhpur, or spending a peaceful weekend in the cool hills of Mount Abu, our vetted fleet of self-drive vehicles, professional chauffeur desk, and private villas are ready to elevate your journey.
-    </p>
-    <p class="text-gray-600 mb-6 leading-relaxed">
-      Every reservation is backed by a dedicated concierge desk, transparent pricing with zero hidden fees, and a fleet that is inspected and sanitized before every handover. We built GoRidez around the belief that premium travel shouldn't mean compromising on reliability.
-    </p>
-    <h2 class="text-2xl font-black uppercase tracking-tight text-gray-900 mt-8 mb-4">Our Mission</h2>
-    <p class="text-gray-600 mb-6 leading-relaxed">
-      To make premium mobility across Rajasthan effortless — connecting travelers with vetted vehicles, professional chauffeurs, and heritage stays through a single, trustworthy platform.
-    </p>
-    <h2 class="text-2xl font-black uppercase tracking-tight text-gray-900 mt-8 mb-4">Our Vision</h2>
-    <p class="text-gray-600 mb-6 leading-relaxed">
-      To build a seamless, reliable, and premium transportation ecosystem across India, driven by elite hospitality and verified standards.
-    </p>
-  `;
-
   const title = data?.title || 'About GoRidez';
   const subtitle = data?.subtitle || 'Premium Car Rentals & Excursions in Rajasthan';
-  const content = data?.content || defaultContent;
+  const content = data?.content || '';
   const bannerImage = data?.imageUrl || 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=1800&q=80';
 
   const hasReviews = (siteSettings?.googleTotalReviews || 0) > 0;
@@ -215,17 +195,17 @@ export default async function AboutPage() {
       </section>
 
       {/* Story Content */}
-      <section className="container mx-auto px-4 relative z-10">
+      {content && content !== "" && <section className="container mx-auto px-4 relative z-10">
         <div className="mx-auto bg-gray-100 p-8 md:p-12 overflow-hidden">
           <div
             className="prose prose-gray max-w-none prose-sm md:prose-base break-words prose-headings:font-black prose-headings:text-gray-900 prose-p:text-gray-700 prose-p:leading-relaxed"
             dangerouslySetInnerHTML={{ __html: content }}
           />
         </div>
-      </section>
+      </section>}
 
       {/* BRAND TRUST BANNER SECTION (Image Left, Text Right) */}
-      <section className="py-24 bg-zinc-950 text-white relative overflow-hidden mt-20 font-body border-y border-brand-border">
+      <section className="py-24 bg-green-950 text-white relative overflow-hidden mt-20 font-body border-y border-brand-border">
         {/* Background Subtle Accent Glows */}
         <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-brand-gold/[0.03] blur-[120px] rounded-full pointer-events-none -z-10" />
         <div className="absolute bottom-0 right-0 w-[450px] h-[450px] bg-brand-gold-hover/[0.02] blur-[120px] rounded-full pointer-events-none -z-10" />
@@ -243,7 +223,7 @@ export default async function AboutPage() {
                   unoptimized
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                <div className="absolute bottom-6 left-6 right-6 p-4 rounded-2xl bg-black/60 backdrop-blur-md border border-white/10">
+                <div className="absolute bottom-6 left-6 right-6 p-4 rounded-2xl bg-green-950/80 backdrop-blur-md border border-white/10">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-brand-gold/20 text-green-300 flex items-center justify-center font-bold">
                       ✦

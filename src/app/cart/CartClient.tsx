@@ -32,10 +32,6 @@ export default function CartClient({ selfDriveLocations = [], cars = [] }: { sel
   const totalAmount = subtotal + gst;
   const advanceHold = totalAmount * 0.3; // 30% advance hold
 
-  const itemsMissingLocation = cartItems.filter(
-    (item) => LOCATION_EDITABLE_SERVICE_TYPES.includes(item.serviceType) && (!item.pickupStation || !item.dropStation)
-  );
-
   return (
     <div className="bg-white min-h-screen text-gray-900 font-sans pt-32 pb-24">
       <div className="container mx-auto px-4 max-w-[1500px] md:px-10 lg:px-16">
@@ -207,17 +203,11 @@ export default function CartClient({ selfDriveLocations = [], cars = [] }: { sel
                   </div>
                 </div>
 
-                {itemsMissingLocation.length > 0 ? (
-                  <div className="bg-amber-50 border border-amber-200 text-amber-700 text-[10px] font-bold uppercase tracking-widest rounded-xl p-4 text-center leading-relaxed">
-                    Please set a pickup and drop location for all self-drive and round-trip items before checkout.
-                  </div>
-                ) : (
-                  <Link href="/checkout" className="block w-full">
-                    <button className="w-full bg-green-600 hover:bg-brand-gold-hover text-white font-black uppercase tracking-widest text-xs py-4 rounded-xl shadow-md hover:shadow-lg transition-all cursor-pointer">
-                      Proceed to Checkout
-                    </button>
-                  </Link>
-                )}
+                <Link href="/checkout" className="block w-full">
+                  <button className="w-full bg-green-600 hover:bg-brand-gold-hover text-white font-black uppercase tracking-widest text-xs py-4 rounded-xl shadow-md hover:shadow-lg transition-all cursor-pointer">
+                    Proceed to Checkout
+                  </button>
+                </Link>
 
                 <div className="text-[9px] text-gray-400 font-mono text-center tracking-widest uppercase flex items-center justify-center gap-1.5">
                   <ShieldCheck size={12} className="text-green-600" /> 100% Secured reservation hold

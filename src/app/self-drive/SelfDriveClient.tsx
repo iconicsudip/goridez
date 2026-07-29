@@ -8,10 +8,26 @@ import { DatePicker, ConfigProvider } from 'antd';
 import dayjs from 'dayjs';
 import { useBookingStore } from '@/store/useBookingStore';
 
+const DATE_PICKER_THEME = {
+  token: {
+    colorPrimary: '#15803d',
+    borderRadius: 8,
+    fontSize: 11,
+  },
+  components: {
+    DatePicker: {
+      cellWidth: 28,
+      cellHeight: 20,
+      timeColumnWidth: 48,
+      timeCellHeight: 22,
+    },
+  },
+};
+
 export default function SelfDriveClient({ initialCars, initialCities }: { initialCars: any[], initialCities: any[] }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { session, updateSession } = useBookingStore();
+  const { updateSession } = useBookingStore();
   const [search, setSearch] = useState('');
   const [selectedCityIds, setSelectedCityIds] = useState<string[]>([]);
   const [category, setCategory] = useState('All');
@@ -41,13 +57,11 @@ export default function SelfDriveClient({ initialCars, initialCities }: { initia
     const qReturnDate = searchParams.get('returnDate');
     const qPickupCity = searchParams.get('pickupCity');
 
-    let loadedPickup = null;
-    if (qPickupDate) loadedPickup = new Date(qPickupDate);
-    else if (session?.pickupDate) loadedPickup = new Date(session.pickupDate);
-
-    let loadedReturn = null;
-    if (qReturnDate) loadedReturn = new Date(qReturnDate);
-    else if (session?.returnDate) loadedReturn = new Date(session.returnDate);
+    // Only an explicit date in the URL (e.g. a shared/deep link) overrides the
+    // "now + 12 hours" default set in useState above — a fresh visit should
+    // never fall back to a stale date left over from a previous session.
+    let loadedPickup = qPickupDate ? new Date(qPickupDate) : null;
+    let loadedReturn = qReturnDate ? new Date(qReturnDate) : null;
 
     const now = new Date();
     if (loadedPickup && loadedPickup.getTime() < now.getTime()) {
@@ -66,7 +80,12 @@ export default function SelfDriveClient({ initialCars, initialCities }: { initia
         setSelectedCityIds([city.id]);
       }
     }
-  }, [session?.pickupDate, session?.returnDate, session?.pickupCity, searchParams]);
+    // Runs once on mount only — this loads the initial filter/date state from the URL
+    // or persisted session. It must NOT re-run when session changes later, since
+    // updateSession() is called on every date pick here, which would otherwise
+    // re-trigger this effect and overwrite the fresh pick with a stale URL value.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Handlers removed because DatePicker handles both date and time selection natively
 
@@ -121,7 +140,8 @@ export default function SelfDriveClient({ initialCars, initialCities }: { initia
     if (changed) {
       router.replace(`?${params.toString()}`, { scroll: false });
     }
-  }, [category, transmission, fuelType, search, selectedCityIds, maxPrice, pickupDate, returnDate, isMounted, router, searchParams]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [category, transmission, fuelType, search, selectedCityIds, maxPrice, pickupDate, returnDate, isMounted, router]);
 
   // Prevent background scrolling while the mobile filter drawer is open
   useEffect(() => {
@@ -161,23 +181,7 @@ export default function SelfDriveClient({ initialCars, initialCities }: { initia
           <label className="block text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-3">Travel Date Range (Required)</label>
           <div className="relative flex items-center bg-white border border-gray-200 rounded-xl px-3 py-3 w-full">
             <Calendar className="text-green-700 mr-2 shrink-0" size={14} />
-            <ConfigProvider
-              theme={{
-                token: {
-                  colorPrimary: '#15803d',
-                  borderRadius: 8,
-                  fontSize: 11,
-                },
-                components: {
-                  DatePicker: {
-                    cellWidth: 28,
-                    cellHeight: 20,
-                    timeColumnWidth: 48,
-                    timeCellHeight: 22,
-                  },
-                },
-              }}
-            >
+            <ConfigProvider theme={DATE_PICKER_THEME}>
               <DatePicker.RangePicker
                 showTime={{ format: 'h:mm a', use12Hours: true, minuteStep: 30 }}
                 format="DD/MM/YYYY - h:mm a"
@@ -388,7 +392,7 @@ export default function SelfDriveClient({ initialCars, initialCities }: { initia
               Reset
             </button>
           </div>
-          {filterControls}
+          {!isFiltersOpen && filterControls}
         </aside>
 
         {/* Cars List */}

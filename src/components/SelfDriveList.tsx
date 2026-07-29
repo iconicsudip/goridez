@@ -61,7 +61,6 @@ export default function SelfDriveList({ initialCars, pickupDate, returnDate }: {
 
           const priceInfo = calculatePackagePricing(car.packages || [], durationHours);
           const finalPrice = priceInfo.basePrice;
-          const usedPackageIds = priceInfo.usedPkgIds;
           const activePackage = priceInfo.selectedPkg || car.packages?.[0];
 
           const isAlreadyBooked = car.bookings && car.bookings.length > 0 && car.bookings.some((booking: any) => {
@@ -76,12 +75,6 @@ export default function SelfDriveList({ initialCars, pickupDate, returnDate }: {
           const extraCharge = activePackage?.extraChargePerUnit || 0;
           const deposit = activePackage?.deposit || 0;
           const unitType = activePackage?.type === 'KM' ? 'KM' : 'Hour';
-
-          const allowedPackages = (car.packages || []).filter((p: any) => {
-            if (!p?.name) return false;
-            const lowerName = p.name.toLowerCase();
-            return lowerName.includes('12 hour') || lowerName.includes('24 hour') || lowerName.includes('12hour') || lowerName.includes('24hour');
-          });
 
           return (
             <div key={car.id} className="bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md hover:border-green-200 transition-all overflow-hidden group">
@@ -140,25 +133,6 @@ export default function SelfDriveList({ initialCars, pickupDate, returnDate }: {
                             {feat}
                           </span>
                         ))}
-                      </div>
-                    )}
-                    {/* Package selector */}
-                    {allowedPackages.length > 0 && (
-                      <div className="flex gap-2 pointer-events-none">
-                        {allowedPackages.map((pkg: any) => {
-                          const isSelected = usedPackageIds.has(pkg.id);
-                          return (
-                            <div
-                              key={pkg.id}
-                              className={`px-3 py-2 text-[9px] font-bold rounded-xl text-center border transition-all ${isSelected
-                                  ? 'bg-green-600 border-green-600 text-white'
-                                  : 'bg-gray-50 border-gray-200 text-gray-400 opacity-50'
-                                }`}
-                            >
-                              {pkg.name} ({pkg.limitValue} {pkg.type === 'KM' ? 'KM' : 'Hrs'})
-                            </div>
-                          );
-                        })}
                       </div>
                     )}
                   </div>

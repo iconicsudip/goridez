@@ -229,13 +229,11 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
       setSelectedRtPackage(qPkg);
     }
 
-    let loadedPickup = null;
-    if (qPickupDate) loadedPickup = new Date(qPickupDate);
-    else if (session?.pickupDate) loadedPickup = new Date(session.pickupDate);
-
-    let loadedReturn = null;
-    if (qReturnDate) loadedReturn = new Date(qReturnDate);
-    else if (session?.returnDate) loadedReturn = new Date(session.returnDate);
+    // Only an explicit date in the URL (e.g. a shared/deep link) overrides the
+    // "now + 1 hour" default set in useState above — a fresh visit should
+    // never fall back to a stale date left over from a previous session.
+    let loadedPickup = qPickupDate ? new Date(qPickupDate) : null;
+    let loadedReturn = qReturnDate ? new Date(qReturnDate) : null;
 
     const now = new Date();
     if (loadedPickup && loadedPickup.getTime() < now.getTime()) {
@@ -305,7 +303,8 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
     if (changed) {
       router.replace(`?${params.toString()}`, { scroll: false });
     }
-  }, [bookingMode, selectedRtPackage, pickupDate, returnDate, isMounted, router, searchParams]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bookingMode, selectedRtPackage, pickupDate, returnDate, isMounted, router]);
 
   const handleDateRangeChange = (update: [Date | null, Date | null]) => {
     const [start, end] = update;
@@ -752,7 +751,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
           <aside className="hidden lg:block lg:w-[380px] shrink-0 space-y-6 lg:sticky lg:top-32 h-fit z-10">
             <div className="bg-gray-100 border border-gray-200 rounded-3xl p-8">
               <h2 className="font-black text-sm uppercase tracking-widest mb-8">Route Configurator</h2>
-              {routeConfiguratorBody}
+              {!isRouteConfigOpen && routeConfiguratorBody}
             </div>
           </aside>
 

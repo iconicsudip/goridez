@@ -108,9 +108,9 @@ export default async function BlogDetails({ params }: { params: Promise<{ slug: 
         </div>
       </section>
 
-      <div className="container mx-auto px-4 max-w-[1500px]">
+      <div className="container mx-auto px-4 ">
 
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-3 bg-gray-100 border border-gray-200 rounded-2xl p-4 w-fit -mt-8 md:-mt-9 relative z-10 mb-10 shadow-sm">
             <div className="w-8 h-8 rounded-full bg-green-600/10 border border-green-600/20 flex items-center justify-center">
               <span className="text-green-700 text-xs font-black">{(blog.author || 'GoRidez').charAt(0)}</span>
@@ -123,38 +123,6 @@ export default async function BlogDetails({ params }: { params: Promise<{ slug: 
 
           {/* Article Body */}
           <div className="blog-content mb-16" dangerouslySetInnerHTML={{ __html: blog.content }} />
-        </div>
-
-        {/* CTA Section (Premium integration) */}
-        <div className="bg-gradient-to-br from-[#111] to-[#0A0A0A] border border-gray-800 rounded-3xl p-8 md:p-12 text-center md:text-left flex flex-col md:flex-row justify-between items-center gap-8 shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-green-600/5 rounded-full blur-3xl pointer-events-none" />
-
-          <div className="flex-1">
-            <div className="text-green-500 text-[10px] font-black uppercase tracking-widest mb-3 flex items-center gap-1.5 justify-center md:justify-start">
-              <Sparkles size={12} /> Mewar Heritage Awaits
-            </div>
-            <h3 className="text-2xl md:text-3xl font-black uppercase tracking-tight mb-3 text-white">
-              READY TO PLAN YOUR <span className="text-outline-neon">JOURNEY?</span>
-            </h3>
-            <p className="text-gray-400 text-xs md:text-sm max-w-lg leading-relaxed">
-              Rent a premium self-drive vehicle or secure a private heritage villa with custom airport transfers to mirror the destinations described in this journal.
-            </p>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-4 shrink-0 w-full md:w-auto">
-            <Link
-              href="/self-drive"
-              className="bg-green-600 hover:bg-brand-hover text-white font-black uppercase text-[10px] tracking-widest px-8 py-4 rounded-xl text-center transition-all shadow-md flex items-center justify-center gap-2"
-            >
-              <Car size={14} /> Cars Collection
-            </Link>
-            <Link
-              href="/villas"
-              className="bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-900 font-black uppercase text-[10px] tracking-widest px-8 py-4 rounded-xl text-center transition-colors flex items-center justify-center gap-2"
-            >
-              <Building size={14} /> Villa Stays
-            </Link>
-          </div>
         </div>
 
       </div>

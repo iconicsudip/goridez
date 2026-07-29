@@ -68,7 +68,7 @@ export default function CityExplorer({
   };
 
   return (
-    <section className="py-24 bg-[#0A0A0A] border-t border-zinc-900 relative overflow-hidden">
+    <section className="py-24 bg-green-950 border-t border-green-900 relative overflow-hidden">
       {/* Decorative Luxury Background Glows */}
       <div className="absolute top-1/4 left-1/12 w-[450px] h-[450px] bg-brand-gold/[0.035] blur-[130px] rounded-full pointer-events-none -z-10" />
       <div className="absolute bottom-1/4 right-1/12 w-[450px] h-[450px] bg-brand-gold/[0.035] blur-[130px] rounded-full pointer-events-none -z-10" />
@@ -97,7 +97,7 @@ export default function CityExplorer({
                 className={`px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-colors cursor-pointer ${
                   activeCityId === city.id 
                     ? 'bg-brand-gold text-white shadow-md shadow-brand-gold/30 font-bold' 
-                    : 'bg-[#1F1F1F] border border-zinc-800 text-gray-400 hover:bg-zinc-800 hover:text-white'
+                    : 'bg-green-900 border border-green-800 text-gray-400 hover:bg-green-800 hover:text-white'
                 }`}
               >
                 {city.name}
@@ -108,7 +108,7 @@ export default function CityExplorer({
         </div>
 
         {/* Tabs */}
-        <div className="flex flex-wrap items-center gap-6 border-b border-zinc-800 pb-4 mb-10">
+        <div className="flex flex-wrap items-center gap-6 border-b border-green-800 pb-4 mb-10">
           {availableTabs.map((tab) => (
             <button
               key={tab}
@@ -128,13 +128,13 @@ export default function CityExplorer({
 
         {/* Grid */}
         {displayItems.length === 0 ? (
-          <div className="text-center py-20 text-gray-405 text-sm font-mono italic bg-[#1F1F1F] rounded-2xl border border-zinc-800">
+          <div className="text-center py-20 text-gray-405 text-sm font-mono italic bg-green-900 rounded-2xl border border-green-800">
             No items found for {cities.find(c => c.id === activeCityId)?.name} in {activeTab}.
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {displayItems.map((item, idx) => (
-              <div key={item.id || idx} className="bg-[#1F1F1F] border border-zinc-800 rounded-2xl p-4 flex flex-col group hover:border-brand-gold hover:shadow-lg transition-all">
+              <div key={item.id || idx} className="bg-green-900 border border-green-800 rounded-2xl p-4 flex flex-col group hover:border-brand-gold hover:shadow-lg transition-all">
                 <div className="relative h-48 w-full rounded-xl overflow-hidden mb-4">
                   <Image 
                     src={item.image} 
@@ -155,7 +155,7 @@ export default function CityExplorer({
                   </h3>
                   
                   <Link href={getLinkForTab()} className="mt-auto">
-                    <button className="w-full bg-black/40 hover:bg-brand-gold text-gray-300 hover:text-white border border-zinc-800 hover:border-brand-gold text-[10px] font-black py-4 rounded-xl transition-all uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer">
+                    <button className="w-full bg-black/40 hover:bg-brand-gold text-gray-300 hover:text-white border border-green-800 hover:border-brand-gold text-[10px] font-black py-4 rounded-xl transition-all uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer">
                       BOOK NOW <ArrowRight size={14} className="group-hover:text-white" />
                     </button>
                   </Link>
