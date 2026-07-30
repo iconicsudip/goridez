@@ -18,6 +18,10 @@ export default function SiteSettingsManager({ initialData }: { initialData: any 
     razorpayKeySecret: initialData?.razorpayKeySecret || 'mocksecret123',
     taxiExclusions: initialData?.taxiExclusions || '',
     taxiTerms: initialData?.taxiTerms || '',
+    facebookUrl: initialData?.facebookUrl || '',
+    instagramUrl: initialData?.instagramUrl || '',
+    twitterUrl: initialData?.twitterUrl || '',
+    youtubeUrl: initialData?.youtubeUrl || '',
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -127,6 +131,66 @@ export default function SiteSettingsManager({ initialData }: { initialData: any 
                 required
                 className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors"
               />
+            </div>
+          </div>
+
+          {/* Social Media Links */}
+          <div className="border-t border-gray-100 pt-8 mt-8">
+            <h3 className="text-sm font-black uppercase tracking-tight mb-1 text-gray-900">Social Media Links</h3>
+            <p className="text-[11px] text-gray-400 mb-4">Leave a field blank to hide that icon from the footer.</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div>
+                <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">
+                  Facebook URL
+                </label>
+                <input
+                  type="url"
+                  name="facebookUrl"
+                  value={formData.facebookUrl}
+                  onChange={handleChange}
+                  placeholder="https://www.facebook.com/..."
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors"
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">
+                  Instagram URL
+                </label>
+                <input
+                  type="url"
+                  name="instagramUrl"
+                  value={formData.instagramUrl}
+                  onChange={handleChange}
+                  placeholder="https://www.instagram.com/..."
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors"
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">
+                  Twitter / X URL
+                </label>
+                <input
+                  type="url"
+                  name="twitterUrl"
+                  value={formData.twitterUrl}
+                  onChange={handleChange}
+                  placeholder="https://x.com/..."
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors"
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold font-mono">
+                  YouTube URL
+                </label>
+                <input
+                  type="url"
+                  name="youtubeUrl"
+                  value={formData.youtubeUrl}
+                  onChange={handleChange}
+                  placeholder="https://www.youtube.com/..."
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-green-600 outline-none text-gray-900 transition-colors"
+                />
+              </div>
             </div>
           </div>
 

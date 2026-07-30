@@ -406,6 +406,10 @@ model SiteSettings {
   razorpayKeySecret     String    @default("mocksecret123")
   taxiExclusions        String    @default("Toll Tax and Parking charges are not included in the above fare.\nState Tax (if applicable crossing borders) is extra.\nAny extra km or hours driven beyond the package limit will be charged additionally.")
   taxiTerms             String    @default("A/C will be switched off in hilly areas.\nNight allowance applies if the driver drives between 10 PM and 6 AM.\nKilometers are calculated from garage to garage.")
+  facebookUrl           String    @default("")
+  instagramUrl          String    @default("")
+  twitterUrl            String    @default("")
+  youtubeUrl            String    @default("")
   googlePlaceId         String    @default("")
   lastReviewSync        DateTime?
   reviewSyncMonthKey    String    @default("")   // e.g. "2026-7"

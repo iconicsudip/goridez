@@ -1071,6 +1071,10 @@ export async function updateSiteSettings(formData: FormData) {
       razorpayKeySecret: formData.get('razorpayKeySecret') as string || "mocksecret123",
       taxiExclusions: formData.get('taxiExclusions') as string || "",
       taxiTerms: formData.get('taxiTerms') as string || "",
+      facebookUrl: formData.get('facebookUrl') as string || "",
+      instagramUrl: formData.get('instagramUrl') as string || "",
+      twitterUrl: formData.get('twitterUrl') as string || "",
+      youtubeUrl: formData.get('youtubeUrl') as string || "",
     };
 
     await prisma.siteSettings.upsert({
