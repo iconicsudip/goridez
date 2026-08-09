@@ -19,6 +19,13 @@ export const GOOGLE_SCOPES = {
   ads: ['https://www.googleapis.com/auth/adwords'],
 } as const;
 
+// Always requested, regardless of which module group(s) triggered Connect — needed so
+// `exchangeCodeAndStore` can look up *which* Google account just connected (userinfo.get()).
+const IDENTITY_SCOPES = [
+  'https://www.googleapis.com/auth/userinfo.email',
+  'https://www.googleapis.com/auth/userinfo.profile',
+];
+
 export type GoogleModuleGroup = keyof typeof GOOGLE_SCOPES;
 
 function getRedirectUri() {
@@ -38,7 +45,7 @@ export async function getOAuthClient() {
 
 export async function buildConsentUrl(groups: GoogleModuleGroup[], state: string) {
   const oauth2Client = await getOAuthClient();
-  const scopes = Array.from(new Set(groups.flatMap((g) => GOOGLE_SCOPES[g])));
+  const scopes = Array.from(new Set([...IDENTITY_SCOPES, ...groups.flatMap((g) => GOOGLE_SCOPES[g])]));
 
   return oauth2Client.generateAuthUrl({
     access_type: 'offline',
