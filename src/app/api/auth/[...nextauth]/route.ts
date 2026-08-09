@@ -1,9 +1,16 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import GoogleProvider from 'next-auth/providers/google';
 import { PrismaAdapter } from '@auth/prisma-adapter';
+import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getGoogleCredentials } from '@/lib/google-credentials';
 import bcrypt from 'bcryptjs';
 
+// NOTE: `getServerSession(authOptions)` (used everywhere else in the app to read the current
+// session) always overrides `providers` internally, so this static object never needs Google
+// in it — only the actual sign-in route handler below does, and it's built dynamically per
+// request from `buildRequestOptions()` so credentials can be rotated without a redeploy.
 export const authOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
@@ -81,6 +88,31 @@ export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET || 'fallback-secret-do-not-use-in-prod',
 };
 
-const handler = NextAuth(authOptions);
+// "Sign in with Google" is opt-in — the provider is only added once OAuth credentials are
+// configured (via the admin Google Integrations page, or GOOGLE_OAUTH_CLIENT_ID/SECRET env
+// vars as a fallback). Built fresh per request so a credential change takes effect immediately.
+async function buildRequestOptions() {
+  const { clientId, clientSecret } = await getGoogleCredentials();
+  if (!clientId || !clientSecret) return authOptions;
+
+  return {
+    ...authOptions,
+    providers: [
+      GoogleProvider({
+        clientId,
+        clientSecret,
+        // Google verifies emails, so it's safe to link a Google sign-in to an existing
+        // Credentials-based account (registered with the same email + a password).
+        allowDangerousEmailAccountLinking: true,
+      }),
+      ...authOptions.providers,
+    ],
+  };
+}
+
+async function handler(req: NextRequest, ctx: { params: Promise<{ nextauth: string[] }> }) {
+  const options = await buildRequestOptions();
+  return NextAuth(req, ctx, options);
+}
 
 export { handler as GET, handler as POST };

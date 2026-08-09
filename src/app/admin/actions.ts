@@ -1,7 +1,7 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, updateTag } from 'next/cache';
 import { getCarSlug } from '@/lib/utils';
 
 function revalidateCarPaths(carSlug?: string) {
@@ -1086,6 +1086,77 @@ export async function updateSiteSettings(formData: FormData) {
     revalidatePath('/');
     revalidatePath('/cities');
     revalidatePath('/admin/cities');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+// --- GOOGLE SITE KIT STYLE INTEGRATIONS ---
+export async function updateGoogleIntegration(field: string, value: string) {
+  const ALLOWED_FIELDS = [
+    'googleAnalyticsId',
+    'googleSearchConsoleVerification',
+    'googleTagManagerId',
+    'googleAdsensePublisherId',
+    'googleAdsCustomerId',
+  ];
+
+  if (!ALLOWED_FIELDS.includes(field)) {
+    return { success: false, error: 'Unknown integration field' };
+  }
+
+  try {
+    await prisma.siteSettings.upsert({
+      where: { id: 'singleton' },
+      update: { [field]: value },
+      create: { id: 'singleton', [field]: value },
+    });
+
+    revalidatePath('/');
+    revalidatePath('/admin/integrations');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+export async function updateGoogleCredentials(formData: FormData) {
+  try {
+    const data = {
+      googleOAuthClientId: formData.get('googleOAuthClientId') as string || '',
+      googleOAuthClientSecret: formData.get('googleOAuthClientSecret') as string || '',
+      googlePagespeedApiKey: formData.get('googlePagespeedApiKey') as string || '',
+      googleAdsDeveloperToken: formData.get('googleAdsDeveloperToken') as string || '',
+    };
+
+    await prisma.siteSettings.upsert({
+      where: { id: 'singleton' },
+      update: data,
+      create: { id: 'singleton', ...data },
+    });
+
+    // These credentials are read via a cache (see src/lib/google-credentials.ts) — updateTag
+    // gives read-your-own-writes semantics so the change is live on the very next request.
+    updateTag('google-credentials');
+    revalidatePath('/admin/integrations');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+export async function updateGoogleSignInToggle(enabled: boolean) {
+  try {
+    await prisma.siteSettings.upsert({
+      where: { id: 'singleton' },
+      update: { googleSignInEnabled: enabled },
+      create: { id: 'singleton', googleSignInEnabled: enabled },
+    });
+
+    revalidatePath('/login');
+    revalidatePath('/register');
+    revalidatePath('/admin/integrations');
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };

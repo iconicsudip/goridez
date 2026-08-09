@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Cinzel, Outfit, Inter } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import ClientLayout from "@/components/ClientLayout";
 import Providers from "@/components/Providers";
@@ -75,14 +76,55 @@ export default async function RootLayout({
     copyrightText: '© GoRidez. All rights reserved.',
   };
 
+  const {
+    googleAnalyticsId = '',
+    googleSearchConsoleVerification = '',
+    googleTagManagerId = '',
+    googleAdsensePublisherId = '',
+  } = siteSettingsData || {};
+
   return (
     <html lang="en" className={`${cinzel.variable} ${outfit.variable} ${inter.variable}`} suppressHydrationWarning>
       <head>
         <link rel="icon" href={siteSettings.favicon || '/favicon.ico'} />
         <link rel="shortcut icon" href={siteSettings.favicon || '/favicon.ico'} />
         <link rel="apple-touch-icon" href={siteSettings.favicon || '/favicon.ico'} />
+        {googleSearchConsoleVerification && (
+          <meta name="google-site-verification" content={googleSearchConsoleVerification} />
+        )}
+        {googleTagManagerId && (
+          <Script id="gtm-head" strategy="afterInteractive">
+            {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${googleTagManagerId}');`}
+          </Script>
+        )}
+        {googleAnalyticsId && (
+          <>
+            <Script src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`} strategy="afterInteractive" />
+            <Script id="ga4-init" strategy="afterInteractive">
+              {`window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', '${googleAnalyticsId}');`}
+            </Script>
+          </>
+        )}
+        {googleAdsensePublisherId && (
+          <Script
+            async
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${googleAdsensePublisherId}`}
+            crossOrigin="anonymous"
+            strategy="afterInteractive"
+          />
+        )}
       </head>
       <body suppressHydrationWarning>
+        {googleTagManagerId && (
+          <noscript>
+            <iframe
+              src={`https://www.googletagmanager.com/ns.html?id=${googleTagManagerId}`}
+              height="0"
+              width="0"
+              style={{ display: 'none', visibility: 'hidden' }}
+            />
+          </noscript>
+        )}
         <AntdRegistry>
           <Providers>
             <ClientLayout navVisibility={navVisibility} siteSettings={siteSettings} cities={cities}>

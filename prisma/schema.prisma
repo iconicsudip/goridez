@@ -11,6 +11,8 @@ model User {
   id            String         @id @default(cuid())
   name          String
   email         String         @unique
+  emailVerified DateTime?      // set by NextAuth on OAuth sign-in (e.g. Google)
+  image         String?        // avatar URL from OAuth providers
   password      String?
   role          String         @default("USER")
   phone         String?
@@ -19,6 +21,45 @@ model User {
   bookings      Booking[]
   notifications Notification[]
   wishlistItems WishlistItem[]
+  accounts      Account[]
+  sessions      Session[]
+}
+
+// Required by @auth/prisma-adapter for OAuth providers (e.g. "Sign in with Google").
+// The existing Credentials-based admin/customer login never touched these tables.
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
 }
 
 model Notification {
@@ -416,7 +457,39 @@ model SiteSettings {
   reviewSyncMonthCount  Int       @default(0)    // calls used this month
   googleAverageRating   Float     @default(0)    // overall business rating
   googleTotalReviews    Int       @default(0)    // total review count on Google
+
+  // Google Site Kit style integrations
+  googleAnalyticsId               String @default("") // GA4 Measurement ID, e.g. "G-XXXXXXX"
+  googleSearchConsoleVerification String @default("") // content of the "google-site-verification" meta tag
+  googleTagManagerId              String @default("") // GTM Container ID, e.g. "GTM-XXXXXXX"
+  googleAdsensePublisherId        String @default("") // AdSense Publisher ID, e.g. "ca-pub-XXXXXXXXXXXXXXXX"
+  googleAdsCustomerId             String @default("") // Google Ads Customer ID, e.g. "123-456-7890"
+  googleSignInEnabled             Boolean @default(false) // shows "Continue with Google" on customer login/register
+
+  // Google API credentials — managed from the admin Google Integrations page instead of .env,
+  // so they can be rotated without a redeploy. Env vars of the same name still work as a fallback.
+  googleOAuthClientId     String @default("") // OAuth 2.0 Client ID from Google Cloud Console
+  googleOAuthClientSecret String @default("") // OAuth 2.0 Client Secret
+  googlePagespeedApiKey   String @default("") // API key restricted to the PageSpeed Insights API
+  googleAdsDeveloperToken String @default("") // From the Google Ads API Center
+
   updatedAt             DateTime  @updatedAt
+}
+
+// Stores the admin's connected Google account (OAuth tokens) that powers the
+// "Connect" buttons on the Google Integrations admin page — one shared
+// connection whose granted scopes expand as more modules are enabled.
+// NOTE: tokens are stored in plaintext, consistent with how other secrets
+// (e.g. SiteSettings.razorpayKeySecret) are handled in this project today.
+model GoogleOAuthConnection {
+  id            String    @id @default("singleton")
+  connectedEmail String   @default("")
+  accessToken   String    @default("")
+  refreshToken  String    @default("")
+  scope         String    @default("") // space-separated list of granted OAuth scopes
+  expiryDate    DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
 
 model GoogleReview {
