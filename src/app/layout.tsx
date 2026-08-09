@@ -7,18 +7,28 @@ import Providers from "@/components/Providers";
 import { prisma } from "@/lib/prisma";
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import { unstable_cache } from 'next/cache';
+import { LEGAL_PAGES } from '@/lib/legal-pages';
 
 const getCachedLayoutData = unstable_cache(
   async () => {
-    const [selfDriveCount, chauffeurCount, taxiCount, tourCount, villaCount, siteSettingsData, cities] = await Promise.all([
+    const [selfDriveCount, chauffeurCount, taxiCount, tourCount, villaCount, siteSettingsData, cities, legalPageRows] = await Promise.all([
       prisma.car.count({ where: { serviceTypes: { has: 'SELF_DRIVE' } } }),
       prisma.car.count({ where: { serviceTypes: { has: 'WITH_DRIVER' } } }),
       prisma.car.count({ where: { serviceTypes: { has: 'TAXI' } } }),
       prisma.tour.count(),
       prisma.villa.count(),
       prisma.siteSettings.findUnique({ where: { id: 'singleton' } }),
-      prisma.city.findMany({ select: { id: true, name: true }, orderBy: { name: 'asc' } })
+      prisma.city.findMany({ select: { id: true, name: true }, orderBy: { name: 'asc' } }),
+      prisma.legalPage.findMany({ where: { id: { in: LEGAL_PAGES.map((p) => p.id) } }, select: { id: true, title: true } })
     ]);
+
+    // Footer link text follows whatever title the admin saved for each legal page;
+    // falls back to the default until a page has been saved for the first time.
+    const legalLinks = LEGAL_PAGES.map((p) => ({
+      path: p.path,
+      title: legalPageRows.find((r) => r.id === p.id)?.title || p.defaultTitle,
+    }));
+
     return {
       selfDriveCount,
       chauffeurCount,
@@ -26,7 +36,8 @@ const getCachedLayoutData = unstable_cache(
       tourCount,
       villaCount,
       siteSettingsData,
-      cities
+      cities,
+      legalLinks
     };
   },
   ['root-layout-data'],
@@ -59,7 +70,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { selfDriveCount, chauffeurCount, taxiCount, tourCount, villaCount, siteSettingsData, cities } = await getCachedLayoutData();
+  const { selfDriveCount, chauffeurCount, taxiCount, tourCount, villaCount, siteSettingsData, cities, legalLinks } = await getCachedLayoutData();
 
   const navVisibility = {
     showSelfDrive: selfDriveCount > 0,
@@ -127,7 +138,7 @@ export default async function RootLayout({
         )}
         <AntdRegistry>
           <Providers>
-            <ClientLayout navVisibility={navVisibility} siteSettings={siteSettings} cities={cities}>
+            <ClientLayout navVisibility={navVisibility} siteSettings={siteSettings} cities={cities} legalLinks={legalLinks}>
               <main>{children}</main>
             </ClientLayout>
           </Providers>

@@ -1,9 +1,15 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { MapPin, Phone, Mail, ChevronRight } from 'lucide-react';
+import { LEGAL_PAGES } from '@/lib/legal-pages';
 
-export default function Footer({ siteSettings, cities }: { siteSettings?: any, cities?: any[] }) {
+export default function Footer({ siteSettings, cities, legalLinks }: { siteSettings?: any, cities?: any[], legalLinks?: { path: string; title: string }[] }) {
   const logoSrc = siteSettings?.logoRidez || '/logo-ridez.png';
+  // Falls back to the static defaults if the caller didn't fetch DB-driven titles (shouldn't
+  // normally happen — the root layout always passes these — but keeps Footer safe standalone).
+  const displayLegalLinks = legalLinks && legalLinks.length > 0
+    ? legalLinks
+    : LEGAL_PAGES.map((p) => ({ path: p.path, title: p.defaultTitle }));
 
   const displayCities = cities && cities.length > 0
     ? cities
@@ -165,8 +171,16 @@ export default function Footer({ siteSettings, cities }: { siteSettings?: any, c
       </div>
 
       {/* Copyright Bar */}
-      <div className="container mx-auto px-4 mt-12 pt-8 border-t border-white/10 text-center text-white/60 text-xs font-medium">
-        {siteSettings?.copyrightText || `© ${new Date().getFullYear()} GoRidez. All rights reserved.`}
+      <div className="container mx-auto px-4 mt-12 pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4 text-white/60 text-xs font-medium">
+        <p>{siteSettings?.copyrightText || `© ${new Date().getFullYear()} GoRidez. All rights reserved.`}</p>
+
+        <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+          {displayLegalLinks.map((link) => (
+            <Link key={link.path} href={link.path} className="hover:text-white transition-colors">
+              {link.title}
+            </Link>
+          ))}
+        </nav>
       </div>
     </footer>
   );
