@@ -461,6 +461,7 @@ model SiteSettings {
 
   // Google Site Kit style integrations
   googleAnalyticsId               String @default("") // GA4 Measurement ID, e.g. "G-XXXXXXX"
+  googleAnalyticsPropertyId       String @default("") // GA4 Property ID, e.g. "123456789" (required for Data API)
   googleSearchConsoleVerification String @default("") // content of the "google-site-verification" meta tag
   googleTagManagerId              String @default("") // GTM Container ID, e.g. "GTM-XXXXXXX"
   googleAdsensePublisherId        String @default("") // AdSense Publisher ID, e.g. "ca-pub-XXXXXXXXXXXXXXXX"

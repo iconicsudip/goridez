@@ -26,7 +26,15 @@ const ADMIN_LINKS = [
   { href: '/admin/legal', label: 'Legal Pages & Contact', icon: ShieldCheck },
   { href: '/admin/reels', label: 'Instagram Reels', icon: Camera },
   { href: '/admin/settings', label: 'Branding Settings', icon: Settings },
-  { href: '/admin/integrations', label: 'Google Integrations', icon: Plug },
+  { 
+    href: '/admin/integrations', 
+    label: 'Google Integrations', 
+    icon: Plug,
+    subItems: [
+      { href: '/admin/integrations?tab=dashboard', label: 'Dashboard' },
+      { href: '/admin/integrations?tab=configuration', label: 'Configuration' }
+    ]
+  },
   { href: '/admin/bookings', label: 'Reservation Ledger', icon: ListOrdered },
   { href: '/admin/seo', label: 'Search Optimization (SEO)', icon: Search },
   { href: '/admin/coupons', label: 'Coupons & Alerts', icon: Percent },
@@ -79,30 +87,41 @@ export default function AdminSidebar({ adminName, adminEmail }: { adminName: str
         <nav className="flex flex-col gap-2 overflow-y-auto pr-2 pb-4 flex-1 custom-scrollbar">
           {ADMIN_LINKS.map((link) => {
             const Icon = link.icon;
+            
+            // For sub-items, we check if the current pathname+search matches
+            // However, usePathname doesn't include search params.
+            // We just check if it starts with the base path.
             const isActive = link.href === '/admin'
               ? pathname === '/admin'
-              : link.href !== '#' && pathname?.startsWith(link.href);
-
-            if (isActive) {
-              return (
-                <Link
-                  key={link.label}
-                  href={link.href}
-                  className="flex items-center gap-4 px-5 py-3.5 rounded-xl bg-green-600 text-white font-black uppercase text-[10px] tracking-widest shadow-md transition-all"
-                >
-                  <Icon size={16} strokeWidth={2.5} /> {link.label}
-                </Link>
-              );
-            }
+              : link.href !== '#' && pathname?.startsWith(link.href.split('?')[0]);
 
             return (
-              <Link
-                key={link.label}
-                href={link.href}
-                className="flex items-center gap-4 px-5 py-3.5 rounded-xl text-gray-500 hover:text-gray-900 hover:bg-gray-100 bg-transparent transition-colors font-bold uppercase text-[10px] tracking-widest"
-              >
-                <Icon size={16} /> {link.label}
-              </Link>
+              <div key={link.label} className="flex flex-col gap-1">
+                <Link
+                  href={link.href}
+                  className={`flex items-center gap-4 px-5 py-3.5 rounded-xl font-bold uppercase text-[10px] tracking-widest transition-all ${
+                    isActive
+                      ? 'bg-green-600 text-white shadow-md'
+                      : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100 bg-transparent'
+                  }`}
+                >
+                  <Icon size={16} strokeWidth={isActive ? 2.5 : 2} /> {link.label}
+                </Link>
+                {link.subItems && (
+                  <div className={`flex flex-col gap-1 pl-11 pr-2 pt-1 pb-2 ${isActive ? 'block' : 'hidden'}`}>
+                    {link.subItems.map((sub) => (
+                      <Link
+                        key={sub.label}
+                        href={sub.href}
+                        className="flex items-center gap-2 text-[10px] font-bold text-gray-500 hover:text-green-700 py-2 transition-colors uppercase tracking-widest"
+                      >
+                        <div className="w-1.5 h-1.5 rounded-full bg-gray-300"></div>
+                        {sub.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
             );
           })}
         </nav>

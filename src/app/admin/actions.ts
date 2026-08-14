@@ -1102,6 +1102,7 @@ export async function updateSiteSettings(formData: FormData) {
 export async function updateGoogleIntegration(field: string, value: string) {
   const ALLOWED_FIELDS = [
     'googleAnalyticsId',
+    'googleAnalyticsPropertyId',
     'googleSearchConsoleVerification',
     'googleTagManagerId',
     'googleAdsensePublisherId',

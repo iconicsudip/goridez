@@ -30,6 +30,8 @@ export async function POST(req: NextRequest) {
 
     const data = await res.json();
     const categories = data.lighthouseResult?.categories || {};
+    const audits = data.lighthouseResult?.audits || {};
+    
     const scores = {
       performance: Math.round((categories.performance?.score ?? 0) * 100),
       accessibility: Math.round((categories.accessibility?.score ?? 0) * 100),
@@ -37,7 +39,22 @@ export async function POST(req: NextRequest) {
       seo: Math.round((categories.seo?.score ?? 0) * 100),
     };
 
-    return NextResponse.json({ scores });
+    const labData = {
+      lcp: {
+        value: audits['largest-contentful-paint']?.displayValue || 'N/A',
+        score: audits['largest-contentful-paint']?.score || 0
+      },
+      cls: {
+        value: audits['cumulative-layout-shift']?.displayValue || 'N/A',
+        score: audits['cumulative-layout-shift']?.score || 0
+      },
+      tbt: {
+        value: audits['total-blocking-time']?.displayValue || 'N/A',
+        score: audits['total-blocking-time']?.score || 0
+      }
+    };
+
+    return NextResponse.json({ scores, labData });
   } catch (err: any) {
     return NextResponse.json({ error: err.message || 'PageSpeed test failed' }, { status: 500 });
   }

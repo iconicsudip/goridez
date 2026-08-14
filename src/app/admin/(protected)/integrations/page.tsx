@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma';
-import IntegrationsManager from '@/components/admin/IntegrationsManager';
+import IntegrationsTabs from '@/components/admin/integrations/IntegrationsTabs';
 import { getConnectionStatus } from '@/lib/google-oauth';
 import { getGoogleCredentials } from '@/lib/google-credentials';
 
@@ -15,7 +15,7 @@ export default async function AdminIntegrationsPage() {
   const defaultSiteUrl = (process.env.NEXTAUTH_URL || 'https://goridez.com').replace(/\/$/, '') + '/';
 
   return (
-    <IntegrationsManager
+    <IntegrationsTabs
       initialData={siteSettings}
       connection={connection}
       credentials={credentials}
