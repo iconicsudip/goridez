@@ -2,7 +2,7 @@
 
 import { prisma } from '@/lib/prisma';
 import { revalidatePath, updateTag } from 'next/cache';
-import { getCarSlug } from '@/lib/utils';
+import { getCarSlug, normalizePagePath } from '@/lib/utils';
 
 function revalidateCarPaths(carSlug?: string) {
   revalidatePath('/');
@@ -792,9 +792,9 @@ export async function getSeoSettingsAction() {
 }
 
 export async function upsertSeoSettingAction(formData: FormData) {
+  const pagePath = normalizePagePath(formData.get('pagePath') as string || '/');
   try {
     const id = formData.get('id') as string | null;
-    const pagePath = (formData.get('pagePath') as string || '/').trim();
     const pageName = (formData.get('pageName') as string || 'Page').trim();
     const metaTitle = (formData.get('metaTitle') as string || '').trim();
     const metaDescription = (formData.get('metaDescription') as string || '').trim();
@@ -837,6 +837,12 @@ export async function upsertSeoSettingAction(formData: FormData) {
     revalidatePath('/admin/seo');
     return { success: true };
   } catch (error: any) {
+    if (error.code === 'P2002') {
+      return {
+        success: false,
+        error: `"${pagePath}" already has SEO settings configured under a different entry. Delete or edit that entry first, or choose a different page path.`,
+      };
+    }
     return { success: false, error: error.message };
   }
 }

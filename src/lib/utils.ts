@@ -11,6 +11,30 @@ export const getCarSlug = (car: { make: string; model: string }) => {
   return slugify(`${car.make} ${car.model}`);
 };
 
+/**
+ * Normalizes a page path used as the SEO settings lookup key. Admins often paste a full
+ * URL (copied from the browser address bar — complete with domain, "www.", and live query
+ * params) instead of a bare relative path. Since this value is the unique key the live site
+ * looks up SEO content by (see getSeoForPath in src/lib/seo.ts), an unnormalized value never
+ * matches any real page and the saved content silently never appears on the site. Used on
+ * both the admin form (for immediate feedback) and the server action (as the source of truth).
+ */
+export const normalizePagePath = (raw: string): string => {
+  let path = (raw || '').trim();
+  if (!path) return '/';
+  try {
+    if (/^https?:\/\//i.test(path)) {
+      path = new URL(path).pathname;
+    }
+  } catch {
+    // Not a parseable absolute URL — fall through and treat as a raw path.
+  }
+  path = path.split('?')[0].split('#')[0]; // strip query string / hash fragment
+  if (!path.startsWith('/')) path = `/${path}`;
+  if (path.length > 1 && path.endsWith('/')) path = path.slice(0, -1); // strip trailing slash
+  return path || '/';
+};
+
 export interface PackageDecompositionResult {
   basePrice: number;
   extraInfo: string;

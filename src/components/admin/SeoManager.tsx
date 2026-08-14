@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Globe, Plus, Trash2, Edit3, Save, Sparkles, AlertCircle, CheckCircle2, FileCode, Search, ExternalLink } from 'lucide-react';
 import ImageUpload from '@/components/admin/ImageUpload';
 import { upsertSeoSettingAction, deleteSeoSettingAction, updateSiteSettings } from '@/app/admin/actions';
+import { normalizePagePath } from '@/lib/utils';
 
 interface SeoSetting {
   id: string;
@@ -80,7 +81,10 @@ export default function SeoManager({
     setJsonError(null);
   };
 
-  const createNewPage = (path: string, name: string) => {
+  const createNewPage = (rawPath: string, name: string) => {
+    // Guards against pasted full URLs (domain, "www.", query params) so the stored
+    // pagePath always matches what the live site looks SEO content up by.
+    const path = normalizePagePath(rawPath);
     const existing = settings.find((s) => s.pagePath === path);
     if (existing) {
       selectPage(existing);
@@ -390,6 +394,8 @@ export default function SeoManager({
                   type="text"
                   value={formData.pagePath || ''}
                   onChange={(e) => setFormData({ ...formData, pagePath: e.target.value })}
+                  onBlur={(e) => setFormData({ ...formData, pagePath: normalizePagePath(e.target.value) })}
+                  placeholder="/self-drive (not the full https:// URL)"
                   className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm font-mono focus:border-green-600 outline-none text-gray-900"
                   required
                 />
