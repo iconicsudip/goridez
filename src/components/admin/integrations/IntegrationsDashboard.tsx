@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { RefreshCw, AlertTriangle } from 'lucide-react';
+import { RefreshCw, AlertTriangle, Clock } from 'lucide-react';
 
 const COLORS = ['#A78BFA', '#93C5FD', '#F472B6', '#FCD34D', '#F87171'];
 
@@ -32,6 +32,25 @@ function SearchConsoleAccessNotice() {
   );
 }
 
+// Shown when Search Console access works (the API call succeeds) but returns zero rows for
+// every report. This is normal right after a property is newly verified or newly granted
+// access — Search Console doesn't backfill Performance data from before that point, and
+// typically takes 24-72h to start recording it. Distinguishing this from SearchConsoleAccessNotice
+// matters: that one means "fix a permission", this one means "just wait".
+function SearchConsoleNoDataNotice() {
+  return (
+    <div className="bg-blue-50 border border-blue-200 rounded-3xl p-6 flex items-start gap-4">
+      <Clock className="text-blue-600 shrink-0 mt-0.5" size={20} />
+      <div>
+        <p className="text-sm font-bold text-blue-900">Search Console is connected — no data recorded yet</p>
+        <p className="text-xs text-blue-800 mt-1.5 leading-relaxed">
+          Access is working fine, but Google hasn&apos;t returned any impressions, clicks or queries for this property in the last 28 days. This is expected right after a property is newly verified or newly granted access — Search Console doesn&apos;t backfill data from before that point, and typically takes 24-72 hours to start showing Performance data. Check back in a day or two.
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export default function IntegrationsDashboard({ siteUrl }: { siteUrl: string }) {
   const [activeTab, setActiveTab] = useState('Traffic');
   const tabs = ['Traffic', 'Content', 'Speed', 'Monetization'];
@@ -49,6 +68,11 @@ export default function IntegrationsDashboard({ siteUrl }: { siteUrl: string }) 
   const [topQueries, setTopQueries] = useState<any>(null);
   const [speedData, setSpeedData] = useState<any>(null);
   const [searchConsoleNoAccess, setSearchConsoleNoAccess] = useState(false);
+  // True once we've confirmed the connected account CAN reach Search Console but it has
+  // returned zero rows for every report — i.e. access is fine, Google just hasn't recorded
+  // any Performance data for this property yet (normal for the first 24-72h after a property
+  // is newly verified/granted access; it doesn't backfill from before that point).
+  const [searchConsoleNoData, setSearchConsoleNoData] = useState(false);
 
   // State for loading/errors
   const [loading, setLoading] = useState<Record<string, boolean>>({});
@@ -160,7 +184,11 @@ export default function IntegrationsDashboard({ siteUrl }: { siteUrl: string }) 
             events: Math.round(row.clicks * 0.2) || 0   // Dummy data for visual
           };
         });
-        setSearchTrafficData({ chart: formattedSearch, totalImpressions, totalClicks });
+        if (!dataSearch.rows || dataSearch.rows.length === 0) {
+          setSearchConsoleNoData(true);
+        } else {
+          setSearchTrafficData({ chart: formattedSearch, totalImpressions, totalClicks });
+        }
       }
 
     } catch (err: any) {
@@ -193,12 +221,16 @@ export default function IntegrationsDashboard({ siteUrl }: { siteUrl: string }) 
       if (dataQueries.noAccess) {
         setSearchConsoleNoAccess(true);
       } else if (resQueries.ok) {
-        const formattedQueries = (dataQueries.rows || []).map((row: any) => ({
-          query: row.keys[0],
-          clicks: row.clicks,
-          impressions: row.impressions
-        }));
-        setTopQueries(formattedQueries);
+        if (!dataQueries.rows || dataQueries.rows.length === 0) {
+          setSearchConsoleNoData(true);
+        } else {
+          const formattedQueries = (dataQueries.rows || []).map((row: any) => ({
+            query: row.keys[0],
+            clicks: row.clicks,
+            impressions: row.impressions
+          }));
+          setTopQueries(formattedQueries);
+        }
       }
     } catch (err: any) {
       setError(prev => ({ ...prev, content: err.message }));
@@ -405,6 +437,7 @@ export default function IntegrationsDashboard({ siteUrl }: { siteUrl: string }) 
               )}
 
               {searchConsoleNoAccess && <SearchConsoleAccessNotice />}
+              {searchConsoleNoData && <SearchConsoleNoDataNotice />}
 
               {searchTrafficData && (
                 <div className="bg-white border border-gray-200 rounded-3xl p-8 shadow-sm">
@@ -488,6 +521,7 @@ export default function IntegrationsDashboard({ siteUrl }: { siteUrl: string }) 
           ) : (
             <>
               {searchConsoleNoAccess && <SearchConsoleAccessNotice />}
+              {searchConsoleNoData && <SearchConsoleNoDataNotice />}
 
               {topQueries && (
                 <div>
