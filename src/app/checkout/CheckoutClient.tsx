@@ -3,11 +3,12 @@
 import { useBookingStore } from '@/store/useBookingStore';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { ShieldCheck, UploadCloud, CheckCircle2, Sparkles, Percent, Gift } from 'lucide-react';
+import { ShieldCheck, UploadCloud, CheckCircle2, Sparkles, Percent, Gift, UserCheck } from 'lucide-react';
 import { useSession } from 'next-auth/react';
+import Link from 'next/link';
 import Image from 'next/image';
 
-export default function CheckoutClient({ razorpayKeyId }: { razorpayKeyId?: string }) {
+export default function CheckoutClient({ razorpayKeyId, guestCheckoutEnabled = false }: { razorpayKeyId?: string; guestCheckoutEnabled?: boolean }) {
   const router = useRouter();
   const { data: session, status } = useSession();
   const { cartItems, clearCart, session: bookingSession } = useBookingStore();
@@ -34,14 +35,16 @@ export default function CheckoutClient({ razorpayKeyId }: { razorpayKeyId?: stri
 
   useEffect(() => {
     setMounted(true);
-    if (status === 'unauthenticated') {
+    // Only force a login redirect when guest checkout is switched off in admin settings —
+    // otherwise let unauthenticated visitors proceed straight through as a guest.
+    if (status === 'unauthenticated' && !guestCheckoutEnabled) {
       router.push('/login?callbackUrl=/checkout');
       return;
     }
-    if (!isSuccess && cartItems.length === 0 && status === 'authenticated') {
+    if (!isSuccess && cartItems.length === 0 && status !== 'loading') {
       router.push('/');
     }
-  }, [cartItems.length, router, status, isSuccess]);
+  }, [cartItems.length, router, status, isSuccess, guestCheckoutEnabled]);
 
   // Prefill details from user session
   useEffect(() => {
@@ -225,6 +228,23 @@ export default function CheckoutClient({ razorpayKeyId }: { razorpayKeyId?: stri
         </h1>
         <p className="text-gray-500 text-sm">Finalize your Sovereign Travel-Tech Reservation</p>
       </div>
+
+      {status === 'unauthenticated' && guestCheckoutEnabled && (
+        <div className="mb-10 p-4 bg-green-600/5 border border-green-600/20 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <UserCheck size={18} className="text-green-700 shrink-0" />
+            <p className="text-xs text-gray-700">
+              You&apos;re checking out as a <b>guest</b>. We&apos;ll use the details below to confirm your reservation.
+            </p>
+          </div>
+          <Link
+            href="/login?callbackUrl=/checkout"
+            className="text-xs font-bold text-green-700 hover:text-green-800 underline underline-offset-2 shrink-0"
+          >
+            Log in instead
+          </Link>
+        </div>
+      )}
 
       <div className="flex flex-col lg:flex-row gap-12">
         {/* Left Column: Form & Identity */}

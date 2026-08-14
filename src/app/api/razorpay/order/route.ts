@@ -5,10 +5,7 @@ import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../auth/[...nextauth]/route';
 
-async function getRazorpayInstance() {
-  const settings = await prisma.siteSettings.findUnique({
-    where: { id: 'singleton' },
-  });
+function getRazorpayInstance(settings: { razorpayKeyId?: string | null; razorpayKeySecret?: string | null } | null) {
   return new Razorpay({
     key_id: settings?.razorpayKeyId || process.env.RAZORPAY_KEY_ID || 'rzp_test_mockkey123',
     key_secret: settings?.razorpayKeySecret || process.env.RAZORPAY_KEY_SECRET || 'mocksecret123',
@@ -17,32 +14,73 @@ async function getRazorpayInstance() {
 
 export async function POST(req: NextRequest) {
   try {
-    // 1. Authenticate user session
-    const session = await getServerSession(authOptions);
-    if (!session || !session.user) {
-      return NextResponse.json({ error: 'Unauthorized: No active session' }, { status: 401 });
-    }
-
-    const dbUser = await prisma.user.findUnique({
-      where: { email: session.user.email as string },
-    });
-
-    if (!dbUser) {
-      return NextResponse.json({ error: 'User not found in database' }, { status: 404 });
-    }
-
     const { amount, cartItems, driverDetails, couponCode, discount, pickupDate, returnDate } = await req.json();
 
     if (!amount || !cartItems || cartItems.length === 0) {
       return NextResponse.json({ error: 'Invalid checkout request data' }, { status: 400 });
     }
 
-    // Update phone in user profile if it's missing or different
-    if (driverDetails.phone && dbUser.phone !== driverDetails.phone) {
-      await prisma.user.update({
-        where: { id: dbUser.id },
-        data: { phone: driverDetails.phone },
+    const settings = await prisma.siteSettings.findUnique({
+      where: { id: 'singleton' },
+    });
+
+    // 1. Authenticate user session, or fall back to a guest checkout account when admin
+    // has switched that on (see SiteSettings.guestCheckoutEnabled / /admin/settings).
+    const session = await getServerSession(authOptions);
+    let dbUser;
+
+    if (session?.user) {
+      dbUser = await prisma.user.findUnique({
+        where: { email: session.user.email as string },
       });
+
+      if (!dbUser) {
+        return NextResponse.json({ error: 'User not found in database' }, { status: 404 });
+      }
+
+      // Update phone in user profile if it's missing or different
+      if (driverDetails.phone && dbUser.phone !== driverDetails.phone) {
+        await prisma.user.update({
+          where: { id: dbUser.id },
+          data: { phone: driverDetails.phone },
+        });
+      }
+    } else {
+      if (!settings?.guestCheckoutEnabled) {
+        return NextResponse.json({ error: 'Unauthorized: No active session' }, { status: 401 });
+      }
+
+      const guestName = (driverDetails?.name as string || '').trim();
+      const guestEmail = (driverDetails?.email as string || '').trim().toLowerCase();
+      const guestPhone = (driverDetails?.phone as string || '').trim();
+
+      if (!guestName || !guestEmail || !guestPhone) {
+        return NextResponse.json(
+          { error: 'Name, email and phone are required for guest checkout' },
+          { status: 400 }
+        );
+      }
+
+      const existing = await prisma.user.findUnique({ where: { email: guestEmail } });
+
+      // If this email already belongs to a real (non-guest) account, don't silently attach
+      // a booking to it — that would let anyone book against someone else's account just by
+      // typing their email address. Send them to log in instead.
+      if (existing && !existing.isGuest) {
+        return NextResponse.json(
+          { error: 'This email is already registered. Please log in to continue.' },
+          { status: 409 }
+        );
+      }
+
+      dbUser = existing
+        ? await prisma.user.update({
+            where: { id: existing.id },
+            data: { name: guestName, phone: guestPhone },
+          })
+        : await prisma.user.create({
+            data: { name: guestName, email: guestEmail, phone: guestPhone, isGuest: true },
+          });
     }
 
     // 2. Compute and log PENDING bookings in the database
@@ -128,7 +166,7 @@ export async function POST(req: NextRequest) {
       },
     };
 
-    const rzp = await getRazorpayInstance();
+    const rzp = getRazorpayInstance(settings);
     const order = await rzp.orders.create(options);
 
     if (!order) {

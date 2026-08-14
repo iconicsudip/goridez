@@ -1,9 +1,52 @@
 'use client';
 
 import { useState } from 'react';
-import { updateSiteSettings } from '@/app/admin/actions';
-import { Settings, Save, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { updateSiteSettings, updateGuestCheckoutToggle } from '@/app/admin/actions';
+import { Settings, Save, X, UserCheck } from 'lucide-react';
 import ImageUpload from './ImageUpload';
+
+function GuestCheckoutCard({ enabled }: { enabled: boolean }) {
+  const router = useRouter();
+  const [on, setOn] = useState(enabled);
+  const [saving, setSaving] = useState(false);
+
+  const toggle = async () => {
+    const next = !on;
+    setOn(next);
+    setSaving(true);
+    await updateGuestCheckoutToggle(next);
+    setSaving(false);
+    router.refresh();
+  };
+
+  return (
+    <div className="bg-white border border-gray-200 rounded-3xl p-8 mb-8 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="flex items-start gap-4 max-w-lg">
+        <div className="w-11 h-11 rounded-2xl bg-green-600/10 border border-green-600/20 flex items-center justify-center shrink-0">
+          <UserCheck className="text-green-700" size={20} />
+        </div>
+        <div>
+          <h3 className="text-sm font-black uppercase tracking-tight text-gray-900">Guest Checkout</h3>
+          <p className="text-gray-500 text-xs mt-1 leading-relaxed">
+            When enabled, customers can complete a booking and pay on <code className="font-mono text-[11px]">/checkout</code> without creating an account or logging in first. Their name, email &amp; phone from the checkout form are still captured on the booking as usual.
+          </p>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        onClick={toggle}
+        disabled={saving}
+        className={`shrink-0 font-bold text-[10px] uppercase tracking-wider px-6 py-3 rounded-xl transition-all disabled:opacity-50 ${
+          on ? 'bg-red-50 hover:bg-red-100 text-red-700 border border-red-200' : 'bg-green-600 hover:bg-green-700 text-white'
+        }`}
+      >
+        {saving ? 'Saving…' : on ? 'Disable Guest Checkout' : 'Enable Guest Checkout'}
+      </button>
+    </div>
+  );
+}
 
 export default function SiteSettingsManager({ initialData }: { initialData: any }) {
   const [loading, setLoading] = useState(false);
@@ -76,6 +119,8 @@ export default function SiteSettingsManager({ initialData }: { initialData: any 
           </button>
         </div>
       )}
+
+      <GuestCheckoutCard enabled={initialData?.guestCheckoutEnabled || false} />
 
       <form onSubmit={handleSubmit}>
         <div className="bg-white border border-gray-200 rounded-3xl p-8 mb-8 shadow-sm">

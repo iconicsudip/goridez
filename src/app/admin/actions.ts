@@ -1169,6 +1169,22 @@ export async function updateGoogleSignInToggle(enabled: boolean) {
   }
 }
 
+export async function updateGuestCheckoutToggle(enabled: boolean) {
+  try {
+    await prisma.siteSettings.upsert({
+      where: { id: 'singleton' },
+      update: { guestCheckoutEnabled: enabled },
+      create: { id: 'singleton', guestCheckoutEnabled: enabled },
+    });
+
+    revalidatePath('/checkout');
+    revalidatePath('/admin/settings');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
 export async function updateCitiesPageBanner(bannerUrl: string) {
   try {
     await prisma.siteSettings.upsert({

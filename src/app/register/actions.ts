@@ -16,6 +16,17 @@ export async function registerUser(formData: FormData) {
   try {
     const existing = await prisma.user.findUnique({ where: { email } });
     if (existing) {
+      // An account with this email already exists, but if it was only ever created by
+      // guest checkout (no password set), let them claim it instead of dead-ending —
+      // this preserves their existing booking history under the new real account.
+      if (existing.isGuest && !existing.password) {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        await prisma.user.update({
+          where: { id: existing.id },
+          data: { name, password: hashedPassword, phone: phone || existing.phone, isGuest: false },
+        });
+        return { success: true };
+      }
       return { error: 'Email already registered' };
     }
 

@@ -16,6 +16,7 @@ model User {
   password      String?
   role          String         @default("USER")
   phone         String?
+  isGuest       Boolean        @default(false) // true for accounts auto-created by guest checkout (no password set)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   bookings      Booking[]
@@ -465,6 +466,7 @@ model SiteSettings {
   googleAdsensePublisherId        String @default("") // AdSense Publisher ID, e.g. "ca-pub-XXXXXXXXXXXXXXXX"
   googleAdsCustomerId             String @default("") // Google Ads Customer ID, e.g. "123-456-7890"
   googleSignInEnabled             Boolean @default(false) // shows "Continue with Google" on customer login/register
+  guestCheckoutEnabled            Boolean @default(false) // lets customers pay without creating an account on /checkout
 
   // Google API credentials — managed from the admin Google Integrations page instead of .env,
   // so they can be rotated without a redeploy. Env vars of the same name still work as a fallback.
