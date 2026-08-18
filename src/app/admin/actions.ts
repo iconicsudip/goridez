@@ -1240,6 +1240,25 @@ export async function generateLlmsTxtDraftAction() {
   }
 }
 
+/** Saves the admin's extra/excluded paths for the sitemap. The core content-derived URLs
+ * (cars, tours, blogs, static pages) are never editable directly — only extended or trimmed —
+ * so the sitemap can't drift into linking pages that don't exist. */
+export async function updateSitemapConfig(extraUrls: string, excludedPaths: string) {
+  try {
+    await prisma.siteSettings.upsert({
+      where: { id: 'singleton' },
+      update: { sitemapExtraUrls: extraUrls, sitemapExcludedPaths: excludedPaths },
+      create: { id: 'singleton', sitemapExtraUrls: extraUrls, sitemapExcludedPaths: excludedPaths },
+    });
+    revalidatePath('/sitemap.xml');
+    revalidatePath('/sitemap');
+    revalidatePath('/admin/sitemap');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
 export async function updateCitiesPageBanner(bannerUrl: string) {
   try {
     await prisma.siteSettings.upsert({

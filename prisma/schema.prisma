@@ -481,6 +481,12 @@ model SiteSettings {
   customRobotsTxt String? // raw text served verbatim at /robots.txt when set
   llmsTxt         String? // raw markdown served verbatim at /llms.txt when set
 
+  // AI SEO — sitemap. The URL list itself is always derived live from real content (cars,
+  // tours, blogs, static pages) so it can't drift into broken links; these two just let an
+  // admin extend or trim that generated list, newline-separated.
+  sitemapExtraUrls      String @default("") // extra paths to include that aren't auto-detected
+  sitemapExcludedPaths  String @default("") // paths to leave out, on top of the noIndex flag
+
   updatedAt             DateTime  @updatedAt
 }
 
