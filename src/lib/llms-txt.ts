@@ -7,7 +7,7 @@ import { LEGAL_PAGES } from '@/lib/legal-pages';
  * markdown-links-with-descriptions format the spec expects, generated deterministically from
  * the database rather than an LLM call (there's nothing to "hallucinate": every link below is
  * a real page). Used both as the live fallback served at /llms.txt when the admin hasn't saved
- * a custom version, and as the draft the "Generate" button in /admin/ai-seo prefills — the
+ * a custom version, and as the draft the "Generate" button in /admin/llms prefills — the
  * admin can then edit or fully rewrite it before saving.
  */
 export async function generateLlmsTxtDraft(): Promise<string> {

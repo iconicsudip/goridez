@@ -1200,7 +1200,7 @@ export async function updateRobotsTxt(customText: string) {
       create: { id: 'singleton', customRobotsTxt: trimmed || null },
     });
     revalidatePath('/robots.txt');
-    revalidatePath('/admin/ai-seo');
+    revalidatePath('/admin/robots');
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };
@@ -1222,7 +1222,7 @@ export async function updateLlmsTxt(content: string) {
       create: { id: 'singleton', llmsTxt: trimmed || null },
     });
     revalidatePath('/llms.txt');
-    revalidatePath('/admin/ai-seo');
+    revalidatePath('/admin/llms');
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };

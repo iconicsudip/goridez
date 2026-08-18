@@ -1,6 +1,6 @@
 import { getSiteUrl } from '@/lib/utils';
 
-/** The default robots.txt served until an admin saves a custom one on /admin/ai-seo. */
+/** The default robots.txt served until an admin saves a custom one on /admin/robots. */
 export function buildDefaultRobotsTxt(): string {
   const base = getSiteUrl();
   return [

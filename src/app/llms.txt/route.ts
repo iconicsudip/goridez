@@ -5,7 +5,7 @@ import { generateLlmsTxtDraft } from '@/lib/llms-txt';
 export const revalidate = 3600;
 
 // Serves the admin-saved llms.txt (SiteSettings.llmsTxt) verbatim, or falls back to a live
-// auto-generated draft — see generateLlmsTxtDraft — until an admin saves one on /admin/ai-seo.
+// auto-generated draft — see generateLlmsTxtDraft — until an admin saves one on /admin/llms.
 export async function GET() {
   const settings = await prisma.siteSettings.findUnique({ where: { id: 'singleton' } });
   const body = settings?.llmsTxt?.trim() ? settings.llmsTxt : await generateLlmsTxtDraft();
