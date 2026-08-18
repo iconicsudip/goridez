@@ -3,6 +3,8 @@
 import { prisma } from '@/lib/prisma';
 import { revalidatePath, updateTag } from 'next/cache';
 import { getCarSlug, normalizePagePath } from '@/lib/utils';
+import { generateLlmsTxtDraft } from '@/lib/llms-txt';
+import { buildDefaultRobotsTxt } from '@/lib/robots-txt';
 
 function revalidateCarPaths(carSlug?: string) {
   revalidatePath('/');
@@ -1181,6 +1183,58 @@ export async function updateGuestCheckoutToggle(enabled: boolean) {
     revalidatePath('/checkout');
     revalidatePath('/admin/settings');
     return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+// --- AI SEO: robots.txt / llms.txt ---
+
+/** Saves a custom robots.txt. Pass null/empty to reset back to the auto-generated default. */
+export async function updateRobotsTxt(customText: string) {
+  try {
+    const trimmed = customText.trim();
+    await prisma.siteSettings.upsert({
+      where: { id: 'singleton' },
+      update: { customRobotsTxt: trimmed || null },
+      create: { id: 'singleton', customRobotsTxt: trimmed || null },
+    });
+    revalidatePath('/robots.txt');
+    revalidatePath('/admin/ai-seo');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+/** Regenerates the default robots.txt from current settings — used by the "Reset to Generated Default" button. */
+export async function getDefaultRobotsTxt() {
+  return buildDefaultRobotsTxt();
+}
+
+/** Saves a custom llms.txt. Pass empty to reset back to the auto-generated draft. */
+export async function updateLlmsTxt(content: string) {
+  try {
+    const trimmed = content.trim();
+    await prisma.siteSettings.upsert({
+      where: { id: 'singleton' },
+      update: { llmsTxt: trimmed || null },
+      create: { id: 'singleton', llmsTxt: trimmed || null },
+    });
+    revalidatePath('/llms.txt');
+    revalidatePath('/admin/ai-seo');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+/** Builds a fresh llms.txt draft from live site content — does not save it, just returns text
+ * for the admin to review/edit before hitting Save. */
+export async function generateLlmsTxtDraftAction() {
+  try {
+    const draft = await generateLlmsTxtDraft();
+    return { success: true, draft };
   } catch (error: any) {
     return { success: false, error: error.message };
   }

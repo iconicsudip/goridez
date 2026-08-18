@@ -476,6 +476,11 @@ model SiteSettings {
   googlePagespeedApiKey   String @default("") // API key restricted to the PageSpeed Insights API
   googleAdsDeveloperToken String @default("") // From the Google Ads API Center
 
+  // AI SEO — robots.txt / llms.txt. Null means "not customized yet": the live /robots.txt and
+  // /llms.txt routes fall back to an auto-generated default built from real site content instead.
+  customRobotsTxt String? // raw text served verbatim at /robots.txt when set
+  llmsTxt         String? // raw markdown served verbatim at /llms.txt when set
+
   updatedAt             DateTime  @updatedAt
 }
 

@@ -11,6 +11,12 @@ export const getCarSlug = (car: { make: string; model: string }) => {
   return slugify(`${car.make} ${car.model}`);
 };
 
+/** Canonical absolute site origin (no trailing slash), used to build absolute URLs for
+ * sitemap.xml, robots.txt and llms.txt. Mirrors the pattern already used for the OAuth
+ * redirect URI and the admin integrations "site URL" default. */
+export const getSiteUrl = (): string =>
+  (process.env.NEXTAUTH_URL || 'https://goridez.com').replace(/\/$/, '');
+
 /**
  * Normalizes a page path used as the SEO settings lookup key. Admins often paste a full
  * URL (copied from the browser address bar — complete with domain, "www.", and live query
