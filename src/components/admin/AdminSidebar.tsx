@@ -101,9 +101,13 @@ export default function AdminSidebar({ adminName, adminEmail }: { adminName: str
             // For sub-items, we check if the current pathname+search matches
             // However, usePathname doesn't include search params.
             // We just check if it starts with the base path.
+            // A parent is also active when the current path matches one of its subItems —
+            // needed for sections like SEO whose sub-pages (/admin/sitemap, /admin/robots,
+            // /admin/llms) don't share the parent's own URL prefix.
+            const matchesPath = (href: string) => href !== '#' && pathname?.startsWith(href.split('?')[0]);
             const isActive = link.href === '/admin'
               ? pathname === '/admin'
-              : link.href !== '#' && pathname?.startsWith(link.href.split('?')[0]);
+              : matchesPath(link.href) || !!link.subItems?.some((sub) => matchesPath(sub.href));
 
             return (
               <div key={link.label} className="flex flex-col gap-1">
