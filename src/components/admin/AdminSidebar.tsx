@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 import {
   LayoutDashboard, Car, Layers, Globe, Map, MapPin, Building, FileText,
-  Search, Activity, Users, Percent, LogOut, UserCircle, ListOrdered, HelpCircle, Info, Settings, ShieldCheck, Camera, MapPinned, Navigation, Heart, Plug, Bot
+  Search, Activity, Users, Percent, LogOut, UserCircle, ListOrdered, HelpCircle, Info, Settings, ShieldCheck, Camera, MapPinned, Navigation, Heart, Plug, Bot, UserX
 } from 'lucide-react';
 
 const ADMIN_LINKS = [
@@ -36,6 +36,7 @@ const ADMIN_LINKS = [
     ]
   },
   { href: '/admin/bookings', label: 'Reservation Ledger', icon: ListOrdered },
+  { href: '/admin/abandoned-checkouts', label: 'Abandoned Checkouts', icon: UserX },
   { 
     href: '/admin/seo', 
     label: 'Search Optimization (SEO)', 

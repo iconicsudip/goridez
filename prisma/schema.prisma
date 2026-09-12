@@ -252,6 +252,30 @@ model Booking {
   villa             Villa?   @relation(fields: [villaId], references: [id])
 }
 
+// Captures checkout-form details as the customer types them, before they ever click "Pay
+// Securely" (or if they abandon at the payment modal) — otherwise a partially-filled or
+// abandoned checkout leaves no record at all for the business to follow up on. Upserted by
+// email (falling back to phone) as the customer keeps editing, so repeated auto-saves update
+// one row instead of spamming new ones. Marked CONVERTED once the matching booking is paid.
+model CheckoutLead {
+  id                  String    @id @default(cuid())
+  name                String?
+  email               String?
+  phone               String?
+  dob                 String?
+  specialRequests     String?
+  cartSnapshot        String?   // JSON snapshot of cartItems at time of capture, for context
+  pickupDate          DateTime?
+  returnDate          DateTime?
+  status              String    @default("ABANDONED") // ABANDONED | CONVERTED
+  convertedBookingIds String?   // comma-separated Booking ids, set once they complete payment
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@index([email])
+  @@index([phone])
+}
+
 model WishlistItem {
   id        String   @id @default(cuid())
   userId    String

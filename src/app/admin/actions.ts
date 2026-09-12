@@ -1259,6 +1259,17 @@ export async function updateSitemapConfig(extraUrls: string, excludedPaths: stri
   }
 }
 
+// --- ABANDONED CHECKOUTS ---
+export async function deleteCheckoutLead(id: string) {
+  try {
+    await prisma.checkoutLead.delete({ where: { id } });
+    revalidatePath('/admin/abandoned-checkouts');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
 export async function updateCitiesPageBanner(bannerUrl: string) {
   try {
     await prisma.siteSettings.upsert({

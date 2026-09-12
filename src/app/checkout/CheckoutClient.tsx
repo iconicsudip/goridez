@@ -2,11 +2,12 @@
 
 import { useBookingStore } from '@/store/useBookingStore';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ShieldCheck, UploadCloud, CheckCircle2, Sparkles, Percent, Gift, UserCheck } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { captureAbandonedCheckout, markCheckoutLeadConverted } from './actions';
 
 export default function CheckoutClient({ razorpayKeyId, guestCheckoutEnabled = false }: { razorpayKeyId?: string; guestCheckoutEnabled?: boolean }) {
   const router = useRouter();
@@ -14,6 +15,9 @@ export default function CheckoutClient({ razorpayKeyId, guestCheckoutEnabled = f
   const { cartItems, clearCart, session: bookingSession } = useBookingStore();
   const [mounted, setMounted] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  // Tracks the abandoned-checkout lead this form auto-saved to (see below) so it can be
+  // flipped to CONVERTED if the customer actually completes payment.
+  const leadIdRef = useRef<string | null>(null);
 
   // Form states
   const [form, setForm] = useState({
@@ -56,6 +60,29 @@ export default function CheckoutClient({ razorpayKeyId, guestCheckoutEnabled = f
       }));
     }
   }, [session]);
+
+  // Auto-saves the form 1.5s after the customer stops typing, so a filled-in-but-never-submitted
+  // (or abandoned at the payment modal) checkout still leaves a record to follow up on. Skips
+  // saving until there's an email or phone — nothing actionable to reach them with otherwise.
+  useEffect(() => {
+    if (!form.email.trim() && !form.phone.trim()) return;
+    const timer = setTimeout(() => {
+      captureAbandonedCheckout({
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        dob: form.dob,
+        specialRequests: form.specialRequests,
+        cartItems,
+        pickupDate: bookingSession?.pickupDate,
+        returnDate: bookingSession?.returnDate,
+      }).then((res) => {
+        if (res.success && res.leadId) leadIdRef.current = res.leadId;
+      });
+    }, 1500);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.name, form.email, form.phone, form.dob, form.specialRequests]);
 
   if (!mounted || status === 'loading' || cartItems.length === 0) return null;
 
@@ -178,6 +205,9 @@ export default function CheckoutClient({ razorpayKeyId, guestCheckoutEnabled = f
               const verifyData = await verifyRes.json();
               if (verifyData.success) {
                 setIsSuccess(true);
+                if (leadIdRef.current) {
+                  markCheckoutLeadConverted(leadIdRef.current, orderData.bookingIds);
+                }
                 clearCart();
                 router.push(`/checkout/success?bookingIds=${orderData.bookingIds.join(',')}`);
               } else {
