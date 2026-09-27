@@ -2,58 +2,79 @@
 
 import { prisma } from '@/lib/prisma';
 
-interface CaptureInput {
+export interface CaptureInput {
+  leadId?: string | null;
+  visitorId?: string | null;
   name?: string;
   email?: string;
   phone?: string;
   dob?: string;
   specialRequests?: string;
   cartItems?: unknown;
+  totalAmount?: number | null;
+  dropStage?: string;
   pickupDate?: string | null;
   returnDate?: string | null;
 }
 
 /**
- * Saves (or updates) a snapshot of the checkout form as the customer fills it in — called
- * on a debounce from CheckoutClient, well before "Pay Securely" is ever clicked. This is the
- * only way an abandoned or never-submitted checkout leaves any trace for the business to
- * follow up on. Requires at least an email or phone (nothing actionable to save otherwise),
- * and upserts by whichever of those match an existing still-open lead so repeated auto-saves
- * from one visitor update a single row instead of spamming new ones.
+ * Saves (or updates) a snapshot of the checkout visit and form as the customer fills it in —
+ * called immediately on checkout view, on debounced keystrokes, on input blur, and before tab close.
+ * Links visits by leadId, visitorId, email, or phone.
  */
 export async function captureAbandonedCheckout(input: CaptureInput) {
   const email = input.email?.trim().toLowerCase() || null;
   const phone = input.phone?.trim() || null;
-
-  if (!email && !phone) return { success: false, skipped: true };
+  const name = input.name?.trim() || null;
+  const visitorId = input.visitorId?.trim() || null;
+  const leadId = input.leadId || null;
 
   try {
-    const orMatch: { email?: string; phone?: string }[] = [];
-    if (email) orMatch.push({ email });
-    if (phone) orMatch.push({ phone });
+    let existing = null;
 
-    const existing = await prisma.checkoutLead.findFirst({
-      where: { status: 'ABANDONED', OR: orMatch },
-      orderBy: { updatedAt: 'desc' },
-    });
+    if (leadId) {
+      existing = await prisma.checkoutLead.findUnique({ where: { id: leadId } });
+    }
 
-    const data = {
-      name: input.name?.trim() || null,
-      email,
-      phone,
-      dob: input.dob || null,
-      specialRequests: input.specialRequests?.trim() || null,
-      cartSnapshot: input.cartItems ? JSON.stringify(input.cartItems) : null,
-      pickupDate: input.pickupDate ? new Date(input.pickupDate) : null,
-      returnDate: input.returnDate ? new Date(input.returnDate) : null,
+    if (!existing) {
+      const orConditions: any[] = [];
+      if (email) orConditions.push({ email });
+      if (phone) orConditions.push({ phone });
+      if (visitorId) orConditions.push({ visitorId });
+
+      if (orConditions.length > 0) {
+        existing = await prisma.checkoutLead.findFirst({
+          where: {
+            status: 'ABANDONED',
+            OR: orConditions,
+            createdAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+          },
+          orderBy: { updatedAt: 'desc' },
+        });
+      }
+    }
+
+    const data: any = {
+      visitorId: visitorId || existing?.visitorId || null,
+      name: name || existing?.name || null,
+      email: email || existing?.email || null,
+      phone: phone || existing?.phone || null,
+      dob: input.dob?.trim() || existing?.dob || null,
+      specialRequests: input.specialRequests?.trim() || existing?.specialRequests || null,
+      cartSnapshot: input.cartItems ? JSON.stringify(input.cartItems) : existing?.cartSnapshot || null,
+      totalAmount: typeof input.totalAmount === 'number' ? input.totalAmount : existing?.totalAmount || null,
+      dropStage: input.dropStage || existing?.dropStage || 'VIEWED_CHECKOUT',
+      pickupDate: input.pickupDate ? new Date(input.pickupDate) : existing?.pickupDate || null,
+      returnDate: input.returnDate ? new Date(input.returnDate) : existing?.returnDate || null,
     };
 
     const lead = existing
       ? await prisma.checkoutLead.update({ where: { id: existing.id }, data })
-      : await prisma.checkoutLead.create({ data });
+      : await prisma.checkoutLead.create({ data: { ...data, status: 'ABANDONED' } });
 
-    return { success: true, leadId: lead.id };
+    return { success: true, leadId: lead.id, dropStage: lead.dropStage };
   } catch (error: any) {
+    console.error('Error capturing checkout lead:', error);
     return { success: false, error: error.message };
   }
 }

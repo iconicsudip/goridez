@@ -2,7 +2,7 @@
 
 import { useBookingStore } from '@/store/useBookingStore';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { ShieldCheck, UploadCloud, CheckCircle2, Sparkles, Percent, Gift, UserCheck } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -15,9 +15,9 @@ export default function CheckoutClient({ razorpayKeyId, guestCheckoutEnabled = f
   const { cartItems, clearCart, session: bookingSession } = useBookingStore();
   const [mounted, setMounted] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  // Tracks the abandoned-checkout lead this form auto-saved to (see below) so it can be
-  // flipped to CONVERTED if the customer actually completes payment.
   const leadIdRef = useRef<string | null>(null);
+  const isSuccessRef = useRef(false);
+  const isProcessingRef = useRef(false);
 
   // Form states
   const [form, setForm] = useState({
@@ -30,17 +30,86 @@ export default function CheckoutClient({ razorpayKeyId, guestCheckoutEnabled = f
     dlFile: '',
   });
 
+  const formRef = useRef(form);
+  formRef.current = form;
+
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [couponCode, setCouponCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
   const [couponError, setCouponError] = useState('');
 
   const [isSuccess, setIsSuccess] = useState(false);
+  isSuccessRef.current = isSuccess;
+  isProcessingRef.current = isProcessing;
+
+  // Invoice calculations
+  const subtotal = cartItems.reduce((acc, item) => acc + item.price, 0);
+  const discount = appliedCoupon
+    ? appliedCoupon.discountType === 'PERCENTAGE'
+      ? Math.round(subtotal * (appliedCoupon.discountValue / 100))
+      : appliedCoupon.discountValue
+    : 0;
+  const discountedSubtotal = Math.max(0, subtotal - discount);
+  const gst = Math.round(discountedSubtotal * 0.18);
+  const totalDeposit = cartItems.reduce((acc, item) => acc + item.deposit, 0);
+  const totalAmount = discountedSubtotal + gst;
+  const totalAmountRef = useRef(totalAmount);
+  totalAmountRef.current = totalAmount;
+
+  const getVisitorId = useCallback(() => {
+    if (typeof window === 'undefined') return '';
+    let id = localStorage.getItem('goridez_checkout_visitor_id');
+    if (!id) {
+      id = 'vis_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 8);
+      try { localStorage.setItem('goridez_checkout_visitor_id', id); } catch {}
+    }
+    return id;
+  }, []);
+
+  const saveCheckoutSnapshot = useCallback((stage: string = 'FILLING_FORM', useBeacon: boolean = false) => {
+    if (isSuccessRef.current || cartItems.length === 0) return;
+    const visitorId = getVisitorId();
+    const currentForm = formRef.current;
+    const payload = {
+      leadId: leadIdRef.current,
+      visitorId,
+      name: currentForm.name,
+      email: currentForm.email,
+      phone: currentForm.phone,
+      dob: currentForm.dob,
+      specialRequests: currentForm.specialRequests,
+      cartItems,
+      totalAmount: totalAmountRef.current,
+      dropStage: stage,
+      pickupDate: bookingSession?.pickupDate,
+      returnDate: bookingSession?.returnDate,
+    };
+
+    if (useBeacon && typeof navigator !== 'undefined' && navigator.sendBeacon) {
+      try {
+        const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+        navigator.sendBeacon('/api/checkout/capture', blob);
+        return;
+      } catch {}
+    }
+
+    fetch('/api/checkout/capture', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      keepalive: true,
+    })
+      .then((r) => r.json())
+      .then((res) => {
+        if (res?.success && res.leadId) {
+          leadIdRef.current = res.leadId;
+        }
+      })
+      .catch(() => {});
+  }, [cartItems, bookingSession, getVisitorId]);
 
   useEffect(() => {
     setMounted(true);
-    // Only force a login redirect when guest checkout is switched off in admin settings —
-    // otherwise let unauthenticated visitors proceed straight through as a guest.
     if (status === 'unauthenticated' && !guestCheckoutEnabled) {
       router.push('/login?callbackUrl=/checkout');
       return;
@@ -61,42 +130,51 @@ export default function CheckoutClient({ razorpayKeyId, guestCheckoutEnabled = f
     }
   }, [session]);
 
-  // Auto-saves the form 1.5s after the customer stops typing, so a filled-in-but-never-submitted
-  // (or abandoned at the payment modal) checkout still leaves a record to follow up on. Skips
-  // saving until there's an email or phone — nothing actionable to reach them with otherwise.
+  // 1. Detect customer coming to checkout with cart immediately
   useEffect(() => {
-    if (!form.email.trim() && !form.phone.trim()) return;
+    if (mounted && cartItems.length > 0 && !isSuccess) {
+      saveCheckoutSnapshot('VIEWED_CHECKOUT');
+    }
+  }, [mounted, cartItems.length, isSuccess, saveCheckoutSnapshot]);
+
+  // 2. Debounced auto-save as customer types in any form field
+  useEffect(() => {
+    const hasStarted = form.name.trim() || form.email.trim() || form.phone.trim() || form.dob.trim() || form.specialRequests.trim();
+    if (!hasStarted) return;
     const timer = setTimeout(() => {
-      captureAbandonedCheckout({
-        name: form.name,
-        email: form.email,
-        phone: form.phone,
-        dob: form.dob,
-        specialRequests: form.specialRequests,
-        cartItems,
-        pickupDate: bookingSession?.pickupDate,
-        returnDate: bookingSession?.returnDate,
-      }).then((res) => {
-        if (res.success && res.leadId) leadIdRef.current = res.leadId;
-      });
-    }, 1500);
+      saveCheckoutSnapshot('FILLING_FORM');
+    }, 600);
     return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form.name, form.email, form.phone, form.dob, form.specialRequests]);
+  }, [form.name, form.email, form.phone, form.dob, form.specialRequests, saveCheckoutSnapshot]);
+
+  // 3. Detect when customer leaves the page, closes browser tab, or switches away
+  useEffect(() => {
+    const handleDrop = () => {
+      if (isSuccessRef.current) return;
+      const hasStarted = formRef.current.name.trim() || formRef.current.email.trim() || formRef.current.phone.trim();
+      const stage = isProcessingRef.current
+        ? 'PAYMENT_DISMISSED'
+        : hasStarted
+          ? 'DROPPED_FORM'
+          : 'VIEWED_CHECKOUT';
+      saveCheckoutSnapshot(stage, true);
+    };
+
+    window.addEventListener('pagehide', handleDrop);
+    window.addEventListener('beforeunload', handleDrop);
+    const handleVisibility = () => {
+      if (document.visibilityState === 'hidden') handleDrop();
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    return () => {
+      window.removeEventListener('pagehide', handleDrop);
+      window.removeEventListener('beforeunload', handleDrop);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
+  }, [saveCheckoutSnapshot]);
 
   if (!mounted || status === 'loading' || cartItems.length === 0) return null;
-
-  // Invoice calculations
-  const subtotal = cartItems.reduce((acc, item) => acc + item.price, 0);
-  const discount = appliedCoupon
-    ? appliedCoupon.discountType === 'PERCENTAGE'
-      ? Math.round(subtotal * (appliedCoupon.discountValue / 100))
-      : appliedCoupon.discountValue
-    : 0;
-  const discountedSubtotal = Math.max(0, subtotal - discount);
-  const gst = Math.round(discountedSubtotal * 0.18);
-  const totalDeposit = cartItems.reduce((acc, item) => acc + item.deposit, 0);
-  const totalAmount = discountedSubtotal + gst;
   const advanceHold = Math.round(totalAmount * 0.3); // 30% hold
 
   const handleApplyCoupon = async () => {
@@ -204,6 +282,7 @@ export default function CheckoutClient({ razorpayKeyId, guestCheckoutEnabled = f
 
               const verifyData = await verifyRes.json();
               if (verifyData.success) {
+                isSuccessRef.current = true;
                 setIsSuccess(true);
                 if (leadIdRef.current) {
                   markCheckoutLeadConverted(leadIdRef.current, orderData.bookingIds);
@@ -229,10 +308,12 @@ export default function CheckoutClient({ razorpayKeyId, guestCheckoutEnabled = f
           modal: {
             ondismiss: function () {
               setIsProcessing(false);
+              saveCheckoutSnapshot('PAYMENT_DISMISSED');
             }
           }
         };
 
+        saveCheckoutSnapshot('PAYMENT_OPENED');
         const rzp = new (window as any).Razorpay(options);
         rzp.open();
       };
@@ -289,6 +370,7 @@ export default function CheckoutClient({ razorpayKeyId, guestCheckoutEnabled = f
                   type="text" 
                   placeholder="e.g. John Doe" 
                   value={form.name}
+                  onBlur={() => saveCheckoutSnapshot('FILLING_FORM')}
                   onChange={(e) => {
                     setForm(prev => ({ ...prev, name: e.target.value }));
                     if (errors.name) setErrors(prev => ({ ...prev, name: '' }));
@@ -304,6 +386,7 @@ export default function CheckoutClient({ razorpayKeyId, guestCheckoutEnabled = f
                   type="email" 
                   placeholder="e.g. john@example.com" 
                   value={form.email}
+                  onBlur={() => saveCheckoutSnapshot('FILLING_FORM')}
                   onChange={(e) => {
                     setForm(prev => ({ ...prev, email: e.target.value }));
                     if (errors.email) setErrors(prev => ({ ...prev, email: '' }));
@@ -319,6 +402,7 @@ export default function CheckoutClient({ razorpayKeyId, guestCheckoutEnabled = f
                   type="tel" 
                   placeholder="e.g. +91 9876543210" 
                   value={form.phone}
+                  onBlur={() => saveCheckoutSnapshot('FILLING_FORM')}
                   onChange={(e) => {
                     setForm(prev => ({ ...prev, phone: e.target.value }));
                     if (errors.phone) setErrors(prev => ({ ...prev, phone: '' }));
@@ -334,6 +418,7 @@ export default function CheckoutClient({ razorpayKeyId, guestCheckoutEnabled = f
                   type="date" 
                   placeholder="Date of Birth" 
                   value={form.dob}
+                  onBlur={() => saveCheckoutSnapshot('FILLING_FORM')}
                   onChange={(e) => {
                     setForm(prev => ({ ...prev, dob: e.target.value }));
                     if (errors.dob) setErrors(prev => ({ ...prev, dob: '' }));
@@ -427,6 +512,7 @@ export default function CheckoutClient({ razorpayKeyId, guestCheckoutEnabled = f
             <textarea 
               rows={4}
               value={form.specialRequests}
+              onBlur={() => saveCheckoutSnapshot('FILLING_FORM')}
               onChange={(e) => setForm(prev => ({ ...prev, specialRequests: e.target.value }))}
               placeholder="Any specific delivery instructions, child seats, or preferences?"
               className="w-full bg-gray-100 border border-gray-300 rounded-xl p-4 outline-none focus:border-green-600 text-sm resize-none"

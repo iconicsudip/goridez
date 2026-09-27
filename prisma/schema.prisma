@@ -259,14 +259,19 @@ model Booking {
 // one row instead of spamming new ones. Marked CONVERTED once the matching booking is paid.
 model CheckoutLead {
   id                  String    @id @default(cuid())
+  visitorId           String?   // anonymous visitor session ID to link visit -> form -> payment
   name                String?
   email               String?
   phone               String?
   dob                 String?
   specialRequests     String?
   cartSnapshot        String?   // JSON snapshot of cartItems at time of capture, for context
+  totalAmount         Float?    // total value of the cart when dropped
+  dropStage           String?   @default("VIEWED_CHECKOUT") // VIEWED_CHECKOUT | FILLING_FORM | PAYMENT_OPENED | PAYMENT_DISMISSED
   pickupDate          DateTime?
   returnDate          DateTime?
+  ipAddress           String?
+  userAgent           String?
   status              String    @default("ABANDONED") // ABANDONED | CONVERTED
   convertedBookingIds String?   // comma-separated Booking ids, set once they complete payment
   createdAt           DateTime  @default(now())
@@ -274,6 +279,7 @@ model CheckoutLead {
 
   @@index([email])
   @@index([phone])
+  @@index([visitorId])
 }
 
 model WishlistItem {
