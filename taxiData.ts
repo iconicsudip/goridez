@@ -163,7 +163,7 @@ export const CAR_FLEET: FleetCar[] = [
     id: "e-class-bmw",
     name: "Mercedes E-Class / BMW",
     category: "Luxury",
-    image: "https://goridez-uploads.s3.ap-south-1.amazonaws.com/uploads/1781900724829-324657301.jpg",
+    image: "/api/uploads/1781900724829-324657301.jpg",
     seats: 4,
     fuel: "Diesel",
     gearbox: "Automatic",

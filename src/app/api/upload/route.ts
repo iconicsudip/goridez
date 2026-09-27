@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import path from 'path';
 import { compressImage } from '@/lib/compressImage';
+import { prisma } from '@/lib/prisma';
+
+export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
   try {
@@ -17,40 +19,29 @@ export async function POST(request: Request) {
 
     // Create unique filename
     const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    const originalExt = contentType === 'image/jpeg' && file.type !== 'image/jpeg'
-      ? '.jpg'
-      : path.extname(file.name);
-    const filename = `uploads/${uniqueSuffix}${originalExt}`;
+    const ext = contentType === 'image/webp'
+      ? '.webp'
+      : contentType === 'image/jpeg'
+        ? '.jpg'
+        : (path.extname(file.name) || '.webp');
+    const filename = `${uniqueSuffix}${ext}`;
 
-    // Initialize S3 Client
-    const s3Client = new S3Client({
-      region: process.env.AWS_REGION || 'ap-south-1',
-      credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
+    // Save directly to PostgreSQL database
+    await prisma.uploadedFile.create({
+      data: {
+        filename,
+        mimeType: contentType,
+        data: new Uint8Array(buffer),
+        size: buffer.length,
       },
     });
 
-    const bucketName = process.env.AWS_S3_BUCKET as string;
-
-    // Upload to S3
-    await s3Client.send(
-      new PutObjectCommand({
-        Bucket: bucketName,
-        Key: filename,
-        Body: buffer,
-        ContentType: contentType,
-      })
-    );
-
-    // Generate the public URL
-    const fileUrl = `https://${bucketName}.s3.${process.env.AWS_REGION || 'ap-south-1'}.amazonaws.com/${filename}`;
-
-    console.log(`File uploaded successfully to S3: ${fileUrl}`);
+    const fileUrl = `/api/uploads/${filename}`;
+    console.log(`File uploaded successfully to database: ${fileUrl} (${buffer.length} bytes, HD quality)`);
 
     return NextResponse.json({ url: fileUrl, success: true });
   } catch (error) {
     console.error('Upload Error:', error);
-    return NextResponse.json({ error: 'Failed to upload file to S3' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to upload file to database' }, { status: 500 });
   }
 }
