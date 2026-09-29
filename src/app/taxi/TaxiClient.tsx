@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useBookingStore } from '@/store/useBookingStore';
-import { ArrowDownUp, MapPin, Calendar, Briefcase, Loader2, Map as MapIcon, SlidersHorizontal, X, Navigation } from 'lucide-react';
+import { ArrowDownUp, MapPin, Calendar, Briefcase, Loader2, Map as MapIcon, SlidersHorizontal, X, Navigation, Check, Fuel, Users, Settings2, ShieldCheck, Sparkles, ArrowRight, Gauge, ChevronRight, Info } from 'lucide-react';
 import dynamic from 'next/dynamic';
 
 const RouteMap = dynamic(() => import('@/components/RouteMap'), { ssr: false, loading: () => <div className="w-full h-64 bg-gray-100 rounded-2xl animate-pulse flex items-center justify-center text-gray-400 font-mono text-[10px] uppercase tracking-widest">Loading Map...</div> });
@@ -402,6 +402,16 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
     router.push('/cart');
   };
 
+  const handleSelectDatesPrompt = () => {
+    setIsRouteConfigOpen(true);
+    const target = document.getElementById('taxi-dates-config') || document.getElementById('taxi-route-sidebar');
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      target.classList.add('ring-2', 'ring-[#C89D5C]');
+      setTimeout(() => target.classList.remove('ring-2', 'ring-[#C89D5C]'), 2500);
+    }
+  };
+
   const updateDestination = (index: number, val: string, data?: OSMLocation) => {
     const newDests = [...destLocations];
     newDests[index] = { name: val, data };
@@ -519,7 +529,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
             <label className="block text-[9px] text-[#8C6D53] font-bold uppercase tracking-[0.2em] mb-2 font-serif">
               {bookingMode === 'ROUND_TRIP' ? 'Travel Date Range (Required)' : bookingMode === 'AIRPORT_TRANSFER' ? 'Transfer Date' : 'Travel Date Range'}
             </label>
-            <div className="relative w-full">
+            <div id="taxi-dates-config" className="relative w-full rounded-xl transition-all duration-300">
               <ConfigProvider
                 theme={{
                   token: {
@@ -710,12 +720,12 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
   );
 
   return (
-    <div className="min-h-screen bg-[#FAF6F0] text-[#250903] font-body pt-28 pb-20 border-t border-[#E7DFD5]">
-      <div className="container mx-auto mt-4">
+    <div className="min-h-screen bg-[#F0E9DF] text-[#250903] font-body pt-28 pb-20 border-t border-[#D4C3B2]">
+      <div className="container mx-auto px-4 sm:px-6 mt-4">
 
         {/* Header Section */}
-        <div className="card-luxury border-classic-frame bg-[#FEFBF8] border-[#E7DFD5] rounded-3xl p-8 md:p-12 mb-10 text-center md:text-left relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-80 h-80 bg-radial from-[#C89D5C]/10 via-[#551A0C]/5 to-transparent rounded-full blur-3xl pointer-events-none" />
+        <div className="card-luxury bg-white border border-[#D4C3B2] rounded-3xl p-8 md:p-12 mb-10 text-center md:text-left relative overflow-hidden shadow-[0_14px_35px_rgba(42,14,7,0.08)]">
+          <div className="absolute top-0 right-0 w-80 h-80 bg-radial from-[#C89D5C]/15 via-[#551A0C]/5 to-transparent rounded-full blur-3xl pointer-events-none" />
           
           <div className="inline-flex items-center gap-2 text-[#C89D5C] text-[11px] font-bold tracking-[0.25em] uppercase mb-4 font-serif">
             <span>✦ CHAUFFEURED LUXURY JOURNEYS ✦</span>
@@ -731,7 +741,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
         </div>
 
         {/* Booking Mode Tabs */}
-        <div className="flex overflow-x-auto lg:flex-wrap gap-3 mb-8 bg-[#FEFBF8] border border-[#E7DFD5] p-2 rounded-2xl w-full lg:w-fit shadow-xs font-serif">
+        <div className="flex overflow-x-auto lg:flex-wrap gap-3 mb-8 bg-white border border-[#D4C3B2] p-2 rounded-2xl w-full lg:w-fit shadow-sm font-serif">
           <button
             onClick={() => setBookingMode('ROUND_TRIP')}
             className={`px-8 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all ${bookingMode === 'ROUND_TRIP' ? 'bg-[#551A0C] text-[#DFB574] shadow-md' : 'text-[#551A0C]/70 hover:text-[#551A0C]'
@@ -753,30 +763,46 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
 
           {/* Sidebar — desktop only, mobile uses the drawer below */}
           <aside className="hidden lg:block lg:w-[380px] shrink-0 space-y-6 lg:sticky lg:top-32 h-fit z-10">
-            <div className="card-luxury border-classic-frame bg-[#FEFBF8] border-[#E7DFD5] rounded-3xl p-7 shadow-sm">
-              <h2 className="font-serif font-bold text-base text-[#551A0C] uppercase tracking-wide mb-6 pb-4 border-b border-[#E7DFD5]">Route Configurator</h2>
+            <div className="card-luxury bg-white border border-[#D4C3B2] rounded-3xl p-7 shadow-[0_12px_32px_rgba(42,14,7,0.06)]">
+              <h2 className="font-serif font-bold text-base text-[#551A0C] uppercase tracking-wide mb-6 pb-4 border-b border-[#D4C3B2]">Route Configurator</h2>
               {!isRouteConfigOpen && routeConfiguratorBody}
             </div>
           </aside>
 
           {/* Main Classes List */}
           <div className="flex-1">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
-              <h2 className="font-serif font-bold text-xl text-[#551A0C] uppercase tracking-tight">Choose Private Cab Class</h2>
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 border-b border-[#D4C3B2] pb-6">
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="h-[1px] w-6 bg-[#C89D5C]"></span>
+                  <span className="text-[#C89D5C] text-[10px] font-bold uppercase tracking-[0.25em] font-mono">
+                    ✦ BESPOKE CHAUFFEUR CLASS ✦
+                  </span>
+                </div>
+                <h2 className="font-heading font-black text-2xl sm:text-3xl lg:text-4xl text-[#250903] uppercase tracking-tight">
+                  Choose Private Cab Class
+                </h2>
+                <p className="text-[#8C6D53] text-xs font-editorial italic mt-1 max-w-xl">
+                  Curated executive fleet with vetted chauffeurs, guaranteed on-time dispatch, and all-inclusive transparent tariffs.
+                </p>
+              </div>
               <button
                 type="button"
                 onClick={() => setIsRouteConfigOpen(true)}
-                className="lg:hidden w-full sm:w-auto flex items-center justify-center gap-2 bg-[#FEFBF8] border border-[#E7DFD5] rounded-xl px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-[#551A0C] shadow-xs transition-colors hover:border-[#C89D5C] active:bg-[#FAF6F0] cursor-pointer font-serif"
+                className="lg:hidden w-full sm:w-auto flex items-center justify-center gap-2 bg-white border border-[#D4C3B2] rounded-xl px-5 py-3 text-xs font-bold uppercase tracking-widest text-[#551A0C] shadow-sm transition-colors hover:border-[#C89D5C] active:bg-[#FAF6F0] cursor-pointer"
               >
-                <SlidersHorizontal size={14} className="text-[#C89D5C]" /> Route
+                <SlidersHorizontal size={14} className="text-[#C89D5C]" /> Modify Route &amp; Dates
               </button>
             </div>
 
             {bookingMode === 'ROUND_TRIP' && ROUNDTRIP_PACKAGES.length > 1 && (
-              <div className="mb-6 card-luxury border-classic-frame bg-[#FEFBF8] border-[#E7DFD5] shadow-sm rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 font-serif">
+              <div className="mb-8 card-luxury bg-white border border-[#D4C3B2] shadow-sm rounded-3xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#551A0C] block">Round Trip Price Package</span>
-                  <span className="text-xs text-[#8C6D53]">Select your desired daily limit &amp; rate package</span>
+                  <div className="flex items-center gap-2 mb-1">
+                    <Sparkles size={14} className="text-[#C89D5C]" />
+                    <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[#551A0C] font-mono">Global Quota Package</span>
+                  </div>
+                  <span className="text-xs text-[#8C6D53] font-medium">Quickly switch standard daily limits across all fleet classes</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {ROUNDTRIP_PACKAGES.map((pkg) => (
@@ -784,10 +810,10 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                       key={pkg.value}
                       type="button"
                       onClick={() => setSelectedRtPackage(pkg.value)}
-                      className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                      className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${
                         selectedRtPackage === pkg.value
-                          ? 'bg-[#551A0C] text-[#DFB574] shadow-md border border-[#551A0C]'
-                          : 'bg-[#FAF6F0] text-[#551A0C] hover:border-[#C89D5C] border border-[#E7DFD5]'
+                          ? 'bg-[#551A0C] text-[#DFB574] shadow-md border border-[#C89D5C]/60 ring-2 ring-[#C89D5C]/20'
+                          : 'bg-[#F8F3EA] text-[#551A0C] hover:border-[#C89D5C] border border-[#D4C3B2] hover:bg-white'
                       }`}
                       title={pkg.hint}
                     >
@@ -893,57 +919,107 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                   const destStr = destLocations.map(d => d.name).filter(Boolean).join(' -> ');
 
                   return (
-                    <div key={car.id} className="card-luxury border-classic-frame bg-[#FEFBF8] border-[#E7DFD5] hover:border-[#C89D5C] rounded-2xl shadow-sm hover:shadow-lg transition-all mb-5 overflow-hidden font-serif">
-                      <div className="flex flex-col md:flex-row">
+                    <div key={car.id} className="card-luxury bg-white border border-[#D4C3B2] hover:border-[#C89D5C] rounded-2xl lg:rounded-3xl shadow-[0_14px_35px_rgba(42,14,7,0.08),0_2px_6px_rgba(42,14,7,0.04)] hover:shadow-[0_20px_50px_rgba(42,14,7,0.16)] transition-all duration-500 mb-6 overflow-hidden font-body group">
+                      <div className="flex flex-col lg:flex-row items-stretch">
 
-                        {/* ── Left: Image ── */}
-                        <div className="relative md:w-64 shrink-0 bg-[#FAF6F0] min-h-[180px]">
-                          {/* Image container with its own overflow-hidden so badges aren't clipped */}
-                          <div className="absolute inset-0 overflow-hidden">
-                            <Link href={`/cars/${getCarSlug(car)}`} className="block w-full h-full">
-                              <CarImageSlider mainImage={car.image} galleryJson={car.gallery} alt={`${car.make} ${car.model}`} imageClassName="object-cover group-hover:scale-105 transition-transform duration-500 w-full h-full" />
+                        {/* ── Left Column: Luxury Vehicle Stage (Compact & Proportional) ── */}
+                        <div className="relative w-full lg:w-[270px] xl:w-[300px] 2xl:w-[320px] shrink-0 bg-[radial-gradient(ellipse_at_center,_#FFFFFF_20%,_#EFE5D6_100%)] flex flex-col items-center justify-center min-h-[190px] sm:min-h-[210px] lg:min-h-[230px] p-2 overflow-hidden border-b lg:border-b-0 lg:border-r border-[#D4C3B2]">
+                          {/* Soft Radial Ambient Spotlight */}
+                          <div className="absolute inset-0 bg-radial from-white/70 via-transparent to-transparent pointer-events-none" />
+
+                          {/* Floating Category Badge – Top Left */}
+                          <span className="absolute top-2.5 left-2.5 z-10 bg-[#250903]/90 text-[#DFB574] text-[8px] font-black uppercase tracking-[0.2em] px-2.5 py-1 rounded-full border border-[#C89D5C]/40 backdrop-blur-md shadow-xs font-mono">
+                            ✦ {car.category ? car.category.replace(/\bClass\b/gi, '').trim() : 'ROYAL FLEET'}
+                          </span>
+
+                          {/* Floating Availability Badge – Top Right */}
+                          <span className={`absolute top-2.5 right-2.5 z-10 text-[7.5px] font-black uppercase tracking-[0.16em] px-2.5 py-1 rounded-full flex items-center gap-1 shadow-xs backdrop-blur-md ${
+                            car.availability 
+                              ? 'bg-emerald-950/85 text-emerald-300 border border-emerald-500/40' 
+                              : 'bg-red-950/85 text-red-300 border border-red-500/40'
+                          }`}>
+                            <span className={`w-1 h-1 rounded-full ${car.availability ? 'bg-emerald-400 animate-pulse' : 'bg-red-400'}`}></span>
+                            {car.availability ? 'AVAILABLE' : 'BOOKED'}
+                          </span>
+
+                          {/* Image Slider - Perfectly Fitted */}
+                          <div className="w-full h-full relative z-0 flex items-center justify-center min-h-[150px] sm:min-h-[170px] lg:min-h-[190px] p-2 sm:p-3">
+                            <Link href={`/cars/${getCarSlug(car)}`} className="block w-full h-full relative">
+                              <CarImageSlider 
+                                mainImage={car.image || '/placeholder-car.png'} 
+                                galleryJson={car.gallery} 
+                                alt={`${car.make} ${car.model}`} 
+                                imageClassName="object-contain w-full h-full group-hover:scale-105 transition-transform duration-500 drop-shadow-[0_10px_20px_rgba(37,9,3,0.18)]" 
+                                dotsClassName="bottom-1.5 left-1/2 -translate-x-1/2"
+                              />
                             </Link>
                           </div>
-                          {/* Category badge – top left */}
-                          <span className="absolute top-3 left-3 z-10 bg-[#FAF6F0]/95 border border-[#C89D5C]/40 text-[#551A0C] text-[8px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full shadow-xs">
-                            {car.category.replace(/\bClass\b/gi, '').trim()}
-                          </span>
-                          {/* Availability badge – top right */}
-                          <span className={`absolute top-3 right-3 z-10 text-[8px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-xs ${car.availability ? 'bg-[#551A0C] text-[#DFB574] border border-[#C89D5C]/40' : 'bg-red-50 text-red-700 border border-red-200'}`}>
-                            <span className={`w-1.5 h-1.5 rounded-full ${car.availability ? 'bg-[#DFB574]' : 'bg-red-500'}`}></span>
-                            {car.availability ? 'Available' : 'Unavailable'}
-                          </span>
+
+                          {/* Bottom chassis inspection badge */}
+                          <div className="absolute bottom-1.5 text-[7.5px] font-mono font-bold tracking-[0.25em] text-[#8C6D53]/70 uppercase select-none pointer-events-none">
+                            CHASSIS INSPECTED • VETTED
+                          </div>
                         </div>
 
-                        {/* ── Center: Info ── */}
-                        <div className="flex-1 flex flex-col justify-between">
-                          <div className="p-6 border-b border-[#E7DFD5]">
-                            {/* Title */}
-                            <h3 className="text-xl font-bold text-[#551A0C] leading-tight mb-1 group-hover:text-[#8C6D53] transition-colors">
+                        {/* ── Center Column: Core Specs & Interactive Package Architecture ── */}
+                        <div className="flex-1 flex flex-col justify-between p-5 sm:p-5.5 lg:p-6 bg-white">
+                          <div>
+                            {/* Header Row: Make & Title */}
+                            <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+                              <div className="text-[9.5px] font-bold uppercase tracking-[0.2em] text-[#C89D5C] font-mono">
+                                ✦ EXECUTIVE CARRIAGE • {car.make}
+                              </div>
+                              {destStr && (
+                                <div className="inline-flex items-center gap-1.5 text-[9.5px] font-mono font-bold text-[#551A0C] bg-[#F8F3EA] border border-[#D4C3B2] px-2.5 py-0.5 rounded-full shadow-2xs">
+                                  <Navigation size={10} className="text-[#C89D5C]" />
+                                  <span className="truncate max-w-[220px]">Udaipur → {destStr}</span>
+                                </div>
+                              )}
+                            </div>
+
+                            <h3 className="text-xl sm:text-2xl font-heading font-black text-[#250903] uppercase tracking-wide group-hover:text-[#551A0C] transition-colors leading-tight mb-3">
                               <Link href={`/cars/${getCarSlug(car)}`}>
                                 {car.make} {car.model}
                               </Link>
                             </h3>
-                            {/* Specs subtitle */}
-                            <p className="text-[11px] text-[#8C6D53] uppercase tracking-wider mb-3">
-                              {car.seatingCapacity} Seats &nbsp;•&nbsp; {car.transmission.replace(' Gearbox', '')} &nbsp;•&nbsp; {car.fuelType}
-                            </p>
-                            {/* Feature pills */}
+
+                            {/* Luxury Spec Pods with Icons */}
+                            <div className="flex flex-wrap items-center gap-2 mb-3.5">
+                              <div className="flex items-center gap-1.5 bg-[#F8F3EA] border border-[#D4C3B2] px-2.5 py-1.5 rounded-lg text-xs font-semibold text-[#350E05] shadow-2xs">
+                                <Users size={13} className="text-[#C89D5C]" />
+                                <span>{car.seatingCapacity} Seats</span>
+                              </div>
+                              <div className="flex items-center gap-1.5 bg-[#F8F3EA] border border-[#D4C3B2] px-2.5 py-1.5 rounded-lg text-xs font-semibold text-[#350E05] shadow-2xs">
+                                <Gauge size={13} className="text-[#C89D5C]" />
+                                <span className="capitalize">{car.transmission ? car.transmission.replace(' Gearbox', '') : 'Auto/Manual'}</span>
+                              </div>
+                              <div className="flex items-center gap-1.5 bg-[#F8F3EA] border border-[#D4C3B2] px-2.5 py-1.5 rounded-lg text-xs font-semibold text-[#350E05] shadow-2xs">
+                                <Fuel size={13} className="text-[#C89D5C]" />
+                                <span className="capitalize">{car.fuelType || 'Diesel'}</span>
+                              </div>
+                              <div className="flex items-center gap-1.5 bg-[#F8F3EA] border border-[#D4C3B2] px-2.5 py-1.5 rounded-lg text-xs font-semibold text-[#350E05] shadow-2xs">
+                                <ShieldCheck size={13} className="text-[#C89D5C]" />
+                                <span>Uniformed Chauffeur</span>
+                              </div>
+                            </div>
+
+                            {/* Feature Badges (if any) */}
                             {car.features && car.features.length > 0 && (
-                              <div className="flex flex-wrap gap-1.5 mb-4">
-                                {car.features.map((feat: string, idx: number) => (
-                                  <span key={idx} className="bg-[#551A0C] text-[#DFB574] text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border border-[#C89D5C]/30">
+                              <div className="flex flex-wrap gap-1.5 mb-3.5">
+                                {car.features.slice(0, 4).map((feat: string, idx: number) => (
+                                  <span key={idx} className="bg-[#551A0C]/10 text-[#551A0C] text-[9.5px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md border border-[#551A0C]/20">
                                     {feat}
                                   </span>
                                 ))}
                               </div>
                             )}
-                            {/* Per-Car Dynamic Round Trip Package Selector */}
+
+                            {/* Interactive Per-Car Package Selector Pills */}
                             {ROUNDTRIP_PACKAGES.length > 1 && (
-                              <div className="mb-4 bg-[#FAF6F0] border border-[#E7DFD5] p-3.5 rounded-xl">
-                                <div className="text-[9px] font-bold uppercase tracking-widest text-[#551A0C] mb-2 flex items-center justify-between">
-                                  <span>Round Trip Price Package</span>
-                                  <span className="text-[#551A0C] bg-[#FEFBF8] border border-[#C89D5C]/40 px-2 py-0.5 rounded text-[8px] font-bold">{bd.packageName}</span>
+                              <div className="mb-3.5 bg-[#F8F3EA] border border-[#D4C3B2] p-2.5 sm:p-3 rounded-xl shadow-2xs">
+                                <div className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#8C6D53] font-mono mb-1.5 flex items-center justify-between">
+                                  <span>CHOOSE DAILY QUOTA TIER:</span>
+                                  <span className="text-[#551A0C] font-bold">{bd.packageName ? bd.packageName.replace(/\s*\(.*\)/, '') : ''}</span>
                                 </div>
                                 <div className="flex flex-wrap gap-1.5">
                                   {ROUNDTRIP_PACKAGES.map(pkg => {
@@ -953,13 +1029,13 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                                         key={pkg.value}
                                         type="button"
                                         onClick={() => setCarPackages(prev => ({ ...prev, [car.id]: pkg.value }))}
-                                        className={`text-[8.5px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg border transition-all cursor-pointer ${
+                                        className={`text-[9.5px] font-bold uppercase tracking-wider px-3 py-1 rounded-lg border transition-all cursor-pointer ${
                                           isSelected
-                                            ? 'bg-[#551A0C] border-[#551A0C] text-[#DFB574] shadow-xs'
-                                            : 'bg-[#FEFBF8] border-[#E7DFD5] text-[#551A0C] hover:border-[#C89D5C]'
+                                            ? 'bg-[#551A0C] border-[#551A0C] text-[#DFB574] shadow-xs ring-1 ring-[#C89D5C]/40'
+                                            : 'bg-white border-[#D4C3B2] text-[#551A0C] hover:border-[#C89D5C]'
                                         }`}
                                       >
-                                        {pkg.minKmPerDay > 0 ? `${pkg.minKmPerDay} KM / Day (${pkg.label.split('(')[1] || ''}`.replace(')', '') : 'Unlimited KM'}
+                                        {pkg.minKmPerDay > 0 ? `${pkg.minKmPerDay} KM / Day` : 'Unlimited KM'}
                                       </button>
                                     );
                                   })}
@@ -967,91 +1043,178 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                               </div>
                             )}
 
-                            {/* Package details table */}
-                            <div className="w-full text-xs text-[#6A5749] space-y-2">
-                              <div className="flex justify-between border-b border-[#E7DFD5] pb-2">
-                                <span className="text-[#8C6D53]">Package</span>
-                                <span className="font-bold text-[#551A0C]">{bd.packageName || 'Outstation (Round Trip)'}</span>
-                              </div>
-                              {destStr && (
-                                <div className="flex justify-between border-b border-[#E7DFD5] pb-2">
-                                  <span className="text-[#8C6D53]">Route</span>
-                                  <span className="font-medium text-right text-[#250903]">Udaipur → {destStr} → Udaipur</span>
+                            {/* 3-Column Modern Instrument Metrics Grid */}
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 my-2.5">
+                              <div className="bg-[#F8F3EA] border border-[#D4C3B2] hover:border-[#C89D5C] p-2.5 sm:p-3 rounded-xl shadow-2xs transition-colors">
+                                <div className="text-[8px] font-bold uppercase tracking-[0.2em] text-[#8C6D53] font-mono mb-0.5">
+                                  PACKAGE INCLUSION
                                 </div>
-                              )}
-                              <div className="flex justify-between border-b border-[#E7DFD5] pb-2">
-                                <span className="text-[#8C6D53]">Charged Distance</span>
-                                <span className="font-medium text-[#250903]">{bd.chargedDistance} Km</span>
+                                <div className="font-heading font-black text-sm sm:text-base text-[#250903] leading-tight truncate">
+                                  {bd.packageName ? bd.packageName.replace(/\s*\(.*\)/, '') : '300 KM / Day'}
+                                </div>
+                                <div className="text-[10px] text-[#8C6D53] font-medium mt-0.5 truncate">
+                                  {bd.isUnlimited ? 'Unlimited travel' : `${bd.minKmPerDay} KM daily`}
+                                </div>
                               </div>
-                              <div className="flex justify-between pb-1">
-                                <span className="text-[#8C6D53]">Extra Charge</span>
-                                <span className="font-medium text-[#250903]">₹{bd.ratePerKm}/Km (Beyond {bd.chargedDistance}Km)</span>
+
+                              <div className="bg-[#F8F3EA] border border-[#D4C3B2] hover:border-[#C89D5C] p-2.5 sm:p-3 rounded-xl shadow-2xs transition-colors">
+                                <div className="text-[8px] font-bold uppercase tracking-[0.2em] text-[#8C6D53] font-mono mb-0.5">
+                                  CHARGED DISTANCE
+                                </div>
+                                <div className="font-heading font-black text-sm sm:text-base text-[#250903] leading-tight truncate">
+                                  {bd.chargedDistance} KM
+                                </div>
+                                <div className="text-[10px] text-[#8C6D53] font-medium mt-0.5 truncate">
+                                  For {bd.days} Day{bd.days > 1 ? 's' : ''} journey
+                                </div>
+                              </div>
+
+                              <div className="bg-[#F8F3EA] border border-[#D4C3B2] hover:border-[#C89D5C] p-2.5 sm:p-3 rounded-xl shadow-2xs transition-colors">
+                                <div className="text-[8px] font-bold uppercase tracking-[0.2em] text-[#8C6D53] font-mono mb-0.5">
+                                  EXTRA DISTANCE TARIFF
+                                </div>
+                                <div className="font-heading font-black text-sm sm:text-base text-[#250903] leading-tight truncate">
+                                  ₹{bd.ratePerKm} / KM
+                                </div>
+                                <div className="text-[10px] text-[#8C6D53] font-medium mt-0.5 truncate">
+                                  Beyond {bd.chargedDistance} KM
+                                </div>
                               </div>
                             </div>
                           </div>
 
-                          {/* Inclusions strip */}
-                          <div className="px-6 py-3 flex flex-wrap items-center gap-4 bg-[#FAF6F0] border-t border-[#E7DFD5]">
-                            <span className="flex items-center gap-1.5 text-[10px] font-semibold text-[#6A5749]">
-                              <svg className="w-3.5 h-3.5 text-[#C89D5C]" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
-                              Inc. GST &amp; Driver Allowance
-                            </span>
-                            <span className="flex items-center gap-1.5 text-[10px] font-semibold text-[#8C6D53]">
-                              <span className="text-[#C89D5C]">✦</span>
-                              Exc. Toll Tax &amp; Parking
-                            </span>
-                            <button onClick={() => toggleTab("fare")} className="ml-auto flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-[#551A0C] hover:text-[#C89D5C] transition-colors cursor-pointer">
-                              View Breakdown &amp; Terms <ArrowDownUp size={12} className="text-[#C89D5C]" />
+                          {/* Bottom Inclusions Bar */}
+                          <div className="pt-3 border-t border-[#D4C3B2] flex flex-wrap items-center justify-between gap-2 text-xs">
+                            <div className="flex flex-wrap items-center gap-3">
+                              <span className="flex items-center gap-1.5 font-bold text-[#551A0C] text-[11px]">
+                                <Check size={13} className="text-[#C89D5C]" strokeWidth={3} />
+                                Inc. 18% GST &amp; Driver Allowance
+                              </span>
+                              <span className="flex items-center gap-1.5 font-semibold text-[#8C6D53] text-[11px]">
+                                <span className="text-[#C89D5C]">✦</span>
+                                Exc. State Toll &amp; Parking (At Actuals)
+                              </span>
+                            </div>
+
+                            <button
+                              onClick={() => toggleTab("fare")}
+                              className="flex items-center gap-1 font-bold uppercase tracking-widest text-[#551A0C] hover:text-[#C89D5C] transition-colors cursor-pointer text-[10px]"
+                            >
+                              <span>View Breakdown &amp; Terms</span>
+                              <ArrowDownUp size={12} className="text-[#C89D5C]" />
                             </button>
                           </div>
                         </div>
 
-                        {/* ── Right: Fare Panel ── */}
-                        <div className="shrink-0 md:w-56 bg-[#FAF6F0] border-t md:border-t-0 md:border-l border-[#E7DFD5] p-6 flex flex-col items-center justify-between">
-                          <div className="text-center w-full">
-                            <div className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#8C6D53] mb-2">Package Fare ({bd.days}D)</div>
-                            <div className="text-3xl font-black text-[#551A0C] leading-none tracking-tight">
+                        {/* ── Right Column: Fare & Action Console (Compact) ── */}
+                        <div className="shrink-0 lg:w-56 xl:w-64 bg-gradient-to-b from-[#F9F4EB] to-[#ECE1D0] border-t lg:border-t-0 lg:border-l border-[#D4C3B2] p-5 sm:p-5.5 lg:p-6 flex flex-col justify-between items-center text-center">
+                          <div className="w-full">
+                            <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#551A0C]/10 text-[#551A0C] text-[8.5px] font-bold uppercase tracking-widest font-mono mb-2">
+                              PACKAGE FARE ({bd.days}D)
+                            </div>
+
+                            <div className="text-2xl sm:text-3xl xl:text-[34px] font-heading font-black text-[#250903] leading-none tracking-tight mb-1">
                               ₹{flatFare.toLocaleString()}
                             </div>
-                            <div className="text-[9px] text-[#8C6D53] italic mt-1 mb-3">all inclusive</div>
+                            <div className="text-[10px] text-[#8C6D53] italic font-editorial">
+                              all inclusive • no hidden charges
+                            </div>
                           </div>
-                          <button
-                            onClick={() => !isAlreadyBooked && handleBook(car, flatFare, extraText)}
-                            disabled={isAlreadyBooked || !returnDate || calculatedDistance === 0}
-                            className={`w-full mt-4 font-bold text-[10px] tracking-[0.2em] uppercase py-3.5 px-4 rounded-xl transition-all ${isAlreadyBooked || !returnDate || calculatedDistance === 0
-                              ? 'bg-[#E7DFD5] text-[#8C6D53] cursor-not-allowed'
-                              : 'btn-luxury btn-luxury-shine text-[#DFB574] shadow-md'
-                              }`}
-                          >
-                            {isAlreadyBooked ? 'Already Booked' : !returnDate ? 'Select Dates First' : calculatedDistance === 0 ? 'Select Valid Route' : 'Reserve Carriage'}
-                          </button>
+
+                          <div className="w-full mt-4">
+                            {isAlreadyBooked ? (
+                              <button
+                                disabled
+                                className="w-full bg-[#E7DFD5] text-[#8C6D53] font-bold text-xs uppercase tracking-widest py-3.5 px-4 rounded-xl cursor-not-allowed"
+                              >
+                                Already Booked
+                              </button>
+                            ) : !returnDate ? (
+                              <button
+                                onClick={handleSelectDatesPrompt}
+                                className="btn-luxury btn-luxury-shine w-full bg-[#551A0C] hover:bg-[#451408] text-[#DFB574] font-bold text-xs uppercase tracking-widest py-3.5 px-4 rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer border border-[#C89D5C]/60 hover:scale-[1.02] active:scale-95"
+                              >
+                                <Calendar size={14} /> Select Dates First
+                              </button>
+                            ) : calculatedDistance === 0 ? (
+                              <button
+                                onClick={handleSelectDatesPrompt}
+                                className="w-full bg-[#FAF6F0] text-[#551A0C] border border-[#E7DFD5] hover:border-[#C89D5C] font-bold text-xs uppercase tracking-widest py-3.5 px-4 rounded-xl transition-all cursor-pointer"
+                              >
+                                Select Valid Route
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => handleBook(car, flatFare, extraText)}
+                                className="btn-luxury btn-luxury-shine w-full bg-[#551A0C] hover:bg-[#451408] text-[#DFB574] font-bold text-xs uppercase tracking-widest py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-[#551A0C]/25 flex items-center justify-center gap-2 cursor-pointer border border-[#C89D5C]/60 hover:scale-[1.02] active:scale-95"
+                              >
+                                Reserve Carriage <ArrowRight size={14} />
+                              </button>
+                            )}
+
+                            <div className="text-[10px] text-[#8C6D53] mt-2.5 flex items-center justify-center gap-1 font-medium">
+                              <ShieldCheck size={13} className="text-[#C89D5C]" />
+                              <span>Verified Royal Chauffeur</span>
+                            </div>
+                          </div>
                         </div>
 
                       </div>
 
-                      {/* Expandable breakdown tabs */}
+                      {/* Expandable breakdown tabs (Fare Details, Exclusions, Terms) */}
                       {activeTab?.startsWith(`${car.id}-`) && (
-                        <div className="border-t border-[#E7DFD5] px-6 py-6 bg-[#FEFBF8]">
+                        <div className="border-t border-[#D4C3B2] px-6 sm:px-8 py-6 bg-[#F8F3EA]">
                           <div className="flex flex-wrap gap-2.5 mb-6">
-                            <button onClick={() => toggleTab("fare")} className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all cursor-pointer border ${isTabActive("fare") ? "bg-[#551A0C] border-[#551A0C] text-[#DFB574] shadow-xs" : "bg-[#FAF6F0] text-[#551A0C] border-[#E7DFD5] hover:border-[#C89D5C]"}`}>Fare Details</button>
-                            <button onClick={() => toggleTab("exclusion")} className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all cursor-pointer border ${isTabActive("exclusion") ? "bg-[#551A0C] border-[#551A0C] text-[#DFB574] shadow-xs" : "bg-[#FAF6F0] text-[#551A0C] border-[#E7DFD5] hover:border-[#C89D5C]"}`}>Exclusions</button>
-                            <button onClick={() => toggleTab("terms")} className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all cursor-pointer border ${isTabActive("terms") ? "bg-[#551A0C] border-[#551A0C] text-[#DFB574] shadow-xs" : "bg-[#FAF6F0] text-[#551A0C] border-[#E7DFD5] hover:border-[#C89D5C]"}`}>Terms &amp; Conditions</button>
+                            <button 
+                              onClick={() => toggleTab("fare")} 
+                              className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all cursor-pointer border ${
+                                isTabActive("fare") 
+                                  ? "bg-[#551A0C] border-[#551A0C] text-[#DFB574] shadow-xs" 
+                                  : "bg-[#FAF6F0] text-[#551A0C] border-[#E7DFD5] hover:border-[#C89D5C]"
+                              }`}
+                            >
+                              Fare Breakdown
+                            </button>
+                            <button 
+                              onClick={() => toggleTab("exclusion")} 
+                              className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all cursor-pointer border ${
+                                isTabActive("exclusion") 
+                                  ? "bg-[#551A0C] border-[#551A0C] text-[#DFB574] shadow-xs" 
+                                  : "bg-[#FAF6F0] text-[#551A0C] border-[#E7DFD5] hover:border-[#C89D5C]"
+                              }`}
+                            >
+                              Exclusions
+                            </button>
+                            <button 
+                              onClick={() => toggleTab("terms")} 
+                              className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all cursor-pointer border ${
+                                isTabActive("terms") 
+                                  ? "bg-[#551A0C] border-[#551A0C] text-[#DFB574] shadow-xs" 
+                                  : "bg-[#FAF6F0] text-[#551A0C] border-[#E7DFD5] hover:border-[#C89D5C]"
+                              }`}
+                            >
+                              Terms &amp; Policies
+                            </button>
                           </div>
 
                           {isTabActive("fare") && (
-                            <div className="flex flex-col md:flex-row gap-6 text-xs">
-                              <div className="flex-1 bg-[#FAF6F0] p-5 rounded-2xl border border-[#E7DFD5] space-y-3">
-                                <div className="flex justify-between items-center"><span className="text-[#8C6D53]">Basic Fare</span><span className="font-bold text-[#250903]">₹{bd.basicFare}</span></div>
-                                <div className="flex justify-between items-center"><span className="text-[#8C6D53]">Driver Allowances</span><span className="font-bold text-[#250903]">₹{bd.driverAllowance}</span></div>
-                                <div className="flex justify-between items-center"><span className="text-[#8C6D53]">GST (18%)</span><span className="font-bold text-[#250903]">₹{bd.gstAmount}</span></div>
-                                <div className="flex justify-between items-center pt-3 border-t border-[#E7DFD5]"><span className="text-[#551A0C] font-bold">Total Amount</span><span className="font-bold text-[#551A0C] text-lg">₹{flatFare}</span></div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                              <div className="bg-[#FAF6F0] p-5 rounded-2xl border border-[#E7DFD5] space-y-3">
+                                <div className="text-[10px] font-bold text-[#8C6D53] uppercase tracking-wider mb-1 font-mono">Invoice Breakdown</div>
+                                <div className="flex justify-between items-center"><span className="text-[#8C6D53]">Basic Carriage Rate</span><span className="font-bold text-[#250903]">₹{bd.basicFare.toLocaleString()}</span></div>
+                                <div className="flex justify-between items-center"><span className="text-[#8C6D53]">Driver Daily Allowance ({bd.days}D)</span><span className="font-bold text-[#250903]">₹{bd.driverAllowance.toLocaleString()}</span></div>
+                                <div className="flex justify-between items-center"><span className="text-[#8C6D53]">Government GST (18%)</span><span className="font-bold text-[#250903]">₹{bd.gstAmount.toLocaleString()}</span></div>
+                                <div className="flex justify-between items-center pt-3 border-t border-[#E7DFD5]">
+                                  <span className="text-[#551A0C] font-bold uppercase">Total All-Inclusive Fare</span>
+                                  <span className="font-black text-[#551A0C] text-lg">₹{flatFare.toLocaleString()}</span>
+                                </div>
                               </div>
-                              <div className="flex-1 bg-[#FAF6F0] p-5 rounded-2xl border border-[#E7DFD5] space-y-3">
-                                <div className="flex justify-between items-center"><span className="text-[#8C6D53]">Rate/Km</span><span className="font-bold text-[#250903]">₹{bd.ratePerKm}/Km</span></div>
-                                <div className="flex justify-between items-center"><span className="text-[#8C6D53]">No. of Days</span><span className="font-bold text-[#250903]">{bd.days} Days</span></div>
-                                <div className="flex justify-between items-center"><span className="text-[#8C6D53]">Min Km/Day ({bd.minKmPerDay}*{bd.days})</span><span className="font-bold text-[#250903]">{bd.chargedDistance} Km</span></div>
-                                <div className="flex justify-between items-center"><span className="text-[#8C6D53]">Running Distance</span><span className="font-bold text-[#250903]">{bd.runningDistance} Km</span></div>
-                                <div className="flex justify-between items-center"><span className="text-[#8C6D53]">Charged Distance</span><span className="font-bold text-[#250903]">{bd.chargedDistance} Km</span></div>
+                              <div className="bg-[#FAF6F0] p-5 rounded-2xl border border-[#E7DFD5] space-y-3">
+                                <div className="text-[10px] font-bold text-[#8C6D53] uppercase tracking-wider mb-1 font-mono">Distance &amp; Rate Metrics</div>
+                                <div className="flex justify-between items-center"><span className="text-[#8C6D53]">Base Rate / Km</span><span className="font-bold text-[#250903]">₹{bd.ratePerKm} / Km</span></div>
+                                <div className="flex justify-between items-center"><span className="text-[#8C6D53]">Duration</span><span className="font-bold text-[#250903]">{bd.days} Day{bd.days > 1 ? 's' : ''}</span></div>
+                                <div className="flex justify-between items-center"><span className="text-[#8C6D53]">Calculated Running Route</span><span className="font-bold text-[#250903]">{bd.runningDistance} Km</span></div>
+                                <div className="flex justify-between items-center"><span className="text-[#8C6D53]">Minimum Charged Quota</span><span className="font-bold text-[#250903]">{bd.chargedDistance} Km</span></div>
                               </div>
                             </div>
                           )}
@@ -1060,7 +1223,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                             <div className="text-xs text-[#6A5749] p-5 bg-[#FAF6F0] rounded-2xl border border-[#E7DFD5]">
                               <ul className="list-disc pl-5 space-y-2">
                                 {exclusionsList.map((item: string, idx: number) => (
-                                  <li key={idx}>{item}</li>
+                                  <li key={idx} className="leading-relaxed">{item}</li>
                                 ))}
                               </ul>
                             </div>
@@ -1070,7 +1233,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                             <div className="text-xs text-[#6A5749] p-5 bg-[#FAF6F0] rounded-2xl border border-[#E7DFD5]">
                               <ul className="list-disc pl-5 space-y-2">
                                 {termsList.map((item: string, idx: number) => (
-                                  <li key={idx}>{item}</li>
+                                  <li key={idx} className="leading-relaxed">{item}</li>
                                 ))}
                               </ul>
                             </div>
@@ -1082,125 +1245,186 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                 }
 
                 return (
-                  <div key={car.id} className="card-luxury border-classic-frame bg-[#FEFBF8] border-[#E7DFD5] hover:border-[#C89D5C] rounded-2xl shadow-sm hover:shadow-lg transition-all mb-5 overflow-hidden font-serif">
-                    <div className="flex flex-col md:flex-row">
+                  <div key={car.id} className="card-luxury bg-white border border-[#D4C3B2] hover:border-[#C89D5C] rounded-2xl lg:rounded-3xl shadow-[0_14px_35px_rgba(42,14,7,0.08),0_2px_6px_rgba(42,14,7,0.04)] hover:shadow-[0_20px_50px_rgba(42,14,7,0.16)] transition-all duration-500 mb-6 overflow-hidden font-body group">
+                    <div className="flex flex-col lg:flex-row items-stretch">
 
-                      {/* ── Left: Image ── */}
-                      <div className="relative md:w-64 shrink-0 bg-[#FAF6F0] flex items-center justify-center min-h-[180px]">
-                        {/* Image with its own overflow-hidden so badges aren't clipped */}
-                        <div className="absolute inset-0 overflow-hidden">
-                          <Link href={`/cars/${getCarSlug(car)}`} className="block w-full h-full">
-                            <CarImageSlider mainImage={car.image || '/placeholder-car.png'} galleryJson={car.gallery} alt={`${car.make} ${car.model}`} imageClassName="object-cover group-hover:scale-105 transition-transform duration-500 w-full h-full" />
+                      {/* ── Left Column: Vehicle Stage (Compact & Proportional) ── */}
+                      <div className="relative w-full lg:w-[270px] xl:w-[300px] 2xl:w-[320px] shrink-0 bg-[radial-gradient(ellipse_at_center,_#FFFFFF_20%,_#EFE5D6_100%)] flex flex-col items-center justify-center min-h-[190px] sm:min-h-[210px] lg:min-h-[230px] p-2 overflow-hidden border-b lg:border-b-0 lg:border-r border-[#D4C3B2]">
+                        <div className="absolute inset-0 bg-radial from-white/70 via-transparent to-transparent pointer-events-none" />
+
+                        <span className="absolute top-2.5 left-2.5 z-10 bg-[#250903]/90 text-[#DFB574] text-[8px] font-black uppercase tracking-[0.2em] px-2.5 py-1 rounded-full border border-[#C89D5C]/40 backdrop-blur-md shadow-xs font-mono">
+                          ✦ {car.category ? car.category.replace(/\bClass\b/gi, '').trim() : 'ROYAL FLEET'}
+                        </span>
+
+                        <span className={`absolute top-2.5 right-2.5 z-10 text-[7.5px] font-black uppercase tracking-[0.16em] px-2.5 py-1 rounded-full flex items-center gap-1 shadow-xs backdrop-blur-md ${
+                          car.availability 
+                            ? 'bg-emerald-950/85 text-emerald-300 border border-emerald-500/40' 
+                            : 'bg-red-950/85 text-red-300 border border-red-500/40'
+                        }`}>
+                          <span className={`w-1 h-1 rounded-full ${car.availability ? 'bg-emerald-400 animate-pulse' : 'bg-red-400'}`}></span>
+                          {car.availability ? 'AVAILABLE' : 'BOOKED'}
+                        </span>
+
+                        <div className="w-full h-full relative z-0 flex items-center justify-center min-h-[150px] sm:min-h-[170px] lg:min-h-[190px] p-2 sm:p-3">
+                          <Link href={`/cars/${getCarSlug(car)}`} className="block w-full h-full relative">
+                            <CarImageSlider 
+                              mainImage={car.image || '/placeholder-car.png'} 
+                              galleryJson={car.gallery} 
+                              alt={`${car.make} ${car.model}`} 
+                              imageClassName="object-contain w-full h-full group-hover:scale-105 transition-transform duration-500 drop-shadow-[0_10px_20px_rgba(37,9,3,0.18)]" 
+                              dotsClassName="bottom-1.5 left-1/2 -translate-x-1/2"
+                            />
                           </Link>
                         </div>
-                        {/* Category badge – top left */}
-                        <span className="absolute top-3 left-3 z-10 bg-[#FAF6F0]/95 border border-[#C89D5C]/40 text-[#551A0C] text-[8px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full shadow-xs">
-                          {car.category.replace(/\bClass\b/gi, '').trim()}
-                        </span>
-                        {/* Available badge – top right */}
-                        <span className={`absolute top-3 right-3 z-10 text-[8px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-xs ${car.availability ? 'bg-[#551A0C] text-[#DFB574] border border-[#C89D5C]/40' : 'bg-red-50 text-red-700 border border-red-200'}`}>
-                          <span className={`w-1.5 h-1.5 rounded-full ${car.availability ? 'bg-[#DFB574]' : 'bg-red-500'}`}></span>
-                          {car.availability ? 'Available' : 'Unavailable'}
-                        </span>
+
+                        <div className="absolute bottom-1.5 text-[7.5px] font-mono font-bold tracking-[0.25em] text-[#8C6D53]/70 uppercase select-none pointer-events-none">
+                          CHASSIS INSPECTED • VETTED
+                        </div>
                       </div>
 
-                      {/* ── Center: Info + Inclusions ── */}
-                      <div className="flex-1 flex flex-col justify-between">
-                        {/* Top: Name + specs + features + description */}
-                        <div className="p-6 border-b border-[#E7DFD5]">
-                          {/* Title row */}
-                          <h3 className="text-xl font-bold text-[#551A0C] leading-tight mb-1 group-hover:text-[#8C6D53] transition-colors">
+                      {/* ── Center Column: Info & Airport Perks ── */}
+                      <div className="flex-1 flex flex-col justify-between p-5 sm:p-5.5 lg:p-6 bg-white">
+                        <div>
+                          <div className="text-[9.5px] font-bold uppercase tracking-[0.2em] text-[#C89D5C] font-mono mb-1.5">
+                            ✦ AIRPORT TERMINAL CONCIERGE • {car.make}
+                          </div>
+
+                          <h3 className="text-xl sm:text-2xl font-heading font-black text-[#250903] uppercase tracking-wide group-hover:text-[#551A0C] transition-colors leading-tight mb-3">
                             <Link href={`/cars/${getCarSlug(car)}`}>
                               {car.make} {car.model}
                             </Link>
                           </h3>
-                          {/* Specs subtitle */}
-                          <p className="text-[11px] text-[#8C6D53] uppercase tracking-wider mb-3">
-                            {car.seatingCapacity} Seats &nbsp;•&nbsp; {car.transmission.replace(' Gearbox', '')} &nbsp;•&nbsp; {car.fuelType}
-                          </p>
-                          {/* Feature pills */}
-                          {car.features && car.features.length > 0 && (
-                            <div className="flex flex-wrap gap-1.5 mb-3">
-                              {car.features.map((feat: string, idx: number) => (
-                                <span key={idx} className="bg-[#551A0C] text-[#DFB574] text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border border-[#C89D5C]/30">
-                                  {feat}
-                                </span>
-                              ))}
+
+                          <div className="flex flex-wrap items-center gap-2 mb-3.5">
+                            <div className="flex items-center gap-1.5 bg-[#F8F3EA] border border-[#D4C3B2] px-2.5 py-1.5 rounded-lg text-xs font-semibold text-[#350E05] shadow-2xs">
+                              <Users size={13} className="text-[#C89D5C]" />
+                              <span>{car.seatingCapacity} Seats</span>
                             </div>
-                          )}
-                          {/* Description */}
-                          {car.content && car.content.replace(/<[^>]*>/g, '').trim() ? (
-                            <div className="text-xs text-[#6A5749] leading-relaxed line-clamp-3" dangerouslySetInnerHTML={{ __html: car.content }} />
-                          ) : (
-                            <p className="text-xs text-[#8C6D53]">Guaranteed private chauffeur service. Immaculate cabin and professional chauffeur.</p>
-                          )}
+                            <div className="flex items-center gap-1.5 bg-[#F8F3EA] border border-[#D4C3B2] px-2.5 py-1.5 rounded-lg text-xs font-semibold text-[#350E05] shadow-2xs">
+                              <Gauge size={13} className="text-[#C89D5C]" />
+                              <span className="capitalize">{car.transmission ? car.transmission.replace(' Gearbox', '') : 'Auto/Manual'}</span>
+                            </div>
+                            <div className="flex items-center gap-1.5 bg-[#F8F3EA] border border-[#D4C3B2] px-2.5 py-1.5 rounded-lg text-xs font-semibold text-[#350E05] shadow-2xs">
+                              <Fuel size={13} className="text-[#C89D5C]" />
+                              <span className="capitalize">{car.fuelType || 'Diesel'}</span>
+                            </div>
+                            <div className="flex items-center gap-1.5 bg-[#F8F3EA] border border-[#D4C3B2] px-2.5 py-1.5 rounded-lg text-xs font-semibold text-[#350E05] shadow-2xs">
+                              <ShieldCheck size={13} className="text-[#C89D5C]" />
+                              <span>Gate Meet &amp; Greet</span>
+                            </div>
+                          </div>
+
+                          {/* 3 Modern Airport Highlight Pods */}
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 my-2.5">
+                            <div className="bg-[#F8F3EA] border border-[#D4C3B2] hover:border-[#C89D5C] p-2.5 sm:p-3 rounded-xl shadow-2xs transition-colors">
+                              <div className="text-[8px] font-bold uppercase tracking-[0.2em] text-[#8C6D53] font-mono mb-0.5">
+                                COMPLIMENTARY WAIT
+                              </div>
+                              <div className="font-heading font-black text-sm sm:text-base text-[#250903] leading-tight truncate">
+                                30 Mins Free
+                              </div>
+                              <div className="text-[10px] text-[#8C6D53] font-medium mt-0.5 truncate">
+                                Terminal arrival buffer
+                              </div>
+                            </div>
+
+                            <div className="bg-[#F8F3EA] border border-[#D4C3B2] hover:border-[#C89D5C] p-2.5 sm:p-3 rounded-xl shadow-2xs transition-colors">
+                              <div className="text-[8px] font-bold uppercase tracking-[0.2em] text-[#8C6D53] font-mono mb-0.5">
+                                FLIGHT TRACKING
+                              </div>
+                              <div className="font-heading font-black text-sm sm:text-base text-[#250903] leading-tight truncate">
+                                Real-Time Sync
+                              </div>
+                              <div className="text-[10px] text-[#8C6D53] font-medium mt-0.5 truncate">
+                                Adjusted for delays
+                              </div>
+                            </div>
+
+                            <div className="bg-[#F8F3EA] border border-[#D4C3B2] hover:border-[#C89D5C] p-2.5 sm:p-3 rounded-xl shadow-2xs transition-colors">
+                              <div className="text-[8px] font-bold uppercase tracking-[0.2em] text-[#8C6D53] font-mono mb-0.5">
+                                HOSPITALITY
+                              </div>
+                              <div className="font-heading font-black text-sm sm:text-base text-[#250903] leading-tight truncate">
+                                Nameboard Gate
+                              </div>
+                              <div className="text-[10px] text-[#8C6D53] font-medium mt-0.5 truncate">
+                                Luggage escort service
+                              </div>
+                            </div>
+                          </div>
                         </div>
 
-                        {/* Bottom: Inclusions strip */}
-                        <div className="px-6 py-3 flex flex-wrap items-center gap-4 bg-[#FAF6F0] border-t border-[#E7DFD5]">
-                          <span className="flex items-center gap-1.5 text-[10px] font-semibold text-[#6A5749]">
-                            <svg className="w-3.5 h-3.5 text-[#C89D5C]" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
-                            30 min free wait
+                        {/* Bottom Inclusions Bar */}
+                        <div className="pt-3 border-t border-[#D4C3B2] flex flex-wrap items-center gap-3 text-xs">
+                          <span className="flex items-center gap-1.5 font-bold text-[#551A0C] text-[11px]">
+                            <Check size={13} className="text-[#C89D5C]" strokeWidth={3} />
+                            30 min free wait included
                           </span>
                           {car._airportBreakdown?.meetAndGreet && (
-                            <span className="flex items-center gap-1.5 text-[10px] font-semibold text-[#6A5749]">
-                              <svg className="w-3.5 h-3.5 text-[#C89D5C]" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
-                              Meet &amp; Greet
+                            <span className="flex items-center gap-1.5 font-semibold text-[#6A5749] text-[11px]">
+                              <span className="text-[#C89D5C]">✦</span>
+                              Terminal Gate Meet &amp; Greet
                             </span>
                           )}
                           {car._airportBreakdown?.nightFee > 0 && (
-                            <span className="flex items-center gap-1.5 text-[10px] font-semibold text-[#8C6D53]">
+                            <span className="flex items-center gap-1.5 font-semibold text-[#8C6D53] text-[11px]">
                               <span className="text-[#C89D5C]">✦</span>
-                              Night charge: ₹{car._airportBreakdown.nightFee.toLocaleString()}
-                            </span>
-                          )}
-                          {car._airportBreakdown?.waitChargePer30Min > 0 && (
-                            <span className="flex items-center gap-1.5 text-[10px] font-semibold text-[#8C6D53]">
-                              <span className="text-[#C89D5C]">✦</span>
-                              +₹{car._airportBreakdown.waitChargePer30Min}/30min extra wait
+                              Night fee: ₹{car._airportBreakdown.nightFee.toLocaleString()}
                             </span>
                           )}
                         </div>
                       </div>
 
-                      {/* ── Right: Fare Panel ── */}
-                      <div className="shrink-0 md:w-56 bg-[#FAF6F0] border-t md:border-t-0 md:border-l border-[#E7DFD5] p-6 flex flex-col items-center justify-between">
-                        <div className="text-center w-full">
-                          <div className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#8C6D53] mb-2">Flat Fare</div>
+                      {/* ── Right Column: Fare & Action Console (Compact) ── */}
+                      <div className="shrink-0 lg:w-56 xl:w-64 bg-gradient-to-b from-[#F9F4EB] to-[#ECE1D0] border-t lg:border-t-0 lg:border-l border-[#D4C3B2] p-5 sm:p-5.5 lg:p-6 flex flex-col justify-between items-center text-center">
+                        <div className="w-full">
+                          <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#551A0C]/10 text-[#551A0C] text-[8.5px] font-bold uppercase tracking-widest font-mono mb-2">
+                            FLAT AIRPORT FARE
+                          </div>
+
                           {car._airportBreakdown?.hasFare ? (
                             <>
-                              <div className="text-3xl font-black text-[#551A0C] leading-none tracking-tight">
+                              <div className="text-2xl sm:text-3xl xl:text-[34px] font-heading font-black text-[#250903] leading-none tracking-tight mb-1">
                                 ₹{flatFare.toLocaleString()}
                               </div>
-                              <div className="text-[9px] text-[#8C6D53] italic mt-1 mb-3">all inclusive</div>
-                              {car._airportBreakdown.nightApplies && car._airportBreakdown.nightFee > 0 && (
-                                <div className="text-[9px] text-[#551A0C] bg-[#FAF6F0] border border-[#C89D5C]/30 rounded-lg px-2 py-1.5 font-bold uppercase tracking-wider">
-                                  Night fee included
-                                </div>
-                              )}
+                              <div className="text-[10px] text-[#8C6D53] italic font-editorial">
+                                all inclusive • fixed tariff
+                              </div>
                             </>
                           ) : (
                             <>
-                              <div className="text-3xl font-black text-[#A8988A] leading-none">—</div>
-                              <div className="text-[9px] text-red-600 bg-red-50 border border-red-200 rounded-lg px-2 py-1.5 mt-2 leading-relaxed">
-                                No fare configured for this zone
+                              <div className="text-2xl font-black text-[#A8988A] leading-none">—</div>
+                              <div className="text-[9.5px] text-red-600 bg-red-50 border border-red-200 rounded-lg px-2 py-1 mt-1.5">
+                                No fare configured
                               </div>
                             </>
                           )}
                         </div>
-                        <button
-                          onClick={() => !isAlreadyBooked && handleBook(car, flatFare, extraText)}
-                          disabled={isAlreadyBooked || !atZoneId || !car._airportBreakdown?.hasFare}
-                          className={`w-full mt-4 font-bold text-[10px] tracking-[0.2em] uppercase py-3.5 px-4 rounded-xl transition-all ${isAlreadyBooked || !atZoneId || !car._airportBreakdown?.hasFare
-                            ? 'bg-[#E7DFD5] text-[#8C6D53] cursor-not-allowed'
-                            : 'btn-luxury btn-luxury-shine text-[#DFB574] shadow-md'
+
+                        <div className="w-full mt-4">
+                          <button
+                            onClick={() => !isAlreadyBooked && handleBook(car, flatFare, extraText)}
+                            disabled={isAlreadyBooked || !atZoneId || !car._airportBreakdown?.hasFare}
+                            className={`w-full font-bold text-xs uppercase tracking-wider py-3.5 px-4 rounded-xl transition-all shadow-md ${
+                              isAlreadyBooked || !atZoneId || !car._airportBreakdown?.hasFare
+                                ? 'bg-[#E7DFD5] text-[#8C6D53] cursor-not-allowed'
+                                : 'btn-luxury btn-luxury-shine bg-[#551A0C] hover:bg-[#451408] text-[#DFB574] border border-[#C89D5C]/60 shadow-lg shadow-[#551A0C]/25 hover:scale-[1.02] active:scale-95 cursor-pointer'
                             }`}
-                        >
-                          {isAlreadyBooked ? 'Already Booked'
-                            : !atZoneId ? 'Select Area First'
-                              : !car._airportBreakdown?.hasFare ? 'Not Available'
-                                : 'Reserve Transfer'}
-                        </button>
+                          >
+                            {isAlreadyBooked 
+                              ? 'Already Booked' 
+                              : !atZoneId 
+                              ? 'Select Area First' 
+                              : !car._airportBreakdown?.hasFare 
+                              ? 'Not Available' 
+                              : 'Reserve Transfer →'}
+                          </button>
+
+                          <div className="text-[10px] text-[#8C6D53] mt-2.5 flex items-center justify-center gap-1 font-medium">
+                            <ShieldCheck size={13} className="text-[#C89D5C]" />
+                            <span>Punctual Dabok (UDR) Fleet</span>
+                          </div>
+                        </div>
                       </div>
 
                     </div>
@@ -1212,14 +1436,14 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
 
               {/* Pagination Controls */}
               {totalPages > 1 && (
-                <div className="flex justify-center items-center gap-2 mt-12 border-t border-[#E7DFD5] pt-8">
+                <div className="flex justify-center items-center gap-2 mt-12 border-t border-[#D4C3B2] pt-8">
                   <button
                     onClick={() => {
                       setCurrentPage(prev => Math.max(1, prev - 1));
                       window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
                     disabled={currentPage === 1}
-                    className="w-10 h-10 rounded-xl border border-[#E7DFD5] bg-[#FEFBF8] flex items-center justify-center text-[#551A0C] hover:border-[#C89D5C] hover:text-[#551A0C] disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer shadow-xs font-serif"
+                    className="w-10 h-10 rounded-xl border border-[#D4C3B2] bg-white flex items-center justify-center text-[#551A0C] hover:border-[#C89D5C] hover:text-[#551A0C] disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer shadow-sm font-serif"
                   >
                     &larr;
                   </button>
@@ -1231,9 +1455,9 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                         setCurrentPage(page);
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                       }}
-                      className={`w-10 h-10 rounded-xl border text-xs font-serif font-bold transition-all cursor-pointer ${currentPage === page
+                      className={`w-10 h-10 rounded-xl border text-xs font-serif font-bold transition-all cursor-pointer shadow-sm ${currentPage === page
                         ? 'bg-[#551A0C] border-[#551A0C] text-[#DFB574] shadow-md'
-                        : 'border-[#E7DFD5] bg-[#FEFBF8] text-[#551A0C] hover:border-[#C89D5C]'
+                        : 'border-[#D4C3B2] bg-white text-[#551A0C] hover:border-[#C89D5C]'
                         }`}
                     >
                       {page}
@@ -1246,7 +1470,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                       window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
                     disabled={currentPage === totalPages}
-                    className="w-10 h-10 rounded-xl border border-[#E7DFD5] bg-[#FEFBF8] flex items-center justify-center text-[#551A0C] hover:border-[#C89D5C] hover:text-[#551A0C] disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer shadow-xs font-serif"
+                    className="w-10 h-10 rounded-xl border border-[#D4C3B2] bg-white flex items-center justify-center text-[#551A0C] hover:border-[#C89D5C] hover:text-[#551A0C] disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer shadow-sm font-serif"
                   >
                     &rarr;
                   </button>

@@ -101,15 +101,15 @@ export default function ChauffeurBookingModal({ isOpen, onClose, car, defaultPic
 
   return (
     <>
-      <div className="fixed inset-0 bg-white/60 backdrop-blur-sm z-[100]" onClick={onClose} />
-      <div className="fixed inset-x-4 md:inset-x-auto md:left-1/2 md:-translate-x-1/2 top-[5%] md:top-[10%] bottom-[5%] md:bottom-auto md:h-[80vh] w-auto md:w-[800px] bg-white border border-gray-300 rounded-3xl z-[101] shadow-2xl overflow-hidden flex flex-col custom-scrollbar">
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100]" onClick={onClose} />
+      <div className="fixed inset-x-4 md:inset-x-auto md:left-1/2 md:-translate-x-1/2 top-[5%] md:top-[10%] bottom-[5%] md:bottom-auto md:h-[80vh] w-auto md:w-[820px] bg-[#FEFBF8] border border-[#E7DFD5] rounded-3xl z-[101] shadow-2xl overflow-hidden flex flex-col custom-scrollbar">
 
         {/* Header */}
-        <div className="flex justify-between items-center p-6 border-b border-gray-200 bg-gray-100 shrink-0">
-          <h2 className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
-            Configure Chauffeur Booking
+        <div className="flex justify-between items-center p-6 border-b border-[#E7DFD5] bg-[#FAF6F0] shrink-0">
+          <h2 className="text-xs font-serif font-black text-[#551A0C] uppercase tracking-[0.2em] flex items-center gap-2">
+            <span className="text-[#C89D5C]">✦</span> Configure Chauffeur Booking
           </h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-900 transition-colors">
+          <button onClick={onClose} className="text-[#8C6D53] hover:text-[#551A0C] transition-colors cursor-pointer">
             <X size={20} />
           </button>
         </div>
@@ -119,33 +119,33 @@ export default function ChauffeurBookingModal({ isOpen, onClose, car, defaultPic
           {/* Left Column - Car & Package */}
           <div className="flex-1 space-y-8">
             {/* Car Info */}
-            <div className="flex gap-4 items-center">
-              <div className="relative w-24 h-16 rounded-xl overflow-hidden bg-white shrink-0 border border-gray-200">
-                <Image src={car.image} alt={car.model} fill className="object-cover p-1" unoptimized />
+            <div className="flex gap-4 items-center bg-[#FAF6F0] p-4 rounded-2xl border border-[#E7DFD5]">
+              <div className="relative w-24 h-16 rounded-xl overflow-hidden bg-white shrink-0 border border-[#E7DFD5]">
+                <Image src={car.image} alt={car.model} fill className="object-contain p-1" unoptimized />
               </div>
               <div>
-                <h3 className="font-black text-xl">{car.make} {car.model}</h3>
-                <p className="text-[10px] text-gray-500 tracking-widest uppercase">{car.category}</p>
+                <h3 className="font-serif font-black text-xl text-[#551A0C]">{car.make} {car.model}</h3>
+                <p className="text-[10px] text-[#C89D5C] font-bold tracking-[0.2em] uppercase">{car.category}</p>
               </div>
             </div>
 
             {/* DateTime Selection */}
             <div>
-              <p className="text-[10px] text-green-700 font-bold uppercase tracking-widest mb-3">1. Select Travel Date Range</p>
-              <div className="relative flex items-center bg-gray-100 border border-gray-200 rounded-xl px-3 py-3 w-full">
-                <Calendar className="text-gray-500 mr-2 shrink-0" size={14} />
+              <p className="text-[10px] text-[#551A0C] font-bold uppercase tracking-[0.2em] mb-3">1. Select Travel Date Range</p>
+              <div className="relative flex items-center bg-[#FEFBF8] border border-[#E7DFD5] rounded-xl px-3 py-3 w-full shadow-xs">
+                <Calendar className="text-[#C89D5C] mr-2 shrink-0" size={14} />
                 <ConfigProvider
                   theme={{
                     token: {
-                      colorPrimary: '#15803d',
-                      borderRadius: 8,
-                      fontSize: 11,
+                      colorPrimary: '#551A0C',
+                      borderRadius: 10,
+                      fontSize: 12,
                     },
                     components: {
                       DatePicker: {
-                        cellWidth: 28,
-                        cellHeight: 20,
-                        timeColumnWidth: 48,
+                        cellWidth: 32,
+                        cellHeight: 22,
+                        timeColumnWidth: 50,
                         timeCellHeight: 22,
                       },
                     },
@@ -242,8 +242,8 @@ export default function ChauffeurBookingModal({ isOpen, onClose, car, defaultPic
                       <div
                         key={pkg.id}
                         className={`p-4 rounded-xl border transition-all ${isSelected
-                            ? 'bg-green-600/5 border-green-600 shadow-sm'
-                            : 'bg-gray-50 border-gray-200 opacity-60'
+                            ? 'bg-[#FAF6F0] border-[#551A0C] shadow-sm'
+                            : 'bg-[#FEFBF8] border-[#E7DFD5] opacity-70 hover:opacity-100'
                           }`}
                       >
                         <div className="flex justify-between items-center">
@@ -253,17 +253,17 @@ export default function ChauffeurBookingModal({ isOpen, onClose, car, defaultPic
                               name="chauffeurPackage"
                               checked={isSelected}
                               readOnly
-                              className="accent-green-700 w-4 h-4"
+                              className="accent-[#551A0C] w-4 h-4 cursor-pointer"
                             />
                             <div>
-                              <div className="font-bold text-sm text-gray-900">{pkg.name}</div>
-                              <div className="text-[10px] text-gray-500">{pkg.limitValue} {pkg.type === 'KM' ? 'KM Included' : ''}</div>
+                              <div className="font-bold text-sm text-[#250903]">{pkg.name}</div>
+                              <div className="text-[10px] text-[#8C6D53]">{pkg.limitValue} {pkg.type === 'KM' ? 'KM Included' : ''}</div>
                             </div>
                           </div>
                           <div className="text-right">
-                            <div className="font-black text-green-700">₹{pkgPrice.toLocaleString()}</div>
+                            <div className="font-black text-[#551A0C]">₹{pkgPrice.toLocaleString()}</div>
                             {pkg.extraChargePerUnit && (
-                              <div className="text-[9px] text-gray-500">Extra KM: ₹{pkg.extraChargePerUnit}/km</div>
+                              <div className="text-[9px] text-[#8C6D53]">Extra KM: ₹{pkg.extraChargePerUnit}/km</div>
                             )}
                           </div>
                         </div>
@@ -272,8 +272,8 @@ export default function ChauffeurBookingModal({ isOpen, onClose, car, defaultPic
                   })}
                 </div>
                 {car.extraHourCharge && (
-                  <p className="text-[10px] text-gray-500 mt-3 flex items-center gap-1.5">
-                    <AlertCircle size={12} className="text-yellow-500" />
+                  <p className="text-[10px] text-[#8C6D53] mt-3 flex items-center gap-1.5">
+                    <AlertCircle size={12} className="text-[#C89D5C]" />
                     Additional hours will be billed at ₹{car.extraHourCharge}/hr
                   </p>
                 )}
@@ -283,54 +283,54 @@ export default function ChauffeurBookingModal({ isOpen, onClose, car, defaultPic
           </div>
 
           {/* Right Column - Summary */}
-          <div className="w-full md:w-[300px] shrink-0 bg-gray-100 border border-gray-200 rounded-2xl p-6 h-fit">
+          <div className="w-full md:w-[320px] shrink-0 bg-[#FAF6F0] border border-[#E7DFD5] rounded-2xl p-6 h-fit">
             {isMultipleOf12 && selectedPackage ? (
               <>
-                <h3 className="font-black mb-6">Fare Breakdown</h3>
+                <h3 className="font-serif font-black text-sm uppercase tracking-wider text-[#551A0C] mb-6">Fare Breakdown</h3>
 
-                <div className="space-y-4 mb-6 text-sm">
-                  <div className="flex justify-between text-gray-650 font-medium">
+                <div className="space-y-4 mb-6 text-xs">
+                  <div className="flex justify-between text-[#6A5749] font-medium">
                     <span>
                       {Math.floor(priceInfo.hours / durationHours) > 1
                         ? `${Math.floor(priceInfo.hours / durationHours)}x ${selectedPackage.name}`
                         : selectedPackage.name} Package
                     </span>
-                    <span className="font-mono text-gray-900 font-bold">₹{basePrice.toLocaleString()}</span>
+                    <span className="font-bold text-[#250903]">₹{basePrice.toLocaleString()}</span>
                   </div>
 
                   {hasNightCharge && (
-                    <div className="flex justify-between text-yellow-400">
+                    <div className="flex justify-between text-[#C89D5C]">
                       <span className="flex items-center gap-1.5">
                         Night Charge
-                        <span className="text-[9px] px-1.5 py-0.5 rounded border border-yellow-400/30">
+                        <span className="text-[9px] px-1.5 py-0.5 rounded border border-[#C89D5C]/30">
                           {car.nightChargeStart} - {car.nightChargeEnd}
                         </span>
                       </span>
-                      <span className="font-mono">+₹{nightChargeAmount.toLocaleString()}</span>
+                      <span className="font-bold">+₹{nightChargeAmount.toLocaleString()}</span>
                     </div>
                   )}
                 </div>
 
-                <div className="pt-4 border-t border-gray-300 mb-8 flex justify-between items-end">
-                  <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Total Estimate</span>
-                  <span className="text-3xl font-black text-green-700">₹{totalFare.toLocaleString()}</span>
+                <div className="pt-4 border-t border-[#E7DFD5] mb-6 flex justify-between items-end">
+                  <span className="text-[10px] text-[#8C6D53] font-bold uppercase tracking-[0.2em]">Total Estimate</span>
+                  <span className="text-3xl font-serif font-black text-[#551A0C]">₹{totalFare.toLocaleString()}</span>
                 </div>
 
-                <div className="space-y-3 mb-8 text-[10px] text-gray-600">
-                  <div className="flex gap-2"><Check size={14} className="text-green-700 shrink-0" /> Professional Chauffeur Included</div>
-                  <div className="flex gap-2"><Check size={14} className="text-green-700 shrink-0" /> Tolls & State Taxes Pre-paid</div>
-                  <div className="flex gap-2"><ShieldCheck size={14} className="text-green-700 shrink-0" /> 100% Insured Journey</div>
+                <div className="space-y-2.5 mb-7 text-[11px] text-[#6A5749]">
+                  <div className="flex gap-2"><Check size={14} className="text-[#C89D5C] shrink-0" /> Professional Chauffeur Included</div>
+                  <div className="flex gap-2"><Check size={14} className="text-[#C89D5C] shrink-0" /> Tolls & State Taxes Pre-paid</div>
+                  <div className="flex gap-2"><ShieldCheck size={14} className="text-[#C89D5C] shrink-0" /> 100% Insured Journey</div>
                 </div>
 
                 <button
                   onClick={handleBook}
-                  className="w-full py-4 bg-green-600 text-white font-black uppercase tracking-widest text-xs rounded-xl shadow-[0_0_20px_rgba(41,75,50,0.2)] hover:shadow-[0_0_30px_rgba(41,75,50,0.4)] transition-all"
+                  className="btn-luxury btn-luxury-shine w-full py-4 bg-[#551A0C] text-[#DFB574] hover:bg-[#451408] border border-[#C89D5C]/50 font-bold uppercase tracking-[0.2em] text-xs rounded-xl shadow-lg transition-all cursor-pointer"
                 >
-                  Add to Booking
+                  Reserve Chauffeur
                 </button>
               </>
             ) : (
-              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-xs text-amber-800 leading-relaxed font-bold text-center">
+              <div className="bg-[#FEFBF8] border border-[#C89D5C]/40 rounded-xl p-4 text-xs text-[#551A0C] leading-relaxed font-bold text-center">
                 ⚠️ Rental duration must be a multiple of 12 hours (e.g. 12 Hours, 24 Hours, 36 Hours, etc.). Please adjust your travel date range.
               </div>
             )}

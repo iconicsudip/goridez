@@ -41,7 +41,7 @@ export default function CarDetailsGallery({ mainImage, galleryJson, alt }: CarDe
           src={images[activeIndex] || '/placeholder-car.png'}
           alt={`${alt} - View ${activeIndex + 1}`}
           fill
-          className="object-cover p-2 group-hover:scale-102 transition-transform duration-700 z-10"
+          className="object-contain p-4 sm:p-6 group-hover:scale-102 transition-transform duration-700 z-10"
           unoptimized
         />
 

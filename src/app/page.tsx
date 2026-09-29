@@ -208,7 +208,7 @@ export default async function Home() {
 
           <div className="flex flex-col gap-10">
             {/* Card 1: Self Drive Cars */}
-            <div className="card-luxury border-classic-frame group relative rounded-3xl overflow-hidden border border-[#E7DFD5] hover:border-[#C89D5C] bg-[#FEFBF8] shadow-sm hover:shadow-[0_22px_45px_rgba(85,26,12,0.14)] transition-all duration-500">
+            <div className="card-luxury border-classic-frame group relative rounded-3xl overflow-hidden border border-[#D4C3B2] hover:border-[#C89D5C] bg-white shadow-[0_20px_55px_rgba(42,14,7,0.13),0_2px_8px_rgba(42,14,7,0.06)] hover:shadow-[0_28px_75px_rgba(42,14,7,0.22)] transition-all duration-500">
               <div className="grid grid-cols-1 lg:grid-cols-12 items-stretch">
                 {/* Visual Media Column */}
                 <div className="relative min-h-[300px] lg:min-h-[380px] lg:col-span-5 overflow-hidden bg-[#250903]">
@@ -294,7 +294,7 @@ export default async function Home() {
             </div>
 
             {/* Card 2: Taxi Service */}
-            <div className="card-luxury border-classic-frame group relative rounded-3xl overflow-hidden border border-[#E7DFD5] hover:border-[#C89D5C] bg-[#FEFBF8] shadow-sm hover:shadow-[0_22px_45px_rgba(85,26,12,0.14)] transition-all duration-500">
+            <div className="card-luxury border-classic-frame group relative rounded-3xl overflow-hidden border border-[#D4C3B2] hover:border-[#C89D5C] bg-white shadow-[0_20px_55px_rgba(42,14,7,0.13),0_2px_8px_rgba(42,14,7,0.06)] hover:shadow-[0_28px_75px_rgba(42,14,7,0.22)] transition-all duration-500">
               <div className="grid grid-cols-1 lg:grid-cols-12 items-stretch">
                 {/* Visual Media Column */}
                 <div className="relative min-h-[300px] lg:min-h-[380px] lg:col-span-5 overflow-hidden bg-[#250903]">
@@ -380,7 +380,7 @@ export default async function Home() {
             </div>
 
             {/* Card 3: Airport Transfers */}
-            <div className="card-luxury border-classic-frame group relative rounded-3xl overflow-hidden border border-[#E7DFD5] hover:border-[#C89D5C] bg-[#FEFBF8] shadow-sm hover:shadow-[0_22px_45px_rgba(85,26,12,0.14)] transition-all duration-500">
+            <div className="card-luxury border-classic-frame group relative rounded-3xl overflow-hidden border border-[#D4C3B2] hover:border-[#C89D5C] bg-white shadow-[0_20px_55px_rgba(42,14,7,0.13),0_2px_8px_rgba(42,14,7,0.06)] hover:shadow-[0_28px_75px_rgba(42,14,7,0.22)] transition-all duration-500">
               <div className="grid grid-cols-1 lg:grid-cols-12 items-stretch">
                 {/* Visual Media Column */}
                 <div className="relative min-h-[300px] lg:min-h-[380px] lg:col-span-5 overflow-hidden bg-[#250903]">
@@ -595,8 +595,12 @@ export default async function Home() {
                 </h2>
                 <div className="w-20 h-1 bg-[#C89D5C] mt-6 rounded-full"></div>
               </div>
-              <Link href="/blogs" className="btn-luxury text-xs font-black uppercase tracking-widest text-[#551A0C] hover:text-[#C89D5C] transition-all flex items-center gap-2 border-b-2 border-[#C89D5C] pb-1.5 hover:translate-x-1">
-                View All Journal Entries <ChevronRight size={14} />
+              <Link 
+                href="/blogs" 
+                className="btn-luxury btn-luxury-shine inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-[#551A0C] hover:bg-[#451408] text-[#DFB574] hover:text-white border border-[#C89D5C]/60 hover:border-[#DFB574] text-xs font-bold uppercase tracking-[0.2em] shadow-md hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-300 group cursor-pointer"
+              >
+                <span>View All Journal Entries</span>
+                <ChevronRight size={14} className="text-[#DFB574] group-hover:text-white transition-transform group-hover:translate-x-1" />
               </Link>
             </div>
 

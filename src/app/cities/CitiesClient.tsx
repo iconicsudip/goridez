@@ -81,21 +81,21 @@ export default function CitiesClient({ initialCities, initialCars, initialVillas
   const CarCard = ({ car, ctaLabel, onBook }: { car: any; ctaLabel: string; onBook: () => void }) => (
     <div className="card-luxury bg-[#FEFBF8] border border-[#E7DFD5] rounded-3xl p-6 group hover:border-[#C89D5C] hover:shadow-2xl transition-all duration-500 border-classic-frame flex flex-col justify-between">
       <Link href={`/cars/${getCarSlug(car)}`} className="block">
-        <div className="relative w-full h-[160px] mb-4 flex items-center justify-center bg-[#FAF6F0] rounded-2xl overflow-hidden border border-[#E7DFD5]">
-          <Image src={car.image} alt={car.model} fill className="object-cover group-hover:scale-105 transition-transform duration-700" unoptimized />
-          <span className="absolute top-3 left-3 text-[9px] font-bold font-mono uppercase tracking-widest px-3 py-1 rounded-full bg-[#250903]/90 text-[#DFB574] border border-[#C89D5C]/30">
+        <div className="relative w-full h-[180px] mb-4 flex items-center justify-center bg-[radial-gradient(ellipse_at_center,_#FFFFFF_0%,_#F3EDE2_100%)] rounded-2xl overflow-hidden border border-[#E7DFD5] p-3">
+          <Image src={car.image} alt={car.model} fill className="object-contain p-2 group-hover:scale-105 transition-transform duration-700 drop-shadow-[0_8px_16px_rgba(37,9,3,0.15)]" unoptimized />
+          <span className="absolute top-3 left-3 text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-[#250903]/90 text-[#DFB574] border border-[#C89D5C]/35 backdrop-blur-md">
             {car.category}
           </span>
         </div>
-        <h3 className="text-lg font-bold font-serif uppercase tracking-tight text-[#551A0C] mb-4 group-hover:text-[#C89D5C] transition-colors">
+        <h3 className="text-xl font-serif font-black uppercase tracking-tight text-[#551A0C] mb-4 group-hover:text-[#C89D5C] transition-colors">
           {car.make} {car.model}
         </h3>
       </Link>
       <button
         onClick={onBook}
-        className="btn-luxury btn-luxury-shine w-full py-3.5 rounded-xl text-[10px] font-serif font-bold uppercase tracking-[0.16em] flex items-center justify-center gap-2 shadow-md cursor-pointer"
+        className="btn-luxury btn-luxury-shine w-full py-4 rounded-xl text-[10px] font-serif font-bold uppercase tracking-[0.18em] flex items-center justify-center gap-2 shadow-md cursor-pointer bg-[#551A0C] text-[#DFB574] hover:bg-[#451408] border border-[#C89D5C]/50"
       >
-        {ctaLabel} <ArrowRight size={14} />
+        {ctaLabel} <ArrowRight size={14} className="text-[#DFB574]" />
       </button>
     </div>
   );

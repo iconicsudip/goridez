@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { MapPin, Calendar, Loader2, X } from 'lucide-react';
+import { MapPin, Calendar, Loader2, X, Sparkles } from 'lucide-react';
 import { useBookingStore } from '@/store/useBookingStore';
 import { searchLocation, OSMLocation } from '@/lib/osm';
 import AirportLocalitySearch, { AIRPORT_ZONE_ID } from '@/components/AirportLocalitySearch';
@@ -185,55 +185,58 @@ export default function BookingWidget({
   return (
     <div className="w-full max-w-5xl mx-auto font-body z-10 relative text-left">
 
-      {/* ── Main Tabs ─────────────────────────────────────────────────────── */}
-      <div className="flex justify-center sm:justify-start w-full sm:w-max max-w-full mx-auto overflow-x-auto hide-scrollbar bg-[#250903]/95 backdrop-blur-xl rounded-t-3xl shadow-xl border border-[#C89D5C]/30 border-b-0">
-        {(['SELF DRIVE', 'TAXI'] as MainTab[]).map((tab) => {
-          if (counts) {
-            if (tab === 'SELF DRIVE' && counts.selfDrive === 0) return null;
-            if (tab === 'TAXI' && counts.chauffeur === 0 && counts.taxi === 0) return null;
-          }
-          return (
-            <button
-              key={tab}
-              onClick={() => { 
-                setMainTab(tab); 
-                setIsDifferentDropCity(false);
-                if (tab === 'TAXI') setSubTab('ROUND TRIP');
-              }}
-              className={`px-8 md:px-12 py-4 text-xs md:text-sm font-heading font-bold tracking-widest transition-all whitespace-nowrap flex-shrink-0 cursor-pointer ${
-                mainTab === tab
-                  ? 'bg-[#551A0C] text-[#DFB574] border-t-2 border-[#DFB574] shadow-md shadow-[#551A0C]/50'
-                  : 'text-white/70 hover:text-white hover:bg-white/5'
-              }`}
-            >
-              {tab}
-            </button>
-          );
-        })}
+      {/* ── Floating Main Tabs Switcher ────────────────────────────────────── */}
+      <div className="flex justify-center -mb-5 relative z-20">
+        <div className="inline-flex p-1.5 bg-[#170501]/95 backdrop-blur-2xl border border-[#C89D5C]/50 rounded-full shadow-[0_12px_36px_rgba(0,0,0,0.5)] gap-1.5">
+          {(['SELF DRIVE', 'TAXI'] as MainTab[]).map((tab) => {
+            if (counts) {
+              if (tab === 'SELF DRIVE' && counts.selfDrive === 0) return null;
+              if (tab === 'TAXI' && counts.chauffeur === 0 && counts.taxi === 0) return null;
+            }
+            const isActive = mainTab === tab;
+            return (
+              <button
+                key={tab}
+                type="button"
+                onClick={() => { 
+                  setMainTab(tab); 
+                  setIsDifferentDropCity(false);
+                  if (tab === 'TAXI') setSubTab('ROUND TRIP');
+                }}
+                className={`px-8 sm:px-11 py-3 text-xs font-bold tracking-[0.2em] uppercase rounded-full transition-all duration-300 cursor-pointer flex items-center gap-2 ${
+                  isActive
+                    ? 'bg-[#551A0C] text-[#DFB574] border border-[#DFB574]/60 shadow-[0_4px_18px_rgba(200,157,92,0.35)]'
+                    : 'text-[#FAF6F0]/75 hover:text-white hover:bg-white/5 border border-transparent'
+                }`}
+              >
+                {isActive && <span className="w-1.5 h-1.5 rounded-full bg-[#DFB574]" />}
+                <span>{tab}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      {/* ── Main Card ─────────────────────────────────────────────────────── */}
-      <div className="card-luxury border-classic-frame bg-[#FEFBF8]/98 backdrop-blur-xl border border-[#E7DFD5] sm:rounded-3xl sm:rounded-tl-none rounded-bl-3xl rounded-br-3xl p-6 md:p-10 shadow-[0_30px_70px_rgba(37,9,3,0.22)] relative text-gray-900">
+      {/* ── Main Console Card ─────────────────────────────────────────────── */}
+      <div className="card-luxury bg-[#FEFBF8]/98 backdrop-blur-2xl border border-[#E7DFD5] ring-1 ring-[#C89D5C]/20 rounded-3xl p-6 sm:p-9 pt-10 md:pt-11 shadow-[0_30px_90px_-20px_rgba(37,9,3,0.35)] relative text-[#250903]">
+        {/* Decorative Top Accent Hairline */}
+        <div className="absolute top-0 inset-x-12 h-[2px] bg-gradient-to-r from-transparent via-[#C89D5C]/50 to-transparent" />
 
         {/* Sub Tabs */}
         {mainTab === 'TAXI' && (
-          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mb-8">
+          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mb-6 pt-1">
             {(['ROUND TRIP', 'AIRPORT TRANSFER'] as SubTab[]).map((sub) => (
               <button
                 key={sub}
                 type="button"
                 onClick={() => setSubTab(sub)}
-                className={`px-6 py-2.5 rounded-full text-xs font-heading font-bold tracking-wider transition-all flex items-center gap-2.5 border cursor-pointer ${
+                className={`px-5 py-2 rounded-full text-[11px] font-bold tracking-wider transition-all flex items-center gap-2 border cursor-pointer ${
                   subTab === sub
-                    ? 'bg-[#551A0C] text-[#DFB574] border-[#C89D5C] shadow-sm'
-                    : 'bg-[#FAF6F0] text-[#350E05] border-[#E7DFD5] hover:border-[#C89D5C]'
+                    ? 'bg-[#551A0C] text-[#DFB574] border-[#DFB574]/60 shadow-sm'
+                    : 'bg-[#FAF6F0] text-[#551A0C]/80 border-[#E7DFD5] hover:border-[#C89D5C]'
                 }`}
               >
-                <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center flex-shrink-0 ${
-                  subTab === sub ? 'border-[#DFB574] bg-[#551A0C]' : 'border-[#C89D5C]/50'
-                }`}>
-                  {subTab === sub && <div className="w-1.5 h-1.5 rounded-full bg-[#DFB574]" />}
-                </div>
+                <span className={`w-1.5 h-1.5 rounded-full ${subTab === sub ? 'bg-[#DFB574]' : 'bg-[#C89D5C]/50'}`} />
                 {sub === 'ROUND TRIP' && 'Round Trip Journey'}
                 {sub === 'AIRPORT TRANSFER' && 'Airport Chauffeur Transfer'}
               </button>
@@ -342,24 +345,26 @@ export default function BookingWidget({
             ) : null}
 
             {/* ── Travel Date(s) ───────────────────────────────────────── */}
-            <div className={`bg-white border border-[#E7DFD5] hover:border-[#C89D5C] focus-within:border-[#C89D5C] transition-all rounded-2xl flex flex-col shadow-[0_2px_10px_rgba(85,26,12,0.03)] ${dateSpansTwo ? 'p-4 md:col-span-2' : 'p-4 md:px-3'}`}>
-              <label className="text-[10px] text-[#7A6A65] mb-2 font-mono uppercase tracking-widest">
+            <div className={`bg-[#FEFBF8] border border-[#E7DFD5] hover:border-[#C89D5C] focus-within:border-[#C89D5C] focus-within:ring-2 focus-within:ring-[#C89D5C]/20 transition-all rounded-2xl flex flex-col shadow-xs group ${dateSpansTwo ? 'p-3.5 md:col-span-2' : 'p-3.5'}`}>
+              <label className="text-[10px] text-[#8C6D53] mb-1.5 font-bold uppercase tracking-[0.2em] select-none">
                 {isAirportTransfer ? 'Transfer Date & Time (Required)' : 'Travel Date Range (Required)'}
               </label>
-              <div className="flex items-center gap-2.5 text-gray-800 w-full">
-                <Calendar size={16} className="text-[#C89D5C] shrink-0" />
+              <div className="flex items-center gap-2.5 text-[#250903] w-full">
+                <div className="w-8 h-8 rounded-lg bg-[#FAF6F0] border border-[#E7DFD5] flex items-center justify-center text-[#C89D5C] shrink-0 group-focus-within:border-[#C89D5C]/70 group-focus-within:bg-[#551A0C]/5 transition-colors">
+                  <Calendar size={15} />
+                </div>
                 <ConfigProvider
                   theme={{
                     token: {
                       colorPrimary: '#551A0C',
-                      borderRadius: 8,
-                      fontSize: 11,
+                      borderRadius: 10,
+                      fontSize: 13,
                     },
                     components: {
                       DatePicker: {
-                        cellWidth: 28,
-                        cellHeight: 20,
-                        timeColumnWidth: 48,
+                        cellWidth: 32,
+                        cellHeight: 22,
+                        timeColumnWidth: 50,
                         timeCellHeight: 22,
                       },
                     },
@@ -373,7 +378,7 @@ export default function BookingWidget({
                       onChange={(date) => handlePickupDateChange(date ? date.toDate() : null)}
                       placeholder="Transfer Date & Time"
                       variant="borderless"
-                      className="w-full text-xs font-semibold cursor-pointer text-gray-900 !p-0"
+                      className="w-full text-sm font-bold cursor-pointer text-[#250903] !p-0"
                       disabledDate={(current) => current && current < dayjs().startOf('day')}
                       disabledTime={(current) => {
                         if (current && current.isSame(dayjs(), 'day')) {
@@ -394,7 +399,7 @@ export default function BookingWidget({
                   ) : (
                   <DatePicker.RangePicker
                     showTime={{ format: 'h:mm a', use12Hours: true, minuteStep: 30 }}
-                    format="DD MMM, h:mma"
+                    format="DD MMM, h:mm a"
                     value={[pickupDate ? dayjs(pickupDate) : null, returnDate ? dayjs(returnDate) : null]}
                     onChange={(dates) => {
                       if (dates && dates[0]) {
@@ -412,7 +417,7 @@ export default function BookingWidget({
                     }}
                     placeholder={['Pickup Date & Time', 'Return Date & Time']}
                     variant="borderless"
-                    className="w-full text-xs font-semibold cursor-pointer text-gray-900 !p-0"
+                    className="w-full text-sm font-bold cursor-pointer text-[#250903] !p-0"
                     disabledDate={(current) => current && current < dayjs().startOf('day')}
                     disabledTime={(current, type) => {
                       if (type === 'start') {
@@ -453,25 +458,27 @@ export default function BookingWidget({
           </div>
 
           {/* Search Button */}
-          <div className="w-full flex justify-center mt-10">
+          <div className="w-full flex justify-center mt-9">
             <button
               type="submit"
-              className="btn-luxury btn-luxury-shine w-full md:w-[340px] bg-[#551A0C] hover:bg-[#451408] text-[#DFB574] font-heading font-bold tracking-widest uppercase text-sm px-8 py-4 rounded-xl transition-all shadow-xl shadow-[#551A0C]/25 border border-[#C89D5C]/60 cursor-pointer"
+              className="btn-luxury btn-luxury-shine w-full sm:w-auto sm:min-w-[340px] bg-[#551A0C] hover:bg-[#451408] text-[#DFB574] font-bold tracking-[0.22em] uppercase text-xs px-10 py-4.5 rounded-2xl transition-all shadow-[0_12px_35px_rgba(85,26,12,0.35)] hover:shadow-[0_18px_45px_rgba(85,26,12,0.5)] hover:scale-[1.02] active:scale-[0.98] border border-[#DFB574]/60 cursor-pointer flex items-center justify-center gap-2.5"
             >
-              Discover Available Fleet
+              <span>Discover Available Fleet</span>
+              <Sparkles size={14} className="text-[#DFB574]" />
             </button>
           </div>
         </form>
 
         {/* Self Drive: drop in different city */}
         {mainTab === 'SELF DRIVE' && (
-          <div className="flex justify-center mt-6">
+          <div className="flex justify-center mt-5">
             <button
               type="button"
               onClick={() => setIsDifferentDropCity(!isDifferentDropCity)}
-              className="text-xs font-heading font-semibold text-[#551A0C] hover:text-[#250903] transition-colors cursor-pointer hover:underline underline-offset-4 tracking-wider uppercase"
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider text-[#551A0C] bg-[#FAF6F0] hover:bg-[#F3EDE2] border border-[#E7DFD5] hover:border-[#C89D5C] transition-all cursor-pointer shadow-xs"
             >
-              {isDifferentDropCity ? '✦ Return to same collection point' : '✦ Require drop-off in a different royal city?'}
+              <span className="text-[#C89D5C]">✦</span>
+              <span>{isDifferentDropCity ? 'Return to same collection point' : 'Require drop-off in a different royal city?'}</span>
             </button>
           </div>
         )}

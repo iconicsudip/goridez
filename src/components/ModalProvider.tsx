@@ -75,40 +75,36 @@ export function ModalProvider({ children }: { children: ReactNode }) {
   const isSuccess = opts.type === 'success';
   const isError = opts.type === 'error';
 
-  const iconColor = isSuccess ? 'text-[#00ffaa]' : isError ? 'text-red-500' : 'text-green-700';
+  const iconColor = isSuccess ? 'text-[#C89D5C]' : isError ? 'text-red-500' : 'text-[#551A0C]';
   const confirmBtnClass = isError
-    ? 'bg-red-500 hover:bg-red-600 text-gray-900'
-    : isSuccess
-    ? 'bg-[#00ffaa] hover:bg-[#00e699] text-black'
-    : isConfirm
-    ? 'bg-green-600 hover:bg-brand-hover text-white'
-    : 'bg-green-600 hover:bg-brand-hover text-white';
+    ? 'bg-red-600 hover:bg-red-700 text-white'
+    : 'btn-luxury btn-luxury-shine bg-[#551A0C] text-[#DFB574] hover:bg-[#451408] border border-[#C89D5C]/50';
 
   return (
     <ModalContext.Provider value={{ confirm, alert, showSuccess, showError }}>
       {children}
       {open && (
         <div
-          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-white/75 backdrop-blur-sm"
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
           onClick={(e) => { if (e.target === e.currentTarget) close(false); }}
         >
-          <div className="bg-gray-100 border border-gray-300 rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <div className="card-luxury bg-[#FEFBF8] border border-[#E7DFD5] rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             {/* Header */}
-            <div className="flex items-center gap-3 p-6 border-b border-gray-200">
-              {isSuccess && <CheckCircle size={20} className="text-[#00ffaa] flex-shrink-0" />}
+            <div className="flex items-center gap-3 p-6 border-b border-[#E7DFD5] bg-[#FAF6F0]">
+              {isSuccess && <CheckCircle size={20} className="text-[#C89D5C] flex-shrink-0" />}
               {isError && <AlertTriangle size={20} className="text-red-500 flex-shrink-0" />}
               {!isSuccess && !isError && <Info size={20} className={`${iconColor} flex-shrink-0`} />}
-              <h3 className="font-black uppercase tracking-tight text-gray-900 text-sm flex-1">
+              <h3 className="font-serif font-black uppercase tracking-wider text-[#551A0C] text-sm flex-1">
                 {opts.title || (isSuccess ? 'Success' : isError ? 'Error' : isConfirm ? 'Confirm Action' : 'Notice')}
               </h3>
-              <button onClick={() => close(false)} className="text-gray-400 hover:text-gray-900 transition-colors">
+              <button onClick={() => close(false)} className="text-[#8C6D53] hover:text-[#551A0C] transition-colors cursor-pointer">
                 <X size={16} />
               </button>
             </div>
 
             {/* Body */}
             <div className="p-6">
-              <p className="text-sm text-gray-600 font-mono leading-relaxed">{opts.message}</p>
+              <p className="text-xs text-[#6A5749] leading-relaxed">{opts.message}</p>
             </div>
 
             {/* Footer */}
@@ -116,14 +112,14 @@ export function ModalProvider({ children }: { children: ReactNode }) {
               {isConfirm && (
                 <button
                   onClick={() => close(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-gray-900 border border-gray-300 hover:border-gray-400 transition-all"
+                  className="px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest text-[#8C6D53] hover:text-[#551A0C] border border-[#E7DFD5] hover:border-[#C89D5C] transition-all cursor-pointer"
                 >
                   {opts.cancelLabel || 'Cancel'}
                 </button>
               )}
               <button
                 onClick={() => close(true)}
-                className={`px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-lg ${confirmBtnClass}`}
+                className={`px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-[0.16em] transition-all shadow-md cursor-pointer ${confirmBtnClass}`}
               >
                 {opts.confirmLabel || 'OK'}
               </button>

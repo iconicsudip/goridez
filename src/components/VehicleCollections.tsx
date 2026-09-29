@@ -220,11 +220,11 @@ export default function VehicleCollections({
           </div>
         )}
 
-        {/* Main Showcase Grid (Left: Carousel of Luxury Cards, Right: Studio Motion Card) */}
+        {/* Main Showcase Grid (Left: Carousel of 3 Luxury Cards, Right: Studio Motion Card) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
           
-          {/* Left Column: Carousel Cards (8 cols) */}
-          <div className="lg:col-span-8 flex flex-col justify-between overflow-hidden">
+          {/* Left Column: Carousel Cards (9 cols to show 3 cards comfortably) */}
+          <div className="lg:col-span-9 flex flex-col justify-between overflow-hidden">
             <div className="overflow-hidden" ref={emblaRef}>
               <div className="flex -ml-5">
                 {activeCars.length === 0 ? (
@@ -241,20 +241,17 @@ export default function VehicleCollections({
                     return (
                       <div
                         key={car.id}
-                        className="flex-[0_0_90%] sm:flex-[0_0_50%] min-w-0 pl-5"
+                        className="flex-[0_0_88%] sm:flex-[0_0_48%] lg:flex-[0_0_33.333%] min-w-0 pl-5"
                       >
                         <div className="bg-[#240C06] border border-[#551A0C]/80 hover:border-[#C89D5C] rounded-3xl p-4 sm:p-5 flex flex-col justify-between group transition-all duration-500 hover:-translate-y-1.5 hover:shadow-[0_20px_45px_rgba(0,0,0,0.45)] h-full">
                           
-                          {/* Inner Vehicle Image Container with Radial Warm Spotlight */}
-                          <div className="relative h-[210px] w-full rounded-2xl flex items-center justify-center overflow-hidden border border-[#551A0C]/60 mb-4 bg-gradient-to-b from-[#381108] via-[#240C06] to-[#170501]">
-                            {/* Radial Glow */}
-                            <div className="absolute inset-0 bg-radial from-[#551A0C]/70 via-transparent to-transparent opacity-80 pointer-events-none" />
-                            
+                          {/* Inner Vehicle Image Stage - Showroom Turntable */}
+                          <div className="relative h-[195px] w-full rounded-2xl flex items-center justify-center overflow-hidden border border-[#E7DFD5]/25 mb-4 bg-[radial-gradient(ellipse_at_center,_#FFFFFF_0%,_#F3EDE2_100%)] p-2 shadow-inner">
                             <Image
                               src={car.image || 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=1000&q=80'}
                               alt={`${car.make} ${car.model}`}
                               fill
-                              className="object-contain p-3 group-hover:scale-108 transition-transform duration-700 ease-out"
+                              className="object-contain p-2.5 group-hover:scale-108 transition-transform duration-700 ease-out drop-shadow-[0_10px_20px_rgba(37,9,3,0.18)]"
                               unoptimized
                             />
 
@@ -338,8 +335,8 @@ export default function VehicleCollections({
             )}
           </div>
 
-          {/* Right Column: Studio Motion Feature Showcase Card (4 cols) */}
-          <div className="lg:col-span-4">
+          {/* Right Column: Studio Motion Feature Showcase Card (3 cols) */}
+          <div className="lg:col-span-3">
             {spotlightCar ? (
               <div className="relative rounded-3xl overflow-hidden border border-[#551A0C] bg-[#240C06] flex flex-col justify-between min-h-[460px] lg:h-full p-6 sm:p-7 group shadow-2xl">
                 {/* Background Photo with Cinematic Treatment */}

@@ -529,11 +529,11 @@ export default function UnifiedCarBookingSidebar({
         )}
 
         {/* === DATE SELECTION === */}
-        <div className="bg-white border border-brand-border hover:border-brand-gold/50 transition-colors rounded-xl p-4 flex flex-col shadow-[0_2px_10px_rgba(0,0,0,0.03)] relative w-full">
-          <label className="text-xs text-gray-500 mb-2 font-mono uppercase tracking-wider flex justify-between">
+        <div className="bg-[#FEFBF8] border border-[#E7DFD5] hover:border-[#C89D5C] transition-colors rounded-2xl p-4 flex flex-col shadow-xs relative w-full">
+          <label className="text-[10px] text-[#8C6D53] mb-2 font-bold uppercase tracking-[0.2em] flex justify-between">
             <span>{bookingMode === 'AIRPORT_TRANSFER' ? 'Pickup Date & Time' : 'Travel Date Range'}</span>
             {bookingMode === 'SELF_DRIVE' && sdPriceInfo && sdPriceInfo.hours > 0 && (
-              <span className="text-green-700 font-bold text-xs">
+              <span className="text-[#551A0C] font-bold text-xs">
                 {Math.round(sdPriceInfo.hours * 10) / 10} Hrs
               </span>
             )}

@@ -209,14 +209,14 @@ export default function BrowseCars({ cars = [] }: BrowseCarsProps) {
                     key={car.id}
                     className="flex-[0_0_88%] sm:flex-[0_0_50%] md:flex-[0_0_33.333%] lg:flex-[0_0_25%] min-w-0 pl-6"
                   >
-                    <div className="card-luxury border-classic-frame bg-[#FEFBF8] border border-[#E7DFD5] hover:border-[#C89D5C] rounded-3xl overflow-hidden flex flex-col group transition-all duration-500 shadow-sm hover:shadow-[0_22px_45px_rgba(85,26,12,0.18)] h-full p-5">
+                    <div className="card-luxury border-classic-frame bg-white border border-[#D4C3B2] hover:border-[#C89D5C] rounded-3xl overflow-hidden flex flex-col group transition-all duration-500 shadow-[0_16px_45px_rgba(42,14,7,0.12)] hover:shadow-[0_24px_55px_rgba(42,14,7,0.22)] h-full p-5">
                       {/* Image Area */}
-                      <div className="relative h-[210px] w-full bg-[#FAF6F0] flex items-center justify-center overflow-hidden border border-[#E7DFD5] rounded-2xl mb-4.5">
+                      <div className="relative h-[210px] w-full bg-[radial-gradient(ellipse_at_center,_#FFFFFF_0%,_#F3EDE2_100%)] flex items-center justify-center overflow-hidden border border-[#D4C3B2] rounded-2xl mb-4.5">
                         <Image
                           src={car.image || 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=1000&q=80'}
                           alt={`${car.make} ${car.model}`}
                           fill
-                          className="object-cover group-hover:scale-108 transition-transform duration-700 ease-out"
+                          className="object-contain p-3 group-hover:scale-105 transition-transform duration-500 ease-out drop-shadow-md"
                           unoptimized
                         />
                         <div className="absolute top-3 left-3 z-10">

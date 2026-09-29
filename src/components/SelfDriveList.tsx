@@ -107,18 +107,18 @@ export default function SelfDriveList({
             return (
               <div
                 key={car.id}
-                className="card-luxury border-classic-frame bg-[#FEFBF8] border-[#E7DFD5] hover:border-[#C89D5C] rounded-3xl shadow-sm hover:shadow-2xl transition-all duration-300 overflow-hidden group"
+                className="card-luxury bg-white border border-[#D4C3B2] hover:border-[#C89D5C] rounded-3xl shadow-[0_20px_55px_rgba(42,14,7,0.13),0_2px_8px_rgba(42,14,7,0.06)] hover:shadow-[0_28px_75px_rgba(42,14,7,0.22)] transition-all duration-300 overflow-hidden group"
               >
                 <div className="flex flex-col lg:flex-row">
                   {/* Left: Vehicle Image Slider Showcase */}
-                  <div className="relative w-full lg:w-[360px] xl:w-[400px] shrink-0 bg-[#FAF6F0] min-h-[260px] lg:min-h-[280px] flex items-center justify-center overflow-hidden border-b lg:border-b-0 lg:border-r border-[#E7DFD5]">
+                  <div className="relative w-full lg:w-[360px] xl:w-[400px] shrink-0 bg-[radial-gradient(ellipse_at_center,_#FFFFFF_0%,_#F3EDE2_100%)] min-h-[260px] lg:min-h-[280px] flex items-center justify-center overflow-hidden border-b lg:border-b-0 lg:border-r border-[#E7DFD5] p-2">
                     <div className="absolute inset-0 overflow-hidden">
                       <Link href={`/cars/${getCarSlug(car)}`} className="block w-full h-full">
                         <CarImageSlider
                           mainImage={car.image}
                           galleryJson={car.gallery}
                           alt={`${car.make} ${car.model}`}
-                          imageClassName="object-cover group-hover:scale-108 transition-transform duration-700 w-full h-full"
+                          imageClassName="object-contain p-4 group-hover:scale-105 transition-transform duration-700 w-full h-full drop-shadow-[0_12px_24px_rgba(37,9,3,0.18)]"
                         />
                       </Link>
                     </div>
@@ -140,7 +140,7 @@ export default function SelfDriveList({
 
                     {/* Hub Location Badge */}
                     {car.city?.name && (
-                      <span className="absolute bottom-4 left-4 z-10 bg-[#250903]/85 backdrop-blur-md text-[#DFB574] text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-md border border-[#C89D5C]/30 shadow-xs">
+                      <span className="absolute bottom-4 left-4 z-10 bg-[#250903]/90 backdrop-blur-md text-[#DFB574] text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-md border border-[#C89D5C]/35 shadow-xs">
                         {car.city.name} Hub
                       </span>
                     )}
@@ -341,16 +341,16 @@ export default function SelfDriveList({
             return (
               <div
                 key={car.id}
-                className="card-luxury border-classic-frame bg-[#FEFBF8] border-[#E7DFD5] hover:border-[#C89D5C] rounded-3xl shadow-sm hover:shadow-2xl transition-all duration-300 flex flex-col justify-between overflow-hidden group"
+                className="card-luxury bg-white border border-[#D4C3B2] hover:border-[#C89D5C] rounded-3xl shadow-[0_20px_55px_rgba(42,14,7,0.13),0_2px_8px_rgba(42,14,7,0.06)] hover:shadow-[0_28px_75px_rgba(42,14,7,0.22)] transition-all duration-300 flex flex-col justify-between overflow-hidden group"
               >
                 {/* Image Section */}
-                <div className="relative aspect-[16/10] w-full bg-[#FAF6F0] overflow-hidden border-b border-[#E7DFD5]">
+                <div className="relative aspect-[16/10] w-full bg-[radial-gradient(ellipse_at_center,_#FFFFFF_0%,_#F3EDE2_100%)] overflow-hidden border-b border-[#E7DFD5] p-3 flex items-center justify-center">
                   <Link href={`/cars/${getCarSlug(car)}`} className="block w-full h-full">
                     <CarImageSlider
                       mainImage={car.image}
                       galleryJson={car.gallery}
                       alt={`${car.make} ${car.model}`}
-                      imageClassName="object-cover group-hover:scale-108 transition-transform duration-700 w-full h-full"
+                      imageClassName="object-contain p-2 group-hover:scale-105 transition-transform duration-700 w-full h-full drop-shadow-[0_8px_20px_rgba(37,9,3,0.15)]"
                     />
                   </Link>
 
@@ -370,7 +370,7 @@ export default function SelfDriveList({
                   </div>
 
                   {car.city?.name && (
-                    <span className="absolute bottom-3.5 left-3.5 z-10 bg-[#250903]/85 backdrop-blur-md text-[#DFB574] text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-md border border-[#C89D5C]/30 shadow-xs">
+                    <span className="absolute bottom-3.5 left-3.5 z-10 bg-[#250903]/90 backdrop-blur-md text-[#DFB574] text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-md border border-[#C89D5C]/35 shadow-xs">
                       {car.city.name} Hub
                     </span>
                   )}

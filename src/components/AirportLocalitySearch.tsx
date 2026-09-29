@@ -76,17 +76,17 @@ export default function AirportLocalitySearch({
 
   return (
     <div
-      className="bg-white border border-[#E7DFD5] hover:border-[#C89D5C] focus-within:border-[#C89D5C] transition-all rounded-2xl p-4 flex flex-col shadow-[0_2px_10px_rgba(85,26,12,0.03)] relative"
+      className="bg-[#FEFBF8] border border-[#E7DFD5] hover:border-[#C89D5C] focus-within:border-[#C89D5C] focus-within:ring-2 focus-within:ring-[#C89D5C]/20 transition-all rounded-2xl p-3.5 flex flex-col shadow-xs relative group"
       ref={wrapperRef}
     >
       {label && (
-        <label className="text-[10px] text-[#7A6A65] mb-2 font-mono uppercase tracking-widest">
+        <label className="text-[10px] text-[#8C6D53] mb-1.5 font-bold uppercase tracking-[0.2em] select-none">
           {label}
         </label>
       )}
-      <div className="flex items-center gap-2.5 text-gray-800 relative">
-        <div className="flex items-center justify-center shrink-0">
-          {value === airportLabel ? <Plane className="text-[#C89D5C]" size={16} /> : <MapPin className="text-[#C89D5C]" size={16} />}
+      <div className="flex items-center gap-2.5 text-[#250903] relative">
+        <div className="w-8 h-8 rounded-lg bg-[#FAF6F0] border border-[#E7DFD5] flex items-center justify-center text-[#C89D5C] shrink-0 group-focus-within:border-[#C89D5C]/70 group-focus-within:bg-[#551A0C]/5 transition-colors">
+          {value === airportLabel ? <Plane size={15} /> : <MapPin size={15} />}
         </div>
         <input
           type="text"
@@ -101,16 +101,16 @@ export default function AirportLocalitySearch({
           }}
           onFocus={() => setIsOpen(true)}
           placeholder={placeholder || 'Search airport or your area...'}
-          className="w-full bg-transparent text-sm font-semibold outline-none text-gray-900 placeholder-gray-400 min-w-0 font-body"
+          className="w-full bg-transparent text-sm font-bold outline-none text-[#250903] placeholder-[#8C6D53]/50 min-w-0"
         />
         {query && (
           <button
             type="button"
             onClick={handleClear}
-            className="text-gray-400 hover:text-red-500 shrink-0 transition-colors"
+            className="text-[#8C6D53]/60 hover:text-[#551A0C] shrink-0 transition-colors p-1"
             aria-label="Clear"
           >
-            <X size={14} />
+            <X size={15} />
           </button>
         )}
       </div>

@@ -67,7 +67,7 @@ export default function Footer({ siteSettings, cities, legalLinks }: { siteSetti
                 src={logoSrc}
                 alt="GoRidez Logo"
                 fill
-                className="object-contain"
+                className="object-cover"
                 unoptimized
               />
             </div>

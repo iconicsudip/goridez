@@ -7,7 +7,7 @@ import Link from 'next/link';
 import ChauffeurBookingModal from './ChauffeurBookingModal';
 import { useBookingStore } from '@/store/useBookingStore';
 
-import { ShieldCheck, CheckCircle, User, Fuel, MapPin, Navigation } from 'lucide-react';
+import { ShieldCheck, CheckCircle2, User, Fuel, MapPin, Navigation, Sparkles, ChevronRight } from 'lucide-react';
 import { getCarSlug } from '@/lib/utils';
 
 export default function ChauffeurList({ initialCars, pickupDate, returnDate }: { initialCars: any[], pickupDate?: Date, returnDate?: Date | null }) {
@@ -35,103 +35,155 @@ export default function ChauffeurList({ initialCars, pickupDate, returnDate }: {
           return currentStart <= bEnd && currentEnd >= bStart;
         });
 
-        return (
-          <div key={car.id} className="bg-white border border-gray-200 rounded-3xl overflow-hidden flex flex-col group hover:border-green-300 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+        const deposit = currentPackage?.deposit || 0;
+        const totalWithGst = Math.round(finalPrice * 1.18);
 
-            {/* Top Image Section */}
-            <div className="relative h-[220px] w-full bg-white flex items-center justify-center">
-              {/* Badge */}
-              <div className="absolute top-4 left-4 z-10">
-                <span className="bg-white/90 backdrop-blur-md text-green-700 px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider shadow-sm flex items-center gap-1">
-                  <ShieldCheck size={14} /> Premium
+        return (
+          <div
+            key={car.id}
+            className="card-luxury bg-white border border-[#D4C3B2] hover:border-[#C89D5C] rounded-3xl overflow-hidden flex flex-col justify-between group shadow-[0_20px_55px_rgba(42,14,7,0.13),0_2px_8px_rgba(42,14,7,0.06)] hover:shadow-[0_28px_75px_rgba(42,14,7,0.22)] transition-all duration-300"
+          >
+            {/* Top Image Showcase Stage */}
+            <div className="relative h-[230px] w-full bg-[radial-gradient(ellipse_at_center,_#FFFFFF_0%,_#F3EDE2_100%)] flex items-center justify-center p-4 border-b border-[#E7DFD5] overflow-hidden">
+              {/* Glass Badges */}
+              <div className="absolute top-4 left-4 right-4 z-10 flex items-center justify-between pointer-events-none">
+                <span className="bg-[#FEFBF8]/95 backdrop-blur-md text-[#551A0C] border border-[#C89D5C]/50 px-3.5 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-[0.2em] shadow-xs flex items-center gap-1.5">
+                  <ShieldCheck size={12} className="text-[#C89D5C]" /> Royal Chauffeur
+                </span>
+                <span className={`text-[9px] font-bold uppercase tracking-wider px-3.5 py-1.5 rounded-full flex items-center gap-1.5 shadow-xs ${
+                  car.availability
+                    ? 'bg-[#551A0C] text-[#DFB574] border border-[#C89D5C]/40'
+                    : 'bg-red-50 text-red-700 border border-red-200'
+                }`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${car.availability ? 'bg-[#DFB574]' : 'bg-red-500'}`} />
+                  {car.availability ? 'Available' : 'Reserved'}
                 </span>
               </div>
 
               {/* Car Image */}
-              <Image
-                src={car.image}
-                alt={`${car.make} ${car.model}`}
-                fill
-                className="object-cover p-4 group-hover:scale-105 transition-transform duration-500"
-                unoptimized
-              />
+              <div className="relative w-full h-full">
+                <Image
+                  src={car.image}
+                  alt={`${car.make} ${car.model}`}
+                  fill
+                  className="object-contain p-2 group-hover:scale-105 transition-transform duration-500 drop-shadow-[0_12px_24px_rgba(37,9,3,0.18)]"
+                  unoptimized
+                />
+              </div>
+
+              {/* City Hub Stamp */}
+              {car.city?.name && (
+                <span className="absolute bottom-3 left-4 z-10 bg-[#250903]/90 backdrop-blur-md text-[#DFB574] text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-md border border-[#C89D5C]/35 shadow-xs">
+                  {car.city.name} Hub
+                </span>
+              )}
             </div>
 
-            {/* Content */}
-            <div className="p-6 md:p-8 flex-1 flex flex-col">
+            {/* Content Dossier */}
+            <div className="p-6 md:p-8 flex-1 flex flex-col justify-between">
+              <div>
+                <div className="text-[10px] text-[#C89D5C] font-bold uppercase tracking-[0.25em] mb-1">
+                  {car.category || 'Executive Marque'}
+                </div>
+                <h3 className="text-2xl font-serif font-black text-[#551A0C] tracking-tight mb-3 group-hover:text-[#C89D5C] transition-colors">
+                  <Link href={`/cars/${getCarSlug(car)}`}>
+                    {car.make} {car.model} {car.make.includes('Mercedes') || car.make.includes('BMW') || car.make.includes('Audi') ? '(VIP Signature)' : ''}
+                  </Link>
+                </h3>
 
-              <h3 className="text-xl font-black mb-2">{car.make} {car.model} {car.make.includes('Mercedes') || car.make.includes('Audi') ? '(VIP)' : ''}</h3>
-              <div className="flex flex-wrap gap-2 mb-6">
-                <span className="flex items-center gap-1 bg-green-50 text-green-700 px-2 py-1 rounded border border-green-100 text-[10px] font-semibold">
-                  <ShieldCheck size={12} /> Sanitized
-                </span>
-                <span className="flex items-center gap-1 bg-blue-50 text-blue-700 px-2 py-1 rounded border border-blue-100 text-[10px] font-semibold">
-                  <CheckCircle size={12} /> Verified Driver
-                </span>
-              </div>
-
-              {/* Feature List */}
-              <div className="space-y-4 mb-8 text-xs font-medium">
-                <div className="flex justify-between items-center border-b border-gray-100 pb-3">
-                  <span className="text-gray-600 flex items-center gap-2"><User size={14} className="text-gray-400" /> Professional Driver</span>
-                  <span className="text-green-700 font-bold bg-green-50 px-2 py-0.5 rounded text-[10px]">INCLUDED</span>
-                </div>
-                <div className="flex justify-between items-center border-b border-gray-100 pb-3">
-                  <span className="text-gray-600 flex items-center gap-2"><Fuel size={14} className="text-gray-400" /> Fuel Surcharge</span>
-                  <span className="text-green-700 font-bold bg-green-50 px-2 py-0.5 rounded text-[10px]">INCLUDED</span>
-                </div>
-                <div className="flex justify-between items-center border-b border-gray-100 pb-3">
-                  <span className="text-gray-600 flex items-center gap-2"><MapPin size={14} className="text-gray-400" /> Interstate Toll Permits</span>
-                  <span className="text-gray-900 font-bold">Tolls Pre-Paid</span>
-                </div>
-                <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                  <span className="text-gray-500 text-xs font-medium flex items-center gap-2"><Navigation size={14} className="text-gray-400" /> Allowed Limit</span>
-                  <span className="text-gray-900 font-bold text-xs bg-gray-100 px-2 py-1 rounded">{currentPackage?.limitValue ? `${Math.round(currentPackage.limitValue * durationDays)} ${currentPackage.type === 'KM' ? 'KM' : 'Hours'}` : 'Unlimited'} allowance</span>
-                </div>
-              </div>
-
-              {/* Fare Summary */}
-              <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 mb-6 text-xs font-mono">
-                <div className="flex justify-between items-center mb-2 pb-2 border-b border-gray-200/60">
-                  <span className="text-gray-500 font-bold uppercase tracking-wider">
-                    {durationDays > 1 ? `Base Fare (${Math.round(durationDays * 10) / 10} Days)` : 'Base Fare'}
+                {/* Chauffeur Trust Badges */}
+                <div className="flex flex-wrap gap-2 mb-5">
+                  <span className="flex items-center gap-1.5 bg-[#FAF6F0] text-[#551A0C] border border-[#C89D5C]/35 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                    <ShieldCheck size={12} className="text-[#C89D5C]" /> Sanitized Cabin
                   </span>
-                  <span className="text-gray-900 font-bold">₹{finalPrice.toLocaleString()}</span>
+                  <span className="flex items-center gap-1.5 bg-[#FAF6F0] text-[#551A0C] border border-[#C89D5C]/35 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                    <CheckCircle2 size={12} className="text-[#C89D5C]" /> Vetted Uniformed Chauffeur
+                  </span>
                 </div>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-gray-500">GST (18%)</span>
-                  <span className="text-gray-900 font-semibold">₹{Math.round(finalPrice * 0.18).toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between items-center mb-3">
-                  <span className="text-gray-500">Refundable Deposit</span>
-                  <span className="text-green-700 font-bold">₹{(currentPackage?.deposit || 0).toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between items-end pt-2 border-t border-dashed border-gray-300">
-                  <div>
-                    <div className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">EST. TRIP TOTAL</div>
-                    <div className="text-green-700 text-2xl font-black">₹{Math.round(finalPrice * 1.18).toLocaleString()}</div>
+
+                {/* Feature Specifications */}
+                <div className="space-y-3 mb-6 text-xs bg-[#FAF6F0]/60 p-4 rounded-2xl border border-[#E7DFD5]">
+                  <div className="flex justify-between items-center pb-2.5 border-b border-[#E7DFD5]">
+                    <span className="text-[#6A5749] flex items-center gap-2 font-medium">
+                      <User size={14} className="text-[#C89D5C]" /> Professional Chauffeur
+                    </span>
+                    <span className="text-[#551A0C] font-bold bg-[#FEFBF8] border border-[#C89D5C]/30 px-2 py-0.5 rounded text-[10px] uppercase tracking-wider">
+                      Complimentary
+                    </span>
                   </div>
-                  <div className="text-right text-[10px] text-gray-400">
-                    <div>Inc. Chauffeur</div>
+                  <div className="flex justify-between items-center pb-2.5 border-b border-[#E7DFD5]">
+                    <span className="text-[#6A5749] flex items-center gap-2 font-medium">
+                      <Fuel size={14} className="text-[#C89D5C]" /> Fuel & Maintenance
+                    </span>
+                    <span className="text-[#551A0C] font-bold bg-[#FEFBF8] border border-[#C89D5C]/30 px-2 py-0.5 rounded text-[10px] uppercase tracking-wider">
+                      Included
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center pb-2.5 border-b border-[#E7DFD5]">
+                    <span className="text-[#6A5749] flex items-center gap-2 font-medium">
+                      <MapPin size={14} className="text-[#C89D5C]" /> Interstate Toll Permits
+                    </span>
+                    <span className="text-[#250903] font-bold text-[11px]">Tolls Pre-Paid</span>
+                  </div>
+                  <div className="flex justify-between items-center pt-0.5">
+                    <span className="text-[#6A5749] flex items-center gap-2 font-medium">
+                      <Navigation size={14} className="text-[#C89D5C]" /> Daily Kilometer Allowance
+                    </span>
+                    <span className="text-[#551A0C] font-bold text-xs bg-[#FEFBF8] border border-[#E7DFD5] px-2.5 py-0.5 rounded-lg">
+                      {currentPackage?.limitValue ? `${Math.round(currentPackage.limitValue * durationDays)} ${currentPackage.type === 'KM' ? 'KM' : 'Hours'}` : 'Unlimited'}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Fare Summary Console */}
+                <div className="bg-[#FAF6F0] border border-[#E7DFD5] rounded-2xl p-4.5 mb-6 text-xs">
+                  <div className="flex justify-between items-center mb-2 pb-2 border-b border-[#E7DFD5]">
+                    <span className="text-[#8C6D53] font-bold uppercase tracking-wider text-[10px]">
+                      {durationDays > 1 ? `Base Fare (${Math.round(durationDays * 10) / 10} Days)` : 'Base Fare'}
+                    </span>
+                    <span className="text-[#250903] font-bold">₹{finalPrice.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-[#8C6D53]">GST (18%)</span>
+                    <span className="text-[#250903] font-medium">₹{Math.round(finalPrice * 0.18).toLocaleString()}</span>
+                  </div>
+                  {deposit > 0 && (
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-[#8C6D53]">Refundable Deposit</span>
+                      <span className="text-[#C89D5C] font-bold">₹{deposit.toLocaleString()}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between items-end pt-3 border-t border-[#E7DFD5]">
+                    <div>
+                      <div className="text-[10px] text-[#8C6D53] font-bold uppercase tracking-[0.2em]">Estimated Total</div>
+                      <div className="text-3xl font-serif font-black text-[#551A0C] leading-none mt-1">₹{totalWithGst.toLocaleString()}</div>
+                    </div>
+                    <div className="text-right text-[10px] text-[#8C6D53] italic">
+                      <div>Chauffeur & GST Included</div>
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex gap-4 mt-auto items-stretch h-12">
-                <Link href={`/cars/${getCarSlug(car)}`} className="flex-grow flex items-center justify-center text-center px-4 py-0 text-sm font-semibold rounded-xl border border-gray-300 hover:bg-gray-100 transition-colors">
-                  Details
+              <div className="flex gap-3 items-stretch">
+                <Link
+                  href={`/cars/${getCarSlug(car)}`}
+                  className="flex-1 py-3.5 px-4 text-xs font-bold uppercase tracking-[0.18em] rounded-xl border border-[#E7DFD5] text-[#551A0C] bg-[#FEFBF8] text-center hover:border-[#C89D5C] hover:bg-[#FAF6F0] transition-colors flex items-center justify-center gap-1.5"
+                >
+                  <span>Dossier</span>
+                  <ChevronRight size={14} className="text-[#C89D5C]" />
                 </Link>
                 <button
                   onClick={() => !isAlreadyBooked && setSelectedBookingCarId(car.id)}
                   disabled={isAlreadyBooked}
-                  className={`flex-grow flex items-center justify-center text-center px-4 py-0 text-sm font-semibold rounded-xl transition-all ${isAlreadyBooked
-                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-200 shadow-none'
-                      : 'bg-green-600 text-white shadow-lg shadow-green-600/20 hover:shadow-xl hover:shadow-green-600/30 hover:-translate-y-0.5 relative overflow-hidden group/btn'
-                    }`}
+                  className={`flex-[1.5] font-bold text-xs tracking-[0.2em] uppercase py-3.5 px-5 rounded-xl transition-all cursor-pointer shadow-md hover:shadow-xl ${
+                    isAlreadyBooked
+                      ? 'bg-[#E7DFD5] text-[#8C6D53] cursor-not-allowed'
+                      : 'btn-luxury btn-luxury-shine bg-[#551A0C] text-[#DFB574] hover:bg-[#451408] border border-[#C89D5C]/50'
+                  }`}
                 >
-                  <span className="absolute inset-0 w-full h-full -ml-[100%] bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover/btn:animate-shimmer"></span>
-                  <span className="relative z-10">{isAlreadyBooked ? 'Booked' : 'Book Now'}</span>
+                  {isAlreadyBooked ? 'Reserved' : 'Reserve Chauffeur'}
                 </button>
               </div>
 
@@ -139,8 +191,6 @@ export default function ChauffeurList({ initialCars, pickupDate, returnDate }: {
           </div>
         );
       })}
-
-
 
       <ChauffeurBookingModal
         isOpen={!!selectedBookingCarId}

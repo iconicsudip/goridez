@@ -115,7 +115,7 @@ export default function Navbar({ navVisibility, siteSettings }: { navVisibility?
                   src={siteSettings?.logoRidez || '/logo-ridez.png'}
                   alt="GoRidez Logo"
                   fill
-                  className="object-contain"
+                  className="object-cover"
                   unoptimized
                 />
               </div>
@@ -295,7 +295,7 @@ export default function Navbar({ navVisibility, siteSettings }: { navVisibility?
                 src={siteSettings?.logoRidez || '/logo-ridez.png'}
                 alt="GoRidez Logo"
                 fill
-                className="object-contain"
+                className="object-cover"
                 unoptimized
               />
             </div>

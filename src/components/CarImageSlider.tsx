@@ -8,9 +8,16 @@ interface CarImageSliderProps {
   galleryJson?: string;
   alt: string;
   imageClassName?: string;
+  dotsClassName?: string;
 }
 
-export default function CarImageSlider({ mainImage, galleryJson, alt, imageClassName = 'object-cover' }: CarImageSliderProps) {
+export default function CarImageSlider({ 
+  mainImage, 
+  galleryJson, 
+  alt, 
+  imageClassName = 'object-contain p-3',
+  dotsClassName = 'bottom-2.5 left-1/2 -translate-x-1/2'
+}: CarImageSliderProps) {
   const [images, setImages] = useState<string[]>([mainImage]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -32,7 +39,7 @@ export default function CarImageSlider({ mainImage, galleryJson, alt, imageClass
     if (images.length <= 1) return;
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % images.length);
-    }, 3000); // 3 seconds transitions
+    }, 3200); // 3.2 seconds transitions
     return () => clearInterval(interval);
   }, [images]);
 
@@ -58,12 +65,12 @@ export default function CarImageSlider({ mainImage, galleryJson, alt, imageClass
       ))}
       {/* Indicator overlay dots */}
       {images.length > 1 && (
-        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-20">
+        <div className={`absolute ${dotsClassName} flex items-center gap-1.5 z-20 bg-white/80 backdrop-blur-sm px-2.5 py-1 rounded-full border border-[#E7DFD5]/80 shadow-xs`}>
           {images.map((_, idx) => (
             <span
               key={idx}
               className={`h-1.5 rounded-full transition-all duration-300 ${
-                idx === currentIndex ? 'w-4 bg-green-500' : 'w-1.5 bg-gray-400/70'
+                idx === currentIndex ? 'w-4 bg-[#551A0C]' : 'w-1.5 bg-[#C89D5C]/40'
               }`}
             />
           ))}
