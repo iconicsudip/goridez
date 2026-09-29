@@ -44,14 +44,14 @@ function fillMarquee(items: GoogleReview[], minCount = 10) {
 }
 
 const ReviewCard = ({ review }: { review: GoogleReview }) => (
-  <div className="card-luxury w-[380px] sm:w-[420px] lg:w-[450px] shrink-0 bg-white border border-[#D4C3B2] hover:border-[#C89D5C] rounded-3xl p-6 sm:p-7 flex flex-col justify-between gap-5 shadow-[0_16px_45px_rgba(42,14,7,0.10),0_2px_8px_rgba(42,14,7,0.05)] hover:shadow-[0_26px_65px_rgba(42,14,7,0.20)] transition-all duration-500 relative group select-none overflow-hidden">
+  <div className="card-luxury w-[380px] sm:w-[420px] lg:w-[440px] h-[280px] sm:h-[290px] shrink-0 bg-white border border-[#D4C3B2] hover:border-[#C89D5C] rounded-3xl p-5 sm:p-6 flex flex-col justify-between shadow-[0_16px_45px_rgba(42,14,7,0.10),0_2px_8px_rgba(42,14,7,0.05)] hover:shadow-[0_26px_65px_rgba(42,14,7,0.20)] transition-all duration-500 relative group select-none overflow-hidden whitespace-normal">
     
     {/* Subtle Luxury Gradient Accent at Top Corner */}
     <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-[#C89D5C]/15 via-transparent to-transparent pointer-events-none rounded-tr-3xl" />
     <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-transparent via-[#C89D5C]/40 to-transparent group-hover:via-[#C89D5C] transition-all duration-500" />
 
     {/* Top Row: Stars + Quote Icon + Google Tag */}
-    <div className="flex items-center justify-between relative z-10">
+    <div className="flex items-center justify-between relative z-10 shrink-0">
       <div className="flex items-center gap-2">
         <StarRating rating={review.rating} />
         <span className="text-[11px] font-mono font-bold text-[#551A0C] bg-[#F8F3EA] border border-[#D4C3B2] px-2 py-0.5 rounded-md">
@@ -77,29 +77,29 @@ const ReviewCard = ({ review }: { review: GoogleReview }) => (
       </div>
     </div>
 
-    {/* Review Text Body */}
-    <div className="relative z-10 flex-1 min-h-[76px] flex items-center">
-      <p className="text-[#250903] text-[14.5px] sm:text-[15px] leading-relaxed line-clamp-4 text-left font-editorial italic font-normal tracking-wide">
+    {/* Review Text Body — Truncated with ellipsis (...), No scrolling */}
+    <div className="relative z-10 flex-1 my-3 overflow-hidden flex items-start text-left whitespace-normal">
+      <p className="text-[#250903] text-[13.5px] sm:text-[14px] leading-relaxed whitespace-normal text-left font-editorial italic font-normal tracking-wide line-clamp-5 sm:line-clamp-6">
         {review.text ? `“${review.text}”` : <span className="italic text-[#8C6D53]">“Exceptional luxury and punctual service throughout our journey in Rajasthan.”</span>}
       </p>
     </div>
 
-    {/* Bottom Author Dossier Pod */}
-    <div className="pt-4 border-t border-[#F0E9DF] flex items-center justify-between gap-3 relative z-10">
+    {/* Bottom Author Dossier Pod — Firmly Anchored at Bottom */}
+    <div className="pt-3.5 border-t border-[#F0E9DF] flex items-center justify-between gap-3 relative z-10 mt-auto shrink-0">
       <div className="flex items-center gap-3 min-w-0">
         {review.authorPhoto ? (
-          <div className="w-11 h-11 rounded-full overflow-hidden border border-[#C89D5C]/60 shrink-0 shadow-xs">
+          <div className="w-10 h-10 rounded-full overflow-hidden border border-[#C89D5C]/60 shrink-0 shadow-xs">
             <img
               src={review.authorPhoto}
               alt={review.authorName}
-              width={44}
-              height={44}
+              width={40}
+              height={40}
               className="object-cover w-full h-full"
               referrerPolicy="no-referrer"
             />
           </div>
         ) : (
-          <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#551A0C] to-[#250903] text-[#DFB574] flex items-center justify-center font-heading font-black text-sm shrink-0 border border-[#C89D5C]/60 shadow-xs">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#551A0C] to-[#250903] text-[#DFB574] flex items-center justify-center font-heading font-black text-sm shrink-0 border border-[#C89D5C]/60 shadow-xs">
             {review.authorName.charAt(0).toUpperCase()}
           </div>
         )}
