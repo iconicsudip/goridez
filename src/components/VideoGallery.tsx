@@ -194,9 +194,9 @@ export default function VideoGallery({ reels }: { reels: Reel[] }) {
                       </span>
                     </div>
 
-                    {/* Embed Area — Compact, Proportional & Cleanly Framed */}
-                    <div className="w-full relative rounded-2xl overflow-hidden bg-[#FEFBF8] border border-[#D4C3B2] flex items-start justify-center h-[330px] sm:h-[345px] shadow-2xs">
-                      <div className="w-full h-full overflow-hidden flex items-start justify-center">
+                    {/* Embed Area — Video Focused (Instagram profile header & bottom comments cropped cleanly) */}
+                    <div className="w-full relative rounded-2xl overflow-hidden bg-[#180401] border border-[#D4C3B2] flex items-start justify-center h-[285px] sm:h-[310px] shadow-2xs">
+                      <div className="w-full -mt-[58px] overflow-hidden flex items-start justify-center">
                         <InstagramEmbed url={reel.url} caption={reel.caption} />
                       </div>
                     </div>
