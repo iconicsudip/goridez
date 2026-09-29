@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Cinzel, Outfit, Inter } from "next/font/google";
+import { Plus_Jakarta_Sans, Cinzel, Cormorant_Garamond, Outfit, Inter } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import ClientLayout from "@/components/ClientLayout";
@@ -44,9 +44,23 @@ const getCachedLayoutData = unstable_cache(
   { revalidate: 300 }
 );
 
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800"],
+  variable: "--font-plus-jakarta",
+  display: "swap",
+});
+
 const cinzel = Cinzel({
   weight: ['400', '500', '600', '700', '800', '900'],
   variable: "--font-cinzel",
+  subsets: ["latin"],
+});
+
+const cormorant = Cormorant_Garamond({
+  weight: ['400', '500', '600', '700'],
+  style: ['normal', 'italic'],
+  variable: "--font-cormorant",
   subsets: ["latin"],
 });
 
@@ -95,7 +109,7 @@ export default async function RootLayout({
   } = siteSettingsData || {};
 
   return (
-    <html lang="en" className={`${cinzel.variable} ${outfit.variable} ${inter.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${plusJakartaSans.variable} ${cinzel.variable} ${cormorant.variable} ${outfit.variable} ${inter.variable}`} suppressHydrationWarning>
       <head>
         <link rel="icon" href={siteSettings.favicon || '/favicon.ico'} />
         <link rel="shortcut icon" href={siteSettings.favicon || '/favicon.ico'} />

@@ -87,15 +87,15 @@ export default function LocationField({
   return (
     <div
       ref={wrapRef}
-      className="bg-white border border-brand-border hover:border-brand-gold/50 transition-colors rounded-xl p-4 flex flex-col shadow-[0_2px_10px_rgba(0,0,0,0.03)] relative"
+      className="bg-white border border-[#E7DFD5] hover:border-[#C89D5C] focus-within:border-[#C89D5C] transition-all rounded-2xl p-4 flex flex-col shadow-[0_2px_10px_rgba(85,26,12,0.03)] relative"
     >
-      <label className="text-xs text-gray-500 mb-2 font-mono uppercase tracking-wider">
+      <label className="text-[10px] text-[#7A6A65] mb-2 font-mono uppercase tracking-widest">
         {label}
       </label>
-      <div className="flex items-center gap-2 text-gray-800">
-        <MapPin size={16} className="text-green-600 shrink-0" />
+      <div className="flex items-center gap-2.5 text-gray-800">
+        <MapPin size={16} className="text-[#C89D5C] shrink-0" />
         {readOnly ? (
-          <span className="text-sm font-semibold text-gray-400 select-none">
+          <span className="text-sm font-semibold text-gray-500 select-none">
             {value || placeholder}
           </span>
         ) : (
@@ -109,7 +109,7 @@ export default function LocationField({
             }}
             onFocus={() => { if (results.length > 0) setIsOpen(true); }}
             placeholder={placeholder}
-            className="w-full bg-transparent text-sm font-semibold outline-none text-gray-900 placeholder-gray-400 min-w-0"
+            className="w-full bg-transparent text-sm font-semibold outline-none text-gray-900 placeholder-gray-400 min-w-0 font-body"
             autoComplete="off"
             autoCorrect="off"
             spellCheck={false}
@@ -120,7 +120,7 @@ export default function LocationField({
             {rightElement}
           </div>
         ) : isLoading ? (
-          <Loader2 size={14} className="text-gray-400 shrink-0 animate-spin" />
+          <Loader2 size={14} className="text-[#C89D5C] shrink-0 animate-spin" />
         ) : query && !readOnly ? (
           <button
             type="button"
@@ -134,20 +134,20 @@ export default function LocationField({
 
       {/* OSM Results Dropdown */}
       {isOpen && results.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-2 z-[9999] bg-white border border-gray-200 rounded-xl shadow-2xl overflow-hidden max-h-60 overflow-y-auto">
+        <div className="absolute top-full left-0 right-0 mt-2 z-[9999] bg-[#FEFBF8] border border-[#E7DFD5] rounded-2xl shadow-2xl overflow-hidden max-h-60 overflow-y-auto">
           {results.map((loc, idx) => (
             <button
               key={`${loc.place_id}-${idx}`}
               type="button"
               onMouseDown={(e) => { e.preventDefault(); handleSelect(loc); }}
-              className="w-full text-left px-4 py-3 hover:bg-green-50 border-b border-gray-50 last:border-0 flex items-start gap-3 transition-colors group"
+              className="w-full text-left px-4 py-3 hover:bg-[#FAF6F0] border-b border-[#E7DFD5]/40 last:border-0 flex items-start gap-3 transition-colors group cursor-pointer"
             >
-              <MapPin size={14} className="text-gray-400 group-hover:text-green-600 mt-0.5 shrink-0 transition-colors" />
+              <MapPin size={14} className="text-[#C89D5C] group-hover:text-[#551A0C] mt-0.5 shrink-0 transition-colors" />
               <div className="min-w-0">
-                <div className="text-sm font-semibold text-gray-900 truncate">
+                <div className="text-sm font-semibold text-[#250903] truncate group-hover:text-[#551A0C]">
                   {loc.display_name.split(',')[0]}
                 </div>
-                <div className="text-[10px] text-gray-400 truncate mt-0.5">
+                <div className="text-[10px] text-[#7A6A65] truncate mt-0.5 font-mono">
                   {loc.display_name}
                 </div>
               </div>

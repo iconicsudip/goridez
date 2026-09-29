@@ -22,9 +22,9 @@ function GoogleSignInButton({ callbackUrl }: { callbackUrl: string }) {
     <button
       type="button"
       onClick={() => signIn('google', { callbackUrl })}
-      className="w-full bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 font-bold text-xs uppercase tracking-widest py-3.5 rounded-xl flex items-center justify-center gap-3 transition-all"
+      className="w-full bg-[#FAF6F0] hover:bg-[#FEFBF8] border border-[#E7DFD5] hover:border-[#C89D5C] text-[#551A0C] font-serif font-bold text-xs uppercase tracking-[0.16em] py-3.5 rounded-xl flex items-center justify-center gap-3 transition-all shadow-sm cursor-pointer"
     >
-      <GoogleIcon /> Continue with Google
+      <GoogleIcon /> Authenticate with Google
     </button>
   );
 }
@@ -61,7 +61,7 @@ function LoginForm({ googleSignInEnabled }: { googleSignInEnabled: boolean }) {
   return (
     <>
       {error && (
-        <div className="bg-red-500/10 border border-red-500/20 text-red-500 text-xs p-4 rounded-xl mb-6 flex items-start gap-3">
+        <div className="bg-red-50 border border-red-200 text-red-700 text-xs p-4 rounded-xl mb-6 flex items-start gap-3">
           <AlertCircle size={16} className="shrink-0 mt-0.5" />
           <span>{error}</span>
         </div>
@@ -71,43 +71,43 @@ function LoginForm({ googleSignInEnabled }: { googleSignInEnabled: boolean }) {
         <>
           <GoogleSignInButton callbackUrl={callbackUrl} />
           <div className="flex items-center gap-3 my-6">
-            <div className="h-px flex-1 bg-gray-200" />
-            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Or</span>
-            <div className="h-px flex-1 bg-gray-200" />
+            <div className="h-px flex-1 bg-[#E7DFD5]" />
+            <span className="text-[10px] text-[#8C6D53] font-bold font-mono uppercase tracking-[0.2em]">Or Sign In With Key</span>
+            <div className="h-px flex-1 bg-[#E7DFD5]" />
           </div>
         </>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="text-[10px] font-bold text-gray-500 tracking-widest uppercase mb-2 block">Registered Email</label>
+          <label className="text-[10px] font-bold font-mono text-[#8C6D53] tracking-widest uppercase mb-1.5 block">Registered Email</label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <Mail size={16} className="text-gray-400" />
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#C89D5C]">
+              <Mail size={16} />
             </div>
             <input
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-white border border-gray-200 rounded-xl py-3 pl-11 pr-4 text-sm text-gray-900 outline-none focus:border-green-600/50 transition-colors"
-              placeholder="name@domain.com"
+              className="w-full bg-[#FAF6F0] border border-[#E7DFD5] rounded-xl py-3 pl-11 pr-4 text-xs font-mono text-[#250903] outline-none focus:border-[#C89D5C] focus:bg-[#FEFBF8] transition-all placeholder:text-[#6A5749]/40"
+              placeholder="client@domain.com"
             />
           </div>
         </div>
 
         <div>
-          <label className="text-[10px] font-bold text-gray-500 tracking-widest uppercase mb-2 block">Security Passkey</label>
+          <label className="text-[10px] font-bold font-mono text-[#8C6D53] tracking-widest uppercase mb-1.5 block">Security Passkey</label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <Lock size={16} className="text-gray-400" />
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#C89D5C]">
+              <Lock size={16} />
             </div>
             <input
               type="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-white border border-gray-200 rounded-xl py-3 pl-11 pr-4 text-sm text-gray-900 outline-none focus:border-green-600/50 transition-colors"
+              className="w-full bg-[#FAF6F0] border border-[#E7DFD5] rounded-xl py-3 pl-11 pr-4 text-xs font-mono text-[#250903] outline-none focus:border-[#C89D5C] focus:bg-[#FEFBF8] transition-all placeholder:text-[#6A5749]/40"
               placeholder="••••••••"
             />
           </div>
@@ -116,9 +116,9 @@ function LoginForm({ googleSignInEnabled }: { googleSignInEnabled: boolean }) {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-green-600 hover:bg-brand-hover text-white font-black uppercase tracking-widest py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_0_15px_rgba(41,75,50,0.15)] disabled:opacity-50 mt-4"
+          className="btn-luxury btn-luxury-shine w-full font-serif font-bold uppercase tracking-[0.16em] py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-xl disabled:opacity-50 mt-4 text-xs cursor-pointer"
         >
-          {loading ? 'Authenticating...' : 'Access Terminal'} <ChevronRight size={16} strokeWidth={3} />
+          {loading ? 'Verifying Credentials...' : 'Access Private Portal'} <ChevronRight size={16} strokeWidth={2} />
         </button>
       </form>
     </>
@@ -127,28 +127,28 @@ function LoginForm({ googleSignInEnabled }: { googleSignInEnabled: boolean }) {
 
 export default function LoginClient({ googleSignInEnabled }: { googleSignInEnabled: boolean }) {
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#FAF6F0] flex items-center justify-center p-4 py-20 font-sans">
       <div className="w-full max-w-md">
 
         {/* Header */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-3 mb-6">
-            <div className="bg-green-600 text-white font-black text-xs w-8 h-8 rounded-lg flex items-center justify-center tracking-tighter">
+            <div className="w-10 h-10 rounded-full bg-[#551A0C] border-2 border-[#C89D5C] text-[#DFB574] font-serif font-black text-xs flex items-center justify-center shadow-md">
               GR
             </div>
-            <div className="text-xl font-black tracking-tight">
-              <span className="text-gray-900">Go</span><span className="text-green-700">Ridez</span>
+            <div className="text-2xl font-black font-serif tracking-tight text-[#551A0C]">
+              Go<span className="text-[#C89D5C]">Ridez</span>
             </div>
           </Link>
-          <h1 className="text-2xl font-black uppercase tracking-tight mb-2">Secure Gateway Login</h1>
-          <p className="text-[10px] text-gray-500 font-mono tracking-widest uppercase">PCI DSS Compliant • 256-Bit Encrypted</p>
+          <h1 className="text-2xl font-black font-serif uppercase tracking-tight text-[#551A0C] mb-2">Private Member Gateway</h1>
+          <p className="text-[10px] text-[#8C6D53] font-mono tracking-[0.25em] uppercase">256-Bit Encrypted &bull; Sovereign Authentication</p>
         </div>
 
         {/* Form Card */}
-        <div className="bg-gray-100 border border-gray-200 rounded-3xl p-8 relative overflow-hidden">
-          <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-brand-neon to-transparent opacity-50"></div>
+        <div className="card-luxury bg-[#FEFBF8] border border-[#E7DFD5] rounded-3xl p-8 relative overflow-hidden shadow-2xl border-classic-frame">
+          <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-[#C89D5C] to-transparent opacity-70"></div>
 
-          <Suspense fallback={<div className="text-center text-gray-500 py-10 font-mono text-[10px]">Loading secure gateway...</div>}>
+          <Suspense fallback={<div className="text-center text-[#8C6D53] py-10 font-mono text-[10px]">Loading secure gateway...</div>}>
             <LoginForm googleSignInEnabled={googleSignInEnabled} />
           </Suspense>
 
@@ -156,8 +156,8 @@ export default function LoginClient({ googleSignInEnabled }: { googleSignInEnabl
 
         {/* Footer Links */}
         <div className="text-center mt-8 space-y-4">
-          <Link href="/register" className="text-[11px] text-gray-600 hover:text-gray-900 transition-colors font-medium">
-            Don't have an account? <span className="text-green-700 font-bold">Register Identity</span>
+          <Link href="/register" className="text-xs text-[#6A5749] hover:text-[#551A0C] transition-colors font-medium">
+            New client? <span className="text-[#551A0C] font-bold font-serif uppercase tracking-wider underline">Register Private Identity</span>
           </Link>
         </div>
 

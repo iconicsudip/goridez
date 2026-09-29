@@ -368,14 +368,14 @@ export default function UnifiedCarBookingSidebar({
   const hasTaxi = car.serviceTypes?.includes('TAXI');
 
   return (
-    <div className="bg-gray-100 border border-gray-200 rounded-3xl p-6 md:p-8 lg:sticky lg:top-28">
+    <div className="card-luxury border-classic-frame bg-[#FEFBF8] border-[#E7DFD5] rounded-3xl p-6 md:p-8 lg:sticky lg:top-28 font-serif shadow-sm">
       {/* TABS */}
-      <div className="flex bg-gray-200/50 p-1.5 rounded-2xl mb-8 overflow-x-auto hide-scrollbar">
+      <div className="flex bg-[#FAF6F0] border border-[#E7DFD5] p-1.5 rounded-2xl mb-8 overflow-x-auto hide-scrollbar">
         {hasSelfDrive && (
           <button
             onClick={() => setBookingMode('SELF_DRIVE')}
-            className={`flex-1 py-3 px-3 text-[9px] sm:text-[10px] font-black uppercase tracking-widest rounded-xl transition-all min-w-max ${
-              bookingMode === 'SELF_DRIVE' ? 'bg-white text-green-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+            className={`flex-1 py-3 px-3 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all min-w-max cursor-pointer ${
+              bookingMode === 'SELF_DRIVE' ? 'bg-[#551A0C] text-[#DFB574] shadow-xs' : 'text-[#551A0C]/70 hover:text-[#551A0C]'
             }`}
           >
             Self Drive
@@ -385,16 +385,16 @@ export default function UnifiedCarBookingSidebar({
           <>
             <button
               onClick={() => setBookingMode('ROUND_TRIP')}
-              className={`flex-1 py-3 px-3 text-[9px] sm:text-[10px] font-black uppercase tracking-widest rounded-xl transition-all min-w-max ${
-                bookingMode === 'ROUND_TRIP' ? 'bg-white text-green-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+              className={`flex-1 py-3 px-3 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all min-w-max cursor-pointer ${
+                bookingMode === 'ROUND_TRIP' ? 'bg-[#551A0C] text-[#DFB574] shadow-xs' : 'text-[#551A0C]/70 hover:text-[#551A0C]'
               }`}
             >
               Round Trip
             </button>
             <button
               onClick={() => setBookingMode('AIRPORT_TRANSFER')}
-              className={`flex-1 py-3 px-3 text-[9px] sm:text-[10px] font-black uppercase tracking-widest rounded-xl transition-all min-w-max ${
-                bookingMode === 'AIRPORT_TRANSFER' ? 'bg-white text-green-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+              className={`flex-1 py-3 px-3 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all min-w-max cursor-pointer ${
+                bookingMode === 'AIRPORT_TRANSFER' ? 'bg-[#551A0C] text-[#DFB574] shadow-xs' : 'text-[#551A0C]/70 hover:text-[#551A0C]'
               }`}
             >
               Transfer
@@ -403,8 +403,8 @@ export default function UnifiedCarBookingSidebar({
         )}
       </div>
 
-      <h2 className="text-xl font-black uppercase tracking-tight mb-6 flex items-center gap-3">
-        <span className="text-green-600">/</span> TRIP DETAILS
+      <h2 className="text-base font-bold uppercase tracking-wide mb-6 flex items-center gap-2 text-[#551A0C]">
+        <span className="text-[#C89D5C]">✦</span> TRIP DETAILS
       </h2>
 
       <div className="space-y-5">
@@ -472,8 +472,8 @@ export default function UnifiedCarBookingSidebar({
             </div>
             {ROUNDTRIP_PACKAGES.length > 1 && (
               <div>
-                <label className="text-[10px] font-black tracking-widest uppercase text-gray-500 block mb-2">Round Trip Price Package</label>
-                <div className="grid grid-cols-2 gap-1.5">
+                <label className="text-[10px] font-bold tracking-widest uppercase text-[#8C6D53] block mb-2 font-serif">Round Trip Price Package</label>
+                <div className="grid grid-cols-2 gap-1.5 font-serif">
                   {ROUNDTRIP_PACKAGES.map((pkg) => {
                     const isSelected = selectedRtPackage === pkg.value;
                     return (
@@ -481,10 +481,10 @@ export default function UnifiedCarBookingSidebar({
                         key={pkg.value}
                         type="button"
                         onClick={() => setSelectedRtPackage(pkg.value)}
-                        className={`text-[9px] font-black uppercase tracking-wider p-2 rounded-xl border text-center transition-all ${
+                        className={`text-[9px] font-bold uppercase tracking-wider p-2 rounded-xl border text-center transition-all cursor-pointer ${
                           isSelected
-                            ? 'bg-green-600 border-green-600 text-white shadow-xs'
-                            : 'bg-white border-gray-200 text-gray-700 hover:border-green-400 hover:text-green-700'
+                            ? 'bg-[#551A0C] border-[#551A0C] text-[#DFB574] shadow-xs'
+                            : 'bg-[#FEFBF8] border-[#E7DFD5] text-[#551A0C] hover:border-[#C89D5C]'
                         }`}
                       >
                         {pkg.minKmPerDay > 0 ? `${pkg.minKmPerDay} KM / Day` : 'Unlimited KM'}
@@ -539,14 +539,14 @@ export default function UnifiedCarBookingSidebar({
             )}
           </label>
           <div className="w-full">
-            <ConfigProvider theme={{ token: { colorPrimary: '#15803d', borderRadius: 12, fontSize: 13 } }}>
+            <ConfigProvider theme={{ token: { colorPrimary: '#551A0C', borderRadius: 12, fontSize: 13 } }}>
               {bookingMode === 'AIRPORT_TRANSFER' ? (
                 <DatePicker
                   showTime={{ format: 'h:mm a', use12Hours: true, minuteStep: 30 }}
                   format="DD-MM-YYYY - h:mm a"
                   value={dayjs(pickupDate)}
                   onChange={(val) => { if (val) setPickupDate(val.toDate()); }}
-                  className="w-full font-bold text-gray-900 border-none shadow-none p-0 outline-none hover:bg-transparent focus:bg-transparent"
+                  className="w-full font-bold text-[#250903] border-none shadow-none p-0 outline-none hover:bg-transparent focus:bg-transparent cursor-pointer font-serif"
                   allowClear={false}
                 />
               ) : (
@@ -558,7 +558,7 @@ export default function UnifiedCarBookingSidebar({
                     if (vals && vals[0]) setPickupDate(vals[0].toDate());
                     if (vals && vals[1]) setReturnDate(vals[1].toDate());
                   }}
-                  className="w-full font-bold text-gray-900 border-none shadow-none p-0 outline-none"
+                  className="w-full font-bold text-[#250903] border-none shadow-none p-0 outline-none cursor-pointer font-serif"
                   allowClear={false}
                 />
               )}
@@ -568,115 +568,115 @@ export default function UnifiedCarBookingSidebar({
 
         {/* === PRICING STRUCTURE === */}
         {bookingMode === 'SELF_DRIVE' && sdPriceInfo && (
-          <div className="bg-gray-900 text-white rounded-2xl p-6 mt-8 font-mono shadow-xl relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
+          <div className="bg-[#250903] text-white rounded-2xl p-6 mt-8 font-serif shadow-xl relative overflow-hidden border border-[#C89D5C]/40 group">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#C89D5C]/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
             
-            <div className="text-[10px] font-black text-gray-400 tracking-widest uppercase mb-6 flex items-center gap-2">
-              <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
-              Price Structure (SD)
+            <div className="text-[10px] font-bold text-[#DFB574] tracking-[0.2em] uppercase mb-6 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 bg-[#DFB574] rounded-full"></span>
+              Price Structure (Self Drive)
             </div>
 
-            <div className="space-y-4 text-xs font-semibold">
-              <div className="flex justify-between text-gray-300">
-                <span>RENTAL RATE ({sdPriceInfo.extraInfo})</span>
-                <span>₹{sdPriceInfo.basePrice.toLocaleString()}</span>
+            <div className="space-y-4 text-xs">
+              <div className="flex justify-between text-[#E7DFD5]">
+                <span>Rental Rate ({sdPriceInfo.extraInfo})</span>
+                <span className="font-bold">₹{sdPriceInfo.basePrice.toLocaleString()}</span>
               </div>
               {sdPriceInfo.locationSurcharge > 0 && (
-                <div className="flex justify-between text-gray-400">
-                  <span>PICKUP/DROP CHARGE</span>
+                <div className="flex justify-between text-[#8C6D53]">
+                  <span>Pickup/Drop Surcharge</span>
                   <span>₹{sdPriceInfo.locationSurcharge.toLocaleString()}</span>
                 </div>
               )}
-              <div className="flex justify-between text-gray-400">
-                <span>REFUNDABLE DEPOSIT</span>
+              <div className="flex justify-between text-[#8C6D53]">
+                <span>Refundable Deposit</span>
                 <span>₹{(sdPriceInfo.selectedPkg?.deposit || 0).toLocaleString()}</span>
               </div>
             </div>
 
-            <div className="border-t border-gray-800 my-5"></div>
+            <div className="border-t border-[#C89D5C]/20 my-5"></div>
             <div className="flex justify-between items-end mb-8">
-              <div className="text-[10px] text-gray-400 tracking-widest font-black uppercase">Gross Total</div>
-              <div className="text-2xl font-black text-green-400">₹{(sdPriceInfo.basePrice + sdPriceInfo.locationSurcharge + (sdPriceInfo.selectedPkg?.deposit || 0)).toLocaleString()}</div>
+              <div className="text-[10px] text-[#8C6D53] tracking-widest font-bold uppercase">Gross Total</div>
+              <div className="text-2xl font-black text-[#DFB574]">₹{(sdPriceInfo.basePrice + sdPriceInfo.locationSurcharge + (sdPriceInfo.selectedPkg?.deposit || 0)).toLocaleString()}</div>
             </div>
 
-            <button onClick={handleBooking} className="w-full bg-green-600 hover:bg-green-500 text-white font-sans font-black uppercase tracking-widest text-[11px] py-4 rounded-xl transition-all active:scale-[0.98]">
-              Book Now
+            <button onClick={handleBooking} className="w-full btn-luxury btn-luxury-shine text-[#DFB574] font-serif font-bold uppercase tracking-widest text-[11px] py-4 rounded-xl shadow-md">
+              Reserve Carriage
             </button>
           </div>
         )}
 
         {bookingMode === 'ROUND_TRIP' && rtPriceInfo && (
-          <div className="bg-gray-900 text-white rounded-2xl p-6 mt-8 font-mono shadow-xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
+          <div className="bg-[#250903] text-white rounded-2xl p-6 mt-8 font-serif shadow-xl relative overflow-hidden border border-[#C89D5C]/40">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#C89D5C]/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
             
-            <div className="text-[10px] font-black text-gray-400 tracking-widest uppercase mb-6 flex items-center gap-2">
-              <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-              Price Structure (RT)
+            <div className="text-[10px] font-bold text-[#DFB574] tracking-[0.2em] uppercase mb-6 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 bg-[#DFB574] rounded-full animate-pulse"></span>
+              Price Structure (Round Trip)
             </div>
 
-            <div className="space-y-4 text-xs font-semibold">
-              <div className="flex justify-between text-gray-300">
-                <span>BASIC FARE ({rtPriceInfo.billableKm} KM)</span>
-                <span>₹{rtPriceInfo.basicFare.toLocaleString()}</span>
+            <div className="space-y-4 text-xs">
+              <div className="flex justify-between text-[#E7DFD5]">
+                <span>Basic Fare ({rtPriceInfo.billableKm} KM)</span>
+                <span className="font-bold">₹{rtPriceInfo.basicFare.toLocaleString()}</span>
               </div>
-              <div className="flex justify-between text-gray-400">
-                <span>DRIVER ALLOWANCE</span>
+              <div className="flex justify-between text-[#8C6D53]">
+                <span>Driver Allowance</span>
                 <span>₹{rtPriceInfo.driverAllowance.toLocaleString()}</span>
               </div>
-              <div className="flex justify-between text-gray-400">
+              <div className="flex justify-between text-[#8C6D53]">
                 <span>GST (18%)</span>
                 <span>₹{rtPriceInfo.gstAmount.toLocaleString()}</span>
               </div>
             </div>
             
-            <div className="border-t border-gray-800 my-5"></div>
+            <div className="border-t border-[#C89D5C]/20 my-5"></div>
             <div className="flex justify-between items-end mb-8">
-              <div className="text-[10px] text-gray-400 tracking-widest font-black uppercase">Gross Total</div>
-              <div className="text-2xl font-black text-green-400">
+              <div className="text-[10px] text-[#8C6D53] tracking-widest font-bold uppercase">Gross Total</div>
+              <div className="text-2xl font-black text-[#DFB574]">
                 {isCalculatingRt ? <Loader2 size={16} className="animate-spin inline" /> : `₹${rtPriceInfo.flatFare.toLocaleString()}`}
               </div>
             </div>
 
-            <button onClick={handleBooking} disabled={isCalculatingRt} className="w-full bg-green-600 hover:bg-green-500 disabled:bg-gray-700 disabled:text-gray-500 text-white font-sans font-black uppercase tracking-widest text-[11px] py-4 rounded-xl transition-all active:scale-[0.98]">
-              Book Now
+            <button onClick={handleBooking} disabled={isCalculatingRt} className="w-full btn-luxury btn-luxury-shine text-[#DFB574] disabled:opacity-50 font-serif font-bold uppercase tracking-widest text-[11px] py-4 rounded-xl shadow-md">
+              Reserve Carriage
             </button>
           </div>
         )}
 
         {bookingMode === 'AIRPORT_TRANSFER' && atPriceInfo && (
-          <div className="bg-gray-900 text-white rounded-2xl p-6 mt-8 font-mono shadow-xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
+          <div className="bg-[#250903] text-white rounded-2xl p-6 mt-8 font-serif shadow-xl relative overflow-hidden border border-[#C89D5C]/40">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#C89D5C]/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
             
-            <div className="text-[10px] font-black text-gray-400 tracking-widest uppercase mb-6 flex items-center gap-2">
-              <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
-              Price Structure (AT)
+            <div className="text-[10px] font-bold text-[#DFB574] tracking-[0.2em] uppercase mb-6 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 bg-[#DFB574] rounded-full"></span>
+              Price Structure (Transfer)
             </div>
 
             {!atPriceInfo.hasFare ? (
               <div className="text-red-400 text-xs py-4 text-center">Service not available for this vehicle in the selected zone.</div>
             ) : (
               <>
-                <div className="space-y-4 text-xs font-semibold">
-                  <div className="flex justify-between text-gray-300">
-                    <span>TRANSFER RATE</span>
-                    <span>₹{atPriceInfo.basePrice.toLocaleString()}</span>
+                <div className="space-y-4 text-xs">
+                  <div className="flex justify-between text-[#E7DFD5]">
+                    <span>Transfer Rate</span>
+                    <span className="font-bold">₹{atPriceInfo.basePrice.toLocaleString()}</span>
                   </div>
                   {atPriceInfo.nightApplies && (
-                    <div className="flex justify-between text-gray-400">
-                      <span>NIGHT CHARGE</span>
+                    <div className="flex justify-between text-[#8C6D53]">
+                      <span>Night Charge</span>
                       <span>₹{atPriceInfo.nightFee.toLocaleString()}</span>
                     </div>
                   )}
                 </div>
                 
-                <div className="border-t border-gray-800 my-5"></div>
+                <div className="border-t border-[#C89D5C]/20 my-5"></div>
                 <div className="flex justify-between items-end mb-8">
-                  <div className="text-[10px] text-gray-400 tracking-widest font-black uppercase">Gross Total</div>
-                  <div className="text-2xl font-black text-green-400">₹{atPriceInfo.flatFare.toLocaleString()}</div>
+                  <div className="text-[10px] text-[#8C6D53] tracking-widest font-bold uppercase">Gross Total</div>
+                  <div className="text-2xl font-black text-[#DFB574]">₹{atPriceInfo.flatFare.toLocaleString()}</div>
                 </div>
 
-                <button onClick={handleBooking} className="w-full bg-green-600 hover:bg-green-500 text-white font-sans font-black uppercase tracking-widest text-[11px] py-4 rounded-xl transition-all active:scale-[0.98]">
-                  Book Now
+                <button onClick={handleBooking} className="w-full btn-luxury btn-luxury-shine text-[#DFB574] font-serif font-bold uppercase tracking-widest text-[11px] py-4 rounded-xl shadow-md">
+                  Reserve Transfer
                 </button>
               </>
             )}

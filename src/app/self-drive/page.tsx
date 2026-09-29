@@ -21,14 +21,14 @@ export default async function SelfDrivePage() {
   ]);
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 font-body pt-24 pb-20">
+    <div className="min-h-screen bg-[#FAF6F0] text-[#250903] font-body pt-28 pb-24 border-t border-[#E7DFD5]">
       {seoSetting?.structuredData && (
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: seoSetting.structuredData }}
         />
       )}
-      <Suspense fallback={<div className="text-center py-20">Loading vehicles...</div>}>
+      <Suspense fallback={<div className="text-center py-20 text-[#551A0C] font-heading text-sm animate-pulse">✦ Loading Royal Fleet...</div>}>
         <SelfDriveClient initialCars={cars} initialCities={cities} />
       </Suspense>
     </div>

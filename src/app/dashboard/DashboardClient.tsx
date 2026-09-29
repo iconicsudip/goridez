@@ -155,32 +155,32 @@ export default function DashboardClient({ user, bookings, aggregates, wishlist =
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 pt-24 pb-20 font-body relative">
+    <div className="min-h-screen bg-[#FAF6F0] text-[#250903] pt-28 pb-20 font-sans relative">
       <div className="container mx-auto px-4 max-w-7xl relative z-10">
         
         {/* === TOP HEADER === */}
-        <div className="bg-gray-100 border border-gray-200 rounded-3xl p-6 md:p-8 flex flex-col md:flex-row gap-6 justify-between items-start md:items-center mb-8 shadow-2xl">
+        <div className="card-luxury bg-[#FEFBF8] border border-[#E7DFD5] rounded-3xl p-6 md:p-8 flex flex-col md:flex-row gap-6 justify-between items-start md:items-center mb-10 shadow-2xl border-classic-frame">
           <div className="flex items-center gap-6">
-            <div className="w-20 h-20 bg-green-600 rounded-xl flex items-center justify-center border-2 border-green-600 relative">
-              <div className="absolute inset-0 bg-white/90 m-1 rounded-lg flex items-center justify-center">
-                <span className="text-green-700 font-black text-2xl tracking-tighter">{getUserInitials(user.name)}</span>
+            <div className="w-20 h-20 bg-[#551A0C] rounded-2xl flex items-center justify-center border-2 border-[#C89D5C] relative shadow-lg">
+              <div className="absolute inset-0 bg-[#FEFBF8] m-1 rounded-xl flex items-center justify-center">
+                <span className="text-[#551A0C] font-serif font-black text-2xl tracking-tight">{getUserInitials(user.name)}</span>
               </div>
-              <div className="absolute -bottom-2 bg-green-600 text-white text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border-2 border-[#111111]">
-                ELITE VIP
+              <div className="absolute -bottom-2 bg-[#250903] text-[#DFB574] text-[8px] font-bold font-mono uppercase tracking-[0.2em] px-2.5 py-0.5 rounded-full border border-[#C89D5C]/40 shadow">
+                ROYAL VIP
               </div>
             </div>
             <div>
-              <div className="flex items-center gap-2 mb-2">
-                <h1 className="text-2xl font-black uppercase tracking-tight">{user.name}</h1>
-                <ShieldCheck size={20} className="text-green-700" />
+              <div className="flex items-center gap-2 mb-1.5">
+                <h1 className="text-2xl md:text-3xl font-black font-serif uppercase tracking-tight text-[#551A0C]">{user.name}</h1>
+                <ShieldCheck size={20} className="text-[#C89D5C]" />
               </div>
-              <div className="flex flex-wrap gap-4 text-[10px] font-mono text-gray-600 mb-2">
-                <div className="flex items-center gap-1.5"><Mail size={12} /> {user.email}</div>
-                {user.phone && <div className="flex items-center gap-1.5 text-green-700"><Phone size={12} /> {user.phone}</div>}
+              <div className="flex flex-wrap gap-4 text-[10px] font-mono text-[#6A5749] mb-2">
+                <div className="flex items-center gap-1.5"><Mail size={12} className="text-[#C89D5C]" /> {user.email}</div>
+                {user.phone && <div className="flex items-center gap-1.5 text-[#551A0C]"><Phone size={12} className="text-[#C89D5C]" /> {user.phone}</div>}
               </div>
-              <div className="flex gap-4 text-[9px] font-mono uppercase tracking-widest text-gray-500">
-                <div className="bg-gray-100 px-2 py-1 rounded">ID Verified: YES</div>
-                <div className="flex items-center gap-1"><span className="text-green-700">●</span> 2,400 Loyalty points active</div>
+              <div className="flex gap-4 text-[9px] font-mono uppercase tracking-widest text-[#8C6D53]">
+                <div className="bg-[#FAF6F0] px-2.5 py-1 rounded border border-[#E7DFD5]">Registry Status: VERIFIED</div>
+                <div className="flex items-center gap-1"><span className="text-[#C89D5C]">✦</span> Sovereign Tier Privileges Active</div>
               </div>
             </div>
           </div>
@@ -190,30 +190,31 @@ export default function DashboardClient({ user, bookings, aggregates, wishlist =
             <div className="relative z-50">
               <button 
                 onClick={handleNotificationsOpen}
-                className="bg-gray-100 border border-gray-200 hover:border-gray-400 p-5 rounded-2xl relative transition-all"
+                className="bg-[#FAF6F0] border border-[#E7DFD5] hover:border-[#C89D5C] p-4 rounded-2xl relative transition-all shadow-sm cursor-pointer"
+                title="Notifications"
               >
-                <Bell size={24} className={unreadCount > 0 ? "text-green-700" : "text-gray-500"} />
+                <Bell size={22} className={unreadCount > 0 ? "text-[#551A0C]" : "text-[#8C6D53]"} />
                 {unreadCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-green-600 text-white text-[10px] font-black w-6 h-6 rounded-full flex items-center justify-center border-4 border-[#111111]">
+                  <span className="absolute -top-1.5 -right-1.5 bg-[#551A0C] text-[#DFB574] text-[9px] font-mono font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow">
                     {unreadCount}
                   </span>
                 )}
               </button>
 
               {showNotifications && (
-                <div className="absolute top-full right-0 mt-4 w-80 bg-white border border-gray-300 rounded-2xl shadow-2xl overflow-hidden z-50">
-                  <div className="p-4 border-b border-gray-200 text-[10px] font-black uppercase tracking-widest text-gray-500">
-                    Recent Notifications
+                <div className="absolute top-full right-0 mt-4 w-80 bg-[#FEFBF8] border border-[#E7DFD5] rounded-2xl shadow-2xl overflow-hidden z-50 border-classic-frame">
+                  <div className="p-4 border-b border-[#E7DFD5] text-[10px] font-bold font-mono uppercase tracking-[0.2em] text-[#8C6D53]">
+                    ✦ RECENT TRANSMISSIONS
                   </div>
                   <div className="max-h-[300px] overflow-y-auto">
                     {localNotifications.length === 0 ? (
-                      <div className="p-8 text-center text-gray-400 text-xs font-mono">No notifications.</div>
+                      <div className="p-8 text-center text-[#8C6D53] text-xs font-mono">No new transmissions.</div>
                     ) : (
                       localNotifications.map((notif: any) => (
-                        <div key={notif.id} className={`p-4 border-b border-gray-200 ${notif.isRead ? 'opacity-60' : 'bg-green-600/5'}`}>
-                          <div className="font-bold text-sm mb-1">{notif.title}</div>
-                          <div className="text-xs text-gray-600 font-mono mb-2">{notif.message}</div>
-                          <div className="text-[9px] text-gray-400 uppercase tracking-widest">{formatDate(notif.createdAt)}</div>
+                        <div key={notif.id} className={`p-4 border-b border-[#E7DFD5] ${notif.isRead ? 'opacity-60' : 'bg-[#FAF6F0]'}`}>
+                          <div className="font-bold text-xs font-serif text-[#551A0C] mb-1">{notif.title}</div>
+                          <div className="text-xs text-[#6A5749] font-mono mb-2">{notif.message}</div>
+                          <div className="text-[9px] text-[#8C6D53] font-mono uppercase tracking-widest">{formatDate(notif.createdAt)}</div>
                         </div>
                       ))
                     )}
@@ -222,17 +223,17 @@ export default function DashboardClient({ user, bookings, aggregates, wishlist =
               )}
             </div>
 
-            <div className="bg-gray-100 border border-gray-200 rounded-2xl p-5 min-w-[120px] text-center">
-              <div className="text-[9px] text-gray-500 uppercase tracking-widest font-bold mb-1">Bookings</div>
-              <div className="text-2xl font-black">{aggregates.totalBookings}</div>
+            <div className="bg-[#FAF6F0] border border-[#E7DFD5] rounded-2xl p-4 min-w-[110px] text-center shadow-sm">
+              <div className="text-[9px] text-[#8C6D53] uppercase tracking-widest font-mono font-bold mb-1">Bookings</div>
+              <div className="text-2xl font-black font-serif text-[#551A0C]">{aggregates.totalBookings}</div>
             </div>
-            <div className="bg-gray-100 border border-green-600/20 rounded-2xl p-5 min-w-[160px] text-center">
-              <div className="text-[9px] text-gray-500 uppercase tracking-widest font-bold mb-1">Active Deposit</div>
-              <div className="text-2xl font-black text-green-700">₹{aggregates.activeDeposits.toLocaleString()}</div>
+            <div className="bg-[#FAF6F0] border border-[#C89D5C]/30 rounded-2xl p-4 min-w-[140px] text-center shadow-sm">
+              <div className="text-[9px] text-[#8C6D53] uppercase tracking-widest font-mono font-bold mb-1">Active Deposit</div>
+              <div className="text-2xl font-black font-serif text-[#551A0C]">₹{aggregates.activeDeposits.toLocaleString()}</div>
             </div>
-            <div className="bg-gray-100 border border-gray-200 rounded-2xl p-5 min-w-[120px] text-center">
-              <div className="text-[9px] text-gray-500 uppercase tracking-widest font-bold mb-1">Level</div>
-              <div className="text-2xl font-black">Tier 3</div>
+            <div className="bg-[#FAF6F0] border border-[#E7DFD5] rounded-2xl p-4 min-w-[110px] text-center shadow-sm">
+              <div className="text-[9px] text-[#8C6D53] uppercase tracking-widest font-mono font-bold mb-1">Tier</div>
+              <div className="text-xl font-black font-serif text-[#C89D5C]">SOVEREIGN</div>
             </div>
           </div>
         </div>
@@ -242,9 +243,11 @@ export default function DashboardClient({ user, bookings, aggregates, wishlist =
           
           {/* SIDEBAR */}
           <div className="w-full lg:w-[280px] shrink-0 space-y-4">
-            <div className="bg-gray-100 border border-gray-200 rounded-3xl p-4">
-              <div className="text-[9px] text-gray-400 uppercase font-black tracking-widest mb-4 px-4 pt-2">Concierge Menu</div>
-              <nav className="space-y-1">
+            <div className="card-luxury bg-[#FEFBF8] border border-[#E7DFD5] rounded-3xl p-4 shadow-xl border-classic-frame">
+              <div className="text-[10px] text-[#8C6D53] uppercase font-bold font-mono tracking-[0.2em] mb-4 px-4 pt-2">
+                ✦ CONCIERGE MENU
+              </div>
+              <nav className="space-y-1.5">
                 {[
                   { id: 'bookings', label: 'My Bookings', icon: Clock },
                   { id: 'profile', label: 'Personal Profile', icon: User },
@@ -256,31 +259,31 @@ export default function DashboardClient({ user, bookings, aggregates, wishlist =
                   <button 
                     key={item.id}
                     onClick={() => setActiveTab(item.id as Tab)}
-                    className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl font-bold text-[11px] uppercase tracking-widest transition-colors ${
+                    className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-xl font-serif font-bold text-xs uppercase tracking-[0.14em] transition-all cursor-pointer ${
                       activeTab === item.id 
-                        ? 'bg-green-600 text-white shadow-[0_0_15px_rgba(41,75,50,0.15)]' 
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                        ? 'bg-[#551A0C] text-[#DFB574] border border-[#C89D5C]/40 shadow-lg' 
+                        : 'text-[#6A5749] hover:text-[#551A0C] hover:bg-[#FAF6F0]'
                     }`}
                   >
-                    <item.icon size={16} /> {item.label}
+                    <item.icon size={16} className={activeTab === item.id ? 'text-[#DFB574]' : 'text-[#8C6D53]'} /> {item.label}
                   </button>
                 ))}
                 
                 <button 
                   onClick={() => signOut({ callbackUrl: '/' })}
-                  className="w-full flex items-center gap-4 px-4 py-3 rounded-xl font-bold text-[11px] uppercase tracking-widest transition-colors text-gray-600 hover:text-red-400 hover:bg-red-500/10 mt-2 border border-transparent hover:border-red-500/20"
+                  className="w-full flex items-center gap-3.5 px-4 py-3 rounded-xl font-serif font-bold text-xs uppercase tracking-[0.14em] transition-colors text-[#8C6D53] hover:text-red-700 hover:bg-red-50 mt-2 border border-transparent hover:border-red-200 cursor-pointer"
                 >
                   <LogOut size={16} /> Sign Out
                 </button>
               </nav>
             </div>
 
-            <div className="bg-white border border-gray-200 rounded-3xl p-6">
-              <div className="flex items-center gap-2 text-green-700 font-black text-xs uppercase tracking-widest mb-3">
-                <Sparkles size={14} /> Elite Privilege Desk
+            <div className="bg-[#250903] text-white border border-[#C89D5C]/30 rounded-3xl p-6 shadow-xl">
+              <div className="flex items-center gap-2 text-[#DFB574] font-serif font-bold text-xs uppercase tracking-widest mb-3">
+                <Sparkles size={14} className="text-[#C89D5C]" /> Royal Privilege Desk
               </div>
-              <p className="text-[10px] text-gray-500 leading-relaxed font-mono">
-                As an Elite Member, you get 24/7 dedicated dispatch priority over lakefront lines. Toll exemptions on highway packages applied automatically.
+              <p className="text-[11px] text-white/70 leading-relaxed font-normal">
+                As a Sovereign Member, you get 24/7 dedicated dispatch priority over lakefront lines. Toll exemptions on highway packages applied automatically.
               </p>
             </div>
           </div>
@@ -291,81 +294,81 @@ export default function DashboardClient({ user, bookings, aggregates, wishlist =
             {/* TAB: MY BOOKINGS */}
             {activeTab === 'bookings' && (
               <>
-                <div className="flex justify-between items-end mb-4">
+                <div className="flex justify-between items-end mb-6">
                   <div>
-                    <h2 className="text-2xl font-black uppercase tracking-tight mb-1">LIVE TRAVEL LOG</h2>
-                    <p className="text-[10px] text-gray-500 font-mono">Coordinated scheduled excursions & premium rentals</p>
+                    <h2 className="text-2xl font-black font-serif uppercase tracking-tight text-[#551A0C] mb-1">LIVE TRAVEL LOG</h2>
+                    <p className="text-[10px] text-[#8C6D53] font-mono">Coordinated scheduled excursions & premium reservations</p>
                   </div>
                   <Link href="/self-drive">
-                    <button className="bg-green-600 hover:bg-brand-hover text-white font-black uppercase tracking-widest px-6 py-3 rounded-xl text-[10px] transition-all flex items-center gap-2">
-                      Book New Service <ChevronRight size={14} strokeWidth={3} />
+                    <button className="btn-luxury btn-luxury-shine font-serif font-bold uppercase tracking-[0.16em] px-6 py-3 rounded-xl text-[10px] transition-all flex items-center gap-2 shadow-lg cursor-pointer">
+                      Reserve Fleet Marque <ChevronRight size={14} strokeWidth={2} />
                     </button>
                   </Link>
                 </div>
 
                 {bookings.length === 0 ? (
-                  <div className="bg-gray-100 border border-gray-200 rounded-3xl p-12 text-center text-gray-500 font-mono text-xs uppercase tracking-widest">
-                    No active bookings found on your ledger.
+                  <div className="card-luxury bg-[#FEFBF8] border border-[#E7DFD5] rounded-3xl p-14 text-center text-[#8C6D53] font-mono text-xs uppercase tracking-widest border-classic-frame">
+                    No active reservations found on your sovereign ledger.
                   </div>
                 ) : (
                   bookings.map((booking) => {
                     const isActive = booking.status !== 'COMPLETED' && booking.status !== 'CANCELLED';
                     return (
-                      <div key={booking.id} className={`bg-gray-100 border border-gray-200 rounded-3xl p-6 hover:border-gray-300 transition-colors ${!isActive && 'opacity-75 grayscale-[0.2]'}`}>
+                      <div key={booking.id} className={`card-luxury bg-[#FEFBF8] border border-[#E7DFD5] rounded-3xl p-7 hover:border-[#C89D5C] transition-all shadow-lg border-classic-frame ${!isActive && 'opacity-75 grayscale-[0.2]'}`}>
                         <div className="flex justify-between items-start mb-6">
                           <div>
                             <div className="flex items-center gap-3 font-mono text-[10px] mb-2">
-                              <span className="text-green-700 font-bold">{booking.id.slice(-8).toUpperCase()}</span>
-                              <span className="text-gray-400">•</span>
-                              <span className="text-gray-600">{formatDate(booking.startDate)}</span>
-                              <span className={`${isActive ? 'bg-[#004d33] text-[#00ffaa] border-[#00ffaa]/20' : 'bg-[#1a334d] text-[#66b3ff] border-[#66b3ff]/20'} border px-2 py-0.5 rounded font-bold uppercase tracking-widest text-[8px]`}>{booking.status}</span>
+                              <span className="text-[#C89D5C] font-bold font-mono">✦ {booking.id.slice(-8).toUpperCase()}</span>
+                              <span className="text-[#8C6D53]">•</span>
+                              <span className="text-[#6A5749]">{formatDate(booking.startDate)}</span>
+                              <span className={`${isActive ? 'bg-[#551A0C] text-[#DFB574] border-[#C89D5C]/40' : 'bg-[#250903] text-white/70 border-white/20'} border px-2.5 py-0.5 rounded font-bold uppercase tracking-widest text-[8px] font-mono`}>{booking.status}</span>
                             </div>
-                            <h3 className={`text-xl font-black uppercase tracking-tight mb-1 ${!isActive && 'text-gray-900/80'}`}>{booking.title}</h3>
-                            <p className="text-gray-500 text-[11px]">{booking.desc}</p>
+                            <h3 className={`text-xl font-bold font-serif uppercase tracking-tight mb-1 text-[#551A0C] ${!isActive && 'text-[#551A0C]/70'}`}>{booking.title}</h3>
+                            <p className="text-[#6A5749] text-xs font-mono">{booking.desc}</p>
                           </div>
                           <div className="text-right">
-                            <div className="text-[9px] text-gray-500 uppercase tracking-widest font-bold mb-1">OUTSTANDING DUES</div>
-                            <div className={`text-2xl font-black tracking-tight ${!isActive && 'text-gray-500'}`}>₹{booking.remainingAmount.toLocaleString()}</div>
+                            <div className="text-[9px] text-[#8C6D53] uppercase tracking-widest font-mono font-bold mb-0.5">OUTSTANDING DUE</div>
+                            <div className={`text-2xl font-black font-serif text-[#551A0C] ${!isActive && 'text-[#8C6D53]'}`}>₹{booking.remainingAmount.toLocaleString()}</div>
                           </div>
                         </div>
 
                         {booking.status === 'REJECTED' && (
-                          <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-6">
-                            <div className="text-red-500 font-black uppercase text-[10px] tracking-widest mb-1">Booking Rejected by Admin</div>
-                            <div className="text-gray-900/80 font-mono text-sm">{booking.rejectionReason}</div>
+                          <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
+                            <div className="text-red-700 font-bold uppercase text-[10px] tracking-widest mb-1 font-mono">Booking Rejected by Concierge</div>
+                            <div className="text-[#250903] font-mono text-xs">{booking.rejectionReason}</div>
                             {booking.refundStatus !== 'NONE' && (
                               <div className="mt-2 text-xs font-bold font-mono">
-                                Refund Status: <span className={booking.refundStatus === 'PROCESSED' ? 'text-[#00ffaa]' : 'text-orange-400'}>{booking.refundStatus}</span>
+                                Refund Status: <span className={booking.refundStatus === 'PROCESSED' ? 'text-green-700' : 'text-orange-600'}>{booking.refundStatus}</span>
                               </div>
                             )}
                           </div>
                         )}
 
                         <div className="flex flex-wrap md:flex-nowrap gap-4 mb-6">
-                          <div className="bg-white border border-gray-200 p-4 rounded-xl flex-1">
-                            <div className="text-[9px] text-gray-500 uppercase font-mono mb-1">Price: <span className="font-bold text-gray-900">₹{booking.totalAmount.toLocaleString()}</span></div>
+                          <div className="bg-[#FAF6F0] border border-[#E7DFD5] p-4 rounded-xl flex-1 border-classic-frame">
+                            <div className="text-[9px] text-[#8C6D53] uppercase font-mono mb-1">Total Locked: <span className="font-bold font-serif text-sm text-[#250903]">₹{booking.totalAmount.toLocaleString()}</span></div>
                           </div>
                           {booking.depositAmount > 0 && (
-                            <div className="bg-white border border-gray-200 p-4 rounded-xl flex-1">
-                              <div className="text-[9px] text-gray-500 uppercase font-mono mb-1">Security Deposit: <span className="font-bold text-green-700">₹{booking.depositAmount.toLocaleString()}</span></div>
+                            <div className="bg-[#FAF6F0] border border-[#C89D5C]/30 p-4 rounded-xl flex-1 border-classic-frame">
+                              <div className="text-[9px] text-[#8C6D53] uppercase font-mono mb-1">Security Hold: <span className="font-bold font-serif text-sm text-[#551A0C]">₹{booking.depositAmount.toLocaleString()}</span></div>
                             </div>
                           )}
-                          <div className="bg-white border border-gray-200 p-4 rounded-xl flex-1">
-                            <div className="text-[9px] text-gray-500 uppercase font-mono mb-1">Advance Paid: <span className="font-bold text-gray-900">₹{booking.advancePaid.toLocaleString()}</span></div>
+                          <div className="bg-[#FAF6F0] border border-[#E7DFD5] p-4 rounded-xl flex-1 border-classic-frame">
+                            <div className="text-[9px] text-[#8C6D53] uppercase font-mono mb-1">Advance Paid: <span className="font-bold font-serif text-sm text-[#C89D5C]">₹{booking.advancePaid.toLocaleString()}</span></div>
                           </div>
                         </div>
 
-                        <div className="flex justify-end gap-3 border-t border-gray-200 pt-6">
+                        <div className="flex justify-end gap-3 border-t border-[#E7DFD5] pt-5">
                           {isActive && (
-                            <button onClick={() => handleCancelBooking(booking.id)} className="text-[10px] font-bold text-gray-500 hover:text-red-400 bg-red-500/5 hover:bg-red-500/10 px-4 py-2.5 rounded-lg transition-colors border border-transparent hover:border-red-500/20">
-                              Cancel Booking
+                            <button onClick={() => handleCancelBooking(booking.id)} className="text-[10px] font-bold font-mono uppercase tracking-wider text-red-700 hover:text-red-900 bg-red-50 hover:bg-red-100 px-4 py-2.5 rounded-lg transition-colors border border-red-200 cursor-pointer">
+                              Cancel Reservation
                             </button>
                           )}
-                          <button onClick={() => { setActiveTab('invoices'); setShowReceiptModal(booking.id); }} className="text-[10px] font-bold text-gray-600 hover:text-gray-900 border border-gray-300 hover:bg-gray-100 px-4 py-2.5 rounded-lg transition-colors">
-                            Show Invoice
+                          <button onClick={() => { setActiveTab('invoices'); setShowReceiptModal(booking.id); }} className="text-[10px] font-bold font-mono uppercase tracking-wider text-[#551A0C] hover:text-[#250903] border border-[#E7DFD5] bg-[#FAF6F0] hover:bg-[#FEFBF8] hover:border-[#C89D5C] px-4 py-2.5 rounded-lg transition-colors cursor-pointer">
+                            Show Sovereign Invoice
                           </button>
                           {isActive && booking.remainingAmount > 0 && (
-                            <button onClick={() => handleRazorpayPayment(booking.id, booking.remainingAmount, `Settle outstanding for ${booking.id}`)} className="text-[10px] font-black text-white bg-green-600 hover:bg-brand-hover px-6 py-2.5 rounded-lg transition-colors shadow-[0_0_15px_rgba(41,75,50,0.15)]">
+                            <button onClick={() => handleRazorpayPayment(booking.id, booking.remainingAmount, `Settle outstanding for ${booking.id}`)} className="btn-luxury btn-luxury-shine text-[10px] font-serif font-bold uppercase tracking-[0.16em] px-6 py-2.5 rounded-lg shadow-md cursor-pointer">
                               SETTLE OUTSTANDING (70%)
                             </button>
                           )}
@@ -379,42 +382,44 @@ export default function DashboardClient({ user, bookings, aggregates, wishlist =
 
             {/* TAB: PERSONAL PROFILE */}
             {activeTab === 'profile' && (
-              <div className="bg-gray-100 border border-gray-200 rounded-3xl p-8">
-                <h2 className="text-2xl font-black uppercase tracking-tight mb-2">CLIENT LEDGER DETAILS</h2>
-                <p className="text-[10px] text-gray-500 font-mono mb-8">Maintain your verified security and travel authorization metadata</p>
+              <div className="card-luxury bg-[#FEFBF8] border border-[#E7DFD5] rounded-3xl p-8 md:p-10 shadow-xl border-classic-frame">
+                <h2 className="text-2xl font-black font-serif uppercase tracking-tight text-[#551A0C] mb-2">CLIENT REGISTRY CREDENTIALS</h2>
+                <p className="text-[10px] text-[#8C6D53] font-mono mb-8">Maintain your verified security and travel authorization metadata</p>
                 
-                <div className="grid grid-cols-2 gap-6 mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                   <div>
-                    <label className="text-[9px] text-gray-500 font-mono uppercase tracking-widest mb-2 block">FULL NAME</label>
-                    <input type="text" defaultValue={user.name} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 outline-none" />
+                    <label className="text-[10px] text-[#8C6D53] font-mono uppercase tracking-widest mb-2 block font-bold">FULL LEGAL NAME</label>
+                    <input type="text" defaultValue={user.name} className="w-full bg-[#FAF6F0] border border-[#E7DFD5] rounded-xl px-4 py-3 text-xs font-mono text-[#250903] outline-none focus:border-[#C89D5C]" />
                   </div>
                   <div>
-                    <label className="text-[9px] text-gray-500 font-mono uppercase tracking-widest mb-2 block">EMAIL ADDRESS</label>
-                    <input type="email" defaultValue={user.email} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 outline-none" disabled />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-6 mb-8">
-                  <div>
-                    <label className="text-[9px] text-gray-500 font-mono uppercase tracking-widest mb-2 block">CONTACT COORDINATES</label>
-                    <input type="text" defaultValue={user.phone || ''} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 outline-none" />
-                  </div>
-                  <div>
-                    <label className="text-[9px] text-gray-500 font-mono uppercase tracking-widest mb-2 block">DRIVING LICENSE / AADHAAR (ID NUM)</label>
-                    <input type="text" defaultValue="DL-VERIFIED" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-500 outline-none" disabled />
+                    <label className="text-[10px] text-[#8C6D53] font-mono uppercase tracking-widest mb-2 block font-bold">REGISTERED EMAIL</label>
+                    <input type="email" defaultValue={user.email} className="w-full bg-[#FAF6F0] border border-[#E7DFD5] rounded-xl px-4 py-3 text-xs font-mono text-[#6A5749] outline-none opacity-80" disabled />
                   </div>
                 </div>
 
-                <div className="bg-white border border-gray-200 rounded-xl p-6 flex justify-between items-center mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                   <div>
-                    <div className="text-[9px] text-gray-500 font-mono uppercase tracking-widest mb-1">KYC STATUS CHECKLIST</div>
-                    <div className="text-sm font-bold text-gray-900">Document uploaded verified with central databases.</div>
+                    <label className="text-[10px] text-[#8C6D53] font-mono uppercase tracking-widest mb-2 block font-bold">CONTACT COORDINATES</label>
+                    <input type="text" defaultValue={user.phone || ''} className="w-full bg-[#FAF6F0] border border-[#E7DFD5] rounded-xl px-4 py-3 text-xs font-mono text-[#250903] outline-none focus:border-[#C89D5C]" />
                   </div>
-                  <div className="bg-[#00ffaa] text-black text-[9px] font-black uppercase tracking-widest px-4 py-1.5 rounded">KYC APPROVED</div>
+                  <div>
+                    <label className="text-[10px] text-[#8C6D53] font-mono uppercase tracking-widest mb-2 block font-bold">IDENTITY CLEARANCE</label>
+                    <input type="text" defaultValue="DL-VERIFIED" className="w-full bg-[#FAF6F0] border border-[#E7DFD5] rounded-xl px-4 py-3 text-xs font-mono text-[#6A5749] outline-none opacity-80" disabled />
+                  </div>
                 </div>
 
-                <div className="flex justify-end pt-6 border-t border-gray-200">
-                  <button className="bg-green-600 hover:bg-brand-hover text-white font-black px-8 py-3 rounded-xl text-[11px] uppercase tracking-widest transition-colors shadow-[0_0_15px_rgba(41,75,50,0.15)]">
+                <div className="bg-[#FAF6F0] border border-[#E7DFD5] rounded-xl p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 border-classic-frame">
+                  <div>
+                    <div className="text-[10px] text-[#8C6D53] font-mono uppercase tracking-widest mb-1 font-bold">KYC STATUS AUDIT</div>
+                    <div className="text-sm font-serif font-bold text-[#551A0C]">Identity verified & securely synced with sovereign databases.</div>
+                  </div>
+                  <div className="bg-[#551A0C] text-[#DFB574] text-[9px] font-bold font-mono uppercase tracking-[0.2em] px-4 py-1.5 rounded-full border border-[#C89D5C]/40 shadow-sm">
+                    ✦ KYC VERIFIED
+                  </div>
+                </div>
+
+                <div className="flex justify-end pt-6 border-t border-[#E7DFD5]">
+                  <button className="btn-luxury btn-luxury-shine font-serif font-bold px-8 py-3.5 rounded-xl text-xs uppercase tracking-[0.16em] shadow-lg cursor-pointer">
                     Save Changes
                   </button>
                 </div>
@@ -424,12 +429,12 @@ export default function DashboardClient({ user, bookings, aggregates, wishlist =
             {/* TAB: DIGITAL INVOICES */}
             {activeTab === 'invoices' && (
               <div>
-                <h2 className="text-2xl font-black uppercase tracking-tight mb-2">FIDELITY INVOICES</h2>
-                <p className="text-[10px] text-gray-500 font-mono mb-8">Download structural GST breakdowns and premium transaction papers</p>
+                <h2 className="text-2xl font-black font-serif uppercase tracking-tight text-[#551A0C] mb-2">SOVEREIGN INVOICES</h2>
+                <p className="text-[10px] text-[#8C6D53] font-mono mb-8">Download structural GST breakdowns and official transaction receipts</p>
                 
-                <div className="bg-gray-100 border border-gray-200 rounded-3xl overflow-hidden">
+                <div className="card-luxury bg-[#FEFBF8] border border-[#E7DFD5] rounded-3xl overflow-hidden shadow-xl border-classic-frame">
                   <table className="w-full text-left">
-                    <thead className="bg-white text-[9px] text-gray-500 uppercase tracking-widest border-b border-gray-200">
+                    <thead className="bg-[#FAF6F0] text-[9px] text-[#8C6D53] uppercase tracking-[0.18em] font-mono border-b border-[#E7DFD5]">
                       <tr>
                         <th className="p-6 font-bold">INVOICE ID</th>
                         <th className="p-6 font-bold">EXCURSION DETAILS</th>
@@ -440,18 +445,18 @@ export default function DashboardClient({ user, bookings, aggregates, wishlist =
                     </thead>
                     <tbody className="text-[11px] font-mono">
                       {bookings.length === 0 ? (
-                         <tr><td colSpan={5} className="p-6 text-center text-gray-500">No invoices available.</td></tr>
+                         <tr><td colSpan={5} className="p-8 text-center text-[#8C6D53]">No invoices available on ledger.</td></tr>
                       ) : bookings.map((inv) => (
-                        <tr key={inv.id} className="border-b border-gray-200 hover:bg-white/[0.02] transition-colors">
-                          <td className="p-6 font-bold text-green-700">{inv.id.slice(-8).toUpperCase()}</td>
+                        <tr key={inv.id} className="border-b border-[#E7DFD5] hover:bg-[#FAF6F0]/60 transition-colors">
+                          <td className="p-6 font-bold font-mono text-[#C89D5C]">✦ {inv.id.slice(-8).toUpperCase()}</td>
                           <td className="p-6">
-                            <div className="font-bold text-gray-900 text-xs mb-1 font-body">{inv.title}</div>
-                            <div className="text-gray-500">{inv.desc}</div>
+                            <div className="font-bold text-[#551A0C] text-xs mb-1 font-serif">{inv.title}</div>
+                            <div className="text-[#6A5749]">{inv.desc}</div>
                           </td>
-                          <td className="p-6 text-gray-900">₹{inv.advancePaid.toLocaleString()}</td>
-                          <td className="p-6 text-gray-900">₹{inv.remainingAmount.toLocaleString()}</td>
+                          <td className="p-6 font-serif font-bold text-[#250903]">₹{inv.advancePaid.toLocaleString()}</td>
+                          <td className="p-6 font-serif font-bold text-[#551A0C]">₹{inv.remainingAmount.toLocaleString()}</td>
                           <td className="p-6">
-                            <button onClick={() => setShowReceiptModal(inv.id)} className="bg-white/5 hover:bg-white/10 border border-gray-300 text-gray-900 px-4 py-2 rounded-lg font-bold transition-colors">
+                            <button onClick={() => setShowReceiptModal(inv.id)} className="bg-[#FAF6F0] hover:bg-[#FEFBF8] border border-[#E7DFD5] hover:border-[#C89D5C] text-[#551A0C] px-4 py-2 rounded-lg font-serif font-bold text-xs uppercase tracking-wider transition-colors cursor-pointer shadow-sm">
                               View Receipt
                             </button>
                           </td>
@@ -466,36 +471,38 @@ export default function DashboardClient({ user, bookings, aggregates, wishlist =
             {/* TAB: PAYMENTS HISTORY */}
             {activeTab === 'payments' && (
               <div>
-                <h2 className="text-2xl font-black uppercase tracking-tight mb-2">TRANSACTION LEDGER</h2>
-                <p className="text-[10px] text-gray-500 font-mono mb-8">Audit logs of all down-payments, deposits, and outstanding settlements</p>
+                <h2 className="text-2xl font-black font-serif uppercase tracking-tight text-[#551A0C] mb-2">TRANSACTION LEDGER</h2>
+                <p className="text-[10px] text-[#8C6D53] font-mono mb-8">Audit logs of all down-payments, deposits, and outstanding settlements</p>
                 
-                <div className="grid grid-cols-3 gap-6 mb-8">
-                  <div className="bg-gray-100 border border-gray-200 rounded-2xl p-6">
-                    <div className="text-[9px] text-gray-500 uppercase tracking-widest font-bold mb-2">CONSOLIDATED SPENT</div>
-                    <div className="text-3xl font-black">₹{aggregates.totalSpent.toLocaleString()}</div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+                  <div className="card-luxury bg-[#FEFBF8] border border-[#E7DFD5] rounded-2xl p-6 border-classic-frame shadow-sm">
+                    <div className="text-[9px] text-[#8C6D53] uppercase tracking-widest font-mono font-bold mb-2">CONSOLIDATED SPENT</div>
+                    <div className="text-3xl font-black font-serif text-[#250903]">₹{aggregates.totalSpent.toLocaleString()}</div>
                   </div>
-                  <div className="bg-gray-100 border border-gray-200 rounded-2xl p-6">
-                    <div className="text-[9px] text-gray-500 uppercase tracking-widest font-bold mb-2">ADVANCED SETTLED</div>
-                    <div className="text-3xl font-black text-green-700">₹{aggregates.advancedSettled.toLocaleString()}</div>
+                  <div className="card-luxury bg-[#FEFBF8] border border-[#C89D5C]/40 rounded-2xl p-6 border-classic-frame shadow-sm">
+                    <div className="text-[9px] text-[#C89D5C] uppercase tracking-widest font-mono font-bold mb-2">ADVANCE SETTLED</div>
+                    <div className="text-3xl font-black font-serif text-[#551A0C]">₹{aggregates.advancedSettled.toLocaleString()}</div>
                   </div>
-                  <div className="bg-gray-100 border border-gray-200 rounded-2xl p-6">
-                    <div className="text-[9px] text-gray-500 uppercase tracking-widest font-bold mb-2">PENDING LATER (70%)</div>
-                    <div className="text-3xl font-black">₹{aggregates.pendingLater.toLocaleString()}</div>
+                  <div className="card-luxury bg-[#FEFBF8] border border-[#E7DFD5] rounded-2xl p-6 border-classic-frame shadow-sm">
+                    <div className="text-[9px] text-[#8C6D53] uppercase tracking-widest font-mono font-bold mb-2">PENDING LATER (70%)</div>
+                    <div className="text-3xl font-black font-serif text-[#250903]">₹{aggregates.pendingLater.toLocaleString()}</div>
                   </div>
                 </div>
 
-                <div className="bg-gray-100 border border-gray-200 rounded-3xl p-8">
-                  <div className="text-[9px] text-gray-500 uppercase tracking-widest font-bold mb-6">AUTHORIZED GATEWAY LOGS</div>
+                <div className="card-luxury bg-[#FEFBF8] border border-[#E7DFD5] rounded-3xl p-8 shadow-xl border-classic-frame">
+                  <div className="text-[10px] text-[#8C6D53] uppercase tracking-[0.2em] font-mono font-bold mb-6 flex items-center gap-2">
+                    <span className="text-[#C89D5C]">✦</span> AUTHORIZED GATEWAY LOGS
+                  </div>
                   <div className="space-y-4">
                     {bookings.map(log => (
-                      <div key={log.id} className="flex justify-between items-center bg-white border border-gray-200 p-5 rounded-2xl">
+                      <div key={log.id} className="flex justify-between items-center bg-[#FAF6F0] border border-[#E7DFD5] p-5 rounded-2xl border-classic-frame">
                         <div>
-                          <div className="font-bold text-sm mb-1 font-mono">UPI Razorpay Transfer: {log.id.slice(-8).toUpperCase()}</div>
-                          <div className="text-[9px] text-gray-500 uppercase tracking-widest font-mono">Merchant Status Indicator: SUCCESS</div>
+                          <div className="font-bold text-xs mb-1 font-mono text-[#551A0C]">UPI Razorpay Transfer: {log.id.slice(-8).toUpperCase()}</div>
+                          <div className="text-[9px] text-[#8C6D53] uppercase tracking-widest font-mono">Gateway Status: VERIFIED SUCCESS</div>
                         </div>
                         <div className="text-right">
-                          <div className="text-[#00ffaa] font-bold font-mono">+₹{log.advancePaid.toLocaleString()}</div>
-                          <div className="text-[9px] text-gray-500 font-mono mt-1">{formatDate(log.startDate)}</div>
+                          <div className="text-[#C89D5C] font-black font-serif text-base">+₹{log.advancePaid.toLocaleString()}</div>
+                          <div className="text-[9px] text-[#8C6D53] font-mono mt-0.5">{formatDate(log.startDate)}</div>
                         </div>
                       </div>
                     ))}
@@ -507,39 +514,41 @@ export default function DashboardClient({ user, bookings, aggregates, wishlist =
             {/* TAB: REFUNDS */}
             {activeTab === 'refunds' && (
               <div>
-                <h2 className="text-2xl font-black uppercase tracking-tight mb-2">SECURITY DEPOSIT ESCROW</h2>
-                <p className="text-[10px] text-gray-500 font-mono mb-8">Manage and request return flow on holds placed for self-drive safety covenants</p>
+                <h2 className="text-2xl font-black font-serif uppercase tracking-tight text-[#551A0C] mb-2">SECURITY DEPOSIT ESCROW</h2>
+                <p className="text-[10px] text-[#8C6D53] font-mono mb-8">Manage holds placed for self-drive safety covenants and automated returns</p>
                 
-                <div className="bg-green-950 border border-green-600/20 rounded-3xl p-8 flex items-center justify-between mb-8">
+                <div className="bg-[#250903] text-white border border-[#C89D5C]/30 rounded-3xl p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-8 shadow-xl">
                   <div className="flex gap-4">
-                    <Banknote className="text-green-300 mt-1" size={24} />
+                    <div className="w-12 h-12 rounded-2xl bg-[#551A0C] text-[#DFB574] border border-[#C89D5C]/40 flex items-center justify-center shrink-0">
+                      <Banknote size={24} />
+                    </div>
                     <div>
-                      <h3 className="text-lg font-black uppercase tracking-tight mb-1">CONSOLIDATED DEPOSITS HELD</h3>
-                      <p className="text-xs text-gray-600 max-w-md">Deposits protect against excess KM or structural dents. Released immediately upon vehicle clearance check.</p>
+                      <h3 className="text-lg font-bold font-serif uppercase tracking-tight mb-1 text-white">Consolidated Deposits Held</h3>
+                      <p className="text-xs text-white/70 max-w-md leading-relaxed font-normal">Deposits protect against excess KM or exterior scratches. Released immediately upon vehicle clearance check.</p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="text-4xl font-black text-green-300 tracking-tight mb-1">₹{aggregates.activeDeposits.toLocaleString()}</div>
-                    <div className="text-[8px] text-gray-500 uppercase tracking-widest font-mono">PROCESSING REFUND (100% GUARANTEED)</div>
+                  <div className="text-left sm:text-right">
+                    <div className="text-4xl font-black font-serif text-[#DFB574] tracking-tight mb-1">₹{aggregates.activeDeposits.toLocaleString()}</div>
+                    <div className="text-[9px] text-[#C89D5C] uppercase tracking-widest font-mono font-bold">100% ESCROW PROTECTED</div>
                   </div>
                 </div>
 
                 <div className="space-y-4">
                   {bookings.filter(b => b.depositAmount > 0).map(booking => (
-                    <div key={booking.id} className="bg-gray-100 border border-gray-200 p-6 rounded-3xl flex justify-between items-center">
+                    <div key={booking.id} className="card-luxury bg-[#FEFBF8] border border-[#E7DFD5] p-6 rounded-3xl flex justify-between items-center border-classic-frame shadow-sm">
                       <div>
-                        <div className="text-[9px] text-gray-400 uppercase font-mono tracking-widest mb-2 bg-gray-100 inline-block px-2 py-1 rounded">ESCROW ITEM {booking.id.slice(-8).toUpperCase()}</div>
-                        <div className="font-black text-lg uppercase tracking-tight mb-1">{booking.title}</div>
-                        <div className="text-xs font-mono text-gray-600">Held: <span className="text-green-700 font-bold">₹{booking.depositAmount.toLocaleString()}</span> • Returned to source</div>
+                        <div className="text-[9px] text-[#8C6D53] uppercase font-mono tracking-widest mb-2 bg-[#FAF6F0] inline-block px-2.5 py-1 rounded border border-[#E7DFD5]">ESCROW REF #{booking.id.slice(-8).toUpperCase()}</div>
+                        <div className="font-bold font-serif text-lg uppercase tracking-tight text-[#551A0C] mb-1">{booking.title}</div>
+                        <div className="text-xs font-mono text-[#6A5749]">Held: <span className="text-[#551A0C] font-bold">₹{booking.depositAmount.toLocaleString()}</span> &bull; Returned automatically to source account</div>
                       </div>
-                      <div className="flex items-center gap-2 text-green-700 font-mono text-xs font-bold">
-                        <span className="animate-pulse">●</span> Hold Active (Ongoing Ride)
+                      <div className="flex items-center gap-2 text-[#C89D5C] font-mono text-xs font-bold">
+                        <span className="animate-pulse">✦</span> Active Hold
                       </div>
                     </div>
                   ))}
                   {bookings.filter(b => b.depositAmount > 0).length === 0 && (
-                    <div className="text-center py-12 text-gray-500 text-xs font-mono uppercase tracking-widest">
-                      No active security deposits.
+                    <div className="card-luxury bg-[#FEFBF8] border border-[#E7DFD5] text-center py-14 text-[#8C6D53] text-xs font-mono uppercase tracking-widest rounded-3xl border-classic-frame">
+                      No active security deposits under hold.
                     </div>
                   )}
                 </div>
@@ -549,12 +558,12 @@ export default function DashboardClient({ user, bookings, aggregates, wishlist =
             {/* TAB: WISHLIST (DYNAMIC) */}
             {activeTab === 'wishlist' && (
               <div>
-                <h2 className="text-2xl font-black uppercase tracking-tight mb-2">MY TRAVEL WISHLIST</h2>
-                <p className="text-[10px] text-gray-500 font-mono mb-8">Unlocked dream configurations of premium SUVs, super tour setups, and luxury palaces</p>
+                <h2 className="text-2xl font-black font-serif uppercase tracking-tight text-[#551A0C] mb-2">SAVED ROYAL WISHLIST</h2>
+                <p className="text-[10px] text-[#8C6D53] font-mono mb-8">Curated configurations of premium grand tourers, private expeditions, and heritage palaces</p>
                 
                 {localWishlist.length === 0 ? (
-                  <div className="bg-gray-100 border border-gray-200 rounded-3xl p-12 text-center text-gray-500 font-mono text-xs uppercase tracking-widest">
-                    Your wishlist is currently empty.
+                  <div className="card-luxury bg-[#FEFBF8] border border-[#E7DFD5] rounded-3xl p-14 text-center text-[#8C6D53] font-mono text-xs uppercase tracking-widest border-classic-frame">
+                    Your sovereign wishlist is currently empty.
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
@@ -589,23 +598,24 @@ export default function DashboardClient({ user, bookings, aggregates, wishlist =
                       }
 
                       return (
-                        <div key={item.id} className="bg-gray-100 border border-gray-200 p-4 rounded-2xl flex gap-4 relative group hover:border-green-600/50 transition-colors">
+                        <div key={item.id} className="card-luxury bg-[#FEFBF8] border border-[#E7DFD5] p-5 rounded-2xl flex gap-4 relative group hover:border-[#C89D5C] transition-all border-classic-frame shadow-md">
                           <button 
                             onClick={() => handleRemoveWishlist(itemId, item.type, item.id)}
-                            className="absolute top-3 right-3 text-gray-400 hover:text-red-400 transition-colors z-10"
+                            className="absolute top-3 right-3 text-[#8C6D53] hover:text-red-700 transition-colors z-10 cursor-pointer"
+                            title="Remove from wishlist"
                           >
-                            <X size={14}/>
+                            <X size={15}/>
                           </button>
-                          <div className="w-32 h-24 relative rounded-xl overflow-hidden bg-white flex-shrink-0 border border-gray-300">
-                            <Image src={imageSrc} alt={title} fill className="object-cover" unoptimized/>
+                          <div className="w-32 h-24 relative rounded-xl overflow-hidden bg-[#FAF6F0] flex-shrink-0 border border-[#E7DFD5]">
+                            <Image src={imageSrc} alt={title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" unoptimized/>
                           </div>
                           <div className="py-1">
-                            <div className="text-[9px] text-green-700 uppercase font-bold tracking-widest mb-1">{badge}</div>
-                            <div className="font-black text-sm uppercase tracking-tight mb-1 truncate max-w-[150px]">{title}</div>
-                            <div className="text-[9px] font-mono text-gray-500 mb-3">{desc} {priceStr && `• ${priceStr}`}</div>
+                            <div className="text-[9px] text-[#C89D5C] uppercase font-bold font-mono tracking-widest mb-1">{badge}</div>
+                            <div className="font-bold font-serif text-sm uppercase tracking-tight text-[#551A0C] mb-1 truncate max-w-[150px]">{title}</div>
+                            <div className="text-[10px] font-mono text-[#8C6D53] mb-3">{desc} {priceStr && `• ${priceStr}`}</div>
                             <Link href={item.type === 'CAR' ? '/self-drive' : item.type === 'VILLA' ? '/villas' : '/tours'}>
-                              <button className="text-[9px] font-bold text-green-700 flex items-center gap-1 uppercase tracking-widest">
-                                Book Now <ChevronRight size={10}/>
+                              <button className="text-[10px] font-bold font-serif text-[#551A0C] hover:text-[#C89D5C] flex items-center gap-1 uppercase tracking-widest transition-colors cursor-pointer">
+                                Reserve Now <ChevronRight size={11}/>
                               </button>
                             </Link>
                           </div>
@@ -622,88 +632,90 @@ export default function DashboardClient({ user, bookings, aggregates, wishlist =
 
       {/* === RECEIPT MODAL === */}
       {showReceiptModal && activeInvoice && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white/80 backdrop-blur-sm">
-          <div id="printable-receipt-modal" className="bg-gray-100 border border-gray-300 w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
-            <div className="p-8 border-b border-gray-200 relative">
-              <button onClick={() => setShowReceiptModal(null)} className="absolute top-8 right-8 border border-gray-300 hover:bg-gray-100 px-3 py-1.5 rounded-lg text-xs font-mono text-gray-600 hover:text-gray-900 flex items-center gap-2 transition-colors">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div id="printable-receipt-modal" className="card-luxury bg-[#FEFBF8] border border-[#E7DFD5] w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200 border-classic-frame">
+            <div className="p-8 border-b border-[#E7DFD5] relative bg-[#FAF6F0]">
+              <button onClick={() => setShowReceiptModal(null)} className="absolute top-8 right-8 border border-[#E7DFD5] hover:border-[#C89D5C] hover:bg-[#FEFBF8] px-3 py-1.5 rounded-lg text-xs font-mono text-[#551A0C] flex items-center gap-2 transition-colors cursor-pointer">
                 Close <X size={14}/>
               </button>
               
-              <div className="bg-green-950 border border-green-600/20 text-green-300 text-[9px] font-black uppercase tracking-widest inline-block px-3 py-1.5 rounded mb-4">PREMIUM TRIP RECEIPT</div>
-              <h2 className="text-3xl font-black uppercase tracking-tighter mb-1">GORIDEZ</h2>
-              <p className="text-[10px] text-gray-500 font-mono tracking-widest uppercase">UDAIPUR STATION FLEET HQ</p>
+              <div className="bg-[#551A0C] text-[#DFB574] text-[9px] font-bold font-mono uppercase tracking-[0.2em] inline-block px-3 py-1 rounded-full mb-3 border border-[#C89D5C]/40">
+                ✦ OFFICIAL ROYAL RECEIPT
+              </div>
+              <h2 className="text-3xl font-black font-serif uppercase tracking-tight text-[#551A0C] mb-1">GORIDEZ</h2>
+              <p className="text-[10px] text-[#8C6D53] font-mono tracking-[0.25em] uppercase">RAJASTHAN CONCIERGE &bull; FLEET AUDIT</p>
             </div>
             
-            <div className="p-8 space-y-8 font-mono">
-              <div className="flex justify-between text-xs">
+            <div className="p-8 space-y-6 font-mono">
+              <div className="flex justify-between text-xs border-b border-[#E7DFD5] pb-6">
                 <div>
-                  <div className="text-gray-500 mb-1">INVOICE TO:</div>
-                  <div className="font-bold text-gray-900 text-base">{activeInvoice.driverName || user.name}</div>
-                  <div className="text-gray-600">{activeInvoice.driverPhone || user.phone || user.email}</div>
-                  {activeInvoice.driverEmail && <div className="text-gray-600">{activeInvoice.driverEmail}</div>}
+                  <div className="text-[#8C6D53] text-[10px] mb-1 uppercase tracking-wider">CLIENT DETAILS:</div>
+                  <div className="font-bold font-serif text-[#551A0C] text-base">{activeInvoice.driverName || user.name}</div>
+                  <div className="text-[#6A5749]">{activeInvoice.driverPhone || user.phone || user.email}</div>
+                  {activeInvoice.driverEmail && <div className="text-[#6A5749]">{activeInvoice.driverEmail}</div>}
                 </div>
                 <div className="text-right">
-                  <div className="text-gray-500 mb-1">REFERENCE:</div>
-                  <div className="font-bold text-green-700 text-base">{activeInvoice.id.slice(-8).toUpperCase()}</div>
-                  <div className="text-gray-600">{formatDate(activeInvoice.startDate)}</div>
+                  <div className="text-[#8C6D53] text-[10px] mb-1 uppercase tracking-wider">LEDGER REFERENCE:</div>
+                  <div className="font-bold font-mono text-[#C89D5C] text-base">✦ {activeInvoice.id.slice(-8).toUpperCase()}</div>
+                  <div className="text-[#6A5749]">{formatDate(activeInvoice.startDate)}</div>
                 </div>
               </div>
 
               <div>
-                <div className="text-gray-500 text-[10px] mb-2 uppercase">EXCURSION BREAKDOWN:</div>
-                <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
-                  <div className="flex justify-between font-bold text-sm mb-4 font-body">
+                <div className="text-[#8C6D53] text-[10px] mb-2 uppercase tracking-wider">RESERVATION BREAKDOWN:</div>
+                <div className="bg-[#FAF6F0] rounded-xl p-5 border border-[#E7DFD5]">
+                  <div className="flex justify-between font-bold text-sm mb-2 font-serif text-[#551A0C]">
                     <div>{activeInvoice.title}</div>
                     <div>₹{Math.round(activeInvoice.totalAmount / 1.18).toLocaleString()}</div>
                   </div>
-                  <div className="text-gray-500 text-xs">{activeInvoice.desc}</div>
+                  <div className="text-[#6A5749] text-xs font-mono">{activeInvoice.desc}</div>
                 </div>
               </div>
 
-              <div className="space-y-2 text-xs border-b border-gray-200 pb-6">
-                <div className="flex justify-between text-gray-600">
+              <div className="space-y-2 text-xs border-b border-[#E7DFD5] pb-6">
+                <div className="flex justify-between text-[#6A5749]">
                   <div>BASE FARE COMPONENT</div>
-                  <div>₹{Math.round(activeInvoice.totalAmount / 1.18).toLocaleString()}</div>
+                  <div className="font-bold text-[#250903]">₹{Math.round(activeInvoice.totalAmount / 1.18).toLocaleString()}</div>
                 </div>
-                <div className="flex justify-between text-gray-600">
-                  <div>CGST (9%) & SGST (9%) INCLUDED</div>
-                  <div>₹{Math.round(activeInvoice.totalAmount - (activeInvoice.totalAmount / 1.18)).toLocaleString()}</div>
+                <div className="flex justify-between text-[#6A5749]">
+                  <div>TAXES (18% GST APPLICABLE)</div>
+                  <div className="font-bold text-[#250903]">₹{Math.round(activeInvoice.totalAmount - (activeInvoice.totalAmount / 1.18)).toLocaleString()}</div>
                 </div>
                 {activeInvoice.depositAmount > 0 && (
-                  <div className="flex justify-between font-bold text-green-700 pt-2">
+                  <div className="flex justify-between font-bold text-[#551A0C] pt-2">
                     <div>100% REFUNDABLE SECURITY DEPOSIT</div>
-                    <div>₹{activeInvoice.depositAmount.toLocaleString()}</div>
+                    <div className="text-[#C89D5C]">₹{activeInvoice.depositAmount.toLocaleString()}</div>
                   </div>
                 )}
               </div>
 
-              <div className="flex justify-between items-center text-xl font-bold font-body border-b border-gray-200 pb-6">
-                <div>Gross Total Invoice</div>
+              <div className="flex justify-between items-center text-xl font-bold font-serif text-[#551A0C] border-b border-[#E7DFD5] pb-6">
+                <div>Total Package Locked</div>
                 <div>₹{(activeInvoice.totalAmount + activeInvoice.depositAmount).toLocaleString()}</div>
               </div>
 
-              <div className="bg-green-950 border border-green-600/20 rounded-xl p-5 text-xs space-y-2">
-                <div className="flex justify-between text-gray-900/80">
-                  <div>Down Payment Settled</div>
-                  <div className="font-bold text-gray-900">₹{activeInvoice.advancePaid.toLocaleString()}</div>
+              <div className="bg-[#250903] text-white rounded-xl p-5 text-xs space-y-2 border border-[#C89D5C]/30">
+                <div className="flex justify-between text-white/80">
+                  <div>Advance Hold Settled</div>
+                  <div className="font-bold text-[#DFB574]">₹{activeInvoice.advancePaid.toLocaleString()}</div>
                 </div>
-                <div className="flex justify-between text-gray-900/80">
-                  <div>Outstanding Balances</div>
-                  <div className="font-bold text-gray-900">₹{activeInvoice.remainingAmount.toLocaleString()}</div>
+                <div className="flex justify-between text-white/80">
+                  <div>Outstanding Balances (At Delivery)</div>
+                  <div className="font-bold text-white">₹{activeInvoice.remainingAmount.toLocaleString()}</div>
                 </div>
               </div>
               
-              <div className="text-center text-[9px] text-gray-400 tracking-widest flex justify-center items-center gap-2">
-                <Lock size={10}/> PAYMENTS PROCESSED THROUGH UPI/RAZORPAY 256B END-TO-END ENCRYPTION.
+              <div className="text-center text-[9px] text-[#8C6D53] tracking-widest flex justify-center items-center gap-2">
+                <Lock size={10} className="text-[#C89D5C]"/> 256-BIT ENCRYPTED RAZORPAY / CASH ON CONVENIENCE TRANSACTION.
               </div>
             </div>
 
             <div className="p-8 pt-0 print:hidden">
               <button 
                 onClick={() => window.print()}
-                className="w-full bg-green-600 hover:bg-brand-hover text-white font-black text-sm uppercase tracking-widest py-4 rounded-xl flex justify-center items-center gap-2 transition-colors shadow-md cursor-pointer"
+                className="btn-luxury btn-luxury-shine w-full font-serif font-bold text-xs uppercase tracking-[0.18em] py-4 rounded-xl flex justify-center items-center gap-2 shadow-lg cursor-pointer"
               >
-                 Print / Save GST Invoice PDF
+                 Print / Save Official Invoice PDF
               </button>
             </div>
             

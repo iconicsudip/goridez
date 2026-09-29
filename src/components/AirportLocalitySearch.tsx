@@ -76,17 +76,17 @@ export default function AirportLocalitySearch({
 
   return (
     <div
-      className="bg-white border border-brand-border hover:border-brand-gold/50 transition-colors rounded-xl p-4 flex flex-col shadow-[0_2px_10px_rgba(0,0,0,0.03)] relative"
+      className="bg-white border border-[#E7DFD5] hover:border-[#C89D5C] focus-within:border-[#C89D5C] transition-all rounded-2xl p-4 flex flex-col shadow-[0_2px_10px_rgba(85,26,12,0.03)] relative"
       ref={wrapperRef}
     >
       {label && (
-        <label className="text-xs text-gray-500 mb-2 font-mono uppercase tracking-wider">
+        <label className="text-[10px] text-[#7A6A65] mb-2 font-mono uppercase tracking-widest">
           {label}
         </label>
       )}
-      <div className="flex items-center gap-2 text-gray-800 relative">
+      <div className="flex items-center gap-2.5 text-gray-800 relative">
         <div className="flex items-center justify-center shrink-0">
-          {value === airportLabel ? <Plane className="text-green-700" size={16} /> : <MapPin className="text-green-700" size={16} />}
+          {value === airportLabel ? <Plane className="text-[#C89D5C]" size={16} /> : <MapPin className="text-[#C89D5C]" size={16} />}
         </div>
         <input
           type="text"
@@ -101,7 +101,7 @@ export default function AirportLocalitySearch({
           }}
           onFocus={() => setIsOpen(true)}
           placeholder={placeholder || 'Search airport or your area...'}
-          className="w-full bg-transparent text-sm font-semibold outline-none text-gray-900 placeholder-gray-400 min-w-0"
+          className="w-full bg-transparent text-sm font-semibold outline-none text-gray-900 placeholder-gray-400 min-w-0 font-body"
         />
         {query && (
           <button
@@ -116,7 +116,7 @@ export default function AirportLocalitySearch({
       </div>
 
       {isOpen && filtered.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-xl z-50 max-h-60 overflow-y-auto custom-scrollbar">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-[#FEFBF8] border border-[#E7DFD5] rounded-2xl shadow-2xl z-50 max-h-60 overflow-y-auto custom-scrollbar">
           {filtered.map((o, idx) => (
             <button
               key={`${o.zoneId}-${idx}`}
@@ -126,20 +126,20 @@ export default function AirportLocalitySearch({
                 onChange(o.locality, o.zoneId);
                 setIsOpen(false);
               }}
-              className="w-full text-left px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-0 flex items-center justify-between gap-3 transition-colors"
+              className="w-full text-left px-4 py-3 hover:bg-[#FAF6F0] border-b border-[#E7DFD5]/40 last:border-0 flex items-center justify-between gap-3 transition-colors group cursor-pointer"
             >
-              <span className="text-sm font-semibold text-gray-900 flex items-center gap-2">
-                {o.zoneId === AIRPORT_ZONE_ID && <Plane size={13} className="text-green-700 shrink-0" />}
+              <span className="text-sm font-semibold text-[#250903] group-hover:text-[#551A0C] flex items-center gap-2">
+                {o.zoneId === AIRPORT_ZONE_ID && <Plane size={14} className="text-[#C89D5C] shrink-0" />}
                 {o.locality}
               </span>
-              <span className="text-[9px] text-gray-400 font-mono uppercase shrink-0">{o.zoneName}</span>
+              <span className="text-[9px] text-[#7A6A65] font-mono uppercase shrink-0">{o.zoneName}</span>
             </button>
           ))}
         </div>
       )}
 
       {isOpen && filtered.length === 0 && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-xl z-50 p-4 text-xs text-gray-500 font-mono">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-[#FEFBF8] border border-[#E7DFD5] rounded-2xl shadow-xl z-50 p-4 text-xs text-[#551A0C]/80 font-editorial italic">
           No matching serviceable area. Airport transfers are only available to/from the zones we cover.
         </div>
       )}

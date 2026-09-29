@@ -54,30 +54,30 @@ export default function RegisterClient({ googleSignInEnabled }: { googleSignInEn
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 py-20">
+    <div className="min-h-screen bg-[#FAF6F0] flex items-center justify-center p-4 py-20 font-sans">
       <div className="w-full max-w-md">
 
         {/* Header */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-3 mb-6">
-            <div className="bg-green-600 text-white font-black text-xs w-8 h-8 rounded-lg flex items-center justify-center tracking-tighter">
+            <div className="w-10 h-10 rounded-full bg-[#551A0C] border-2 border-[#C89D5C] text-[#DFB574] font-serif font-black text-xs flex items-center justify-center shadow-md">
               GR
             </div>
-            <div className="text-xl font-black tracking-tight">
-              <span className="text-gray-900">Go</span><span className="text-green-700">Ridez</span>
+            <div className="text-2xl font-black font-serif tracking-tight text-[#551A0C]">
+              Go<span className="text-[#C89D5C]">Ridez</span>
             </div>
           </Link>
-          <h1 className="text-2xl font-black uppercase tracking-tight mb-2">Register Digital Identity</h1>
-          <p className="text-[10px] text-gray-500 font-mono tracking-widest uppercase">GDPR Security Framework Verified</p>
+          <h1 className="text-2xl font-black font-serif uppercase tracking-tight text-[#551A0C] mb-2">Register Sovereign Identity</h1>
+          <p className="text-[10px] text-[#8C6D53] font-mono tracking-[0.25em] uppercase">Private Registry &bull; Encrypted Vault Access</p>
         </div>
 
         {/* Form Card */}
-        <div className="bg-gray-100 border border-gray-200 rounded-3xl p-8 relative overflow-hidden">
+        <div className="card-luxury bg-[#FEFBF8] border border-[#E7DFD5] rounded-3xl p-8 relative overflow-hidden shadow-2xl border-classic-frame">
 
-          <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-brand-neon to-transparent opacity-50"></div>
+          <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-[#C89D5C] to-transparent opacity-70"></div>
 
           {error && (
-            <div className="bg-red-500/10 border border-red-500/20 text-red-500 text-xs p-4 rounded-xl mb-6 flex items-start gap-3">
+            <div className="bg-red-50 border border-red-200 text-red-700 text-xs p-4 rounded-xl mb-6 flex items-start gap-3">
               <AlertCircle size={16} className="shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
@@ -88,95 +88,95 @@ export default function RegisterClient({ googleSignInEnabled }: { googleSignInEn
               <button
                 type="button"
                 onClick={() => signIn('google', { callbackUrl: '/dashboard' })}
-                className="w-full bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 font-bold text-xs uppercase tracking-widest py-3.5 rounded-xl flex items-center justify-center gap-3 transition-all mb-6"
+                className="w-full bg-[#FAF6F0] hover:bg-[#FEFBF8] border border-[#E7DFD5] hover:border-[#C89D5C] text-[#551A0C] font-serif font-bold text-xs uppercase tracking-[0.16em] py-3.5 rounded-xl flex items-center justify-center gap-3 transition-all shadow-sm cursor-pointer mb-6"
               >
-                <GoogleIcon /> Continue with Google
+                <GoogleIcon /> Authenticate with Google
               </button>
               <div className="flex items-center gap-3 mb-6">
-                <div className="h-px flex-1 bg-gray-200" />
-                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Or register with email</span>
-                <div className="h-px flex-1 bg-gray-200" />
+                <div className="h-px flex-1 bg-[#E7DFD5]" />
+                <span className="text-[10px] text-[#8C6D53] font-bold font-mono uppercase tracking-[0.2em]">Or Register Credentials</span>
+                <div className="h-px flex-1 bg-[#E7DFD5]" />
               </div>
             </>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="text-[10px] font-bold text-gray-500 tracking-widest uppercase mb-2 block">Full Legal Name</label>
+              <label className="text-[10px] font-bold font-mono text-[#8C6D53] tracking-widest uppercase mb-1.5 block">Full Legal Name</label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <User size={16} className="text-gray-400" />
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#C89D5C]">
+                  <User size={16} />
                 </div>
                 <input
                   type="text"
                   name="name"
                   required
-                  className="w-full bg-white border border-gray-200 rounded-xl py-3 pl-11 pr-4 text-sm text-gray-900 outline-none focus:border-green-600/50 transition-colors"
-                  placeholder="John Doe"
+                  className="w-full bg-[#FAF6F0] border border-[#E7DFD5] rounded-xl py-3 pl-11 pr-4 text-xs font-mono text-[#250903] outline-none focus:border-[#C89D5C] focus:bg-[#FEFBF8] transition-all placeholder:text-[#6A5749]/40"
+                  placeholder="e.g. Maharaja Vikram Singh"
                 />
               </div>
             </div>
 
             <div>
-              <label className="text-[10px] font-bold text-gray-500 tracking-widest uppercase mb-2 block">Email Address</label>
+              <label className="text-[10px] font-bold font-mono text-[#8C6D53] tracking-widest uppercase mb-1.5 block">Email Address</label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <Mail size={16} className="text-gray-400" />
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#C89D5C]">
+                  <Mail size={16} />
                 </div>
                 <input
                   type="email"
                   name="email"
                   required
-                  className="w-full bg-white border border-gray-200 rounded-xl py-3 pl-11 pr-4 text-sm text-gray-900 outline-none focus:border-green-600/50 transition-colors"
-                  placeholder="name@domain.com"
+                  className="w-full bg-[#FAF6F0] border border-[#E7DFD5] rounded-xl py-3 pl-11 pr-4 text-xs font-mono text-[#250903] outline-none focus:border-[#C89D5C] focus:bg-[#FEFBF8] transition-all placeholder:text-[#6A5749]/40"
+                  placeholder="client@domain.com"
                 />
               </div>
             </div>
 
             <div>
-              <label className="text-[10px] font-bold text-gray-500 tracking-widest uppercase mb-2 block">Phone Contact</label>
+              <label className="text-[10px] font-bold font-mono text-[#8C6D53] tracking-widest uppercase mb-1.5 block">Phone Contact</label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <Phone size={16} className="text-gray-400" />
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#C89D5C]">
+                  <Phone size={16} />
                 </div>
                 <input
                   type="tel"
                   name="phone"
                   required
-                  className="w-full bg-white border border-gray-200 rounded-xl py-3 pl-11 pr-4 text-sm text-gray-900 outline-none focus:border-green-600/50 transition-colors"
+                  className="w-full bg-[#FAF6F0] border border-[#E7DFD5] rounded-xl py-3 pl-11 pr-4 text-xs font-mono text-[#250903] outline-none focus:border-[#C89D5C] focus:bg-[#FEFBF8] transition-all placeholder:text-[#6A5749]/40"
                   placeholder="+91 99999 99999"
                 />
               </div>
             </div>
 
             <div>
-              <label className="text-[10px] font-bold text-gray-500 tracking-widest uppercase mb-2 block">Master Passkey</label>
+              <label className="text-[10px] font-bold font-mono text-[#8C6D53] tracking-widest uppercase mb-1.5 block">Master Passkey</label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <Lock size={16} className="text-gray-400" />
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#C89D5C]">
+                  <Lock size={16} />
                 </div>
                 <input
                   type="password"
                   name="password"
                   required
                   minLength={8}
-                  className="w-full bg-white border border-gray-200 rounded-xl py-3 pl-11 pr-4 text-sm text-gray-900 outline-none focus:border-green-600/50 transition-colors"
+                  className="w-full bg-[#FAF6F0] border border-[#E7DFD5] rounded-xl py-3 pl-11 pr-4 text-xs font-mono text-[#250903] outline-none focus:border-[#C89D5C] focus:bg-[#FEFBF8] transition-all placeholder:text-[#6A5749]/40"
                   placeholder="••••••••"
                 />
               </div>
             </div>
 
-            <div className="flex gap-3 bg-gray-50 p-4 rounded-xl border border-gray-200 mt-4">
-               <CheckCircle2 size={16} className="text-green-700 shrink-0 mt-0.5" />
-               <p className="text-[9px] text-gray-500 leading-relaxed font-mono">By registering, you agree to Rajputana Mobility's Terms of Service and authorize encrypted storage of identity logs.</p>
+            <div className="flex gap-3 bg-[#FAF6F0] p-4 rounded-xl border border-[#E7DFD5] mt-4">
+               <CheckCircle2 size={16} className="text-[#C89D5C] shrink-0 mt-0.5" />
+               <p className="text-[9px] text-[#6A5749] leading-relaxed font-mono">By registering, you agree to Rajputana Mobility's Terms of Service and authorize encrypted storage of identity logs.</p>
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-green-600 hover:bg-brand-hover text-white font-black uppercase tracking-widest py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_0_15px_rgba(41,75,50,0.15)] disabled:opacity-50 mt-4"
+              className="btn-luxury btn-luxury-shine w-full font-serif font-bold uppercase tracking-[0.16em] py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-xl disabled:opacity-50 mt-4 text-xs cursor-pointer"
             >
-              {loading ? 'Encrypting Identity...' : 'Create Secure Profile'} <ChevronRight size={16} strokeWidth={3} />
+              {loading ? 'Encrypting Identity...' : 'Create Private Identity'} <ChevronRight size={16} strokeWidth={2} />
             </button>
           </form>
 
@@ -184,8 +184,8 @@ export default function RegisterClient({ googleSignInEnabled }: { googleSignInEn
 
         {/* Footer Links */}
         <div className="text-center mt-8 space-y-4">
-          <Link href="/login" className="text-[11px] text-gray-600 hover:text-gray-900 transition-colors font-medium">
-            Already registered? <span className="text-green-700 font-bold">Access Terminal</span>
+          <Link href="/login" className="text-xs text-[#6A5749] hover:text-[#551A0C] transition-colors font-medium">
+            Already registered? <span className="text-[#551A0C] font-bold font-serif uppercase tracking-wider underline">Access Private Portal</span>
           </Link>
         </div>
 

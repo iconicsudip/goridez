@@ -34,7 +34,7 @@ export default async function TaxiPage() {
     : [];
 
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-gray-50"><div className="text-green-700 animate-pulse font-black tracking-widest uppercase">Loading Routes...</div></div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#FAF6F0]"><div className="text-[#551A0C] font-serif animate-pulse font-bold tracking-widest uppercase text-sm">✦ Loading Sovereign Routes... ✦</div></div>}>
       <TaxiClient
         initialCars={cars}
         initialCities={cities}

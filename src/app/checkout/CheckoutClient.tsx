@@ -332,56 +332,61 @@ export default function CheckoutClient({ razorpayKeyId, guestCheckoutEnabled = f
   };
 
   return (
-    <div className="container mx-auto px-4">
-      <div className="mb-12">
-        <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tight mb-2 text-brand-gold">
-          SECURE <span className="text-outline-neon">CHECKOUT</span>
+    <div className="container mx-auto">
+      <div className="mb-10 text-center md:text-left">
+        <div className="inline-flex items-center gap-2 text-[#C89D5C] text-[11px] font-bold tracking-[0.25em] uppercase mb-3">
+          <span>✦ GUARANTEED SOVEREIGN RESERVATION ✦</span>
+        </div>
+        <h1 className="text-3xl md:text-5xl font-serif font-black uppercase tracking-tight mb-2 text-[#551A0C]">
+          SECURE <span className="font-editorial italic font-normal text-[#C89D5C] lowercase">checkout</span>
         </h1>
-        <p className="text-gray-500 text-sm">Finalize your Sovereign Travel-Tech Reservation</p>
+        <p className="text-[#6A5749] text-sm">Finalize your distinguished carriage and chauffeur arrangements</p>
       </div>
 
       {status === 'unauthenticated' && guestCheckoutEnabled && (
-        <div className="mb-10 p-4 bg-green-600/5 border border-green-600/20 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="mb-10 p-4 card-luxury border-classic-frame bg-[#FEFBF8] border-[#E7DFD5] rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
           <div className="flex items-center gap-3">
-            <UserCheck size={18} className="text-green-700 shrink-0" />
-            <p className="text-xs text-gray-700">
+            <UserCheck size={18} className="text-[#C89D5C] shrink-0" />
+            <p className="text-xs text-[#6A5749]">
               You&apos;re checking out as a <b>guest</b>. We&apos;ll use the details below to confirm your reservation.
             </p>
           </div>
           <Link
             href="/login?callbackUrl=/checkout"
-            className="text-xs font-bold text-green-700 hover:text-green-800 underline underline-offset-2 shrink-0"
+            className="text-xs font-bold text-[#551A0C] hover:text-[#C89D5C] underline underline-offset-2 shrink-0 transition-colors"
           >
             Log in instead
           </Link>
         </div>
       )}
 
-      <div className="flex flex-col lg:flex-row gap-12">
+      <div className="flex flex-col lg:flex-row gap-10">
         {/* Left Column: Form & Identity */}
-        <div className="flex-1 space-y-10">
+        <div className="flex-1 space-y-8">
           
-          <section>
-            <h2 className="text-xl font-black uppercase tracking-widest mb-6">1. Primary Driver Details</h2>
+          <section className="card-luxury border-classic-frame bg-[#FEFBF8] border-[#E7DFD5] rounded-3xl p-7 md:p-9 shadow-sm">
+            <h2 className="text-lg font-bold uppercase tracking-wide mb-6 text-[#551A0C] flex items-center gap-2">
+              <span className="text-[#C89D5C]">✦</span> 1. Primary Guest / Driver Details
+            </h2>
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label className="text-[10px] font-bold text-gray-500 tracking-widest uppercase mb-2 block">Full Legal Name <span className="text-red-500 font-bold">*</span></label>
+                <label className="text-[10px] font-bold text-[#8C6D53] tracking-[0.2em] uppercase mb-2 block">Full Legal Name <span className="text-red-500 font-bold">*</span></label>
                 <input 
                   type="text" 
-                  placeholder="e.g. John Doe" 
+                  placeholder="e.g. Lord John Doe" 
                   value={form.name}
                   onBlur={() => saveCheckoutSnapshot('FILLING_FORM')}
                   onChange={(e) => {
                     setForm(prev => ({ ...prev, name: e.target.value }));
                     if (errors.name) setErrors(prev => ({ ...prev, name: '' }));
                   }}
-                  className={`w-full bg-gray-100 border rounded-xl px-4 py-4 outline-none focus:border-green-600 text-sm ${errors.name ? 'border-red-500' : 'border-gray-300'}`} 
+                  className={`w-full bg-[#FAF6F0] border rounded-xl px-4 py-3.5 outline-none focus:border-[#C89D5C] text-sm text-[#250903] shadow-xs transition-colors ${errors.name ? 'border-red-500' : 'border-[#E7DFD5]'}`} 
                 />
                 {errors.name && <p className="text-[10px] text-red-500 mt-1 pl-1 font-mono">{errors.name}</p>}
               </div>
 
               <div>
-                <label className="text-[10px] font-bold text-gray-500 tracking-widest uppercase mb-2 block">Email Address <span className="text-red-500 font-bold">*</span></label>
+                <label className="text-[10px] font-bold text-[#8C6D53] tracking-[0.2em] uppercase mb-2 block">Email Address <span className="text-red-500 font-bold">*</span></label>
                 <input 
                   type="email" 
                   placeholder="e.g. john@example.com" 
@@ -391,13 +396,13 @@ export default function CheckoutClient({ razorpayKeyId, guestCheckoutEnabled = f
                     setForm(prev => ({ ...prev, email: e.target.value }));
                     if (errors.email) setErrors(prev => ({ ...prev, email: '' }));
                   }}
-                  className={`w-full bg-gray-100 border rounded-xl px-4 py-4 outline-none focus:border-green-600 text-sm ${errors.email ? 'border-red-500' : 'border-gray-300'}`} 
+                  className={`w-full bg-[#FAF6F0] border rounded-xl px-4 py-3.5 outline-none focus:border-[#C89D5C] text-sm text-[#250903] shadow-xs transition-colors ${errors.email ? 'border-red-500' : 'border-[#E7DFD5]'}`} 
                 />
                 {errors.email && <p className="text-[10px] text-red-500 mt-1 pl-1 font-mono">{errors.email}</p>}
               </div>
 
               <div>
-                <label className="text-[10px] font-bold text-gray-500 tracking-widest uppercase mb-2 block">Phone Number <span className="text-red-500 font-bold">*</span></label>
+                <label className="text-[10px] font-bold text-[#8C6D53] tracking-[0.2em] uppercase mb-2 block">Phone Number <span className="text-red-500 font-bold">*</span></label>
                 <input 
                   type="tel" 
                   placeholder="e.g. +91 9876543210" 
@@ -407,13 +412,13 @@ export default function CheckoutClient({ razorpayKeyId, guestCheckoutEnabled = f
                     setForm(prev => ({ ...prev, phone: e.target.value }));
                     if (errors.phone) setErrors(prev => ({ ...prev, phone: '' }));
                   }}
-                  className={`w-full bg-gray-100 border rounded-xl px-4 py-4 outline-none focus:border-green-600 text-sm ${errors.phone ? 'border-red-500' : 'border-gray-300'}`} 
+                  className={`w-full bg-[#FAF6F0] border rounded-xl px-4 py-3.5 outline-none focus:border-[#C89D5C] text-sm text-[#250903] shadow-xs transition-colors ${errors.phone ? 'border-red-500' : 'border-[#E7DFD5]'}`} 
                 />
                 {errors.phone && <p className="text-[10px] text-red-500 mt-1 pl-1 font-mono">{errors.phone}</p>}
               </div>
 
               <div>
-                <label className="text-[10px] font-bold text-gray-500 tracking-widest uppercase mb-2 block">Date of Birth <span className="text-red-500 font-bold">*</span></label>
+                <label className="text-[10px] font-bold text-[#8C6D53] tracking-[0.2em] uppercase mb-2 block">Date of Birth <span className="text-red-500 font-bold">*</span></label>
                 <input 
                   type="date" 
                   placeholder="Date of Birth" 
@@ -423,25 +428,25 @@ export default function CheckoutClient({ razorpayKeyId, guestCheckoutEnabled = f
                     setForm(prev => ({ ...prev, dob: e.target.value }));
                     if (errors.dob) setErrors(prev => ({ ...prev, dob: '' }));
                   }}
-                  className={`w-full bg-gray-100 border rounded-xl px-4 py-4 outline-none focus:border-green-600 text-sm text-gray-500 ${errors.dob ? 'border-red-500' : 'border-gray-300'}`} 
+                  className={`w-full bg-[#FAF6F0] border rounded-xl px-4 py-3.5 outline-none focus:border-[#C89D5C] text-sm text-[#250903] shadow-xs transition-colors ${errors.dob ? 'border-red-500' : 'border-[#E7DFD5]'}`} 
                 />
                 {errors.dob && <p className="text-[10px] text-red-500 mt-1 pl-1 font-mono">{errors.dob}</p>}
               </div>
             </div>
           </section>
 
-          <section>
-            <h2 className="text-xl font-black uppercase tracking-widest mb-6 flex items-center gap-2">
-              2. Identity Verification
-              <ShieldCheck className="text-green-700" size={20} />
+          <section className="card-luxury border-classic-frame bg-[#FEFBF8] border-[#E7DFD5] rounded-3xl p-7 md:p-9 shadow-sm">
+            <h2 className="text-lg font-bold uppercase tracking-wide mb-6 flex items-center gap-2 text-[#551A0C]">
+              <span className="text-[#C89D5C]">✦</span> 2. Identity Verification
+              <ShieldCheck className="text-[#C89D5C]" size={20} />
             </h2>
-            <div className="bg-gray-100 border border-gray-300 rounded-2xl p-6">
-              <p className="text-xs text-gray-500 mb-6 font-mono">
-                Mandatory government ID required for Self-Drive & Luxury rentals. Data is encrypted and automatically wiped post-trip under GDPR guidelines.
+            <div className="bg-[#FAF6F0] border border-[#E7DFD5] rounded-2xl p-6">
+              <p className="text-xs text-[#8C6D53] mb-6 leading-relaxed">
+                Mandatory government identification required for insurance validation. Data is encrypted and securely stored.
               </p>
               
               <div className="grid md:grid-cols-2 gap-4">
-                <label className={`border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center text-center cursor-pointer hover:border-green-600/50 transition-colors bg-white ${errors.aadharFile ? 'border-red-500/50' : 'border-gray-300'}`}>
+                <label className={`border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center text-center cursor-pointer hover:border-[#C89D5C] transition-colors bg-[#FEFBF8] ${errors.aadharFile ? 'border-red-400' : 'border-[#E7DFD5]'}`}>
                   <input
                     type="file"
                     accept="image/*,application/pdf"
@@ -456,20 +461,20 @@ export default function CheckoutClient({ razorpayKeyId, guestCheckoutEnabled = f
                   />
                   {form.aadharFile ? (
                     <>
-                      <CheckCircle2 className="text-green-700 mb-3" size={28} />
-                      <div className="text-[10px] font-bold uppercase tracking-widest mb-1 text-green-700">Aadhar / Passport Selected</div>
-                      <div className="text-[9px] text-gray-600 truncate max-w-[200px]">{form.aadharFile}</div>
+                      <CheckCircle2 className="text-[#C89D5C] mb-3" size={28} />
+                      <div className="text-[10px] font-bold uppercase tracking-widest mb-1 text-[#551A0C]">Aadhar / Passport Selected</div>
+                      <div className="text-[9px] text-[#6A5749] truncate max-w-[200px]">{form.aadharFile}</div>
                     </>
                   ) : (
                     <>
-                      <UploadCloud className="text-gray-400 mb-3" size={28} />
-                      <div className="text-[10px] font-bold uppercase tracking-widest mb-1">Aadhar / Passport <span className="text-red-500 font-bold">*</span></div>
-                      <div className="text-[9px] text-gray-500">Upload Front & Back (PDF, JPG)</div>
+                      <UploadCloud className="text-[#8C6D53] mb-3" size={28} />
+                      <div className="text-[10px] font-bold uppercase tracking-widest mb-1 text-[#551A0C]">Aadhar / Passport <span className="text-red-500 font-bold">*</span></div>
+                      <div className="text-[9px] text-[#8C6D53]">Upload Front &amp; Back (PDF, JPG)</div>
                     </>
                   )}
                 </label>
 
-                <label className={`border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center text-center cursor-pointer hover:border-green-600/50 transition-colors bg-white ${errors.dlFile ? 'border-red-500/50' : 'border-gray-300'}`}>
+                <label className={`border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center text-center cursor-pointer hover:border-[#C89D5C] transition-colors bg-[#FEFBF8] ${errors.dlFile ? 'border-red-400' : 'border-[#E7DFD5]'}`}>
                   <input
                     type="file"
                     accept="image/*,application/pdf"
@@ -484,22 +489,22 @@ export default function CheckoutClient({ razorpayKeyId, guestCheckoutEnabled = f
                   />
                   {form.dlFile ? (
                     <>
-                      <CheckCircle2 className="text-green-700 mb-3" size={28} />
-                      <div className="text-[10px] font-bold uppercase tracking-widest mb-1 text-green-700">Driving License Selected</div>
-                      <div className="text-[9px] text-gray-600 truncate max-w-[200px]">{form.dlFile}</div>
+                      <CheckCircle2 className="text-[#C89D5C] mb-3" size={28} />
+                      <div className="text-[10px] font-bold uppercase tracking-widest mb-1 text-[#551A0C]">Driving License Selected</div>
+                      <div className="text-[9px] text-[#6A5749] truncate max-w-[200px]">{form.dlFile}</div>
                     </>
                   ) : (
                     <>
-                      <UploadCloud className="text-gray-400 mb-3" size={28} />
-                      <div className="text-[10px] font-bold uppercase tracking-widest mb-1">Driving License <span className="text-red-500 font-bold">*</span></div>
-                      <div className="text-[9px] text-gray-500">Valid Indian or Int. License</div>
+                      <UploadCloud className="text-[#8C6D53] mb-3" size={28} />
+                      <div className="text-[10px] font-bold uppercase tracking-widest mb-1 text-[#551A0C]">Driving License <span className="text-red-500 font-bold">*</span></div>
+                      <div className="text-[9px] text-[#8C6D53]">Valid Indian or Int. License</div>
                     </>
                   )}
                 </label>
               </div>
               
               {(errors.aadharFile || errors.dlFile) && (
-                <div className="mt-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500 text-[10px] font-mono">
+                <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-[10px] font-serif">
                   {errors.aadharFile && <p>• {errors.aadharFile}</p>}
                   {errors.dlFile && <p>• {errors.dlFile}</p>}
                 </div>
@@ -507,56 +512,58 @@ export default function CheckoutClient({ razorpayKeyId, guestCheckoutEnabled = f
             </div>
           </section>
 
-          <section>
-            <h2 className="text-xl font-black uppercase tracking-widest mb-6">3. Special Requests</h2>
+          <section className="card-luxury border-classic-frame bg-[#FEFBF8] border-[#E7DFD5] rounded-3xl p-7 md:p-9 shadow-sm">
+            <h2 className="text-lg font-bold uppercase tracking-wide mb-6 text-[#551A0C] flex items-center gap-2">
+              <span className="text-[#C89D5C]">✦</span> 3. Special Requests
+            </h2>
             <textarea 
               rows={4}
               value={form.specialRequests}
               onBlur={() => saveCheckoutSnapshot('FILLING_FORM')}
               onChange={(e) => setForm(prev => ({ ...prev, specialRequests: e.target.value }))}
-              placeholder="Any specific delivery instructions, child seats, or preferences?"
-              className="w-full bg-gray-100 border border-gray-300 rounded-xl p-4 outline-none focus:border-green-600 text-sm resize-none"
+              placeholder="Any specific delivery instructions, child seats, luggage requirements, or preferences?"
+              className="w-full bg-[#FAF6F0] border border-[#E7DFD5] rounded-xl p-4 outline-none focus:border-[#C89D5C] text-sm text-[#250903] resize-none shadow-xs transition-colors"
             ></textarea>
           </section>
 
         </div>
 
         {/* Right Column: Voucher Live Receipt */}
-        <aside className="w-full lg:w-[400px] shrink-0">
-          <div className="lg:sticky lg:top-28 bg-white border-t-2 border-t-brand-neon border-x border-b border-gray-300 rounded-b-3xl p-8 shadow-2xl">
+        <aside className="w-full lg:w-[420px] shrink-0 font-serif">
+          <div className="lg:sticky lg:top-28 card-luxury border-classic-frame bg-[#FEFBF8] border-[#E7DFD5] rounded-3xl p-7 md:p-8 shadow-xl">
             
-            <div className="text-[10px] font-black text-green-700 uppercase tracking-widest mb-2">Voucher Live Receipt</div>
-            <h2 className="text-xl font-black uppercase tracking-widest mb-8">Regal Mobility Invoice</h2>
+            <div className="text-[10px] font-bold text-[#C89D5C] uppercase tracking-[0.25em] mb-2">✦ Voucher Live Receipt ✦</div>
+            <h2 className="text-xl font-bold uppercase tracking-tight text-[#551A0C] mb-6 pb-4 border-b border-[#E7DFD5]">Regal Mobility Invoice</h2>
 
             {/* Items List */}
-            <div className="space-y-4 mb-8">
+            <div className="space-y-4 mb-6">
               {cartItems.map((item) => (
-                <div key={item.id} className="flex justify-between items-start border-b border-gray-200 pb-4">
+                <div key={item.id} className="flex justify-between items-start border-b border-[#E7DFD5] pb-4">
                   <div className="flex-1 pr-4">
-                    <div className="text-[9px] text-gray-500 uppercase tracking-widest font-mono mb-1">
+                    <div className="text-[9px] text-[#8C6D53] uppercase tracking-widest font-bold mb-1">
                       {item.serviceType === 'selfDrive' ? 'Self Drive' : item.serviceType === 'withDriver' ? 'Chauffeur' : item.serviceType === 'villaCar' ? 'Villa Combo' : item.serviceType === 'oneWayTaxi' ? 'One Way Taxi' : item.serviceType === 'roundTripTaxi' ? 'Round Trip Taxi' : item.serviceType === 'airportTransfer' ? 'Airport Transfer' : item.serviceType === 'tours' ? 'Tour' : item.serviceType}
                     </div>
-                    <div className="font-bold text-sm uppercase">{item.title}</div>
-                    {item.extraInfo && <div className="text-[10px] text-green-700 mt-1">{item.extraInfo}</div>}
+                    <div className="font-bold text-sm uppercase text-[#250903]">{item.title}</div>
+                    {item.extraInfo && <div className="text-[10px] text-[#C89D5C] mt-1 font-sans">{item.extraInfo}</div>}
                     
                     {(item.pickupStation || item.dropStation) && (
                       <div className="mt-2 space-y-1">
                         {item.pickupStation && (
-                          <div className="flex gap-1.5 text-[9px] text-gray-600">
-                            <span className="font-bold uppercase tracking-wider text-gray-400">Pickup:</span>
+                          <div className="flex gap-1.5 text-[10px] text-[#6A5749]">
+                            <span className="font-bold uppercase tracking-wider text-[#8C6D53]">Pickup:</span>
                             <span className="truncate">{item.pickupStation}</span>
                           </div>
                         )}
                         {item.dropStation && (
-                          <div className="flex gap-1.5 text-[9px] text-gray-600">
-                            <span className="font-bold uppercase tracking-wider text-gray-400">Drop:</span>
+                          <div className="flex gap-1.5 text-[10px] text-[#6A5749]">
+                            <span className="font-bold uppercase tracking-wider text-[#8C6D53]">Drop:</span>
                             <span className="truncate">{item.dropStation}</span>
                           </div>
                         )}
                       </div>
                     )}
                   </div>
-                  <div className="text-sm font-bold text-right shrink-0">
+                  <div className="text-base font-black text-[#551A0C] text-right shrink-0">
                     ₹{item.price.toLocaleString()}
                   </div>
                 </div>
@@ -564,10 +571,10 @@ export default function CheckoutClient({ razorpayKeyId, guestCheckoutEnabled = f
             </div>
 
             {/* Coupon Code Selection */}
-            <div className="bg-gray-100 border border-gray-200 rounded-xl p-4 mb-6">
+            <div className="bg-[#FAF6F0] border border-[#E7DFD5] rounded-xl p-4 mb-6">
               <div className="flex items-center gap-2 mb-3">
-                <Percent size={14} className="text-green-700" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">Apply Coupon Code</span>
+                <Percent size={14} className="text-[#C89D5C]" />
+                <span className="text-[10px] font-bold uppercase tracking-widest text-[#551A0C]">Apply Coupon Code</span>
               </div>
               <div className="flex gap-2">
                 <input 
@@ -576,28 +583,28 @@ export default function CheckoutClient({ razorpayKeyId, guestCheckoutEnabled = f
                   value={couponCode}
                   onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                   disabled={!!appliedCoupon}
-                  className="flex-1 bg-white border border-gray-300 rounded-lg px-3 py-2 text-xs uppercase tracking-wider outline-none focus:border-green-600 text-gray-900 disabled:opacity-50 font-mono"
+                  className="flex-1 bg-[#FEFBF8] border border-[#E7DFD5] rounded-lg px-3 py-2 text-xs uppercase tracking-wider outline-none focus:border-[#C89D5C] text-[#250903] disabled:opacity-50 font-serif"
                 />
                 {appliedCoupon ? (
                   <button 
                     onClick={handleRemoveCoupon}
-                    className="bg-red-500/10 border border-red-500/30 text-red-500 px-4 py-2 rounded-lg text-[10px] font-black uppercase hover:bg-red-500/20 transition-all"
+                    className="bg-red-50 border border-red-200 text-red-600 px-4 py-2 rounded-lg text-[10px] font-bold uppercase hover:bg-red-100 transition-all cursor-pointer"
                   >
                     Remove
                   </button>
                 ) : (
                   <button 
                     onClick={handleApplyCoupon}
-                    className="bg-green-600 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase hover:bg-brand-hover transition-all"
+                    className="btn-luxury btn-luxury-shine bg-[#551A0C] hover:bg-[#451408] text-[#DFB574] px-4 py-2 rounded-lg text-[10px] font-bold uppercase cursor-pointer border border-[#C89D5C]/60 shadow-xs"
                   >
                     Apply
                   </button>
                 )}
               </div>
-              {couponError && <p className="text-[9px] text-red-500 mt-2 font-mono">{couponError}</p>}
+              {couponError && <p className="text-[9px] text-red-600 mt-2 font-mono">{couponError}</p>}
               {appliedCoupon && (
-                <div className="flex items-center gap-1.5 mt-3 text-green-700 text-[10px] font-mono uppercase bg-green-600/10 border border-green-600/20 px-3 py-1.5 rounded-lg">
-                  <Gift size={12} />
+                <div className="flex items-center gap-1.5 mt-3 text-[#551A0C] text-[10px] uppercase bg-[#FEFBF8] border border-[#C89D5C]/40 px-3 py-1.5 rounded-lg">
+                  <Gift size={12} className="text-[#C89D5C]" />
                   <span>Success: <b>{appliedCoupon.code}</b> applied! (
                     {appliedCoupon.discountType === 'PERCENTAGE' 
                       ? `${appliedCoupon.discountValue}% off` 
@@ -608,49 +615,49 @@ export default function CheckoutClient({ razorpayKeyId, guestCheckoutEnabled = f
             </div>
 
             {/* Calculations */}
-            <div className="bg-gray-100 rounded-xl p-5 mb-6 space-y-3 font-mono text-[11px] uppercase tracking-widest">
-              <div className="flex justify-between text-gray-600">
+            <div className="bg-[#FAF6F0] border border-[#E7DFD5] rounded-xl p-5 mb-6 space-y-3 text-xs tracking-wider">
+              <div className="flex justify-between text-[#6A5749]">
                 <span>Subtotal</span>
-                <span>₹{subtotal.toLocaleString()}</span>
+                <span className="font-bold text-[#250903]">₹{subtotal.toLocaleString()}</span>
               </div>
               {appliedCoupon && (
-                <div className="flex justify-between text-green-700">
+                <div className="flex justify-between text-[#551A0C]">
                   <span>Coupon Discount</span>
-                  <span>-₹{discount.toLocaleString()}</span>
+                  <span className="font-bold">-₹{discount.toLocaleString()}</span>
                 </div>
               )}
-              <div className="flex justify-between text-gray-600">
+              <div className="flex justify-between text-[#6A5749]">
                 <span>Total Tax Invoice (18% GST)</span>
-                <span>₹{gst.toLocaleString()}</span>
+                <span className="font-bold text-[#250903]">₹{gst.toLocaleString()}</span>
               </div>
-              <div className="flex justify-between border-t border-gray-300 pt-3 text-gray-900 font-bold">
+              <div className="flex justify-between border-t border-[#E7DFD5] pt-3 text-[#551A0C] font-bold text-sm">
                 <span>Total Package Fare</span>
-                <span>₹{totalAmount.toLocaleString()}</span>
+                <span className="text-base font-black">₹{totalAmount.toLocaleString()}</span>
               </div>
             </div>
 
-            <div className="bg-green-600/10 border border-brand-gold/30 rounded-xl p-5 mb-8">
+            <div className="bg-[#FAF6F0] border border-[#C89D5C]/40 rounded-xl p-5 mb-6">
               <div className="flex justify-between items-center mb-2">
-                <span className="text-[10px] font-bold text-green-700 uppercase tracking-widest">Advance Hold Deposit:</span>
-                <span className="text-xl font-black text-green-700">₹{advanceHold.toLocaleString()}</span>
+                <span className="text-[10px] font-bold text-[#551A0C] uppercase tracking-widest">Advance Hold Deposit:</span>
+                <span className="text-xl font-black text-[#551A0C]">₹{advanceHold.toLocaleString()}</span>
               </div>
-              <div className="text-[9px] text-green-700/60">Remaining balance of ₹{(totalAmount - advanceHold).toLocaleString()} + Security Deposit of ₹{totalDeposit.toLocaleString()} payable at delivery.</div>
+              <div className="text-[10px] text-[#8C6D53] leading-relaxed">Remaining balance of ₹{(totalAmount - advanceHold).toLocaleString()} + Security Deposit of ₹{totalDeposit.toLocaleString()} payable at delivery.</div>
             </div>
 
-            <div className="flex items-center gap-2 text-[9px] text-gray-500 mb-6 font-mono">
-              <ShieldCheck size={14} className="shrink-0 text-green-700" />
-              <p>Identity records are heavily cryptographed under GDPR security guidelines.</p>
+            <div className="flex items-center gap-2 text-[10px] text-[#8C6D53] mb-6">
+              <ShieldCheck size={14} className="shrink-0 text-[#C89D5C]" />
+              <p>Identity records are cryptographically secured under GDPR guidelines.</p>
             </div>
 
             <button 
               onClick={handlePayment}
               disabled={isProcessing}
-              className="w-full bg-green-600 text-white font-black uppercase tracking-widest py-5 rounded-xl shadow-[0_0_20px_rgba(41,75,50,0.2)] hover:shadow-[0_0_30px_rgba(41,75,50,0.4)] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              className="btn-luxury btn-luxury-shine w-full bg-[#551A0C] hover:bg-[#451408] text-[#DFB574] font-serif font-bold uppercase tracking-widest py-4 rounded-xl shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2 text-xs border border-[#C89D5C]/60 cursor-pointer"
             >
               {isProcessing ? (
-                <span className="animate-pulse">Processing...</span>
+                <span className="animate-pulse">Processing Payment...</span>
               ) : (
-                <>Pay Securely <span className="font-mono text-sm">₹{advanceHold.toLocaleString()}</span></>
+                <>Pay Securely <span>₹{advanceHold.toLocaleString()}</span></>
               )}
             </button>
 

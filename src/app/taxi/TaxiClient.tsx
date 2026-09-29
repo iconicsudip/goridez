@@ -427,23 +427,23 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
         {bookingMode === 'ROUND_TRIP' ? (
           <>
             <div>
-              <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest mb-2">Pick-Up Location</label>
+              <label className="block text-[9px] text-[#8C6D53] font-bold uppercase tracking-[0.2em] mb-2 font-serif">Pick-Up Location</label>
               <div className="relative">
-                <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-green-700" size={16} />
+                <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-[#C89D5C]" size={16} />
                 <input
                   type="text"
                   readOnly
                   value="Udaipur, Rajasthan"
-                  className="w-full bg-gray-200 border border-gray-200 rounded-xl pl-12 pr-4 py-4 text-sm outline-none font-medium text-gray-600 cursor-not-allowed"
+                  className="w-full bg-[#FAF6F0] border border-[#E7DFD5] rounded-xl pl-12 pr-4 py-4 text-sm outline-none font-serif font-medium text-[#250903] cursor-not-allowed shadow-xs"
                 />
               </div>
             </div>
 
             <div className="mt-4">
               <div className="flex items-center justify-between mb-2">
-                <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest">Destinations</label>
+                <label className="block text-[9px] text-[#8C6D53] font-bold uppercase tracking-[0.2em] font-serif">Destinations</label>
                 {destLocations.length < 3 && (
-                  <button type="button" onClick={addDestination} className="text-green-700 hover:text-gray-900 transition-colors flex items-center gap-1 bg-green-500/10 px-2 py-0.5 rounded text-[9px]">
+                  <button type="button" onClick={addDestination} className="text-[#C89D5C] hover:text-[#551A0C] transition-colors flex items-center gap-1 bg-[#FAF6F0] border border-[#C89D5C]/30 px-2.5 py-1 rounded-lg text-[9px] font-bold uppercase tracking-wider font-serif">
                     <span className="text-[14px] leading-none">+</span> ADD
                   </button>
                 )}
@@ -461,7 +461,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                       />
                     </div>
                     {destLocations.length > 1 && (
-                      <button type="button" onClick={() => removeDestination(idx)} className="text-red-400 hover:text-red-300 w-8 flex justify-center">
+                      <button type="button" onClick={() => removeDestination(idx)} className="text-red-400 hover:text-red-600 w-8 flex justify-center text-sm font-bold">
                         ✕
                       </button>
                     )}
@@ -473,7 +473,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
         ) : (
           <div className="space-y-4">
             <div>
-              <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest mb-2">Pickup Location</label>
+              <label className="block text-[9px] text-[#8C6D53] font-bold uppercase tracking-[0.2em] mb-2 font-serif">Pickup Location</label>
               <AirportLocalitySearch
                 zones={airportZones}
                 value={atPickup.name}
@@ -491,7 +491,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
             </div>
 
             <div>
-              <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest mb-2">Drop Location</label>
+              <label className="block text-[9px] text-[#8C6D53] font-bold uppercase tracking-[0.2em] mb-2 font-serif">Drop Location</label>
               <AirportLocalitySearch
                 zones={airportZones}
                 value={atDrop.name}
@@ -508,7 +508,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
               />
             </div>
 
-            <p className="text-[9px] text-gray-400 font-mono">
+            <p className="text-[10px] text-[#8C6D53] font-serif">
               One side must be {airportName}; the other, your locality within the zones we cover.
             </p>
           </div>
@@ -516,14 +516,14 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
 
         <div className="space-y-4 pt-2">
           <div>
-            <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest mb-2">
+            <label className="block text-[9px] text-[#8C6D53] font-bold uppercase tracking-[0.2em] mb-2 font-serif">
               {bookingMode === 'ROUND_TRIP' ? 'Travel Date Range (Required)' : bookingMode === 'AIRPORT_TRANSFER' ? 'Transfer Date' : 'Travel Date Range'}
             </label>
             <div className="relative w-full">
               <ConfigProvider
                 theme={{
                   token: {
-                    colorPrimary: '#15803d',
+                    colorPrimary: '#551A0C',
                     borderRadius: 12,
                     fontSize: 11,
                     controlHeight: 52,
@@ -634,45 +634,45 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
 
       {calculatedDistance > 0 && (
         <>
-          <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black text-white border border-brand-gold/30 rounded-2xl p-5 mt-6 shadow-xl relative overflow-hidden">
-            <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-3">
+          <div className="bg-[#250903] text-white border border-[#C89D5C]/40 rounded-2xl p-5 mt-6 shadow-xl relative overflow-hidden font-serif">
+            <div className="flex items-center justify-between pb-3 border-b border-[#C89D5C]/20 mb-3">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-brand-gold/20 flex items-center justify-center text-green-300">
+                <div className="w-7 h-7 rounded-lg bg-[#C89D5C]/20 border border-[#C89D5C]/30 flex items-center justify-center text-[#DFB574]">
                   <Navigation size={14} />
                 </div>
-                <span className="text-xs font-bold uppercase tracking-wider text-gray-200">Route Summary</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-[#DFB574]">Route Summary</span>
               </div>
-              {isCalculating && <Loader2 size={14} className="animate-spin text-green-300" />}
+              {isCalculating && <Loader2 size={14} className="animate-spin text-[#DFB574]" />}
             </div>
 
             <div className="grid grid-cols-2 gap-3 pt-1">
               {/* Distance Card */}
-              <div className="bg-white/5 backdrop-blur-sm rounded-xl p-3 border border-white/10">
-                <span className="text-[10px] font-mono uppercase tracking-wider text-gray-400 block mb-1">
+              <div className="bg-black/30 backdrop-blur-sm rounded-xl p-3 border border-[#C89D5C]/20">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-[#E7DFD5]/70 block mb-1">
                   {bookingMode === 'ROUND_TRIP' ? 'Round Trip Distance' : 'One-Way Distance'}
                 </span>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-xl font-black text-green-300">
+                  <span className="text-xl font-black text-[#DFB574]">
                     {bookingMode === 'ROUND_TRIP' ? calculatedDistance * 2 : calculatedDistance}
                   </span>
-                  <span className="text-xs font-bold text-gray-300">KM</span>
+                  <span className="text-xs font-bold text-[#E7DFD5]">KM</span>
                 </div>
                 {bookingMode === 'ROUND_TRIP' && (
-                  <span className="text-[10px] font-mono text-gray-400 block mt-1">
+                  <span className="text-[10px] font-mono text-[#E7DFD5]/70 block mt-1">
                     ({calculatedDistance} KM one-way)
                   </span>
                 )}
               </div>
 
               {/* Duration Card */}
-              <div className="bg-white/5 backdrop-blur-sm rounded-xl p-3 border border-white/10">
-                <span className="text-[10px] font-mono uppercase tracking-wider text-gray-400 block mb-1">
+              <div className="bg-black/30 backdrop-blur-sm rounded-xl p-3 border border-[#C89D5C]/20">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-[#E7DFD5]/70 block mb-1">
                   Est. Drive Time
                 </span>
                 <div className="flex items-baseline gap-1">
                   <span className="text-xl font-black text-white">{displayDuration}</span>
                 </div>
-                <span className="text-[10px] font-mono text-gray-400 block mt-1">
+                <span className="text-[10px] font-mono text-[#E7DFD5]/70 block mt-1">
                   via shortest route
                 </span>
               </div>
@@ -680,7 +680,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
           </div>
 
           {!isCalculating && (
-            <div className="mt-6 h-[300px] rounded-2xl overflow-hidden shadow-lg border border-gray-200">
+            <div className="mt-6 h-[300px] rounded-2xl overflow-hidden shadow-lg border border-[#E7DFD5]">
               <RouteMap
                 sourceLocation={mapToRouteLocation(
                   bookingMode === 'ROUND_TRIP' ? UDAIPUR_CITY : pickupLocation.data || UDAIPUR_CITY
@@ -696,12 +696,12 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
       )}
 
       {bookingMode === 'AIRPORT_TRANSFER' && atZone && (
-        <div className="bg-green-600/5 border border-green-600/20 rounded-xl p-5 mt-6 font-mono text-[10px] space-y-2">
+        <div className="bg-[#FEFBF8] border border-[#C89D5C]/40 rounded-xl p-5 mt-6 font-serif text-[10px] space-y-2">
           <div className="flex justify-between items-center">
-            <span className="text-gray-500 font-bold tracking-widest">SERVICE ZONE</span>
-            <span className="text-green-700 font-bold text-sm">{atZone.name}</span>
+            <span className="text-[#8C6D53] font-bold tracking-widest uppercase">SERVICE ZONE</span>
+            <span className="text-[#551A0C] font-bold text-sm">{atZone.name}</span>
           </div>
-          <p className="text-gray-500 leading-relaxed normal-case font-sans text-[11px]">
+          <p className="text-[#6A5749] leading-relaxed normal-case text-[11px]">
             Fares below already reflect your selected direction and area. Wait time, night hours, and meet &amp; greet charges (if any) are shown per vehicle.
           </p>
         </div>
@@ -710,34 +710,38 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 font-body pt-24 pb-20">
-      <div className="container mx-auto px-4 mt-8">
+    <div className="min-h-screen bg-[#FAF6F0] text-[#250903] font-body pt-28 pb-20 border-t border-[#E7DFD5]">
+      <div className="container mx-auto mt-4">
 
         {/* Header Section */}
-        <div className="bg-white border border-gray-200 rounded-3xl p-10 mb-10 bg-gradient-to-br from-white to-green-50">
-          <div className="text-green-700 text-[10px] font-black tracking-widest uppercase mb-4">
-            Premium Driver Services
+        <div className="card-luxury border-classic-frame bg-[#FEFBF8] border-[#E7DFD5] rounded-3xl p-8 md:p-12 mb-10 text-center md:text-left relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-80 h-80 bg-radial from-[#C89D5C]/10 via-[#551A0C]/5 to-transparent rounded-full blur-3xl pointer-events-none" />
+          
+          <div className="inline-flex items-center gap-2 text-[#C89D5C] text-[11px] font-bold tracking-[0.25em] uppercase mb-4 font-serif">
+            <span>✦ CHAUFFEURED LUXURY JOURNEYS ✦</span>
           </div>
-          <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tight mb-4 text-brand-gold">
-            TAXI <span className="text-outline-neon">SERVICES & TRANSFERS</span>
+          
+          <h1 className="text-3xl md:text-5xl font-serif font-black uppercase tracking-tight mb-4 text-[#551A0C]">
+            ROYAL CHAUFFEUR <span className="font-editorial italic font-normal text-[#C89D5C] lowercase">&amp; transfers</span>
           </h1>
-          <p className="text-gray-600 max-w-2xl text-sm leading-relaxed">
-            Premium door-to-door luxury journeys. Powered by professional drivers and accurate routing.
+          
+          <p className="text-[#6A5749] max-w-2xl text-sm leading-relaxed font-serif">
+            Impeccable door-to-door luxury journeys. Commanded by distinguished chauffeurs, GPS monitored, and transparently priced.
           </p>
         </div>
 
         {/* Booking Mode Tabs */}
-        <div className="flex overflow-x-auto lg:flex-wrap gap-4 mb-8 bg-gray-100 p-2 rounded-2xl w-full lg:w-fit">
+        <div className="flex overflow-x-auto lg:flex-wrap gap-3 mb-8 bg-[#FEFBF8] border border-[#E7DFD5] p-2 rounded-2xl w-full lg:w-fit shadow-xs font-serif">
           <button
             onClick={() => setBookingMode('ROUND_TRIP')}
-            className={`px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${bookingMode === 'ROUND_TRIP' ? 'bg-green-500 text-white shadow-lg shadow-green-500/20' : 'text-gray-500 hover:text-gray-900'
+            className={`px-8 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all ${bookingMode === 'ROUND_TRIP' ? 'bg-[#551A0C] text-[#DFB574] shadow-md' : 'text-[#551A0C]/70 hover:text-[#551A0C]'
               }`}
           >
             Round Trip Packages
           </button>
           <button
             onClick={() => setBookingMode('AIRPORT_TRANSFER')}
-            className={`px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${bookingMode === 'AIRPORT_TRANSFER' ? 'bg-green-500 text-white shadow-lg shadow-green-500/20' : 'text-gray-500 hover:text-gray-900'
+            className={`px-8 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all ${bookingMode === 'AIRPORT_TRANSFER' ? 'bg-[#551A0C] text-[#DFB574] shadow-md' : 'text-[#551A0C]/70 hover:text-[#551A0C]'
               }`}
           >
             Airport Transfers
@@ -749,8 +753,8 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
 
           {/* Sidebar — desktop only, mobile uses the drawer below */}
           <aside className="hidden lg:block lg:w-[380px] shrink-0 space-y-6 lg:sticky lg:top-32 h-fit z-10">
-            <div className="bg-gray-100 border border-gray-200 rounded-3xl p-8">
-              <h2 className="font-black text-sm uppercase tracking-widest mb-8">Route Configurator</h2>
+            <div className="card-luxury border-classic-frame bg-[#FEFBF8] border-[#E7DFD5] rounded-3xl p-7 shadow-sm">
+              <h2 className="font-serif font-bold text-base text-[#551A0C] uppercase tracking-wide mb-6 pb-4 border-b border-[#E7DFD5]">Route Configurator</h2>
               {!isRouteConfigOpen && routeConfiguratorBody}
             </div>
           </aside>
@@ -758,21 +762,21 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
           {/* Main Classes List */}
           <div className="flex-1">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
-              <h2 className="font-black text-xl uppercase tracking-tight">Choose Private Cab Class</h2>
+              <h2 className="font-serif font-bold text-xl text-[#551A0C] uppercase tracking-tight">Choose Private Cab Class</h2>
               <button
                 type="button"
                 onClick={() => setIsRouteConfigOpen(true)}
-                className="lg:hidden w-full sm:w-auto flex items-center justify-center gap-2 bg-white border border-gray-200 rounded-xl px-4 py-3 text-[10px] font-black uppercase tracking-widest text-gray-700 shadow-xs transition-colors active:bg-gray-50 cursor-pointer"
+                className="lg:hidden w-full sm:w-auto flex items-center justify-center gap-2 bg-[#FEFBF8] border border-[#E7DFD5] rounded-xl px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-[#551A0C] shadow-xs transition-colors hover:border-[#C89D5C] active:bg-[#FAF6F0] cursor-pointer font-serif"
               >
-                <SlidersHorizontal size={14} /> Route
+                <SlidersHorizontal size={14} className="text-[#C89D5C]" /> Route
               </button>
             </div>
 
             {bookingMode === 'ROUND_TRIP' && ROUNDTRIP_PACKAGES.length > 1 && (
-              <div className="mb-6 bg-white border border-green-200 shadow-sm rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div className="mb-6 card-luxury border-classic-frame bg-[#FEFBF8] border-[#E7DFD5] shadow-sm rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 font-serif">
                 <div>
-                  <span className="text-[10px] font-black uppercase tracking-widest text-green-700 block">Round Trip Price Package</span>
-                  <span className="text-xs text-gray-500 font-medium">Select your desired daily limit & rate package</span>
+                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#551A0C] block">Round Trip Price Package</span>
+                  <span className="text-xs text-[#8C6D53]">Select your desired daily limit &amp; rate package</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {ROUNDTRIP_PACKAGES.map((pkg) => (
@@ -780,10 +784,10 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                       key={pkg.value}
                       type="button"
                       onClick={() => setSelectedRtPackage(pkg.value)}
-                      className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all ${
+                      className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer ${
                         selectedRtPackage === pkg.value
-                          ? 'bg-green-600 text-white shadow-md'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200'
+                          ? 'bg-[#551A0C] text-[#DFB574] shadow-md border border-[#551A0C]'
+                          : 'bg-[#FAF6F0] text-[#551A0C] hover:border-[#C89D5C] border border-[#E7DFD5]'
                       }`}
                       title={pkg.hint}
                     >
@@ -889,46 +893,46 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                   const destStr = destLocations.map(d => d.name).filter(Boolean).join(' -> ');
 
                   return (
-                    <div key={car.id} className="bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md hover:border-green-200 transition-all mb-5 overflow-hidden font-sans">
+                    <div key={car.id} className="card-luxury border-classic-frame bg-[#FEFBF8] border-[#E7DFD5] hover:border-[#C89D5C] rounded-2xl shadow-sm hover:shadow-lg transition-all mb-5 overflow-hidden font-serif">
                       <div className="flex flex-col md:flex-row">
 
                         {/* ── Left: Image ── */}
-                        <div className="relative md:w-64 shrink-0 bg-gray-50 min-h-[180px]">
+                        <div className="relative md:w-64 shrink-0 bg-[#FAF6F0] min-h-[180px]">
                           {/* Image container with its own overflow-hidden so badges aren't clipped */}
                           <div className="absolute inset-0 overflow-hidden">
                             <Link href={`/cars/${getCarSlug(car)}`} className="block w-full h-full">
-                              <CarImageSlider mainImage={car.image} galleryJson={car.gallery} alt={`${car.make} ${car.model}`} imageClassName="object-cover hover:scale-105 transition-transform duration-500 w-full h-full" />
+                              <CarImageSlider mainImage={car.image} galleryJson={car.gallery} alt={`${car.make} ${car.model}`} imageClassName="object-cover group-hover:scale-105 transition-transform duration-500 w-full h-full" />
                             </Link>
                           </div>
                           {/* Category badge – top left */}
-                          <span className="absolute top-3 left-3 z-10 bg-white/95 border border-gray-200 text-gray-700 text-[8px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg shadow-sm">
+                          <span className="absolute top-3 left-3 z-10 bg-[#FAF6F0]/95 border border-[#C89D5C]/40 text-[#551A0C] text-[8px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full shadow-xs">
                             {car.category.replace(/\bClass\b/gi, '').trim()}
                           </span>
                           {/* Availability badge – top right */}
-                          <span className={`absolute top-3 right-3 z-10 text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-lg flex items-center gap-1 ${car.availability ? 'bg-green-500 text-white' : 'bg-red-100 text-red-600 border border-red-200'}`}>
-                            <span className={`w-1.5 h-1.5 rounded-full ${car.availability ? 'bg-white' : 'bg-red-500'}`}></span>
+                          <span className={`absolute top-3 right-3 z-10 text-[8px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-xs ${car.availability ? 'bg-[#551A0C] text-[#DFB574] border border-[#C89D5C]/40' : 'bg-red-50 text-red-700 border border-red-200'}`}>
+                            <span className={`w-1.5 h-1.5 rounded-full ${car.availability ? 'bg-[#DFB574]' : 'bg-red-500'}`}></span>
                             {car.availability ? 'Available' : 'Unavailable'}
                           </span>
                         </div>
 
                         {/* ── Center: Info ── */}
-                        <div className="flex-1 flex flex-col">
-                          <div className="flex-1 p-5 border-b border-gray-100">
+                        <div className="flex-1 flex flex-col justify-between">
+                          <div className="p-6 border-b border-[#E7DFD5]">
                             {/* Title */}
-                            <h3 className="text-xl font-black text-gray-900 leading-tight mb-1">
-                              <Link href={`/cars/${getCarSlug(car)}`} className="hover:text-green-600 transition-colors">
+                            <h3 className="text-xl font-bold text-[#551A0C] leading-tight mb-1 group-hover:text-[#8C6D53] transition-colors">
+                              <Link href={`/cars/${getCarSlug(car)}`}>
                                 {car.make} {car.model}
                               </Link>
                             </h3>
                             {/* Specs subtitle */}
-                            <p className="text-[11px] text-gray-400 font-mono mb-3">
+                            <p className="text-[11px] text-[#8C6D53] uppercase tracking-wider mb-3">
                               {car.seatingCapacity} Seats &nbsp;•&nbsp; {car.transmission.replace(' Gearbox', '')} &nbsp;•&nbsp; {car.fuelType}
                             </p>
                             {/* Feature pills */}
                             {car.features && car.features.length > 0 && (
                               <div className="flex flex-wrap gap-1.5 mb-4">
                                 {car.features.map((feat: string, idx: number) => (
-                                  <span key={idx} className="bg-gray-900 text-white text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full">
+                                  <span key={idx} className="bg-[#551A0C] text-[#DFB574] text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border border-[#C89D5C]/30">
                                     {feat}
                                   </span>
                                 ))}
@@ -936,10 +940,10 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                             )}
                             {/* Per-Car Dynamic Round Trip Package Selector */}
                             {ROUNDTRIP_PACKAGES.length > 1 && (
-                              <div className="mb-4 bg-green-50/60 border border-green-200/80 p-3 rounded-2xl">
-                                <div className="text-[9px] font-black uppercase tracking-widest text-green-800 mb-2 flex items-center justify-between">
+                              <div className="mb-4 bg-[#FAF6F0] border border-[#E7DFD5] p-3.5 rounded-xl">
+                                <div className="text-[9px] font-bold uppercase tracking-widest text-[#551A0C] mb-2 flex items-center justify-between">
                                   <span>Round Trip Price Package</span>
-                                  <span className="font-mono text-green-700 bg-green-100 px-2 py-0.5 rounded text-[8px] font-bold">{bd.packageName}</span>
+                                  <span className="text-[#551A0C] bg-[#FEFBF8] border border-[#C89D5C]/40 px-2 py-0.5 rounded text-[8px] font-bold">{bd.packageName}</span>
                                 </div>
                                 <div className="flex flex-wrap gap-1.5">
                                   {ROUNDTRIP_PACKAGES.map(pkg => {
@@ -949,10 +953,10 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                                         key={pkg.value}
                                         type="button"
                                         onClick={() => setCarPackages(prev => ({ ...prev, [car.id]: pkg.value }))}
-                                        className={`text-[8.5px] font-black uppercase tracking-wider px-2.5 py-1 rounded-xl border transition-all ${
+                                        className={`text-[8.5px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg border transition-all cursor-pointer ${
                                           isSelected
-                                            ? 'bg-green-600 border-green-600 text-white shadow-xs scale-[1.02]'
-                                            : 'bg-white border-gray-200 text-gray-700 hover:border-green-400 hover:text-green-700'
+                                            ? 'bg-[#551A0C] border-[#551A0C] text-[#DFB574] shadow-xs'
+                                            : 'bg-[#FEFBF8] border-[#E7DFD5] text-[#551A0C] hover:border-[#C89D5C]'
                                         }`}
                                       >
                                         {pkg.minKmPerDay > 0 ? `${pkg.minKmPerDay} KM / Day (${pkg.label.split('(')[1] || ''}`.replace(')', '') : 'Unlimited KM'}
@@ -964,62 +968,62 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                             )}
 
                             {/* Package details table */}
-                            <div className="w-full text-xs font-mono text-gray-700 space-y-2">
-                              <div className="flex justify-between border-b border-gray-100 pb-2">
-                                <span className="text-gray-400">Package</span>
-                                <span className="font-medium text-green-700 font-bold">{bd.packageName || 'Outstation (Round Trip)'}</span>
+                            <div className="w-full text-xs text-[#6A5749] space-y-2">
+                              <div className="flex justify-between border-b border-[#E7DFD5] pb-2">
+                                <span className="text-[#8C6D53]">Package</span>
+                                <span className="font-bold text-[#551A0C]">{bd.packageName || 'Outstation (Round Trip)'}</span>
                               </div>
                               {destStr && (
-                                <div className="flex justify-between border-b border-gray-100 pb-2">
-                                  <span className="text-gray-400">Route</span>
-                                  <span className="font-medium font-sans text-right">Udaipur → {destStr} → Udaipur</span>
+                                <div className="flex justify-between border-b border-[#E7DFD5] pb-2">
+                                  <span className="text-[#8C6D53]">Route</span>
+                                  <span className="font-medium text-right text-[#250903]">Udaipur → {destStr} → Udaipur</span>
                                 </div>
                               )}
-                              <div className="flex justify-between border-b border-gray-100 pb-2">
-                                <span className="text-gray-400">Charged Distance</span>
-                                <span className="font-medium">{bd.chargedDistance} Km</span>
+                              <div className="flex justify-between border-b border-[#E7DFD5] pb-2">
+                                <span className="text-[#8C6D53]">Charged Distance</span>
+                                <span className="font-medium text-[#250903]">{bd.chargedDistance} Km</span>
                               </div>
                               <div className="flex justify-between pb-1">
-                                <span className="text-gray-400">Extra Charge</span>
-                                <span className="font-medium">₹{bd.ratePerKm}/Km (Beyond {bd.chargedDistance}Km)</span>
+                                <span className="text-[#8C6D53]">Extra Charge</span>
+                                <span className="font-medium text-[#250903]">₹{bd.ratePerKm}/Km (Beyond {bd.chargedDistance}Km)</span>
                               </div>
                             </div>
                           </div>
 
                           {/* Inclusions strip */}
-                          <div className="px-5 py-3 flex flex-wrap items-center gap-4 bg-gray-50">
-                            <span className="flex items-center gap-1.5 text-[10px] font-semibold text-gray-600">
-                              <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
+                          <div className="px-6 py-3 flex flex-wrap items-center gap-4 bg-[#FAF6F0] border-t border-[#E7DFD5]">
+                            <span className="flex items-center gap-1.5 text-[10px] font-semibold text-[#6A5749]">
+                              <svg className="w-3.5 h-3.5 text-[#C89D5C]" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
                               Inc. GST &amp; Driver Allowance
                             </span>
-                            <span className="flex items-center gap-1.5 text-[10px] font-semibold text-gray-400">
-                              <svg className="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            <span className="flex items-center gap-1.5 text-[10px] font-semibold text-[#8C6D53]">
+                              <span className="text-[#C89D5C]">✦</span>
                               Exc. Toll Tax &amp; Parking
                             </span>
-                            <button onClick={() => toggleTab("fare")} className="ml-auto flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-green-700 hover:text-green-800 transition-colors">
-                              View Breakdown &amp; Terms <ArrowDownUp size={12} />
+                            <button onClick={() => toggleTab("fare")} className="ml-auto flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-[#551A0C] hover:text-[#C89D5C] transition-colors cursor-pointer">
+                              View Breakdown &amp; Terms <ArrowDownUp size={12} className="text-[#C89D5C]" />
                             </button>
                           </div>
                         </div>
 
                         {/* ── Right: Fare Panel ── */}
-                        <div className="shrink-0 md:w-52 bg-green-50 border-l border-green-100 p-5 flex flex-col items-center justify-between">
+                        <div className="shrink-0 md:w-56 bg-[#FAF6F0] border-t md:border-t-0 md:border-l border-[#E7DFD5] p-6 flex flex-col items-center justify-between">
                           <div className="text-center w-full">
-                            <div className="text-[9px] font-black uppercase tracking-widest text-green-700/60 mb-2">Package Fare ({bd.days}D)</div>
-                            <div className="text-4xl font-black text-green-700 leading-none">
+                            <div className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#8C6D53] mb-2">Package Fare ({bd.days}D)</div>
+                            <div className="text-3xl font-black text-[#551A0C] leading-none tracking-tight">
                               ₹{flatFare.toLocaleString()}
                             </div>
-                            <div className="text-[10px] text-green-600/70 font-mono mt-1 mb-3">all inclusive</div>
+                            <div className="text-[9px] text-[#8C6D53] italic mt-1 mb-3">all inclusive</div>
                           </div>
                           <button
                             onClick={() => !isAlreadyBooked && handleBook(car, flatFare, extraText)}
                             disabled={isAlreadyBooked || !returnDate || calculatedDistance === 0}
-                            className={`w-full mt-4 font-black text-[10px] tracking-widest uppercase py-3.5 px-4 rounded-xl transition-all ${isAlreadyBooked || !returnDate || calculatedDistance === 0
-                              ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                              : 'bg-green-500 text-white hover:bg-green-600 shadow-md shadow-green-500/30'
+                            className={`w-full mt-4 font-bold text-[10px] tracking-[0.2em] uppercase py-3.5 px-4 rounded-xl transition-all ${isAlreadyBooked || !returnDate || calculatedDistance === 0
+                              ? 'bg-[#E7DFD5] text-[#8C6D53] cursor-not-allowed'
+                              : 'btn-luxury btn-luxury-shine text-[#DFB574] shadow-md'
                               }`}
                           >
-                            {isAlreadyBooked ? 'Already Booked' : !returnDate ? 'Select Dates First' : calculatedDistance === 0 ? 'Select Valid Route' : 'Book Now'}
+                            {isAlreadyBooked ? 'Already Booked' : !returnDate ? 'Select Dates First' : calculatedDistance === 0 ? 'Select Valid Route' : 'Reserve Carriage'}
                           </button>
                         </div>
 
@@ -1027,34 +1031,34 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
 
                       {/* Expandable breakdown tabs */}
                       {activeTab?.startsWith(`${car.id}-`) && (
-                        <div className="border-t border-gray-100 px-6 py-6">
-                          <div className="flex flex-wrap gap-3 mb-6">
-                            <button onClick={() => toggleTab("fare")} className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-colors ${isTabActive("fare") ? "bg-green-500 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-200"}`}>Fare Details</button>
-                            <button onClick={() => toggleTab("exclusion")} className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-colors ${isTabActive("exclusion") ? "bg-green-500 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-200"}`}>Exclusions</button>
-                            <button onClick={() => toggleTab("terms")} className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-colors ${isTabActive("terms") ? "bg-green-500 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-200"}`}>Terms &amp; Conditions</button>
+                        <div className="border-t border-[#E7DFD5] px-6 py-6 bg-[#FEFBF8]">
+                          <div className="flex flex-wrap gap-2.5 mb-6">
+                            <button onClick={() => toggleTab("fare")} className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all cursor-pointer border ${isTabActive("fare") ? "bg-[#551A0C] border-[#551A0C] text-[#DFB574] shadow-xs" : "bg-[#FAF6F0] text-[#551A0C] border-[#E7DFD5] hover:border-[#C89D5C]"}`}>Fare Details</button>
+                            <button onClick={() => toggleTab("exclusion")} className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all cursor-pointer border ${isTabActive("exclusion") ? "bg-[#551A0C] border-[#551A0C] text-[#DFB574] shadow-xs" : "bg-[#FAF6F0] text-[#551A0C] border-[#E7DFD5] hover:border-[#C89D5C]"}`}>Exclusions</button>
+                            <button onClick={() => toggleTab("terms")} className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all cursor-pointer border ${isTabActive("terms") ? "bg-[#551A0C] border-[#551A0C] text-[#DFB574] shadow-xs" : "bg-[#FAF6F0] text-[#551A0C] border-[#E7DFD5] hover:border-[#C89D5C]"}`}>Terms &amp; Conditions</button>
                           </div>
 
                           {isTabActive("fare") && (
-                            <div className="flex flex-col md:flex-row gap-8 text-xs font-mono">
-                              <div className="flex-1 bg-gray-50 p-6 rounded-2xl border border-gray-200 space-y-4">
-                                <div className="flex justify-between items-center"><span className="text-gray-400">Basic Fare</span><span className="font-bold text-gray-900">₹{bd.basicFare}</span></div>
-                                <div className="flex justify-between items-center"><span className="text-gray-400">Driver Allowances</span><span className="font-bold text-gray-900">₹{bd.driverAllowance}</span></div>
-                                <div className="flex justify-between items-center"><span className="text-gray-400">GST (18%)</span><span className="font-bold text-gray-900">₹{bd.gstAmount}</span></div>
-                                <div className="flex justify-between items-center pt-3 border-t border-gray-200"><span className="text-green-700 font-bold">Total Amount</span><span className="font-bold text-green-700 text-lg">₹{flatFare}</span></div>
+                            <div className="flex flex-col md:flex-row gap-6 text-xs">
+                              <div className="flex-1 bg-[#FAF6F0] p-5 rounded-2xl border border-[#E7DFD5] space-y-3">
+                                <div className="flex justify-between items-center"><span className="text-[#8C6D53]">Basic Fare</span><span className="font-bold text-[#250903]">₹{bd.basicFare}</span></div>
+                                <div className="flex justify-between items-center"><span className="text-[#8C6D53]">Driver Allowances</span><span className="font-bold text-[#250903]">₹{bd.driverAllowance}</span></div>
+                                <div className="flex justify-between items-center"><span className="text-[#8C6D53]">GST (18%)</span><span className="font-bold text-[#250903]">₹{bd.gstAmount}</span></div>
+                                <div className="flex justify-between items-center pt-3 border-t border-[#E7DFD5]"><span className="text-[#551A0C] font-bold">Total Amount</span><span className="font-bold text-[#551A0C] text-lg">₹{flatFare}</span></div>
                               </div>
-                              <div className="flex-1 bg-gray-50 p-6 rounded-2xl border border-gray-200 space-y-4">
-                                <div className="flex justify-between items-center"><span className="text-gray-400">Rate/Km</span><span className="font-bold text-gray-900">₹{bd.ratePerKm}/Km</span></div>
-                                <div className="flex justify-between items-center"><span className="text-gray-400">No. of Days</span><span className="font-bold text-gray-900">{bd.days} Days</span></div>
-                                <div className="flex justify-between items-center"><span className="text-gray-400">Min Km/Day ({bd.minKmPerDay}*{bd.days})</span><span className="font-bold text-gray-900">{bd.chargedDistance} Km</span></div>
-                                <div className="flex justify-between items-center"><span className="text-gray-400">Running Distance</span><span className="font-bold text-gray-900">{bd.runningDistance} Km</span></div>
-                                <div className="flex justify-between items-center"><span className="text-gray-400">Charged Distance</span><span className="font-bold text-gray-900">{bd.chargedDistance} Km</span></div>
+                              <div className="flex-1 bg-[#FAF6F0] p-5 rounded-2xl border border-[#E7DFD5] space-y-3">
+                                <div className="flex justify-between items-center"><span className="text-[#8C6D53]">Rate/Km</span><span className="font-bold text-[#250903]">₹{bd.ratePerKm}/Km</span></div>
+                                <div className="flex justify-between items-center"><span className="text-[#8C6D53]">No. of Days</span><span className="font-bold text-[#250903]">{bd.days} Days</span></div>
+                                <div className="flex justify-between items-center"><span className="text-[#8C6D53]">Min Km/Day ({bd.minKmPerDay}*{bd.days})</span><span className="font-bold text-[#250903]">{bd.chargedDistance} Km</span></div>
+                                <div className="flex justify-between items-center"><span className="text-[#8C6D53]">Running Distance</span><span className="font-bold text-[#250903]">{bd.runningDistance} Km</span></div>
+                                <div className="flex justify-between items-center"><span className="text-[#8C6D53]">Charged Distance</span><span className="font-bold text-[#250903]">{bd.chargedDistance} Km</span></div>
                               </div>
                             </div>
                           )}
 
                           {isTabActive("exclusion") && (
-                            <div className="text-xs font-mono text-gray-600 p-6 bg-gray-50 rounded-2xl border border-gray-200">
-                              <ul className="list-disc pl-5 space-y-3">
+                            <div className="text-xs text-[#6A5749] p-5 bg-[#FAF6F0] rounded-2xl border border-[#E7DFD5]">
+                              <ul className="list-disc pl-5 space-y-2">
                                 {exclusionsList.map((item: string, idx: number) => (
                                   <li key={idx}>{item}</li>
                                 ))}
@@ -1063,8 +1067,8 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                           )}
 
                           {isTabActive("terms") && (
-                            <div className="text-xs font-mono text-gray-600 p-6 bg-gray-50 rounded-2xl border border-gray-200">
-                              <ul className="list-disc pl-5 space-y-3">
+                            <div className="text-xs text-[#6A5749] p-5 bg-[#FAF6F0] rounded-2xl border border-[#E7DFD5]">
+                              <ul className="list-disc pl-5 space-y-2">
                                 {termsList.map((item: string, idx: number) => (
                                   <li key={idx}>{item}</li>
                                 ))}
@@ -1078,47 +1082,47 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                 }
 
                 return (
-                  <div key={car.id} className="bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md hover:border-green-200 transition-all mb-5 overflow-hidden">
+                  <div key={car.id} className="card-luxury border-classic-frame bg-[#FEFBF8] border-[#E7DFD5] hover:border-[#C89D5C] rounded-2xl shadow-sm hover:shadow-lg transition-all mb-5 overflow-hidden font-serif">
                     <div className="flex flex-col md:flex-row">
 
                       {/* ── Left: Image ── */}
-                      <div className="relative md:w-64 shrink-0 bg-gray-50 flex items-center justify-center min-h-[180px]">
+                      <div className="relative md:w-64 shrink-0 bg-[#FAF6F0] flex items-center justify-center min-h-[180px]">
                         {/* Image with its own overflow-hidden so badges aren't clipped */}
                         <div className="absolute inset-0 overflow-hidden">
                           <Link href={`/cars/${getCarSlug(car)}`} className="block w-full h-full">
-                            <CarImageSlider mainImage={car.image || '/placeholder-car.png'} galleryJson={car.gallery} alt={`${car.make} ${car.model}`} imageClassName="object-cover hover:scale-105 transition-transform duration-500 w-full h-full" />
+                            <CarImageSlider mainImage={car.image || '/placeholder-car.png'} galleryJson={car.gallery} alt={`${car.make} ${car.model}`} imageClassName="object-cover group-hover:scale-105 transition-transform duration-500 w-full h-full" />
                           </Link>
                         </div>
                         {/* Category badge – top left */}
-                        <span className="absolute top-3 left-3 z-10 bg-white/95 border border-gray-200 text-gray-700 text-[8px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg shadow-sm">
+                        <span className="absolute top-3 left-3 z-10 bg-[#FAF6F0]/95 border border-[#C89D5C]/40 text-[#551A0C] text-[8px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full shadow-xs">
                           {car.category.replace(/\bClass\b/gi, '').trim()}
                         </span>
                         {/* Available badge – top right */}
-                        <span className={`absolute top-3 right-3 z-10 text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-lg flex items-center gap-1 ${car.availability ? 'bg-green-500 text-white' : 'bg-red-100 text-red-600 border border-red-200'}`}>
-                          <span className={`w-1.5 h-1.5 rounded-full ${car.availability ? 'bg-white' : 'bg-red-500'}`}></span>
+                        <span className={`absolute top-3 right-3 z-10 text-[8px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-xs ${car.availability ? 'bg-[#551A0C] text-[#DFB574] border border-[#C89D5C]/40' : 'bg-red-50 text-red-700 border border-red-200'}`}>
+                          <span className={`w-1.5 h-1.5 rounded-full ${car.availability ? 'bg-[#DFB574]' : 'bg-red-500'}`}></span>
                           {car.availability ? 'Available' : 'Unavailable'}
                         </span>
                       </div>
 
                       {/* ── Center: Info + Inclusions ── */}
-                      <div className="flex-1 flex flex-col">
+                      <div className="flex-1 flex flex-col justify-between">
                         {/* Top: Name + specs + features + description */}
-                        <div className="flex-1 p-5 border-b border-gray-100">
+                        <div className="p-6 border-b border-[#E7DFD5]">
                           {/* Title row */}
-                          <h3 className="text-xl font-black text-gray-900 leading-tight mb-1">
-                            <Link href={`/cars/${getCarSlug(car)}`} className="hover:text-green-600 transition-colors">
+                          <h3 className="text-xl font-bold text-[#551A0C] leading-tight mb-1 group-hover:text-[#8C6D53] transition-colors">
+                            <Link href={`/cars/${getCarSlug(car)}`}>
                               {car.make} {car.model}
                             </Link>
                           </h3>
                           {/* Specs subtitle */}
-                          <p className="text-[11px] text-gray-400 font-mono mb-3">
+                          <p className="text-[11px] text-[#8C6D53] uppercase tracking-wider mb-3">
                             {car.seatingCapacity} Seats &nbsp;•&nbsp; {car.transmission.replace(' Gearbox', '')} &nbsp;•&nbsp; {car.fuelType}
                           </p>
                           {/* Feature pills */}
                           {car.features && car.features.length > 0 && (
                             <div className="flex flex-wrap gap-1.5 mb-3">
                               {car.features.map((feat: string, idx: number) => (
-                                <span key={idx} className="bg-gray-900 text-white text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full">
+                                <span key={idx} className="bg-[#551A0C] text-[#DFB574] text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border border-[#C89D5C]/30">
                                   {feat}
                                 </span>
                               ))}
@@ -1126,33 +1130,33 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                           )}
                           {/* Description */}
                           {car.content && car.content.replace(/<[^>]*>/g, '').trim() ? (
-                            <div className="text-xs text-gray-500 leading-relaxed line-clamp-3" dangerouslySetInnerHTML={{ __html: car.content }} />
+                            <div className="text-xs text-[#6A5749] leading-relaxed line-clamp-3" dangerouslySetInnerHTML={{ __html: car.content }} />
                           ) : (
-                            <p className="text-xs text-gray-400">Guaranteed private ride. No ridesharing. No multiple stops.</p>
+                            <p className="text-xs text-[#8C6D53]">Guaranteed private chauffeur service. Immaculate cabin and professional chauffeur.</p>
                           )}
                         </div>
 
                         {/* Bottom: Inclusions strip */}
-                        <div className="px-5 py-3 flex flex-wrap items-center gap-4 bg-gray-50">
-                          <span className="flex items-center gap-1.5 text-[10px] font-semibold text-gray-600">
-                            <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
+                        <div className="px-6 py-3 flex flex-wrap items-center gap-4 bg-[#FAF6F0] border-t border-[#E7DFD5]">
+                          <span className="flex items-center gap-1.5 text-[10px] font-semibold text-[#6A5749]">
+                            <svg className="w-3.5 h-3.5 text-[#C89D5C]" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
                             30 min free wait
                           </span>
                           {car._airportBreakdown?.meetAndGreet && (
-                            <span className="flex items-center gap-1.5 text-[10px] font-semibold text-gray-600">
-                              <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
+                            <span className="flex items-center gap-1.5 text-[10px] font-semibold text-[#6A5749]">
+                              <svg className="w-3.5 h-3.5 text-[#C89D5C]" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
                               Meet &amp; Greet
                             </span>
                           )}
                           {car._airportBreakdown?.nightFee > 0 && (
-                            <span className="flex items-center gap-1.5 text-[10px] font-semibold text-gray-600">
-                              <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
+                            <span className="flex items-center gap-1.5 text-[10px] font-semibold text-[#8C6D53]">
+                              <span className="text-[#C89D5C]">✦</span>
                               Night charge: ₹{car._airportBreakdown.nightFee.toLocaleString()}
                             </span>
                           )}
                           {car._airportBreakdown?.waitChargePer30Min > 0 && (
-                            <span className="flex items-center gap-1.5 text-[10px] font-semibold text-gray-400">
-                              <svg className="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            <span className="flex items-center gap-1.5 text-[10px] font-semibold text-[#8C6D53]">
+                              <span className="text-[#C89D5C]">✦</span>
                               +₹{car._airportBreakdown.waitChargePer30Min}/30min extra wait
                             </span>
                           )}
@@ -1160,25 +1164,25 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                       </div>
 
                       {/* ── Right: Fare Panel ── */}
-                      <div className="shrink-0 md:w-52 bg-green-50 border-l border-green-100 p-5 flex flex-col items-center justify-between">
+                      <div className="shrink-0 md:w-56 bg-[#FAF6F0] border-t md:border-t-0 md:border-l border-[#E7DFD5] p-6 flex flex-col items-center justify-between">
                         <div className="text-center w-full">
-                          <div className="text-[9px] font-black uppercase tracking-widest text-green-700/60 mb-2">Flat Fare</div>
+                          <div className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#8C6D53] mb-2">Flat Fare</div>
                           {car._airportBreakdown?.hasFare ? (
                             <>
-                              <div className="text-4xl font-black text-green-700 leading-none">
+                              <div className="text-3xl font-black text-[#551A0C] leading-none tracking-tight">
                                 ₹{flatFare.toLocaleString()}
                               </div>
-                              <div className="text-[10px] text-green-600/70 font-mono mt-1 mb-3">all inclusive</div>
+                              <div className="text-[9px] text-[#8C6D53] italic mt-1 mb-3">all inclusive</div>
                               {car._airportBreakdown.nightApplies && car._airportBreakdown.nightFee > 0 && (
-                                <div className="text-[9px] text-blue-600 bg-blue-50 border border-blue-100 rounded-lg px-2 py-1.5 font-mono">
+                                <div className="text-[9px] text-[#551A0C] bg-[#FAF6F0] border border-[#C89D5C]/30 rounded-lg px-2 py-1.5 font-bold uppercase tracking-wider">
                                   Night fee included
                                 </div>
                               )}
                             </>
                           ) : (
                             <>
-                              <div className="text-3xl font-black text-gray-300 leading-none">—</div>
-                              <div className="text-[9px] text-red-500 bg-red-50 border border-red-100 rounded-lg px-2 py-1.5 mt-2 font-mono leading-relaxed">
+                              <div className="text-3xl font-black text-[#A8988A] leading-none">—</div>
+                              <div className="text-[9px] text-red-600 bg-red-50 border border-red-200 rounded-lg px-2 py-1.5 mt-2 leading-relaxed">
                                 No fare configured for this zone
                               </div>
                             </>
@@ -1187,15 +1191,15 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                         <button
                           onClick={() => !isAlreadyBooked && handleBook(car, flatFare, extraText)}
                           disabled={isAlreadyBooked || !atZoneId || !car._airportBreakdown?.hasFare}
-                          className={`w-full mt-4 font-black text-[10px] tracking-widest uppercase py-3.5 px-4 rounded-xl transition-all ${isAlreadyBooked || !atZoneId || !car._airportBreakdown?.hasFare
-                            ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                            : 'bg-green-500 text-white hover:bg-green-600 shadow-md shadow-green-500/30'
+                          className={`w-full mt-4 font-bold text-[10px] tracking-[0.2em] uppercase py-3.5 px-4 rounded-xl transition-all ${isAlreadyBooked || !atZoneId || !car._airportBreakdown?.hasFare
+                            ? 'bg-[#E7DFD5] text-[#8C6D53] cursor-not-allowed'
+                            : 'btn-luxury btn-luxury-shine text-[#DFB574] shadow-md'
                             }`}
                         >
                           {isAlreadyBooked ? 'Already Booked'
                             : !atZoneId ? 'Select Area First'
                               : !car._airportBreakdown?.hasFare ? 'Not Available'
-                                : 'Book Transfer'}
+                                : 'Reserve Transfer'}
                         </button>
                       </div>
 
@@ -1208,14 +1212,14 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
 
               {/* Pagination Controls */}
               {totalPages > 1 && (
-                <div className="flex justify-center items-center gap-2 mt-12 border-t border-gray-200 pt-8">
+                <div className="flex justify-center items-center gap-2 mt-12 border-t border-[#E7DFD5] pt-8">
                   <button
                     onClick={() => {
                       setCurrentPage(prev => Math.max(1, prev - 1));
                       window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
                     disabled={currentPage === 1}
-                    className="w-10 h-10 rounded-xl border border-gray-200 flex items-center justify-center text-gray-700 hover:border-green-600 hover:text-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer bg-white"
+                    className="w-10 h-10 rounded-xl border border-[#E7DFD5] bg-[#FEFBF8] flex items-center justify-center text-[#551A0C] hover:border-[#C89D5C] hover:text-[#551A0C] disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer shadow-xs font-serif"
                   >
                     &larr;
                   </button>
@@ -1227,9 +1231,9 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                         setCurrentPage(page);
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                       }}
-                      className={`w-10 h-10 rounded-xl border text-sm font-bold transition-all cursor-pointer ${currentPage === page
-                        ? 'bg-green-600 border-green-600 text-white shadow-md'
-                        : 'border-gray-200 bg-white text-gray-700 hover:border-green-600 hover:text-green-700'
+                      className={`w-10 h-10 rounded-xl border text-xs font-serif font-bold transition-all cursor-pointer ${currentPage === page
+                        ? 'bg-[#551A0C] border-[#551A0C] text-[#DFB574] shadow-md'
+                        : 'border-[#E7DFD5] bg-[#FEFBF8] text-[#551A0C] hover:border-[#C89D5C]'
                         }`}
                     >
                       {page}
@@ -1242,7 +1246,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                       window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
                     disabled={currentPage === totalPages}
-                    className="w-10 h-10 rounded-xl border border-gray-200 flex items-center justify-center text-gray-700 hover:border-green-600 hover:text-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer bg-white"
+                    className="w-10 h-10 rounded-xl border border-[#E7DFD5] bg-[#FEFBF8] flex items-center justify-center text-[#551A0C] hover:border-[#C89D5C] hover:text-[#551A0C] disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer shadow-xs font-serif"
                   >
                     &rarr;
                   </button>
@@ -1258,15 +1262,15 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
         {isRouteConfigOpen && (
           <>
             <div
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] lg:hidden"
+              className="fixed inset-0 bg-[#250903]/60 backdrop-blur-sm z-[100] lg:hidden"
               onClick={() => setIsRouteConfigOpen(false)}
             />
-            <div className="fixed top-0 left-0 h-full w-full max-w-sm bg-gray-50 border-r border-gray-200 shadow-2xl z-[101] flex flex-col lg:hidden">
-              <div className="flex items-center justify-between p-6 border-b border-gray-200 shrink-0">
-                <h2 className="font-black text-sm uppercase tracking-widest">Route Configurator</h2>
+            <div className="fixed top-0 left-0 h-full w-full max-w-sm bg-[#FEFBF8] border-r border-[#E7DFD5] shadow-2xl z-[101] flex flex-col lg:hidden font-serif">
+              <div className="flex items-center justify-between p-6 border-b border-[#E7DFD5] shrink-0">
+                <h2 className="font-bold text-sm text-[#551A0C] uppercase tracking-widest">Route Configurator</h2>
                 <button
                   onClick={() => setIsRouteConfigOpen(false)}
-                  className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:text-gray-900 transition-colors"
+                  className="w-9 h-9 rounded-full bg-[#FAF6F0] border border-[#E7DFD5] flex items-center justify-center text-[#8C6D53] hover:text-[#551A0C] transition-colors"
                 >
                   <X size={16} />
                 </button>
@@ -1274,10 +1278,10 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
               <div className="flex-1 overflow-y-auto p-6">
                 {routeConfiguratorBody}
               </div>
-              <div className="p-6 border-t border-gray-200 shrink-0">
+              <div className="p-6 border-t border-[#E7DFD5] shrink-0">
                 <button
                   onClick={() => setIsRouteConfigOpen(false)}
-                  className="w-full bg-green-600 text-white px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-brand-hover transition-colors"
+                  className="w-full btn-luxury btn-luxury-shine text-[#DFB574] px-4 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-md"
                 >
                   Done
                 </button>

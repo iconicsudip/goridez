@@ -186,7 +186,7 @@ export default function BookingWidget({
     <div className="w-full max-w-5xl mx-auto font-body z-10 relative text-left">
 
       {/* ── Main Tabs ─────────────────────────────────────────────────────── */}
-      <div className="flex justify-center sm:justify-start w-full sm:w-max max-w-full mx-auto overflow-x-auto hide-scrollbar bg-brand-panel/95 backdrop-blur-xl rounded-t-3xl shadow-lg border border-brand-border border-b-0">
+      <div className="flex justify-center sm:justify-start w-full sm:w-max max-w-full mx-auto overflow-x-auto hide-scrollbar bg-[#250903]/95 backdrop-blur-xl rounded-t-3xl shadow-xl border border-[#C89D5C]/30 border-b-0">
         {(['SELF DRIVE', 'TAXI'] as MainTab[]).map((tab) => {
           if (counts) {
             if (tab === 'SELF DRIVE' && counts.selfDrive === 0) return null;
@@ -200,10 +200,10 @@ export default function BookingWidget({
                 setIsDifferentDropCity(false);
                 if (tab === 'TAXI') setSubTab('ROUND TRIP');
               }}
-              className={`px-6 md:px-10 py-4 text-xs md:text-sm font-black tracking-widest transition-all whitespace-nowrap flex-shrink-0 cursor-pointer ${
+              className={`px-8 md:px-12 py-4 text-xs md:text-sm font-heading font-bold tracking-widest transition-all whitespace-nowrap flex-shrink-0 cursor-pointer ${
                 mainTab === tab
-                  ? 'bg-brand-gold text-white shadow-md shadow-brand-gold/40'
-                  : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
+                  ? 'bg-[#551A0C] text-[#DFB574] border-t-2 border-[#DFB574] shadow-md shadow-[#551A0C]/50'
+                  : 'text-white/70 hover:text-white hover:bg-white/5'
               }`}
             >
               {tab}
@@ -213,7 +213,7 @@ export default function BookingWidget({
       </div>
 
       {/* ── Main Card ─────────────────────────────────────────────────────── */}
-      <div className="bg-white/95 backdrop-blur-xl border border-brand-border sm:rounded-3xl sm:rounded-tl-3xl sm:rounded-tr-3xl rounded-bl-3xl rounded-br-3xl p-6 md:p-10 shadow-2xl relative text-gray-900">
+      <div className="card-luxury border-classic-frame bg-[#FEFBF8]/98 backdrop-blur-xl border border-[#E7DFD5] sm:rounded-3xl sm:rounded-tl-none rounded-bl-3xl rounded-br-3xl p-6 md:p-10 shadow-[0_30px_70px_rgba(37,9,3,0.22)] relative text-gray-900">
 
         {/* Sub Tabs */}
         {mainTab === 'TAXI' && (
@@ -223,19 +223,19 @@ export default function BookingWidget({
                 key={sub}
                 type="button"
                 onClick={() => setSubTab(sub)}
-                className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all flex items-center gap-2 border cursor-pointer ${
+                className={`px-6 py-2.5 rounded-full text-xs font-heading font-bold tracking-wider transition-all flex items-center gap-2.5 border cursor-pointer ${
                   subTab === sub
-                    ? 'bg-brand-gold text-white border-brand-gold shadow-sm'
-                    : 'bg-brand-panel text-gray-700 border-brand-border hover:bg-gray-100 hover:text-gray-950'
+                    ? 'bg-[#551A0C] text-[#DFB574] border-[#C89D5C] shadow-sm'
+                    : 'bg-[#FAF6F0] text-[#350E05] border-[#E7DFD5] hover:border-[#C89D5C]'
                 }`}
               >
-                <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
-                  subTab === sub ? 'border-black bg-black' : 'border-gray-400'
+                <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center flex-shrink-0 ${
+                  subTab === sub ? 'border-[#DFB574] bg-[#551A0C]' : 'border-[#C89D5C]/50'
                 }`}>
-                  {subTab === sub && <div className="w-2 h-2 rounded-full bg-brand-gold" />}
+                  {subTab === sub && <div className="w-1.5 h-1.5 rounded-full bg-[#DFB574]" />}
                 </div>
-                {sub === 'ROUND TRIP' && 'Round Trip'}
-                {sub === 'AIRPORT TRANSFER' && 'Airport Transfer'}
+                {sub === 'ROUND TRIP' && 'Round Trip Journey'}
+                {sub === 'AIRPORT TRANSFER' && 'Airport Chauffeur Transfer'}
               </button>
             ))}
           </div>
@@ -342,16 +342,16 @@ export default function BookingWidget({
             ) : null}
 
             {/* ── Travel Date(s) ───────────────────────────────────────── */}
-            <div className={`bg-white border border-brand-border hover:border-brand-gold/50 transition-colors rounded-xl flex flex-col shadow-[0_2px_10px_rgba(0,0,0,0.02)] ${dateSpansTwo ? 'p-4 md:col-span-2' : 'p-4 md:px-2.5'}`}>
-              <label className="text-xs text-gray-500 mb-2 font-mono uppercase tracking-wider">
-                {isAirportTransfer ? 'Transfer Date (Required)' : 'Travel Date Range (Required)'}
+            <div className={`bg-white border border-[#E7DFD5] hover:border-[#C89D5C] focus-within:border-[#C89D5C] transition-all rounded-2xl flex flex-col shadow-[0_2px_10px_rgba(85,26,12,0.03)] ${dateSpansTwo ? 'p-4 md:col-span-2' : 'p-4 md:px-3'}`}>
+              <label className="text-[10px] text-[#7A6A65] mb-2 font-mono uppercase tracking-widest">
+                {isAirportTransfer ? 'Transfer Date & Time (Required)' : 'Travel Date Range (Required)'}
               </label>
-              <div className="flex items-center gap-2 text-gray-800 w-full">
-                <Calendar size={16} className="text-gray-400 shrink-0" />
+              <div className="flex items-center gap-2.5 text-gray-800 w-full">
+                <Calendar size={16} className="text-[#C89D5C] shrink-0" />
                 <ConfigProvider
                   theme={{
                     token: {
-                      colorPrimary: '#15803d',
+                      colorPrimary: '#551A0C',
                       borderRadius: 8,
                       fontSize: 11,
                     },
@@ -453,12 +453,12 @@ export default function BookingWidget({
           </div>
 
           {/* Search Button */}
-          <div className="w-full flex justify-center mt-8">
+          <div className="w-full flex justify-center mt-10">
             <button
               type="submit"
-              className="w-full md:w-[320px] bg-brand-gold hover:bg-brand-gold-hover text-white font-bold tracking-widest uppercase text-base px-8 py-3.5 rounded-xl transition-all shadow-md shadow-brand-gold/30 border border-brand-gold cursor-pointer"
+              className="btn-luxury btn-luxury-shine w-full md:w-[340px] bg-[#551A0C] hover:bg-[#451408] text-[#DFB574] font-heading font-bold tracking-widest uppercase text-sm px-8 py-4 rounded-xl transition-all shadow-xl shadow-[#551A0C]/25 border border-[#C89D5C]/60 cursor-pointer"
             >
-              Search Cars
+              Discover Available Fleet
             </button>
           </div>
         </form>
@@ -469,9 +469,9 @@ export default function BookingWidget({
             <button
               type="button"
               onClick={() => setIsDifferentDropCity(!isDifferentDropCity)}
-              className="text-sm font-semibold text-brand-gold hover:text-brand-gold-hover transition-colors cursor-pointer hover:underline underline-offset-2"
+              className="text-xs font-heading font-semibold text-[#551A0C] hover:text-[#250903] transition-colors cursor-pointer hover:underline underline-offset-4 tracking-wider uppercase"
             >
-              {isDifferentDropCity ? 'Same drop-off city?' : 'Drop in a different city?'}
+              {isDifferentDropCity ? '✦ Return to same collection point' : '✦ Require drop-off in a different royal city?'}
             </button>
           </div>
         )}
