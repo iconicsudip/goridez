@@ -28,7 +28,7 @@ export async function GET(
       },
     });
 
-    if (!file || !file.data) {
+    if (!file || !file.data || file.filename.startsWith('kyc-')) {
       return new NextResponse('File not found', { status: 404 });
     }
 

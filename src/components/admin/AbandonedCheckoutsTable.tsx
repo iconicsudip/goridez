@@ -36,18 +36,59 @@ function timeAgo(iso: string): string {
   return `${days}d ago`;
 }
 
-function cartSummary(cartSnapshot: string | null, totalAmount: number | null): { count: number; total: number; titles: string[] } {
-  if (!cartSnapshot) return { count: 0, total: totalAmount || 0, titles: [] };
+const SERVICE_LABELS: Record<string, string> = {
+  selfDrive: 'Self-Drive',
+  withDriver: 'Chauffeur',
+  oneWayTaxi: 'One-Way Taxi',
+  roundTripTaxi: 'Round-Trip Taxi',
+  airportTransfer: 'Airport Transfer',
+  tours: 'Tour Package',
+  villaCar: 'Villa Stay',
+};
+
+const STATION_LABELS: Record<string, string> = {
+  CITY_CENTER: 'City Center',
+  AIRPORT: 'Airport',
+  RAILWAY: 'Railway Station',
+};
+
+const stationLabel = (s?: string) => (s ? STATION_LABELS[s] || s : '');
+
+interface CartLine {
+  title: string;
+  service: string;
+  extraInfo?: string;
+  pickup?: string;
+  drop?: string;
+  price: number;
+  deposit: number;
+  deliveryFee: number;
+}
+
+function cartSummary(cartSnapshot: string | null, totalAmount: number | null): { count: number; total: number; titles: string[]; lines: CartLine[] } {
+  const empty = { count: 0, total: totalAmount || 0, titles: [] as string[], lines: [] as CartLine[] };
+  if (!cartSnapshot) return empty;
   try {
     const items = JSON.parse(cartSnapshot);
-    if (!Array.isArray(items)) return { count: 0, total: totalAmount || 0, titles: [] };
+    if (!Array.isArray(items)) return empty;
+    const lines: CartLine[] = items.map((item: any) => ({
+      title: item.title || item.name || 'Vehicle/Tour',
+      service: SERVICE_LABELS[item.serviceType] || item.serviceType || 'Booking',
+      extraInfo: item.extraInfo,
+      pickup: stationLabel(item.pickupStation),
+      drop: stationLabel(item.dropStation),
+      price: item.price || 0,
+      deposit: item.deposit || 0,
+      deliveryFee: item.deliveryFee || 0,
+    }));
     return {
       count: items.length,
-      total: totalAmount || items.reduce((acc: number, item: any) => acc + (item.price || 0), 0),
-      titles: items.map((item: any) => item.title || item.name || 'Vehicle/Tour').filter(Boolean),
+      total: totalAmount || lines.reduce((acc, l) => acc + l.price, 0),
+      titles: lines.map((l) => l.title),
+      lines,
     };
   } catch {
-    return { count: 0, total: totalAmount || 0, titles: [] };
+    return empty;
   }
 }
 
@@ -130,7 +171,7 @@ export default function AbandonedCheckoutsTable({ initialLeads }: { initialLeads
           <div className="flex items-center gap-2 text-green-700 font-mono text-xs font-bold uppercase tracking-wider mb-1">
             <UserX size={16} /> Real-Time Lead Recovery
           </div>
-          <h1 className="text-3xl font-black text-gray-900 uppercase font-serif tracking-tight">Checkout Drops & Leads</h1>
+          <h1 className="text-3xl font-black text-gray-900 uppercase font-serif tracking-tight">Abandoned (Unpaid) Bookings</h1>
           <p className="text-gray-500 text-sm mt-1">
             Detects customers who reach the checkout page or fill in the form and drop before completing payment.
           </p>
@@ -205,7 +246,7 @@ export default function AbandonedCheckoutsTable({ initialLeads }: { initialLeads
             <thead className="bg-gray-50 text-[10px] text-gray-400 font-bold uppercase tracking-widest border-b border-gray-200">
               <tr>
                 <th className="px-6 py-4">Customer Details</th>
-                <th className="px-6 py-4">Cart & Reservation</th>
+                <th className="px-6 py-4">Booking Details</th>
                 <th className="px-6 py-4">Drop Stage</th>
                 <th className="px-6 py-4">Last Activity</th>
                 <th className="px-6 py-4 text-right">Quick Recovery</th>
@@ -245,6 +286,9 @@ export default function AbandonedCheckoutsTable({ initialLeads }: { initialLeads
                           </a>
                         </div>
                       )}
+                      {lead.dob && (
+                        <div className="text-[11px] text-gray-500 mt-0.5">DOB: {lead.dob}</div>
+                      )}
                       {lead.specialRequests && (
                         <div className="mt-1 text-[11px] text-amber-800 bg-amber-50 border border-amber-200 rounded-md px-2 py-0.5 max-w-xs truncate">
                           "{lead.specialRequests}"
@@ -252,26 +296,50 @@ export default function AbandonedCheckoutsTable({ initialLeads }: { initialLeads
                       )}
                     </td>
 
-                    {/* Cart snapshot */}
-                    <td className="px-6 py-4">
+                    {/* Booking details */}
+                    <td className="px-6 py-4 min-w-[280px]">
                       {cart.count > 0 || cart.total > 0 ? (
-                        <div className="flex items-start gap-2">
-                          <ShoppingCart size={14} className="text-gray-400 mt-0.5 shrink-0" />
-                          <div>
-                            <div className="text-xs text-gray-800 font-medium">
-                              {cart.titles.length > 0 ? cart.titles.join(', ') : `${cart.count} item(s)`}
-                            </div>
-                            <div className="text-xs font-black text-gray-900 mt-0.5">
-                              ₹{cart.total.toLocaleString()}
-                            </div>
-                            {(lead.pickupDate || lead.returnDate) && (
-                              <div className="flex items-center gap-1 text-[10px] text-gray-400 mt-1 font-mono">
-                                <Calendar size={10} />
-                                {lead.pickupDate ? new Date(lead.pickupDate).toLocaleDateString('en-IN') : '—'}
-                                {' → '}
-                                {lead.returnDate ? new Date(lead.returnDate).toLocaleDateString('en-IN') : '—'}
+                        <div className="space-y-2">
+                          {cart.lines.map((line, i) => (
+                            <div key={i} className="border border-gray-200 rounded-xl p-3 bg-gray-50/60">
+                              <div className="flex items-start justify-between gap-3">
+                                <div>
+                                  <span className="text-[9px] font-black uppercase tracking-wider text-green-700 bg-green-50 border border-green-200 rounded px-1.5 py-0.5">
+                                    {line.service}
+                                  </span>
+                                  <div className="text-xs text-gray-900 font-bold mt-1">{line.title}</div>
+                                  {line.extraInfo && <div className="text-[11px] text-gray-500">{line.extraInfo}</div>}
+                                </div>
+                                <div className="text-xs font-black text-gray-900 whitespace-nowrap">₹{line.price.toLocaleString()}</div>
                               </div>
-                            )}
+                              {(line.pickup || line.drop) && (
+                                <div className="text-[11px] text-gray-600 mt-1.5">
+                                  {line.pickup && <span>Pickup: <b>{line.pickup}</b></span>}
+                                  {line.pickup && line.drop && <span className="mx-1.5 text-gray-300">|</span>}
+                                  {line.drop && <span>Drop: <b>{line.drop}</b></span>}
+                                </div>
+                              )}
+                              {(line.deposit > 0 || line.deliveryFee > 0) && (
+                                <div className="text-[10px] text-gray-500 mt-1 font-mono">
+                                  {line.deposit > 0 && <span>Deposit ₹{line.deposit.toLocaleString()}</span>}
+                                  {line.deposit > 0 && line.deliveryFee > 0 && <span className="mx-1.5">•</span>}
+                                  {line.deliveryFee > 0 && <span>Delivery ₹{line.deliveryFee.toLocaleString()}</span>}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                          {(lead.pickupDate || lead.returnDate) && (
+                            <div className="flex items-center gap-1 text-[11px] text-gray-600 font-mono">
+                              <Calendar size={11} className="text-gray-400" />
+                              {lead.pickupDate ? new Date(lead.pickupDate).toLocaleDateString('en-IN') : '—'}
+                              {' → '}
+                              {lead.returnDate ? new Date(lead.returnDate).toLocaleDateString('en-IN') : '—'}
+                            </div>
+                          )}
+                          <div className="flex items-center gap-1.5 text-xs font-black text-gray-900">
+                            <ShoppingCart size={13} className="text-gray-400" />
+                            Cart total: ₹{cart.total.toLocaleString()}
+                            <span className="text-[10px] font-normal text-gray-400">({cart.count} item{cart.count === 1 ? '' : 's'})</span>
                           </div>
                         </div>
                       ) : (

@@ -33,6 +33,29 @@ export default function CheckoutClient({ razorpayKeyId, guestCheckoutEnabled = f
   const formRef = useRef(form);
   formRef.current = form;
 
+  // Uploads an ID document and stores the returned URL (not just the file name) in the form.
+  const [fileNames, setFileNames] = useState<{ aadharFile: string; dlFile: string }>({ aadharFile: '', dlFile: '' });
+  const [uploadingField, setUploadingField] = useState<'aadharFile' | 'dlFile' | null>(null);
+  const handleIdUpload = async (field: 'aadharFile' | 'dlFile', file: File) => {
+    setUploadingField(field);
+    setErrors(prev => ({ ...prev, [field]: '' }));
+    try {
+      const body = new FormData();
+      body.append('file', file);
+      const res = await fetch('/api/checkout/kyc-upload', { method: 'POST', body });
+      const data = await res.json();
+      if (!res.ok || !data.url) throw new Error(data.error || 'Upload failed');
+      setForm(prev => ({ ...prev, [field]: data.url }));
+      setFileNames(prev => ({ ...prev, [field]: file.name }));
+    } catch (err: any) {
+      setForm(prev => ({ ...prev, [field]: '' }));
+      setFileNames(prev => ({ ...prev, [field]: '' }));
+      setErrors(prev => ({ ...prev, [field]: err.message || 'Upload failed, please try again' }));
+    } finally {
+      setUploadingField(null);
+    }
+  };
+
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [couponCode, setCouponCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
@@ -448,17 +471,16 @@ export default function CheckoutClient({ razorpayKeyId, guestCheckoutEnabled = f
                     className="hidden"
                     onChange={(e) => {
                       const file = e.target.files?.[0];
-                      if (file) {
-                        setForm(prev => ({ ...prev, aadharFile: file.name }));
-                        setErrors(prev => ({ ...prev, aadharFile: '' }));
-                      }
+                      if (file) handleIdUpload('aadharFile', file);
                     }}
                   />
-                  {form.aadharFile ? (
+                  {uploadingField === 'aadharFile' ? (
+                    <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Uploading...</div>
+                  ) : form.aadharFile ? (
                     <>
                       <CheckCircle2 className="text-green-700 mb-3" size={28} />
-                      <div className="text-[10px] font-bold uppercase tracking-widest mb-1 text-green-700">Aadhar / Passport Selected</div>
-                      <div className="text-[9px] text-gray-600 truncate max-w-[200px]">{form.aadharFile}</div>
+                      <div className="text-[10px] font-bold uppercase tracking-widest mb-1 text-green-700">Aadhar / Passport Uploaded</div>
+                      <div className="text-[9px] text-gray-600 truncate max-w-[200px]">{fileNames.aadharFile}</div>
                     </>
                   ) : (
                     <>
@@ -476,17 +498,16 @@ export default function CheckoutClient({ razorpayKeyId, guestCheckoutEnabled = f
                     className="hidden"
                     onChange={(e) => {
                       const file = e.target.files?.[0];
-                      if (file) {
-                        setForm(prev => ({ ...prev, dlFile: file.name }));
-                        setErrors(prev => ({ ...prev, dlFile: '' }));
-                      }
+                      if (file) handleIdUpload('dlFile', file);
                     }}
                   />
-                  {form.dlFile ? (
+                  {uploadingField === 'dlFile' ? (
+                    <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Uploading...</div>
+                  ) : form.dlFile ? (
                     <>
                       <CheckCircle2 className="text-green-700 mb-3" size={28} />
-                      <div className="text-[10px] font-bold uppercase tracking-widest mb-1 text-green-700">Driving License Selected</div>
-                      <div className="text-[9px] text-gray-600 truncate max-w-[200px]">{form.dlFile}</div>
+                      <div className="text-[10px] font-bold uppercase tracking-widest mb-1 text-green-700">Driving License Uploaded</div>
+                      <div className="text-[9px] text-gray-600 truncate max-w-[200px]">{fileNames.dlFile}</div>
                     </>
                   ) : (
                     <>

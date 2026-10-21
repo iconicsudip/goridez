@@ -5,7 +5,13 @@ export const metadata = {
   title: 'Reservation Ledger | GoRidez Admin ERP',
 };
 
-export default async function AdminBookingsPage() {
+export default async function AdminBookingsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string }>;
+}) {
+  const { status } = await searchParams;
+  const initialStatus = ['CONFIRMED', 'CANCELLED', 'REJECTED'].includes(status || '') ? status! : 'ALL';
   const bookings = await prisma.booking.findMany({
     // Bookings only reach PENDING before the 30% advance is paid — an abandoned
     // or failed checkout should never surface in the reservation ledger.
@@ -25,14 +31,14 @@ export default async function AdminBookingsPage() {
     <div className="max-w-7xl mx-auto space-y-6">
       <div>
         <h1 className="text-3xl font-black uppercase tracking-tight text-brand-gold mb-2">
-          RESERVATION <span className="text-outline-neon">LEDGER</span>
+          BOOKINGS <span className="text-outline-neon">LEDGER</span>
         </h1>
         <p className="text-gray-500 text-xs font-mono uppercase tracking-widest">
           Sovereign Travel-Tech Fleet & Stay reservations catalog
         </p>
       </div>
 
-      <BookingsTable initialBookings={bookings} />
+      <BookingsTable key={initialStatus} initialBookings={bookings} initialStatus={initialStatus} />
     </div>
   );
 }

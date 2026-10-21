@@ -35,8 +35,18 @@ const ADMIN_LINKS = [
       { href: '/admin/integrations?tab=configuration', label: 'Configuration' }
     ]
   },
-  { href: '/admin/bookings', label: 'Reservation Ledger', icon: ListOrdered },
-  { href: '/admin/abandoned-checkouts', label: 'Abandoned Checkouts', icon: UserX },
+  {
+    href: '/admin/bookings',
+    label: 'Bookings',
+    icon: ListOrdered,
+    subItems: [
+      { href: '/admin/bookings', label: 'All Bookings' },
+      { href: '/admin/bookings?status=CONFIRMED', label: 'Confirmed' },
+      { href: '/admin/bookings?status=CANCELLED', label: 'Cancelled' },
+      { href: '/admin/bookings?status=REJECTED', label: 'Rejected' },
+      { href: '/admin/abandoned-checkouts', label: 'Abandoned (Unpaid)' },
+    ]
+  },
   { 
     href: '/admin/seo', 
     label: 'Search Optimization (SEO)', 
