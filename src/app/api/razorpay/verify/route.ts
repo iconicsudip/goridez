@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { prisma } from '@/lib/prisma';
+import { confirmBookingsAndNotify } from '@/lib/bookingNotifications';
 
 export async function POST(req: NextRequest) {
   try {
@@ -23,15 +24,7 @@ export async function POST(req: NextRequest) {
 
     // Payment is verified successfully. Update the booking statuses to CONFIRMED.
     if (bookingIds && Array.isArray(bookingIds) && bookingIds.length > 0) {
-      await prisma.booking.updateMany({
-        where: {
-          id: { in: bookingIds },
-        },
-        data: {
-          status: 'CONFIRMED',
-          razorpayPaymentId: razorpay_payment_id,
-        },
-      });
+      await confirmBookingsAndNotify(bookingIds, razorpay_payment_id);
     }
 
     if (settleBookingId) {

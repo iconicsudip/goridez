@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { prisma } from '@/lib/prisma';
+import { confirmBookingsAndNotify } from '@/lib/bookingNotifications';
 
 // Server-side backstop for payment confirmation. The client-side checkout
 // handler (see /api/razorpay/verify) is the fast path; if the browser closes
@@ -45,10 +46,7 @@ export async function POST(req: NextRequest) {
       } else if (notes.bookingIds) {
         const bookingIds: string[] = JSON.parse(notes.bookingIds);
         if (bookingIds.length > 0) {
-          await prisma.booking.updateMany({
-            where: { id: { in: bookingIds }, status: { not: 'CONFIRMED' } },
-            data: { status: 'CONFIRMED', razorpayPaymentId: paymentId },
-          });
+          await confirmBookingsAndNotify(bookingIds, paymentId);
         }
       }
     }

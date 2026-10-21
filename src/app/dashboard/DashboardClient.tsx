@@ -322,6 +322,11 @@ export default function DashboardClient({ user, bookings, aggregates, wishlist =
                             </div>
                             <h3 className={`text-xl font-black uppercase tracking-tight mb-1 ${!isActive && 'text-gray-900/80'}`}>{booking.title}</h3>
                             <p className="text-gray-500 text-[11px]">{booking.desc}</p>
+                            <p className="text-gray-400 text-[10px] mt-1">
+                              {formatDate(booking.startDate)} → {formatDate(booking.endDate)}
+                              {booking.pickupStation ? ` • Pickup: ${booking.pickupStation}` : ''}
+                              {booking.dropStation ? ` • Drop: ${booking.dropStation}` : ''}
+                            </p>
                           </div>
                           <div className="text-right">
                             <div className="text-[9px] text-gray-500 uppercase tracking-widest font-bold mb-1">OUTSTANDING DUES</div>
@@ -623,7 +628,7 @@ export default function DashboardClient({ user, bookings, aggregates, wishlist =
       {/* === RECEIPT MODAL === */}
       {showReceiptModal && activeInvoice && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white/80 backdrop-blur-sm">
-          <div id="printable-receipt-modal" className="bg-gray-100 border border-gray-300 w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
+          <div id="printable-receipt-modal" className="bg-gray-100 border border-gray-300 w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl animate-in fade-in zoom-in duration-200">
             <div className="p-8 border-b border-gray-200 relative">
               <button onClick={() => setShowReceiptModal(null)} className="absolute top-8 right-8 border border-gray-300 hover:bg-gray-100 px-3 py-1.5 rounded-lg text-xs font-mono text-gray-600 hover:text-gray-900 flex items-center gap-2 transition-colors">
                 Close <X size={14}/>
@@ -657,6 +662,12 @@ export default function DashboardClient({ user, bookings, aggregates, wishlist =
                     <div>₹{Math.round(activeInvoice.totalAmount / 1.18).toLocaleString()}</div>
                   </div>
                   <div className="text-gray-500 text-xs">{activeInvoice.desc}</div>
+                  <div className="text-gray-500 text-xs mt-2">
+                    {formatDate(activeInvoice.startDate)} → {formatDate(activeInvoice.endDate)}
+                  </div>
+                  {activeInvoice.pickupStation && <div className="text-gray-500 text-xs">Pickup: {activeInvoice.pickupStation}</div>}
+                  {activeInvoice.dropStation && <div className="text-gray-500 text-xs">Drop: {activeInvoice.dropStation}</div>}
+                  <div className="text-gray-400 text-[10px] mt-2 uppercase">Status: {activeInvoice.status}</div>
                 </div>
               </div>
 

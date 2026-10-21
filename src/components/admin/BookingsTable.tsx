@@ -148,7 +148,14 @@ export default function BookingsTable({ initialBookings }: BookingsTableProps) {
                         <div className="text-gray-900 font-bold">{b.driverName || b.user.name}</div>
                         <div className="text-gray-500 text-[9px] lowercase font-sans">{b.driverEmail || b.user.email}</div>
                         {(b.driverPhone || b.user.phone) && <div className="text-gray-500 text-[9px] font-sans">{b.driverPhone || b.user.phone}</div>}
+                        {b.driverDob && <div className="text-gray-500 text-[9px] font-sans">DOB: {b.driverDob}</div>}
                         {b.specialRequests && <div className="text-orange-300 text-[9px] font-sans mt-1 truncate max-w-[150px]" title={b.specialRequests}>Req: {b.specialRequests}</div>}
+                        {(b.aadharFile || b.dlFile) && (
+                          <div className="flex gap-2 mt-1 text-[9px] font-sans normal-case">
+                            {b.aadharFile && <a href={b.aadharFile} target="_blank" rel="noreferrer" className="text-green-700 underline">Aadhar</a>}
+                            {b.dlFile && <a href={b.dlFile} target="_blank" rel="noreferrer" className="text-green-700 underline">License</a>}
+                          </div>
+                        )}
                       </td>
                       <td className="p-5">
                         <div className="flex flex-col gap-1.5 items-start">
@@ -162,18 +169,25 @@ export default function BookingsTable({ initialBookings }: BookingsTableProps) {
                           )}
                         </div>
                       </td>
-                      <td className="p-5 text-gray-900 font-semibold">{details}</td>
+                      <td className="p-5 text-gray-900 font-semibold">
+                        <div>{details}</div>
+                        {b.pickupStation && <div className="text-gray-500 text-[9px] font-normal">Pickup: {b.pickupStation}</div>}
+                        {b.dropStation && <div className="text-gray-500 text-[9px] font-normal">Drop: {b.dropStation}</div>}
+                      </td>
                       <td className="p-5 text-gray-600">
                         <div className="flex items-center gap-1">
                           <Calendar size={12} className="text-green-700" />
                           <span>{new Date(b.startDate).toLocaleDateString('en-GB')} - {new Date(b.endDate).toLocaleDateString('en-GB')}</span>
                         </div>
+                        <div className="text-gray-400 text-[9px] mt-1">Booked: {new Date(b.createdAt).toLocaleDateString('en-GB')}</div>
                       </td>
                       <td className="p-5">
                         <div className="text-gray-900 font-bold">Total: ₹{b.totalAmount.toLocaleString()}</div>
                         <div className="text-green-700 font-semibold text-[10px]">Hold: ₹{b.advancePaid.toLocaleString()}</div>
                         <div className="text-gray-500 text-[9px]">Due: ₹{b.remainingAmount.toLocaleString()}</div>
                         {b.depositAmount > 0 && <div className="text-orange-400 text-[9px]">Escrow: ₹{b.depositAmount.toLocaleString()}</div>}
+                        {b.deliveryFee > 0 && <div className="text-gray-500 text-[9px]">Delivery: ₹{b.deliveryFee.toLocaleString()}</div>}
+                        {b.razorpayPaymentId && <div className="text-gray-400 text-[9px] normal-case truncate max-w-[130px]" title={b.razorpayPaymentId}>{b.razorpayPaymentId}</div>}
                       </td>
                       <td className="p-5">
                         <span
