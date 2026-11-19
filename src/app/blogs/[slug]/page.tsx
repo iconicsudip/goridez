@@ -164,7 +164,7 @@ export default async function BlogDetails({ params }: { params: Promise<{ slug: 
 
       {/* Article */}
       <section className="relative isolate overflow-hidden py-14 md:py-20">
-        <FloatingBackdrop tone="light" variant="a" />
+        <FloatingBackdrop tone="light" variant="a" subtle />
         <div className="container mx-auto px-4 max-w-[1100px]">
           <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_260px]">
             <article>
@@ -221,7 +221,7 @@ export default async function BlogDetails({ params }: { params: Promise<{ slug: 
       {/* Suggested reads */}
       {suggestions.length > 0 && (
         <section className="relative isolate overflow-hidden border-t border-[#E7DFD5] bg-[#F0E9DF] py-16 md:py-20">
-          <FloatingBackdrop tone="light" variant="c" />
+          <FloatingBackdrop tone="light" variant="c" road={false} subtle />
           <div className="container mx-auto px-4 max-w-[1300px]">
             <div className="mb-10 flex items-end justify-between gap-4">
               <div>

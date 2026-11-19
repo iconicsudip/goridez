@@ -100,7 +100,8 @@ export default function SelfDriveList({
                 mainImage={car.image}
                 galleryJson={car.gallery}
                 alt={`${car.make} ${car.model}`}
-                imageClassName="object-contain w-full h-full mix-blend-multiply group-hover:scale-105 transition-transform duration-700"
+                slideClassName="mix-blend-multiply"
+                imageClassName="object-contain w-full h-full group-hover:scale-105 transition-transform duration-700"
               />
             </Link>
           ),

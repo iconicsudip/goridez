@@ -48,10 +48,13 @@ export default function FloatingBackdrop({
   tone = 'light',
   variant = 'a',
   road = true,
+  subtle = false,
 }: {
   tone?: 'light' | 'dark';
   variant?: 'a' | 'b' | 'c';
   road?: boolean;
+  /** Calmer layer for text-heavy areas: icons are much fainter and pushed to the edges. */
+  subtle?: boolean;
 }) {
   const dark = tone === 'dark';
   const iconCls = dark ? 'text-[#DFB574]' : 'text-[#B98443]';
@@ -86,6 +89,7 @@ export default function FloatingBackdrop({
       )}
 
       {/* icons */}
+      <div className={subtle ? 'opacity-40' : undefined}>
       {LAYOUTS[variant].map(({ Icon, pos, size, anim, dim }, i) => (
         <Icon
           key={i}
@@ -93,6 +97,7 @@ export default function FloatingBackdrop({
           className={`absolute ${pos} ${size} ${anim} motion-reduce:animate-none ${dim ? iconAlt : iconCls} ${dim ? 'opacity-40' : dark ? 'opacity-40' : 'opacity-60'}`}
         />
       ))}
+      </div>
 
       {/* orbs, diamonds & rings */}
       <span className={`absolute left-[20%] top-[26%] h-3 w-3 rounded-full animate-float motion-reduce:animate-none ${orbA}`} />

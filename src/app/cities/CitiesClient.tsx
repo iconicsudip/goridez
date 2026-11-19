@@ -7,7 +7,7 @@ import { MapPin, Car as CarIcon, Home, Compass, ArrowRight, UserCircle, RefreshC
 import { useRouter } from 'next/navigation';
 import { useBookingStore } from '@/store/useBookingStore';
 import { getCarSlug } from '@/lib/utils';
-import VehicleCard from '@/components/VehicleCard';
+import VehicleCard, { getCarPricing, getCarPerks } from '@/components/VehicleCard';
 import FloatingBackdrop from '@/components/FloatingBackdrop';
 
 const CITY_FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1477587458883-47145ed94245?auto=format&fit=crop&w=1800&q=80';
@@ -98,6 +98,7 @@ export default function CitiesClient({ initialCities, initialCars, initialVillas
           </span>
         ),
       }}
+      perks={getCarPerks(car, getCarPricing(car).refPkg)}
       cta={{ label: ctaLabel, onClick: onBook }}
     />
   );

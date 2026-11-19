@@ -9,6 +9,8 @@ interface CarImageSliderProps {
   alt: string;
   imageClassName?: string;
   dotsClassName?: string;
+  /** Extra classes for each slide layer (e.g. mix-blend-multiply to drop white photo backgrounds). */
+  slideClassName?: string;
 }
 
 export default function CarImageSlider({ 
@@ -16,7 +18,8 @@ export default function CarImageSlider({
   galleryJson, 
   alt, 
   imageClassName = 'object-contain p-3',
-  dotsClassName = 'bottom-2.5 left-1/2 -translate-x-1/2'
+  dotsClassName = 'bottom-2.5 left-1/2 -translate-x-1/2',
+  slideClassName = ''
 }: CarImageSliderProps) {
   const [images, setImages] = useState<string[]>([mainImage]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -50,7 +53,7 @@ export default function CarImageSlider({
       {images.map((img, idx) => (
         <div
           key={img + idx}
-          className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+          className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${slideClassName} ${
             idx === currentIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'
           }`}
         >

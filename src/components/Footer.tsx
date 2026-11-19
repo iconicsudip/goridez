@@ -82,7 +82,7 @@ export default function Footer({ siteSettings, cities, legalLinks }: { siteSetti
 
   return (
     <footer className="relative isolate overflow-hidden border-t border-[#C89D5C]/25 bg-gradient-to-b from-[#250903] via-[#1A0602] to-[#100301] pt-16 pb-8 font-body text-white">
-      <FloatingBackdrop tone="dark" variant="b" />
+      <FloatingBackdrop tone="dark" variant="b" road={false} subtle />
 
       <div className="container relative mx-auto px-4">
         {/* Trust ribbon */}

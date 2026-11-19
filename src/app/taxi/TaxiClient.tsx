@@ -941,7 +941,8 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                                   mainImage={car.image || '/placeholder-car.png'}
                                   galleryJson={car.gallery}
                                   alt={getCarDisplay(car).full}
-                                  imageClassName="object-contain w-full h-full mix-blend-multiply group-hover:scale-105 transition-transform duration-500"
+                                  slideClassName="mix-blend-multiply"
+                                  imageClassName="object-contain w-full h-full group-hover:scale-105 transition-transform duration-500"
                                   dotsClassName="bottom-1.5 left-1/2 -translate-x-1/2"
                                 />
                               </Link>
@@ -1254,7 +1255,8 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                                 mainImage={car.image || '/placeholder-car.png'}
                                 galleryJson={car.gallery}
                                 alt={getCarDisplay(car).full}
-                                imageClassName="object-contain w-full h-full mix-blend-multiply group-hover:scale-105 transition-transform duration-500"
+                                slideClassName="mix-blend-multiply"
+                                  imageClassName="object-contain w-full h-full group-hover:scale-105 transition-transform duration-500"
                                 dotsClassName="bottom-1.5 left-1/2 -translate-x-1/2"
                               />
                             </Link>
