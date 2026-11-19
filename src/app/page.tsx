@@ -10,6 +10,7 @@ import VideoGallery from "@/components/VideoGallery";
 import VehicleCollections from "@/components/VehicleCollections";
 import GoogleReviewsSection from "@/components/GoogleReviewsSection";
 import BookingProcessSection from "@/components/BookingProcessSection";
+import FloatingBackdrop from "@/components/FloatingBackdrop";
 import { Star, Shield, Clock, Map, ChevronRight, Key, Plane, UserCheck, Coins, ArrowRight, ArrowUpRight, Check } from 'lucide-react';
 
 import { generatePageMetadata, getSeoForPath } from "@/lib/seo";
@@ -187,7 +188,8 @@ export default async function Home() {
       </section>
 
       {/* SECTION 2: SERVICES SECTION */}
-      <section className="py-24 relative overflow-hidden z-10 bg-[#FAF6F0] border-t border-[#E7DFD5]">
+      <section className="py-24 relative isolate overflow-hidden z-10 bg-[#FAF6F0] border-t border-[#E7DFD5]">
+        <FloatingBackdrop tone="light" variant="a" />
         {/* Decorative Luxury Background Glows */}
         <div className="absolute top-0 right-0 w-[550px] h-[550px] bg-[#C89D5C]/[0.05] blur-[120px] rounded-full pointer-events-none -z-10" />
         <div className="absolute bottom-0 left-0 w-[550px] h-[550px] bg-[#551A0C]/[0.03] blur-[120px] rounded-full pointer-events-none -z-10" />
@@ -475,9 +477,10 @@ export default async function Home() {
       )}
 
       {/* SECTION 5: AIRPORT PICKUP & DROP BANNER */}
-      <section className="py-24 relative overflow-hidden bg-[#170501] border-t border-[#C89D5C]/20">
-        {/* Background Image with Dark Overlay */}
-        <div className="absolute inset-0 z-0">
+      <section className="py-24 relative isolate overflow-hidden bg-[#170501] border-t border-[#C89D5C]/20">
+        <FloatingBackdrop tone="dark" variant="b" />
+        {/* Background Image with Dark Overlay (sits beneath the floating layer) */}
+        <div className="absolute inset-0 -z-20">
           <Image
             src={(hp as any).airportTransferImage || "https://images.unsplash.com/photo-1542282088-fe8426682b8f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80"}
             alt="Airport Transfer Background"
@@ -576,7 +579,8 @@ export default async function Home() {
 
       {/* SECTION 6: FEATURED BLOGS / JOURNAL */}
       {blogs.length > 0 && (
-        <section className="py-24 bg-[#FAF6F0] border-t border-[#E7DFD5] relative overflow-hidden">
+        <section className="py-24 bg-[#FAF6F0] border-t border-[#E7DFD5] relative isolate overflow-hidden">
+          <FloatingBackdrop tone="light" variant="c" />
           {/* Decorative Luxury Background Glows */}
           <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[#C89D5C]/[0.02] blur-[110px] rounded-full pointer-events-none -z-10" />
           <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-[#551A0C]/[0.02] blur-[110px] rounded-full pointer-events-none -z-10" />

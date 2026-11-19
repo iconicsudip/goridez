@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ChevronDown, Sparkles, MessageCircle, PhoneCall, ShieldCheck, ArrowRight } from 'lucide-react';
+import FloatingBackdrop from '@/components/FloatingBackdrop';
 
 interface FaqItem {
   id: string;
@@ -22,7 +23,8 @@ export default function FaqAccordion({ faqs }: { faqs: FaqItem[] }) {
   if (!faqs || faqs.length === 0) return null;
 
   return (
-    <section className="py-24 bg-[#170501] border-t border-[#C89D5C]/20 relative overflow-hidden">
+    <section className="py-24 bg-[#170501] border-t border-[#C89D5C]/20 relative isolate overflow-hidden">
+      <FloatingBackdrop tone="dark" variant="b" />
       {/* Ambient Royal Gold Glows */}
       <div className="absolute top-1/3 left-10 w-[500px] h-[500px] bg-[#C89D5C]/[0.06] blur-[140px] rounded-full pointer-events-none" />
       <div className="absolute bottom-10 right-10 w-[500px] h-[500px] bg-[#551A0C]/[0.15] blur-[140px] rounded-full pointer-events-none" />

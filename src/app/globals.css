@@ -438,3 +438,12 @@ iframe.instagram-media,
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+/* Small car that slowly drives across a section's dotted road (FloatingBackdrop) */
+@keyframes drive-across {
+  from { transform: translateX(-12vw) translateY(0); }
+  50%  { transform: translateX(50vw) translateY(-26px); }
+  to   { transform: translateX(112vw) translateY(8px); }
+}
+.animate-drive { animation: drive-across 42s linear infinite; }
+@media (prefers-reduced-motion: reduce) { .animate-drive { animation: none; } }

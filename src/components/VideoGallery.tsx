@@ -5,6 +5,7 @@ import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 import { ChevronLeft, ChevronRight, Video, Sparkles, ArrowUpRight } from 'lucide-react';
 import InstagramEmbed, { InstagramEmbedScript, useInstagramEmbedProcess } from './InstagramEmbed';
+import FloatingBackdrop from '@/components/FloatingBackdrop';
 
 interface Reel {
   id: string;
@@ -88,7 +89,8 @@ export default function VideoGallery({ reels }: { reels: Reel[] }) {
   }, [activeTab, filteredReels.length, emblaApi]);
 
   return (
-    <section id="video-gallery" className="py-24 bg-[#F0E9DF] border-t-2 border-[#D4C3B2] relative overflow-hidden font-body text-[#250903]">
+    <section id="video-gallery" className="py-24 bg-[#F0E9DF] border-t-2 border-[#D4C3B2] relative isolate overflow-hidden font-body text-[#250903]">
+      <FloatingBackdrop tone="light" variant="b" />
       {/* Decorative Atmospheric Lighting */}
       <div className="absolute top-1/4 left-0 w-[600px] h-[600px] bg-[#C89D5C]/10 blur-[140px] rounded-full pointer-events-none -z-10" />
       <div className="absolute bottom-1/4 right-0 w-[500px] h-[500px] bg-[#551A0C]/5 blur-[140px] rounded-full pointer-events-none -z-10" />

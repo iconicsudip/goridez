@@ -5,8 +5,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
-import { ChevronLeft, ChevronRight, ArrowRight, ArrowUpRight, Fuel, Users, Settings2, Volume2, VolumeX, Plus } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ArrowRight, ArrowUpRight, Volume2, VolumeX } from 'lucide-react';
 import { getCarSlug } from '@/lib/utils';
+import VehicleCard, { getCarPricing, getCarPerks } from '@/components/VehicleCard';
+import FloatingBackdrop from '@/components/FloatingBackdrop';
 
 interface VehicleCollectionsProps {
   cars: any[];
@@ -137,7 +139,8 @@ export default function VehicleCollections({
   const spotlightPrice = spotlightCar?.perDayPrice || spotlightCar?.price || (spotlightCheapestPkg ? spotlightCheapestPkg.basePrice : 4500);
 
   return (
-    <section id="collection" className="py-24 bg-[#180501] border-t border-[#C89D5C]/20 text-white relative overflow-hidden font-body">
+    <section id="collection" className="py-24 bg-[#180501] border-t border-[#C89D5C]/20 text-white relative isolate overflow-hidden font-body">
+      <FloatingBackdrop tone="dark" variant="c" />
       {/* Background Decorative Warm Accents */}
       <div className="absolute top-1/4 left-0 w-[600px] h-[600px] bg-[#551A0C]/25 blur-[140px] rounded-full pointer-events-none -z-10" />
       <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-[#C89D5C]/12 blur-[140px] rounded-full pointer-events-none -z-10" />
@@ -233,82 +236,25 @@ export default function VehicleCollections({
                   </div>
                 ) : (
                   activeCars.map((car) => {
-                    const cheapestPkg = car.packages?.sort((a: any, b: any) => a.basePrice - b.basePrice)[0];
-                    const startingPrice = car.perDayPrice || car.price || (cheapestPkg ? cheapestPkg.basePrice : 2800);
-                    const originalPrice = Math.round(startingPrice * 1.22);
+                    const { startingPrice, refPkg } = getCarPricing(car, 2800);
                     const targetLink = `/cars/${getCarSlug(car)}`;
 
                     return (
                       <div
                         key={car.id}
-                        className="flex-[0_0_88%] sm:flex-[0_0_48%] lg:flex-[0_0_33.333%] min-w-0 pl-5"
+                        className="flex-[0_0_88%] sm:flex-[0_0_48%] lg:flex-[0_0_33.333%] min-w-0 pl-5 pt-3 pb-8"
                       >
-                        <div className="bg-[#240C06] border border-[#551A0C]/80 hover:border-[#C89D5C] rounded-3xl p-4 sm:p-5 flex flex-col justify-between group transition-all duration-500 hover:-translate-y-1.5 hover:shadow-[0_20px_45px_rgba(0,0,0,0.45)] h-full">
-                          
-                          {/* Inner Vehicle Image Stage - Showroom Turntable */}
-                          <div className="relative h-[195px] w-full rounded-2xl flex items-center justify-center overflow-hidden border border-[#E7DFD5]/25 mb-4 bg-[radial-gradient(ellipse_at_center,_#FFFFFF_0%,_#F3EDE2_100%)] p-2 shadow-inner">
-                            <Image
-                              src={car.image || 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=1000&q=80'}
-                              alt={`${car.make} ${car.model}`}
-                              fill
-                              className="object-contain p-2.5 group-hover:scale-108 transition-transform duration-700 ease-out drop-shadow-[0_10px_20px_rgba(37,9,3,0.18)]"
-                              unoptimized
-                            />
-
-                            <div className="absolute top-3 left-3 z-10">
-                              <span className="bg-[#170501]/90 text-[#DFB574] text-[8.5px] font-bold uppercase tracking-widest px-3 py-1 rounded-full border border-[#C89D5C]/40 backdrop-blur-md shadow-sm">
-                                ✦ {car.category ? car.category.replace(/\bClass\b/gi, '').trim() : 'ROYAL SELECTION'}
-                              </span>
-                            </div>
-                          </div>
-
-                          {/* Content Details */}
-                          <div className="flex flex-col flex-grow justify-between">
-                            <div>
-                              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#C89D5C] mb-1 font-mono">
-                                {car.make}
-                              </div>
-                              <h3 className="text-base sm:text-lg font-heading font-black text-white uppercase tracking-wide mb-3 truncate group-hover:text-[#DFB574] transition-colors">
-                                {car.model}
-                              </h3>
-
-                              {/* Specs row */}
-                              <div className="grid grid-cols-3 border border-[#551A0C]/60 rounded-xl bg-[#170501]/60 p-2 mb-4 text-[10.5px] text-[#FAF6F0]/80 font-medium">
-                                <div className="flex items-center justify-center gap-1.5 py-0.5">
-                                  <Fuel size={12} className="text-[#C89D5C]" />
-                                  <span className="capitalize">{car.fuelType || 'Petrol'}</span>
-                                </div>
-                                <div className="flex items-center justify-center gap-1.5 py-0.5 border-x border-[#551A0C]/60">
-                                  <Users size={12} className="text-[#C89D5C]" />
-                                  <span>{car.seatingCapacity || 5} Seats</span>
-                                </div>
-                                <div className="flex items-center justify-center gap-1.5 py-0.5">
-                                  <Settings2 size={12} className="text-[#C89D5C]" />
-                                  <span className="capitalize">{car.transmission ? car.transmission.replace(' Gearbox', '') : 'Auto/Man'}</span>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Price & Action Row (Matching Reference) */}
-                            <div className="pt-2 border-t border-[#551A0C]/60 flex items-center justify-between gap-2">
-                              <div>
-                                <div className="text-white font-heading font-black text-lg leading-none">
-                                  Rs. {startingPrice.toLocaleString('en-IN')}.00
-                                </div>
-                                <div className="text-[10px] text-white/40 line-through mt-0.5 font-mono">
-                                  Rs. {originalPrice.toLocaleString('en-IN')}.00
-                                </div>
-                              </div>
-
-                              <Link href={targetLink}>
-                                <button className="bg-[#FAF6F0] hover:bg-[#DFB574] text-[#250903] text-[11px] font-black uppercase tracking-wider px-4 py-2 rounded-full transition-all flex items-center gap-1 shadow-md hover:scale-105 active:scale-95 cursor-pointer">
-                                  ADD <Plus size={13} strokeWidth={3} />
-                                </button>
-                              </Link>
-                            </div>
-                          </div>
-
-                        </div>
+                        <VehicleCard
+                          car={car}
+                          theme="dark"
+                          href={targetLink}
+                          perks={getCarPerks(car, refPkg)}
+                          price={startingPrice}
+                          cta={{
+                            label: car.availability !== false ? 'Reserve Vehicle' : 'View Details',
+                            href: targetLink,
+                          }}
+                        />
                       </div>
                     );
                   })

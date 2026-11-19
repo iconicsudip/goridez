@@ -1,6 +1,7 @@
 'use client';
 
 import { Compass, Car, CalendarCheck, KeyRound, Sparkles, ArrowRight, ShieldCheck, MapPin, Sliders, CheckCircle } from 'lucide-react';
+import FloatingBackdrop from '@/components/FloatingBackdrop';
 
 const BOOKING_PROCESS = [
   {
@@ -43,7 +44,8 @@ const BOOKING_PROCESS = [
 
 export default function BookingProcessSection({ className = '' }: { className?: string }) {
   return (
-    <section className={`py-28 bg-[#170501] border-t border-[#C89D5C]/25 relative overflow-hidden text-white ${className}`}>
+    <section className={`py-28 bg-[#170501] border-t border-[#C89D5C]/25 relative isolate overflow-hidden text-white ${className}`}>
+      <FloatingBackdrop tone="dark" variant="a" />
       {/* ── Ambient Radial Atmosphere ── */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[900px] h-[450px] bg-radial from-[#C89D5C]/12 via-[#551A0C]/10 to-transparent blur-[140px] rounded-full pointer-events-none -z-10" />
       <div className="absolute -bottom-20 right-0 w-[500px] h-[500px] bg-[#551A0C]/20 blur-[130px] rounded-full pointer-events-none -z-10" />

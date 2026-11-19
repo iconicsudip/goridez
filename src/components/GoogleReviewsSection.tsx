@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { Star, ShieldCheck, Check, Quote, ArrowUpRight } from 'lucide-react';
+import FloatingBackdrop from '@/components/FloatingBackdrop';
 
 interface GoogleReview {
   id: string;
@@ -146,7 +147,8 @@ export default function GoogleReviewsSection({ reviews, placeId, averageRating =
     : 'https://google.com';
 
   return (
-    <section className="py-24 bg-[#F0E9DF] border-y-2 border-[#D4C3B2] overflow-hidden relative font-body">
+    <section className="py-24 bg-[#F0E9DF] border-y-2 border-[#D4C3B2] overflow-hidden relative isolate font-body">
+      <FloatingBackdrop tone="light" variant="c" />
       {/* Decorative Warm Ambient Glows */}
       <div className="absolute top-1/3 left-1/4 w-[600px] h-[600px] bg-[#C89D5C]/[0.08] blur-[140px] rounded-full pointer-events-none -z-10" />
       <div className="absolute bottom-10 right-1/4 w-[450px] h-[450px] bg-[#551A0C]/[0.05] blur-[120px] rounded-full pointer-events-none -z-10" />

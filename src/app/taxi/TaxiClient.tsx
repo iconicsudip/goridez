@@ -15,7 +15,8 @@ import LocationAutocomplete from '@/components/LocationAutocomplete';
 import CarImageSlider from '@/components/CarImageSlider';
 import AirportLocalitySearch, { AIRPORT_ZONE_ID } from '@/components/AirportLocalitySearch';
 import { calculateRoute, resolveLocationData, getFallbackDistanceKm, OSMLocation } from '@/lib/osm';
-import { getCarSlug } from '@/lib/utils';
+import { getCarSlug, getCarDisplay } from '@/lib/utils';
+import { VehicleStage } from '@/components/VehicleCard';
 import { ROUNDTRIP_PACKAGES } from '../../../taxiData';
 
 function normalizeVehicleCategory(raw: string): string {
@@ -922,43 +923,30 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                     <div key={car.id} className="card-luxury bg-white border border-[#D4C3B2] hover:border-[#C89D5C] rounded-2xl lg:rounded-3xl shadow-[0_14px_35px_rgba(42,14,7,0.08),0_2px_6px_rgba(42,14,7,0.04)] hover:shadow-[0_20px_50px_rgba(42,14,7,0.16)] transition-all duration-500 mb-6 overflow-hidden font-body group">
                       <div className="flex flex-col lg:flex-row items-stretch">
 
-                        {/* ── Left Column: Luxury Vehicle Stage (Compact & Proportional) ── */}
-                        <div className="relative w-full lg:w-[270px] xl:w-[300px] 2xl:w-[320px] shrink-0 bg-[radial-gradient(ellipse_at_center,_#FFFFFF_20%,_#EFE5D6_100%)] flex flex-col items-center justify-center min-h-[190px] sm:min-h-[210px] lg:min-h-[230px] p-2 overflow-hidden border-b lg:border-b-0 lg:border-r border-[#D4C3B2]">
-                          {/* Soft Radial Ambient Spotlight */}
-                          <div className="absolute inset-0 bg-radial from-white/70 via-transparent to-transparent pointer-events-none" />
-
-                          {/* Floating Category Badge – Top Left */}
-                          <span className="absolute top-2.5 left-2.5 z-10 bg-[#250903]/90 text-[#DFB574] text-[8px] font-black uppercase tracking-[0.2em] px-2.5 py-1 rounded-full border border-[#C89D5C]/40 backdrop-blur-md shadow-xs font-mono">
-                            ✦ {car.category ? car.category.replace(/\bClass\b/gi, '').trim() : 'ROYAL FLEET'}
-                          </span>
-
-                          {/* Floating Availability Badge – Top Right */}
-                          <span className={`absolute top-2.5 right-2.5 z-10 text-[7.5px] font-black uppercase tracking-[0.16em] px-2.5 py-1 rounded-full flex items-center gap-1 shadow-xs backdrop-blur-md ${
-                            car.availability 
-                              ? 'bg-emerald-950/85 text-emerald-300 border border-emerald-500/40' 
-                              : 'bg-red-950/85 text-red-300 border border-red-500/40'
-                          }`}>
-                            <span className={`w-1 h-1 rounded-full ${car.availability ? 'bg-emerald-400 animate-pulse' : 'bg-red-400'}`}></span>
-                            {car.availability ? 'AVAILABLE' : 'BOOKED'}
-                          </span>
-
-                          {/* Image Slider - Perfectly Fitted */}
-                          <div className="w-full h-full relative z-0 flex items-center justify-center min-h-[150px] sm:min-h-[170px] lg:min-h-[190px] p-2 sm:p-3">
-                            <Link href={`/cars/${getCarSlug(car)}`} className="block w-full h-full relative">
-                              <CarImageSlider 
-                                mainImage={car.image || '/placeholder-car.png'} 
-                                galleryJson={car.gallery} 
-                                alt={`${car.make} ${car.model}`} 
-                                imageClassName="object-contain w-full h-full group-hover:scale-105 transition-transform duration-500 drop-shadow-[0_10px_20px_rgba(37,9,3,0.18)]" 
-                                dotsClassName="bottom-1.5 left-1/2 -translate-x-1/2"
-                              />
-                            </Link>
-                          </div>
-
-                          {/* Bottom chassis inspection badge */}
-                          <div className="absolute bottom-1.5 text-[7.5px] font-mono font-bold tracking-[0.25em] text-[#8C6D53]/70 uppercase select-none pointer-events-none">
-                            CHASSIS INSPECTED • VETTED
-                          </div>
+                        {/* ── Left Column: Shared Vehicle Stage ── */}
+                        <div className="relative w-full shrink-0 p-3 lg:w-[310px] lg:pr-0 xl:w-[340px]">
+                          <VehicleStage
+                            car={car}
+                            showServiceChips={false}
+                            unavailableLabel="Booked"
+                            className="h-[215px] lg:h-full lg:min-h-[250px]"
+                            chips={
+                              <span className="flex items-center gap-1 rounded-full bg-white/85 px-2 py-1 text-[9px] font-bold uppercase tracking-wide text-[#551A0C] ring-1 ring-[#E7DFD5] backdrop-blur">
+                                <ShieldCheck size={10} className="text-[#C89D5C]" /> Uniformed chauffeur
+                              </span>
+                            }
+                            imageSlot={
+                              <Link href={`/cars/${getCarSlug(car)}`} className="relative block h-full w-full">
+                                <CarImageSlider
+                                  mainImage={car.image || '/placeholder-car.png'}
+                                  galleryJson={car.gallery}
+                                  alt={getCarDisplay(car).full}
+                                  imageClassName="object-contain w-full h-full mix-blend-multiply group-hover:scale-105 transition-transform duration-500"
+                                  dotsClassName="bottom-1.5 left-1/2 -translate-x-1/2"
+                                />
+                              </Link>
+                            }
+                          />
                         </div>
 
                         {/* ── Center Column: Core Specs & Interactive Package Architecture ── */}
@@ -967,7 +955,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                             {/* Header Row: Make & Title */}
                             <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
                               <div className="text-[9.5px] font-bold uppercase tracking-[0.2em] text-[#C89D5C] font-mono">
-                                ✦ EXECUTIVE CARRIAGE • {car.make}
+                                ✦ EXECUTIVE CARRIAGE • {getCarDisplay(car).brand || car.make}
                               </div>
                               {destStr && (
                                 <div className="inline-flex items-center gap-1.5 text-[9.5px] font-mono font-bold text-[#551A0C] bg-[#F8F3EA] border border-[#D4C3B2] px-2.5 py-0.5 rounded-full shadow-2xs">
@@ -979,7 +967,7 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
 
                             <h3 className="text-xl sm:text-2xl font-heading font-black text-[#250903] uppercase tracking-wide group-hover:text-[#551A0C] transition-colors leading-tight mb-3">
                               <Link href={`/cars/${getCarSlug(car)}`}>
-                                {car.make} {car.model}
+                                {getCarDisplay(car).full}
                               </Link>
                             </h3>
 
@@ -1248,50 +1236,42 @@ export default function TaxiClient({ initialCars, initialCities, taxiSettings, a
                   <div key={car.id} className="card-luxury bg-white border border-[#D4C3B2] hover:border-[#C89D5C] rounded-2xl lg:rounded-3xl shadow-[0_14px_35px_rgba(42,14,7,0.08),0_2px_6px_rgba(42,14,7,0.04)] hover:shadow-[0_20px_50px_rgba(42,14,7,0.16)] transition-all duration-500 mb-6 overflow-hidden font-body group">
                     <div className="flex flex-col lg:flex-row items-stretch">
 
-                      {/* ── Left Column: Vehicle Stage (Compact & Proportional) ── */}
-                      <div className="relative w-full lg:w-[270px] xl:w-[300px] 2xl:w-[320px] shrink-0 bg-[radial-gradient(ellipse_at_center,_#FFFFFF_20%,_#EFE5D6_100%)] flex flex-col items-center justify-center min-h-[190px] sm:min-h-[210px] lg:min-h-[230px] p-2 overflow-hidden border-b lg:border-b-0 lg:border-r border-[#D4C3B2]">
-                        <div className="absolute inset-0 bg-radial from-white/70 via-transparent to-transparent pointer-events-none" />
-
-                        <span className="absolute top-2.5 left-2.5 z-10 bg-[#250903]/90 text-[#DFB574] text-[8px] font-black uppercase tracking-[0.2em] px-2.5 py-1 rounded-full border border-[#C89D5C]/40 backdrop-blur-md shadow-xs font-mono">
-                          ✦ {car.category ? car.category.replace(/\bClass\b/gi, '').trim() : 'ROYAL FLEET'}
-                        </span>
-
-                        <span className={`absolute top-2.5 right-2.5 z-10 text-[7.5px] font-black uppercase tracking-[0.16em] px-2.5 py-1 rounded-full flex items-center gap-1 shadow-xs backdrop-blur-md ${
-                          car.availability 
-                            ? 'bg-emerald-950/85 text-emerald-300 border border-emerald-500/40' 
-                            : 'bg-red-950/85 text-red-300 border border-red-500/40'
-                        }`}>
-                          <span className={`w-1 h-1 rounded-full ${car.availability ? 'bg-emerald-400 animate-pulse' : 'bg-red-400'}`}></span>
-                          {car.availability ? 'AVAILABLE' : 'BOOKED'}
-                        </span>
-
-                        <div className="w-full h-full relative z-0 flex items-center justify-center min-h-[150px] sm:min-h-[170px] lg:min-h-[190px] p-2 sm:p-3">
-                          <Link href={`/cars/${getCarSlug(car)}`} className="block w-full h-full relative">
-                            <CarImageSlider 
-                              mainImage={car.image || '/placeholder-car.png'} 
-                              galleryJson={car.gallery} 
-                              alt={`${car.make} ${car.model}`} 
-                              imageClassName="object-contain w-full h-full group-hover:scale-105 transition-transform duration-500 drop-shadow-[0_10px_20px_rgba(37,9,3,0.18)]" 
-                              dotsClassName="bottom-1.5 left-1/2 -translate-x-1/2"
-                            />
-                          </Link>
-                        </div>
-
-                        <div className="absolute bottom-1.5 text-[7.5px] font-mono font-bold tracking-[0.25em] text-[#8C6D53]/70 uppercase select-none pointer-events-none">
-                          CHASSIS INSPECTED • VETTED
-                        </div>
+                      {/* ── Left Column: Shared Vehicle Stage ── */}
+                      <div className="relative w-full shrink-0 p-3 lg:w-[310px] lg:pr-0 xl:w-[340px]">
+                        <VehicleStage
+                          car={car}
+                          showServiceChips={false}
+                          unavailableLabel="Booked"
+                          className="h-[215px] lg:h-full lg:min-h-[250px]"
+                          chips={
+                            <span className="flex items-center gap-1 rounded-full bg-white/85 px-2 py-1 text-[9px] font-bold uppercase tracking-wide text-[#551A0C] ring-1 ring-[#E7DFD5] backdrop-blur">
+                              <ShieldCheck size={10} className="text-[#C89D5C]" /> Airport transfer
+                            </span>
+                          }
+                          imageSlot={
+                            <Link href={`/cars/${getCarSlug(car)}`} className="relative block h-full w-full">
+                              <CarImageSlider
+                                mainImage={car.image || '/placeholder-car.png'}
+                                galleryJson={car.gallery}
+                                alt={getCarDisplay(car).full}
+                                imageClassName="object-contain w-full h-full mix-blend-multiply group-hover:scale-105 transition-transform duration-500"
+                                dotsClassName="bottom-1.5 left-1/2 -translate-x-1/2"
+                              />
+                            </Link>
+                          }
+                        />
                       </div>
 
                       {/* ── Center Column: Info & Airport Perks ── */}
                       <div className="flex-1 flex flex-col justify-between p-5 sm:p-5.5 lg:p-6 bg-white">
                         <div>
                           <div className="text-[9.5px] font-bold uppercase tracking-[0.2em] text-[#C89D5C] font-mono mb-1.5">
-                            ✦ AIRPORT TERMINAL CONCIERGE • {car.make}
+                            ✦ AIRPORT TERMINAL CONCIERGE • {getCarDisplay(car).brand || car.make}
                           </div>
 
                           <h3 className="text-xl sm:text-2xl font-heading font-black text-[#250903] uppercase tracking-wide group-hover:text-[#551A0C] transition-colors leading-tight mb-3">
                             <Link href={`/cars/${getCarSlug(car)}`}>
-                              {car.make} {car.model}
+                              {getCarDisplay(car).full}
                             </Link>
                           </h3>
 
