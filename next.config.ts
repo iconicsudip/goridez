@@ -29,6 +29,11 @@ try {
 }
 
 const nextConfig: NextConfig = {
+  // The "Running TypeScript" step needs >2GB of heap and OOMs on Render's build
+  // container. Skip it there only; run `npx tsc --noEmit` locally/CI instead.
+  typescript: {
+    ignoreBuildErrors: process.env.RENDER === 'true',
+  },
   images: {
     remotePatterns: [
       {
